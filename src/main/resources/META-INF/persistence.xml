@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="ProjectManagerPU" transaction-type="RESOURCE_LOCAL">
+    <non-jta-data-source>java:/jboss/datasources/ProjectManager</non-jta-data-source>
+    <class>com.allone.projectmanager.entities.Collabs</class>
+    <class>com.allone.projectmanager.entities.Company</class>
+    <class>com.allone.projectmanager.entities.Email</class>
+    <class>com.allone.projectmanager.entities.Exchange</class>
+    <class>com.allone.projectmanager.entities.Item</class>
+    <class>com.allone.projectmanager.entities.Repimage</class>
+    <class>com.allone.projectmanager.entities.Reports</class>
+    <class>com.allone.projectmanager.entities.Rights</class>
+    <class>com.allone.projectmanager.entities.Salestrans</class>
+    <class>com.allone.projectmanager.entities.Stock</class>
+    <class>com.allone.projectmanager.entities.Stocktrans</class>
+    <class>com.allone.projectmanager.entities.Vessel</class>
+    <class>com.allone.projectmanager.entities.TypeProject</class>
+    <class>com.allone.projectmanager.entities.StatusProject</class>
+    <class>com.allone.projectmanager.entities.ItemTrans</class>
+    <class>com.allone.projectmanager.entities.ProjectBill</class>
+    <class>com.allone.projectmanager.entities.ProjectBillItem</class>
+    <class>com.allone.projectmanager.entities.ProjectBillCustomItem</class>
+    <class>com.allone.projectmanager.entities.Project</class>
+    <class>com.allone.projectmanager.entities.PurchaseOrder</class>
+    <class>com.allone.projectmanager.entities.RequestQuotation</class>
+    <class>com.allone.projectmanager.entities.RequestQuotationItem</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+    </properties>
+  </persistence-unit>
+</persistence>

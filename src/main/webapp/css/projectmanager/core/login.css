@@ -1,0 +1,75 @@
+.bganimate2 {
+    height: 100%;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.bganimate2.image1 {    
+    background: url("../../../images/projectmanager/common/world-map-background.jpg") no-repeat scroll 50% 50% / cover rgba(0, 0, 0, 0);
+}
+
+.login-container {
+    font-family: 'Basic',Arial,sans serif;
+    height: 450px;
+    left: 50%;
+    margin: -200px 0 0 -280px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 560px;
+}
+
+.login-container form {
+    margin-top:40px;
+}
+
+.login-container .logo{
+    background: url("../../../images/projectmanager/common/marpo-grpoup-login.jpg") no-repeat;
+    margin-left: -30px;
+    height: 98px;
+}
+.login-container p.lTitle {
+    display: inline-block;
+    color:black;
+    width: 100px;
+    font-weight: bold;
+    margin-left: -150px
+}
+
+.login-container input.login {
+    background : url("../../../images/projectmanager/common/field-input.png") no-repeat;
+    border : none;   
+    height: 30px;
+    width: 150px;
+    padding-left: 10px;
+    line-height: 18px;
+    color: #000;
+    outline: 0;
+}
+
+.login-container input.submit {
+    background : url("../../../images/projectmanager/common/login.png") no-repeat;
+    border : none;   
+    height: 32px;
+    width: 32px;
+    padding: 10px;	
+    color: #000;
+    cursor: pointer;
+    margin-left: -150px;
+    text-indent: 30px;
+}
+.login-container .loginText {
+    margin-top: 60px;
+    color:#bcbcbe;
+    font-size: 11px;
+}
+
+.login-container .ver {
+    color:black;
+    font-size: 13px;
+    position: relative; left:-170px; top:20px;
+}

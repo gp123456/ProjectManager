@@ -1,0 +1,43 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 30, 2015, 8:07:52 PM
+    Author     : qbsstation5
+*/
+
+.img {
+    height: 10px;
+    width: 20px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    float: right;
+}
+
+.img div:before {
+    content:attr(title);
+    display:none;
+}
+
+.img div:hover {
+    z-index:10;
+    position:relative;
+}
+
+.img.first-page {
+    background-image: url(../../images/pager-first.png);
+}
+
+.img.previous-page {
+    background-image: url(../../images/pager-previous.png);
+}
+
+.img.next-page {
+    background-image: url(../../images/pager-next.png);
+}
+
+.img.last-page {
+    background-image: url(../../images/pager-last.png);
+}

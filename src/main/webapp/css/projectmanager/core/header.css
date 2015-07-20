@@ -1,0 +1,125 @@
+.top-bar {
+    background: white;
+    border-bottom: 4px solid red;
+    height: 54px;
+    font-size: 12px;
+    width: 100%;
+}
+
+.top-bar .logo {
+    float: left;
+    width: 12%;
+    background: url('../../../images/projectmanager/common/marpo-grpoup-logo.jpg') no-repeat left;
+    height: 100%;
+}
+
+.top-bar .version {
+    float: left;
+    width: 10%;
+    margin-top: 25px;
+    font-size: 10px;
+    color: black;
+    padding: 10px;
+}
+
+.top-bar .headmenu {
+    position: relative;
+    float: left;
+    padding-top: 9px;
+    width: 8%;
+    cursor: pointer;
+    height: 100%;
+    color: black;
+}
+
+#userHead {
+    position: relative;
+    height: 100%;
+    width: 25%;
+    float: left;
+    border-left: groove 2px #3c3c3c;
+    font-size: 13px;
+    color: black;
+}
+
+#userHead .userHead-element {
+    height: 54px;
+    background-color: green;
+}
+
+#userHead .userHead-element.login {
+    width: 26px!important;
+    background: url('../../../images/projectmanager/common/user_icon.png') no-repeat left;
+}
+
+#userHead .userHead-element.logout {
+    width: 26px!important;
+    background: url('../../../images/projectmanager/common/user_icon.png') no-repeat left;
+}
+
+#userHead .userHead-element:first-child {
+    position: relative;
+    float: left;
+    width: 20%;
+}
+
+#userHead .userHead-element:last-child {
+    position: relative;
+    float: left;
+    width: 20%;
+}
+
+#userHead .userHead-element .userHead-element1 {
+    position: relative;
+    float: left;
+    height: 50%;
+    width: 100%;
+    top: 5px;
+    font-size: 10px;
+    color: rgb(110,110,110);
+}
+
+#userHead .userHead-element .userHead-element1 .userHead-element2 {
+    position: relative;
+    float: left;
+    width: 45%;
+    border-right: solid 1 #EE2;
+    margin-right: 2;
+    font-size: 13px;
+    color: black;
+}
+
+#userHead .userHead-element .userHead-element1 .userHead-element2:last-child {
+    border-right: none;
+}
+
+#userHead .logout {
+    position: absolute;
+    right: 0px;
+    top: 20px;
+}
+
+#userHead .loginInfo {
+    position: relative;
+}
+
+#userHead .loginInfo div {
+    display: inline;
+    position: relative;
+    top: 10px;
+    padding:  5px 
+}
+
+#userHead .loginInfo span.sep {
+    border-right: 2px solid #c9b20a;
+    line-height: 2px;
+    position: relative;
+    top: 8px;
+    font-size: 10px;
+}
+
+#userHead .loginInfo div {
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+}

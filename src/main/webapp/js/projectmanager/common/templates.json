@@ -1,0 +1,6 @@
+{
+    "templates": {
+        "project": "<option value=\"-1\" selected=\"selected\">Select</option><option value={{id}}>{{value}}</option>"
+    }
+
+}

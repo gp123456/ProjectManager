@@ -1,0 +1,106 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 23, 2015, Mar 23, 2015 1:48:02 AM
+    Author     : antonia
+*/
+
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+/*body {
+    background: #e5e5e7;
+}*/
+
+nav {
+    font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+    line-height: 1.5;
+    margin: 0px auto; /*for display only*/
+    /*    width: 100%;
+        -webkit-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        -moz-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);*/
+}
+
+.menu-item {
+    background: #fff;
+    /*box-shadow: -20px 0 10px -15px rgba(0, 0, 0, 0.5) inset;*/
+    float: left;
+    width: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    border-right: 4px solid red;
+}
+
+/*Menu Header Styles*/
+.menu-item h3 {
+    color: black;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 7px 12px;
+    background: cyan;
+}
+
+.menu-item h3 a {
+    color: white;
+    display: block;
+    text-decoration: none;
+    /*width: 200px;*/
+}
+
+.menu-item h3:hover {  
+    background: blue; /* Old browsers */
+    background: -moz-linear-gradient(top,  blue 0%, cyan 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, blue), color-stop(100%, cyan)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  blue 0%, cyan 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  cyan 0%,#6d0019 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  blue 0%, cyan 100%); /* IE10+ */
+    background: linear-gradient(top,  blue 0%, cyan 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='blue', endColorstr='cyan',GradientType=0 ); /* IE6-9 */
+}
+
+.menu-item ul a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #aaa;
+    display: block;
+    /*width: 100%;*/
+}
+
+/*li Styles*/
+.menu-item li {
+    border-bottom: 1px solid #eee;
+}
+
+.menu-item li:hover {
+    background: blue;
+}
+
+/*ul Styles*/
+.menu-item ul {
+    background: cyan;
+    font-size: 13px;
+    line-height: 20px;
+    height: 0px;
+    list-style-type: none;
+    overflow: hidden;
+    padding: 0px;
+
+    /*Animation*/
+    -webkit-animation-timing-function: liearn; /* Chrome, Safari, Opera */
+    animation-timing-function: linear;
+    /*    -webkit-transition: height 1s ease;
+        -moz-transition: height 1s ease;
+        -o-transition: height 1s ease;
+        -ms-transition: height 1s ease;
+        transition: height 1s ease;*/
+}
+
+.menu-item:hover ul {
+    height: 100%;
+}
