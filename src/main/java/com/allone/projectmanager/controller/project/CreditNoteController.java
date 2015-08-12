@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/project")
+@RequestMapping(value = "/project-cretid")
 public class CreditNoteController extends Common {
     @RequestMapping(value = "/credit-note")
     public String CreditNote(Model model) {

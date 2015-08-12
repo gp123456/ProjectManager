@@ -60,7 +60,7 @@ public class Company implements Serializable {
     @Column(name = "email3")
     private String email3;
     @Column(name = "contact")
-    private BigInteger contact;
+    private Long contact;
     @Column(name = "vat")
     private String vat;
     @Column(name = "doy")
@@ -195,11 +195,11 @@ public class Company implements Serializable {
         this.email3 = email3;
     }
 
-    public BigInteger getContact() {
+    public Long getContact() {
         return contact;
     }
 
-    public void setContact(BigInteger contact) {
+    public void setContact(Long contact) {
         this.contact = contact;
     }
 

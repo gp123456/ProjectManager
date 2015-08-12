@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/project")
+@RequestMapping(value = "/project-bill")
 public class ProjectBillController extends ProjectCommon {
 
     private static final Logger LOG = Logger.getLogger(Root.class.getName());
@@ -51,8 +51,7 @@ public class ProjectBillController extends ProjectCommon {
         this.srvProjectManager.loadPropertyValues();
     }
 
-    private void setHeader(String title, String sideBar, String content,
-            Boolean itemInfo, Model model) {
+    private void setHeader(String title, String sideBar, String content, Boolean itemInfo, Model model) {
         this.setTitle(title);
         this.setSide_bar(sideBar);
         this.setContent(content);
@@ -65,25 +64,25 @@ public class ProjectBillController extends ProjectCommon {
     private String createProjectBill(ProjectBill pb) {
         String response = "";
 
-        response
-                += "<tr>"
-                + "<td id=\"m_total_cost\">" + pb.getTotalCost() + "</td>"
-                + "<td id=\"m_average_discount\">" + pb.getAverangeDiscount() + "</td>"
-                + "<td id=\"m_sale_price\">" + pb.getTotalSalePrice() + "</td>"
-                + "<td id=\"m_net_sale_price\">" + pb.getTotalNetPrice() + "</td>"
-                + "<td><input type=\"button\" value=\"Edit\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"edit\" onclick=\"edit()\"></td>\n"
-                + "<td><input type=\"button\" value=\"Delete\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"delete\" onclick=\"delete()\"></td>\n"
-                + "<td><input type=\"button\" value=\"Save PDF\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"save-pdf\" onclick=\"savePDF()\"></td>\n"
-                + "<td><input type=\"button\" value=\"Print PDF\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"print-pdf\" onclick=\"printPDF()\"></td>\n"
-                + "<td><input type=\"button\" value=\"Save Excel\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"save-xls\" onclick=\"saveXLS()\"></td>\n"
-                + "<td><input type=\"button\" value=\"Send eMail\" style=\"text-align:center; "
-                + "vertical-align: middle;\" id=\"send-email\" onclick=\"sendEmail()\"></td>\n"
-                + "</tr>";
+        response +=
+        "<tr>" +
+        "<td id=\"m_total_cost\">" + pb.getTotalCost() + "</td>" +
+        "<td id=\"m_average_discount\">" + pb.getAverangeDiscount() + "</td>" +
+        "<td id=\"m_sale_price\">" + pb.getTotalSalePrice() + "</td>" +
+        "<td id=\"m_net_sale_price\">" + pb.getTotalNetPrice() + "</td>" +
+        "<td><input type=\"button\" value=\"Edit\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"edit\" onclick=\"edit()\"></td>\n" +
+        "<td><input type=\"button\" value=\"Delete\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"delete\" onclick=\"delete()\"></td>\n" +
+        "<td><input type=\"button\" value=\"Save PDF\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"save-pdf\" onclick=\"savePDF()\"></td>\n" +
+        "<td><input type=\"button\" value=\"Print PDF\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"print-pdf\" onclick=\"printPDF()\"></td>\n" +
+        "<td><input type=\"button\" value=\"Save Excel\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"save-xls\" onclick=\"saveXLS()\"></td>\n" +
+        "<td><input type=\"button\" value=\"Send eMail\" style=\"text-align:center; " +
+        "vertical-align: middle;\" id=\"send-email\" onclick=\"sendEmail()\"></td>\n" +
+        "</tr>";
 
         return response;
     }
@@ -108,59 +107,60 @@ public class ProjectBillController extends ProjectCommon {
                 String disabledSave = (!key.equals(lastKey)) ? "disabled" : (disableSave) ? "disabled" : "";
 
                 if (!custom || !key.equals(lastKey)) {
-                    response
-                            += "<tr>"
-                            + "<td>" + item.getImno() + "</td>"
-                            + "<td>" + item.getDescription() + "</td>"
-                            + "<td id=\"available" + item.getId() + "\">" + item.getQuantity() + "</td>"
-                            + "<td>" + item.getPrice() + "</td>"
-                            + "<td id=\"quantity" + item.getId() + "\">" + "<div contenteditable></div>"
-                            + ((!quantity.equals(0)) ? quantity : "") + "</td>"
-                            + "<td id=\"cost" + item.getId() + "\"><div contenteditable></div>" + ((cost != null) ? cost : "")
-                            + "</td>"
-                            + "<td id=\"total_cost" + item.getId() + "\">" + ((totalCost != null) ? totalCost : "") + "</td>"
-                            + "<td id=\"percentage" + item.getId() + "\"><div contenteditable></div>" + ((percentage != null)
-                                    ? percentage : "")
-                            + "</td>"
-                            + "<td id=\"discount" + item.getId() + "\"><div contenteditable></div>" + ((discount != null)
-                                    ? discount : "") + "</td>"
-                            + "<td id=\"sale_price" + item.getId() + "\">" + ((salePrice != null) ? salePrice : "") + "</td>"
-                            + "<td id=\"total_sale_price" + item.getId() + "\">" + ((totalSalePrice != null) ? totalSalePrice
-                                    : "") + "</td>"
-                            + "<td id=\"total_net_price" + item.getId() + "\">" + ((totalNetPrice != null) ? totalNetPrice
-                                    : "") + "</td>"
-                            + "<td><input type=\"button\" value=\"Refresh\" style=\"text-align:center; vertical-align: middle;\" "
-                            + "onclick=\"changeValues(" + item.getId() + ")\"" + disabledRefresh + "></td>"
-                            + "<td><input type=\"button\" value=\"Save\" style=\"text-align:center;vertical-align:middle;\" "
-                            + "onclick=\"newProjectBillInfo(" + item.getId() + ")\" " + disabledSave + "></td>"
-                            + "<td><input type=\"checkbox\" value=\"checked\" style=\"text-align:center; vertical-align: middle;\" "
-                            + "onclick=\"removeProjectBillInfo(" + item.getId() + ")\"></td>"
-                            + "</tr>";
+                    response +=
+                    "<tr>" +
+                    "<td>" + item.getImno() + "</td>" +
+                    "<td>" + item.getDescription() + "</td>" +
+                    "<td id=\"available" + item.getId() + "\">" + item.getQuantity() + "</td>" +
+                    "<td>" + item.getPrice() + "</td>" +
+                    "<td id=\"quantity" + item.getId() + "\">" + "<div contenteditable></div>" +
+                    ((!quantity.equals(0)) ? quantity : "") + "</td>" +
+                    "<td id=\"cost" + item.getId() + "\"><div contenteditable></div>" + ((cost != null) ? cost : "") +
+                    "</td>" +
+                    "<td id=\"total_cost" + item.getId() + "\">" + ((totalCost != null) ? totalCost : "") + "</td>" +
+                    "<td id=\"percentage" + item.getId() + "\"><div contenteditable></div>" + ((percentage != null) ?
+                            percentage : "") +
+                    "</td>" +
+                    "<td id=\"discount" + item.getId() + "\"><div contenteditable></div>" + ((discount != null) ?
+                            discount : "") + "</td>" +
+                    "<td id=\"sale_price" + item.getId() + "\">" + ((salePrice != null) ? salePrice : "") + "</td>" +
+                    "<td id=\"total_sale_price" + item.getId() + "\">" + ((totalSalePrice != null) ? totalSalePrice :
+                            "") + "</td>" +
+                    "<td id=\"total_net_price" + item.getId() + "\">" + ((totalNetPrice != null) ? totalNetPrice :
+                            "") + "</td>" +
+                    "<td><input type=\"button\" value=\"Refresh\" style=\"text-align:center; vertical-align: middle;\" " +
+                    "onclick=\"changeValues(" + item.getId() + ")\"" + disabledRefresh + "></td>" +
+                    "<td><input type=\"button\" value=\"Save\" style=\"text-align:center;vertical-align:middle;\" " +
+                    "onclick=\"newProjectBillInfo(" + item.getId() + ")\" " + disabledSave + "></td>" +
+                    "<td><input type=\"checkbox\" value=\"checked\" style=\"text-align:center; vertical-align: middle;\" " +
+                    "onclick=\"removeProjectBillInfo(" + item.getId() + ")\"></td>" +
+                    "</tr>";
                 } else {
-                    response
-                            += "<tr>"
-                            + "<td id=\"code" + key + "\"><div contenteditable></div></td>"
-                            + "<td id=\"description" + key + "\"><div contenteditable></div></td>"
-                            + "<td id=\"available" + key + "\"><div contenteditable></div></td>"
-                            + "<td id=\"price" + key + "\"><div contenteditable></div></td>"
-                            + "<td id=\"quantity" + key + "\"><div contenteditable></div></td>"
-                            + "<td id=\"cost" + key + "\"><div contenteditable></div>" + ((cost != null) ? cost : "") + "</td>"
-                            + "<td id=\"cost_total" + key + "\">" + ((totalCost != null) ? totalCost : "") + "</td>"
-                            + "<td id=\"percentage" + key + "\">" + "<div contenteditable></div>" + ((percentage != null)
-                                    ? percentage : "") + "</td>"
-                            + "<td id=\"discount" + key + "\"><div contenteditable></div>" + ((discount != null) ? discount : "")
-                            + "</td>"
-                            + "<td id=\"sale_price" + key + "\">" + ((salePrice != null) ? salePrice : "") + "</td>"
-                            + "<td id=\"total_sale_price" + key + "\">" + ((totalSalePrice != null) ? totalSalePrice : "")
-                            + "</td>"
-                            + "<td id=\"total_net_price" + key + "\">" + ((totalNetPrice != null) ? totalNetPrice : "") + "</td>"
-                            + "<td><input type=\"button\" value=\"Refresh\" style=\"text-align:center; vertical-align: middle;\" "
-                            + "onclick=\"changeValues(" + key + ")\" " + disabledRefresh + "></td>"
-                            + "<td><input type=\"button\" value=\"Save\" style=\"text-align:center; vertical-align: middle;\" "
-                            + "onclick=\"newProjectBillInfo(" + key + ")\" " + disabledSave + "></td>"
-                            + "<td><input type=\"checkbox\" value=\"checked\" style=\"text-align:center; vertical-align: middle;\" "
-                            + "onclick=\"removeProjectBillInfo(" + key + ")\"></td>"
-                            + "</tr>";
+                    response +=
+                    "<tr>" +
+                    "<td id=\"code" + key + "\"><div contenteditable></div></td>" +
+                    "<td id=\"description" + key + "\"><div contenteditable></div></td>" +
+                    "<td id=\"available" + key + "\"><div contenteditable></div></td>" +
+                    "<td id=\"price" + key + "\"><div contenteditable></div></td>" +
+                    "<td id=\"quantity" + key + "\"><div contenteditable></div></td>" +
+                    "<td id=\"cost" + key + "\"><div contenteditable></div>" + ((cost != null) ? cost : "") + "</td>" +
+                    "<td id=\"cost_total" + key + "\">" + ((totalCost != null) ? totalCost : "") + "</td>" +
+                    "<td id=\"percentage" + key + "\">" + "<div contenteditable></div>" + ((percentage != null) ?
+                            percentage : "") + "</td>" +
+                    "<td id=\"discount" + key + "\"><div contenteditable></div>" + ((discount != null) ? discount : "") +
+                    "</td>" +
+                    "<td id=\"sale_price" + key + "\">" + ((salePrice != null) ? salePrice : "") + "</td>" +
+                    "<td id=\"total_sale_price" + key + "\">" + ((totalSalePrice != null) ? totalSalePrice : "") +
+                    "</td>" +
+                    "<td id=\"total_net_price" + key + "\">" + ((totalNetPrice != null) ? totalNetPrice : "") + "</td>" +
+
+                    "<td><input type=\"button\" value=\"Refresh\" style=\"text-align:center; vertical-align: middle;\" " +
+                    "onclick=\"changeValues(" + key + ")\" " + disabledRefresh + "></td>" +
+                    "<td><input type=\"button\" value=\"Save\" style=\"text-align:center; vertical-align: middle;\" " +
+                    "onclick=\"newProjectBillInfo(" + key + ")\" " + disabledSave + "></td>" +
+                    "<td><input type=\"checkbox\" value=\"checked\" style=\"text-align:center; vertical-align: middle;\" " +
+                    "onclick=\"removeProjectBillInfo(" + key + ")\"></td>" +
+                    "</tr>";
                 }
             }
         }
@@ -198,8 +198,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "new")
     public @ResponseBody
-    String newItem(Item item,
-            Model model) {
+    String newItem(Item item, Model model) {
         Long itemId = 0l;
         Boolean custom = Boolean.FALSE;
 
@@ -217,8 +216,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "new/info")
     public @ResponseBody
-    String newItemInfo(ProjectBillItem item,
-            Model model) {
+    String newItemInfo(ProjectBillItem item, Model model) {
         ProjectBillItem temp = getProjectBillItem(item.getId());
         Map<String, String> content = new HashMap<>();
 
@@ -238,7 +236,8 @@ public class ProjectBillController extends ProjectCommon {
             editVirtualProjectBillInfo(item);
         }
         content.put("project_bill", createProjectBill(getAverangeDiscount()));
-        content.put("project_bill_items", createProjectBillItems(item.getId(), Boolean.FALSE, Boolean.TRUE, Boolean.TRUE));
+        content.put("project_bill_items",
+                    createProjectBillItems(item.getId(), Boolean.FALSE, Boolean.TRUE, Boolean.TRUE));
 
         return new Gson().toJson(content);
     }
@@ -250,7 +249,8 @@ public class ProjectBillController extends ProjectCommon {
 
         removeVirtualProjectBillInfo(item.getId());
         content.put("project_bill", createProjectBill(getAverangeDiscount()));
-        content.put("project_bill_items", createProjectBillItems(item.getId(), Boolean.FALSE, Boolean.TRUE, Boolean.TRUE));
+        content.put("project_bill_items",
+                    createProjectBillItems(item.getId(), Boolean.FALSE, Boolean.TRUE, Boolean.TRUE));
 
         return new Gson().toJson(content);
     }
@@ -364,7 +364,7 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "createpdf")
     public String createPDF(ProjectBillController pb, Model model) throws JRException {
         JasperReport.createProjectBillReport(getSrvProjectManager().getPathProjectBill(), getUser().
-                getProject_reference().replace("/", "_") + ".pdf");
+                                             getProject_reference().replace("/", "_") + ".pdf");
 
         return "";
     }

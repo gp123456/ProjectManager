@@ -36,7 +36,7 @@ public class ItemTrans implements Serializable {
     @Column(name = "id")
     private Long id;
     @Column(name = "item")
-    private BigInteger item;
+    private Long item;
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -48,11 +48,11 @@ public class ItemTrans implements Serializable {
     @Column(name = "notes")
     private String notes;
     @Column(name = "project")
-    private BigInteger project;
+    private Long project;
     @Column(name = "currency")
-    private BigInteger currency;
+    private Long currency;
     @Column(name = "status")
-    private BigInteger status;
+    private Long status;
     @Column(name = "offer_value")
     private BigDecimal offerValue;
 
@@ -71,11 +71,11 @@ public class ItemTrans implements Serializable {
         this.id = id;
     }
 
-    public BigInteger getItem() {
+    public Long getItem() {
         return item;
     }
 
-    public void setItem(BigInteger item) {
+    public void setItem(Long item) {
         this.item = item;
     }
 
@@ -111,27 +111,27 @@ public class ItemTrans implements Serializable {
         this.notes = notes;
     }
 
-    public BigInteger getProject() {
+    public Long getProject() {
         return project;
     }
 
-    public void setProject(BigInteger project) {
+    public void setProject(Long project) {
         this.project = project;
     }
 
-    public BigInteger getCurrency() {
+    public Long getCurrency() {
         return currency;
     }
 
-    public void setCurrency(BigInteger currency) {
+    public void setCurrency(Long currency) {
         this.currency = currency;
     }
 
-    public BigInteger getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(BigInteger status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 

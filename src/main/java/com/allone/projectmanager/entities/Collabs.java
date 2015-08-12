@@ -44,7 +44,7 @@ public class Collabs implements Serializable {
     @Column(name = "email")
     private String email;
     @Column(name = "rights")
-    private BigInteger rights;
+    private Long rights;
     @Column(name = "notes")
     private String notes;
     @Column(name = "username")
@@ -111,11 +111,11 @@ public class Collabs implements Serializable {
         this.email = email;
     }
 
-    public BigInteger getRights() {
+    public Long getRights() {
         return rights;
     }
 
-    public void setRights(BigInteger rights) {
+    public void setRights(Long rights) {
         this.rights = rights;
     }
 

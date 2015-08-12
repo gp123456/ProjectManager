@@ -32,9 +32,9 @@ public class ProjectDAO extends Project {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findAll")
-                  .setFirstResult(offset * size).setMaxResults(size);
-            
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findAll").
+                  setFirstResult(offset * size).setMaxResults(size);
+
             values = query.getResultList();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
@@ -51,7 +51,7 @@ public class ProjectDAO extends Project {
 
         try {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countAll");
-            
+
             values = (Long) query.getSingleResult();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
@@ -86,8 +86,8 @@ public class ProjectDAO extends Project {
         try {
             em.getTransaction().begin();
             Query query = (id != null && id.compareTo(0l) >= 0) ?
-                          em.createNamedQuery("com.allone.projectmanager.entities.Project.findById")
-                          .setParameter("id", id) : null;
+                  em.createNamedQuery("com.allone.projectmanager.entities.Project.findById").setParameter("id", id) :
+                  null;
             Project value = (query != null) ? (Project) query.getSingleResult() : null;
             if (value != null) {
                 em.remove(value);
@@ -118,15 +118,15 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public List getMyProjectType(Long collab, Long type) {
+    public List getMyProjectType(Long creator, String type) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (collab != null && collab.compareTo(0l) >= 0 && type != null && type.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectType")
-                    .setParameter("status", ProjectStatusEnum.CREATE.getId()).setParameter("collab", collab)
-                    .setParameter("type", type) : null;
+            query = (creator != null && !Strings.isNullOrEmpty(type)) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectType").
+            setParameter("status", ProjectStatusEnum.CREATE.getValue()).setParameter("creator", creator).
+            setParameter("type", type) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -138,15 +138,15 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public List getMyProjectService(Long collab) {
+    public List getMyProjectService(Long creator) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (collab != null && collab.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectService")
-                    .setParameter("status", ProjectStatusEnum.CREATE.getId()).setParameter("collab", collab)
-                    .setParameter("type", ProjectTypeEnum.SERVICE.getId()) : null;
+            query = (creator != null && creator.compareTo(0l) >= 0) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectService").
+            setParameter("status", ProjectStatusEnum.CREATE.getValue()).setParameter("creator", creator).
+            setParameter("type", ProjectTypeEnum.SERVICE.getValue()) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -158,15 +158,16 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public List getMyProjectCompany(Long collab, String company) {
+    public List getMyProjectCompany(Long creator, String company) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (collab != null && collab.compareTo(0l) >= 0 && !Strings.isNullOrEmpty(company)) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectCompany")
-                    .setParameter("status", ProjectStatusEnum.CREATE.getId()).setParameter("collab", collab)
-                    .setParameter("company", company) : null;
+            query = (creator != null && creator.compareTo(0l) >= 0 && !Strings.
+            isNullOrEmpty(company)) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectCompany").
+            setParameter("status", ProjectStatusEnum.CREATE.getValue()).setParameter("creator", creator).
+            setParameter("company", company) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -178,14 +179,15 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public List getByType(Long type, Integer offset, Integer size) {
+    public List getByType(String type, Integer offset, Integer size) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (type != null && type.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findByType")
-                    .setParameter("type", type).setFirstResult(offset * size).setMaxResults(size) : null;
+            query = (!Strings.isNullOrEmpty(type)) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findByType").
+            setParameter("type", type).setFirstResult(offset * size).
+            setMaxResults(size) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -197,14 +199,14 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public Long countByType(Long type) {
+    public Long countByType(String type) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (type != null && type.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.countByType")
-                    .setParameter("type", type) : null;
+            query = (!Strings.isNullOrEmpty(type)) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.countByType").
+            setParameter("type", type) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -216,14 +218,14 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public List getByStatus(Long status, Integer offset, Integer size) {
+    public List getByStatus(String status, Integer offset, Integer size) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (status != null && status.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findByStatus")
-                    .setParameter("status", status).setFirstResult(offset * size).setMaxResults(size) : null;
+            query = (!Strings.isNullOrEmpty(status)) ?
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findByStatus").
+            setParameter("status", status).setFirstResult(offset * size).setMaxResults(size) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -235,18 +237,20 @@ public class ProjectDAO extends Project {
         }
     }
 
-    public Long countByStatus(Long status) {
+    public Long countByStatus(String status) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (status != null && status.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.countByStatus")
-                    .setParameter("status", status) : null;
+            query = (!Strings.isNullOrEmpty(status)) ?
+            em.createNamedQuery(
+                    "com.allone.projectmanager.entities.Project.countByStatus").
+            setParameter("status", status) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            Long values = (query != null) ? (Long) query.getSingleResult() : null;
+            Long values = (query != null) ? (Long) query.getSingleResult() :
+                 null;
 
             em.close();
 
@@ -260,8 +264,9 @@ public class ProjectDAO extends Project {
 
         try {
             query = (vessel != null && vessel.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findByVessel")
-                    .setParameter("vessel", vessel).setFirstResult(offset * size).setMaxResults(size) : null;
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.findByVessel").
+            setParameter("vessel", vessel).setFirstResult(offset * size).
+            setMaxResults(size) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -279,12 +284,13 @@ public class ProjectDAO extends Project {
 
         try {
             query = (vessel != null && vessel.compareTo(0l) >= 0) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.countByVessel")
-                    .setParameter("vessel", vessel) : null;
+            em.createNamedQuery("com.allone.projectmanager.entities.Project.countByVessel").
+            setParameter("vessel", vessel) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            Long values = (query != null) ? (Long) query.getSingleResult() : null;
+            Long values = (query != null) ? (Long) query.getSingleResult() :
+                 null;
 
             em.close();
 
@@ -298,8 +304,10 @@ public class ProjectDAO extends Project {
 
         try {
             query = (!Strings.isNullOrEmpty(customer)) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.findByCustomer")
-                    .setParameter("customer", customer).setFirstResult(offset * size).setMaxResults(size) : null;
+            em.createNamedQuery(
+                    "com.allone.projectmanager.entities.Project.findByCustomer").
+            setParameter("customer", customer).setFirstResult(offset *
+            size).setMaxResults(size) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -317,12 +325,14 @@ public class ProjectDAO extends Project {
 
         try {
             query = (!Strings.isNullOrEmpty(customer)) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCustomer")
-                    .setParameter("customer", customer) : null;
+            em.createNamedQuery(
+                    "com.allone.projectmanager.entities.Project.countByCustomer").
+            setParameter("customer", customer) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            Long values = (query != null) ? (Long) query.getSingleResult() : null;
+            Long values = (query != null) ? (Long) query.getSingleResult() :
+                 null;
 
             em.close();
 
@@ -336,8 +346,9 @@ public class ProjectDAO extends Project {
 
         try {
             query = (!Strings.isNullOrEmpty(company)) ? em.createNamedQuery(
-                    "com.allone.projectmanager.entities.Project.findByCompany").setParameter("company", company).
-                    setFirstResult(offset * size).setMaxResults(size) : null;
+            "com.allone.projectmanager.entities.Project.findByCompany").
+            setParameter("company", company).
+            setFirstResult(offset * size).setMaxResults(size) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -355,12 +366,14 @@ public class ProjectDAO extends Project {
 
         try {
             query = (!Strings.isNullOrEmpty(company)) ?
-                    em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCompany")
-                    .setParameter("company", company) : null;
+            em.createNamedQuery(
+                    "com.allone.projectmanager.entities.Project.countByCompany").
+            setParameter("company", company) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            Long values = (query != null) ? (Long) query.getSingleResult() : null;
+            Long values = (query != null) ? (Long) query.getSingleResult() :
+                 null;
 
             em.close();
 
@@ -381,6 +394,24 @@ public class ProjectDAO extends Project {
             System.out.printf("%s", e.getMessage());
         } finally {
             em.close();
+        }
+    }
+
+    public Project getByReference(String reference) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByReference").setParameter(
+            "reference", reference);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            Project value = (query != null) ? (Project) query.getSingleResult() : null;
+
+            em.close();
+
+            return value;
         }
     }
 }

@@ -6,6 +6,7 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,27 +21,39 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author antonia
  */
 @Entity
-@Table(name = "currency")
+@Table(name = "contact")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Currency.findAll", query = "SELECT c FROM Currency c")})
-public class Currency implements Serializable {
+    @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findAll", query = "SELECT c FROM Contact c"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById", query = "SELECT c FROM Contact c WHERE c.id = :id"),
+})
+public class Contact implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    @Column(name = "symbol")
-    private String symbol;
     @Column(name = "name")
     private String name;
+    @Column(name = "surname")
+    private String surname;
+    @Column(name = "company")
+    private String company;
+    @Column(name = "title")
+    private String title;
+    @Column(name = "phone")
+    private String phone;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "vessel")
+    private BigInteger vessel;
     @Column(name = "notes")
     private String notes;
 
-    public Currency() {
+    public Contact() {
     }
 
-    public Currency(Long id) {
+    public Contact(Long id) {
         this.id = id;
     }
 
@@ -52,20 +65,60 @@ public class Currency implements Serializable {
         this.id = id;
     }
 
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public BigInteger getVessel() {
+        return vessel;
+    }
+
+    public void setVessel(BigInteger vessel) {
+        this.vessel = vessel;
     }
 
     public String getNotes() {
@@ -86,10 +139,10 @@ public class Currency implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Currency)) {
+        if (!(object instanceof Contact)) {
             return false;
         }
-        Currency other = (Currency) object;
+        Contact other = (Contact) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -98,7 +151,7 @@ public class Currency implements Serializable {
 
     @Override
     public String toString() {
-        return "com.allone.projectmanager.entities.Currency[ id=" + id + " ]";
+        return "com.allone.projectmanager.entities.Contact[ id=" + id + " ]";
     }
     
 }

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,8 @@ public class Root extends ProjectCommon {
             getUser().setLast_login(ds.format(new Date()));
             getUser().setFull_name(collab.getSurname() + " " + collab.getName());
             getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
-            this.setTitle("Projects");
-            setSide_bar("../project/sidebar.jsp");
+            this.setTitle("Project - View");
+//            setSide_bar("../project/sidebar.jsp");
             setContent("../project/ViewProject.jsp");
 
             setHeaderInfo(model);
@@ -91,6 +92,8 @@ public class Root extends ProjectCommon {
     public @ResponseBody
     String getView(Project p, Integer offset, Integer size) {
         if (p != null) {
+            LOG.log(Level.INFO, "{0},{1},{2}", new Object[] {p.getId(), p.getType(), p.getStatus()});
+            
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",

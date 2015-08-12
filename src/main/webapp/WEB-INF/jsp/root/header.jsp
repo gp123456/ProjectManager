@@ -52,7 +52,7 @@
     </div>
 
     <div class="logout">
-        <a href="<%=path%>"><img src="images/projectmanager/common/logout.png"></a>
+        <a href="<%=path%>"><img src="/images/projectmanager/common/logout.png"></a>
     </div>
 </div>
 </div>

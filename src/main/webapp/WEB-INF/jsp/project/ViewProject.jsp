@@ -10,26 +10,26 @@
     $(function () {
         refreshSearchContent();
 
-        var data = "id=-1&type=-1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10";
-
+        var data = "reference=-1&type=-1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10";
+        
         $.ajax({
             type: "POST",
             url: "view",
             data: data,
-            success: function (response) {
-                var content = JSON.parse(response)
+            success: function(response) {
+                var content = JSON.parse(response);
 
                 $("#project-header").html(content.project_header);
                 $("#project-footer").html(content.project_footer);
                 $("#project-body").html(content.project_body);
             },
-            error: function (e) {
+            error: function(xhr, status, error) {
             }
         });
     });
 </script>
 
-<div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
+<jsp:include page="../project/searchCritiria.jsp"/>
 <div>
     <table class="table tablesorter">
         <thead id="project-header"></thead>

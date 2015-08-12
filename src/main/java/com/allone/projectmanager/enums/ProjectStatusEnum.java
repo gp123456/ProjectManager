@@ -10,34 +10,27 @@ package com.allone.projectmanager.enums;
  * @author antonia
  */
 public enum ProjectStatusEnum {
-    CREATE(1l, "CREATE"),
-    PROJECT_BILL(2l, "PROJECT_BILL"),
-    REQUEST_QUOTATION(3l, "REQUEST_QUOTATION"),
-    PERCHASE_ORDER(4l, "PERCHASE_ORDER"),
-    WORK_ORDER(5l, "WORK_ORDER"),
-    ACK_ORDER(6l, "ACK_ORDER"),
-    PACKING_LIST(7l, "PACKING_LIST"),
-    DELIVERY_NOTE(8l, "DELIVERY_NOTE"),
-    SHIPPING_INVOICE(9l, "SHIPPING_INVOICE"),
-    BOX_MARKING(10l, "BOX_MARKING"),
-    CREDIT_NOTE(11l, "CREDIT_NOTE");
-    
-    private Long id;
+    CREATE("CREATE"),
+    PROJECT_BILL("PROJECT_BILL"),
+    REQUEST_QUOTATION("REQUEST_QUOTATION"),
+    PERCHASE_ORDER("PERCHASE_ORDER"),
+    WORK_ORDER("WORK_ORDER"),
+    ACK_ORDER("ACK_ORDER"),
+    PACKING_LIST("PACKING_LIST"),
+    DELIVERY_NOTE("DELIVERY_NOTE"),
+    SHIPPING_INVOICE("SHIPPING_INVOICE"),
+    BOX_MARKING("BOX_MARKING"),
+    CREDIT_NOTE("CREDIT_NOTE");
     
     private String value;
     
-    ProjectStatusEnum(Long id, String value) {
-        this.id = id;
+    ProjectStatusEnum(String value) {
         this.value = value;
     }
     
     @Override
     public String toString() {
         return this.value;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getValue() {

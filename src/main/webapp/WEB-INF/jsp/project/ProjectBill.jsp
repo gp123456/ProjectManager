@@ -44,6 +44,7 @@
 </script>
 
 <div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
+<h1>Project Bill - REF:<%=prj_reference%></h1>
 <h3>Select Item</h3>
 <div style="height: 200px; overflow-y: scroll">
     <select id="project" data-placeholder="Choose type" tabindex="1" onchange="insertItem(this)">
@@ -61,7 +62,6 @@
     </select>
     <input type="hidden" id="item_id" name="id"/>
 </div>
-<h1>Project Bill - REF:<%=prj_reference%></h1>
 <div>
     <table class="table tablesorter">
         <thead>

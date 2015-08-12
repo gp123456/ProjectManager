@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import net.sf.jasperreports.engine.JRException;
@@ -46,8 +47,7 @@ public class ProjectController extends ProjectCommon {
 
     private static final Logger LOG = Logger.getLogger(Root.class.getName());
 
-    @Autowired
-    ProjectManagerService srvProjectManager;
+    @Autowired ProjectManagerService srvProjectManager;
 
     public void setSrvProjectManager(ProjectManagerService srvProjectManager) {
         this.srvProjectManager = srvProjectManager;
@@ -62,21 +62,22 @@ public class ProjectController extends ProjectCommon {
         Map<String, String> content = new HashMap<>();
 
         content = new Gson().fromJson(refreshSearchContent(srvProjectManager, offset, size), content.getClass());
-        if (p != null && !p.getId().equals(-1l)) {
+        if (p != null) {
             String projectHeader = createProjectHeader(getModeEdit());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start")),
-                    getModeEdit(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
             content.put("project_footer", projectFooter);
+            content.put("company", createSearchCompany());
         } else {
             content.put("project_header", null);
             content.put("project_body", null);
@@ -86,11 +87,8 @@ public class ProjectController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    private Map<String, Object> getMyProjectInfo(String keySize,
-            String keyInfo,
-            String mode,
-            List<Project> info,
-            String url) {
+    private Map<String, Object> getMyProjectInfo(String keySize, String keyInfo, String mode, List<Project> info,
+                                                 String url) {
         Map<String, Object> content = new HashMap<>();
 
         content.put(keySize, 0);
@@ -102,8 +100,8 @@ public class ProjectController extends ProjectCommon {
             content.put(keySize, mode + "[" + info.size() + "]");
 
             for (Project p : info) {
-                response += "<li onclick=\"window.location.href = '" + url + "?id=" + p.getId() + "&reference="
-                        + p.getReference() + "';\">" + p.getReference() + "</li>";
+                response += "<li onclick=\"window.location.href = '" + url + "?id=" + p.getId() + "&reference=" +
+                p.getReference() + "';\">" + p.getReference() + "</li>";
             }
             content.put(keyInfo, response);
         }
@@ -116,59 +114,60 @@ public class ProjectController extends ProjectCommon {
 
         if (mode != null && (mode.isEmpty() || mode.equals(ProjectTypeEnum.SALE.getValue()))) {
             List<Project> sales = srvProjectManager.getDaoProject().getMyProjectType(getUser().getId(),
-                    ProjectTypeEnum.SALE.getId());
+                                                                                     ProjectTypeEnum.SALE.getValue());
 
             if (mode.isEmpty()) {
                 content.put("project_sale_size_id", "#project-sale-size");
                 content.put("project_sale_id", "#project-sale");
                 content.putAll(getMyProjectInfo("project_sale_size", "project_sale_info", "Sale", sales,
-                        "/ProjectManager/project/sale/edit"));
+                                                "/ProjectManager/project/sale/edit"));
             } else {
                 content.put("project_size_id", "#project-sale-size");
                 content.put("project_id", "#project-sale");
                 content.putAll(getMyProjectInfo("project_size", "project_info", "Sale", sales,
-                        "/ProjectManager/project/sale/edit"));
+                                                "/ProjectManager/project/sale/edit"));
             }
         }
         if (mode != null && (mode.isEmpty() || mode.equals(ProjectTypeEnum.SERVICE.getValue()))) {
             List<Project> services = srvProjectManager.getDaoProject().getMyProjectType(getUser().getId(),
-                    ProjectTypeEnum.SERVICE.getId());
+                                                                                        ProjectTypeEnum.SERVICE.
+                                                                                        getValue());
 
             if (mode.isEmpty()) {
                 content.put("project_service_size_id", "#project-service-size");
                 content.put("project_service_id", "#project-service");
                 content.putAll(getMyProjectInfo("project_service_size", "project_service_info", "Service", services,
-                        "/ProjectManager/project/service/edit"));
+                                                "/ProjectManager/project/service/edit"));
             } else {
                 content.put("project_size_id", "#project-service-size");
                 content.put("project_id", "#project-service");
                 content.putAll(getMyProjectInfo("project_size", "project_info", "Service", services,
-                        "/ProjectManager/project/service/edit"));
+                                                "/ProjectManager/project/service/edit"));
             }
         }
         if (mode != null && (mode.isEmpty() || mode.equals(CompanyEnum.MTS.name()))) {
             if (mode.isEmpty()) {
                 List<Project> mts = srvProjectManager.getDaoProject().getMyProjectCompany(getUser().getId(),
-                        CompanyEnum.MTS.name());
+                                                                                          CompanyEnum.MTS.name());
 
                 content.put("project_mts_size_id", "#project-mts-size");
                 content.put("project_mts_id", "#project-mts");
                 content.putAll(getMyProjectInfo("project_mts_size", "project_mts_info", "MGPS Anodes", mts,
-                        "/ProjectManager/project/mts/edit"));
+                                                "/ProjectManager/project/mts/edit"));
             } else {
                 List<Project> sales = srvProjectManager.getDaoProject().getMyProjectType(getUser().getId(),
-                        ProjectTypeEnum.SALE.getId());
+                                                                                         ProjectTypeEnum.SALE.getValue());
                 List<Project> mts = srvProjectManager.getDaoProject().getMyProjectCompany(getUser().getId(),
-                        CompanyEnum.MTS.name());
+                                                                                          CompanyEnum.MTS.name());
 
                 content.put("project_sale_size_id", "#project-sale-size");
                 content.put("project_sale_id", "#project-sale");
                 content.putAll(getMyProjectInfo("project_sale_size", "project_sale_info", "Sale", sales,
-                        "/ProjectManager/project/sale/edit"));
+                                                "/ProjectManager/project/sale/edit"));
                 content.put("project_mts_size_id", "#project-mts-size");
                 content.put("project_mts_id", "#project-mts");
                 content.putAll(getMyProjectInfo("project_mts_size", "project_mts_info", "MGPS Anodes", mts,
-                        "/ProjectManager/project/mts/edit"));
+                                                "/ProjectManager/project/mts/edit"));
             }
         }
 
@@ -185,47 +184,21 @@ public class ProjectController extends ProjectCommon {
         return "index";
     }
 
-    @RequestMapping(value = "/sale")
-    public String Sale(Model model) {
-        this.setTitle("Projects-Sale");
+    @RequestMapping(value = "/new")
+    public String NewProject(Model model) {
+        this.setTitle("Projects-New Project");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
-        model.addAttribute("project_id", -1);
-        model.addAttribute("project_reference", "New Project - REF: " + getUser().getProject_reference());
-        setProjectType(ProjectTypeEnum.SALE.getValue());
-
-        return "index";
-    }
-
-    @RequestMapping(value = "/sale/edit")
-    public String SaleEdit(Project p,
-            Model model) {
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("project_id", p.getId());
-        model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-
-        return "index";
-    }
-
-    @RequestMapping(value = "/service")
-    public String Service(Model model) {
-        this.setTitle("Projects-Service");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("project_id", -1);
+        model.addAttribute("project_reference", "-1");
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
-        setProjectType(ProjectTypeEnum.SERVICE.getValue());
 
         return "index";
     }
 
-    @RequestMapping(value = "/service/edit")
-    public String ServiceEdit(Project p,
-            Model model) {
+    @RequestMapping(value = "/edit-form")
+    public String EditProject(Project p, Model model) {
+        this.setTitle("Projects-Edit Project");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
@@ -235,32 +208,7 @@ public class ProjectController extends ProjectCommon {
         return "index";
     }
 
-    @RequestMapping(value = "/mts")
-    public String MTS(Model model) {
-        this.setTitle("Projects-MGPS Anodes");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("project_id", -1);
-        model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
-        setProjectType(CompanyEnum.MTS.name());
-
-        return "index";
-    }
-
-    @RequestMapping(value = "/mts/edit")
-    public String MTSEdit(Project p,
-            Model model) {
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("project_id", p.getId());
-        model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-
-        return "index";
-    }
-
-    @RequestMapping(value = {"/save", "/sale/save", "/service/save", "/mts/save"})
+    @RequestMapping(value = {"/save"})
     public @ResponseBody
     String saveProject(Project p, Integer offset, Integer size) {
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
@@ -269,23 +217,23 @@ public class ProjectController extends ProjectCommon {
             Map<String, Object> content = new HashMap<>();
 
             p.setReference(getUser().getProject_reference());
-            p.setStatus(ProjectStatusEnum.CREATE.getId());
-            p.setType(getProjectType(getProjectType()));
-            p.setCreateDate(new Date());
-            p.setCollab(getUser().getId());
+            p.setStatus(ProjectStatusEnum.CREATE.getValue());
+//            p.setType(getProjectType(getProjectType()));
+            p.setCreated(new Date());
+            p.setCreator(getUser().getId());
             p = srvProjectManager.getDaoProject().add(p);
             user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
             getUser().setProject_reference(user.getProjectId() + "/" + user.getProjectPrefix());
 
             String projectHeader = createProjectHeader(getModeEdit());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start")),
-                    getModeEdit(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("reference", createSearchReference(srvProjectManager, offset, size));
@@ -339,15 +287,9 @@ public class ProjectController extends ProjectCommon {
             srvProjectManager.getDaoProject().edit(dbPrj);
 
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.
-                    asList("Processed",
-                            "Start",
-                            "Start",
-                            "Start",
-                            "Start",
-                            "Start",
-                            "Start")),
-                    getModeEdit(), offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList(
+                                                     "Processed", "Start", "Start", "Start", "Start", "Start", "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -380,23 +322,23 @@ public class ProjectController extends ProjectCommon {
 
         if (p != null) {
             Map<String, String> content = new HashMap<>();
-            Collabs user = srvProjectManager.getDaoCollab().getById(p.getCollab());
+            Collabs user = srvProjectManager.getDaoCollab().getById(p.getCreator());
             Vessel vess = srvProjectManager.getDaoVessel().getById(p.getVessel());
 
             JasperReport.createProjectReport(p, getProjectStatusName(p.getStatus()), getProjectTypeName(p.getType()),
-                    (user != null) ? user.getSurname() + ", " + user.getName() : "",
-                    (vess != null) ? vess.getName() : "");
+                                             (user != null) ? user.getSurname() + ", " + user.getName() : "",
+                                             (vess != null) ? vess.getName() : "");
 
             String projectHeader = createProjectHeader(getModeEdit());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Processed",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start")),
-                    getModeEdit(), offset, size);
+                                                                                                               "Processed",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -413,25 +355,25 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/printpdf", "/sale/printpdf", "/service/printpdf", "/mts/printpdf"})
     public @ResponseBody
     String printProjectPDF(Project p, Integer offset, Integer size) throws IOException, FileNotFoundException,
-            PrintException {
+                                                                           PrintException {
         Project dbPrj = srvProjectManager.getDaoProject().getById(p.getId());
 
         if (dbPrj != null) {
             Map<String, String> content = new HashMap<>();
-            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                    + "/" + dbPrj.getReference().replace("/", "_") + ".pdf";
+            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) +
+                   "/" + dbPrj.getReference().replace("/", "_") + ".pdf";
 
             Printing.printing(strPath);
 
             String projectHeader = createProjectHeader(getModeEdit());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Processed",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start")),
-                    getModeEdit(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Processed",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -462,7 +404,7 @@ public class ProjectController extends ProjectCommon {
         return "";
     }
 
-    @RequestMapping(value = {"/content", "/sale/content", "/service/content", "/mts/content"})
+    @RequestMapping(value = {"/content"})
     public @ResponseBody
     String getContent(Project p, Integer offset, Integer size) {
         return createContent(p, offset, size);
@@ -475,9 +417,9 @@ public class ProjectController extends ProjectCommon {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Start")),
-                    getModeView(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeView(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -497,9 +439,9 @@ public class ProjectController extends ProjectCommon {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Start")),
-                    getModeEdit(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -527,13 +469,13 @@ public class ProjectController extends ProjectCommon {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeEdit());
             Object[] projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start",
-                    "Start")),
-                    getModeView(), offset, size);
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start",
+                                                                                                               "Start")),
+                                                     getModeView(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);

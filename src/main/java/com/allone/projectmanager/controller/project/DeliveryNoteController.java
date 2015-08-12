@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/project")
+@RequestMapping(value = "/project-delivery")
 public class DeliveryNoteController extends Common {
     @RequestMapping(value = "/delivery-note")
     public String DeliveryNote(Model model) {

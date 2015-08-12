@@ -7,8 +7,6 @@ package com.allone.projectmanager;
 
 import com.allone.projectmanager.dao.CollabsDAO;
 import com.allone.projectmanager.dao.CompanyDAO;
-import com.allone.projectmanager.dao.EmailDAO;
-import com.allone.projectmanager.dao.ExchangeDAO;
 import com.allone.projectmanager.dao.ItemDAO;
 import com.allone.projectmanager.dao.ItemTransDAO;
 import com.allone.projectmanager.dao.ProjectBillCustomItemDAO;
@@ -19,11 +17,10 @@ import com.allone.projectmanager.dao.RepimageDAO;
 import com.allone.projectmanager.dao.ReportsDAO;
 import com.allone.projectmanager.dao.RightsDAO;
 import com.allone.projectmanager.dao.SaleTransDAO;
-import com.allone.projectmanager.dao.StatusProjectDAO;
 import com.allone.projectmanager.dao.StockDAO;
 import com.allone.projectmanager.dao.StockTransDAO;
-import com.allone.projectmanager.dao.TypeProjectDAO;
 import com.allone.projectmanager.dao.VesselDAO;
+import com.allone.projectmanager.dao.ContactDAO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -54,8 +51,6 @@ public class ProjectManagerService {
     private final CollabsDAO daoCollabs = new CollabsDAO(emf);
 
     private final CompanyDAO daoCompany = new CompanyDAO(emf);
-    private final ExchangeDAO daoExchange = new ExchangeDAO(emf);
-    private final EmailDAO daoEmail = new EmailDAO(emf);
     private final ItemDAO daoItem = new ItemDAO(emf);
     private final ItemTransDAO daoItemTrans = new ItemTransDAO(emf);
     private final ProjectDAO daoProject = new ProjectDAO(emf);
@@ -66,11 +61,10 @@ public class ProjectManagerService {
     private final StockDAO daoStock = new StockDAO(emf);
     private final StockTransDAO daoStockTrans = new StockTransDAO(emf);
     private final VesselDAO daoVessel = new VesselDAO(emf);
-    private final TypeProjectDAO daoTypeProject = new TypeProjectDAO(emf);
-    private final StatusProjectDAO daoStatusProject = new StatusProjectDAO(emf);
     private final ProjectBillDAO daoProjectBill = new ProjectBillDAO(emf);
     private final ProjectBillItemDAO daoProjectBillItem = new ProjectBillItemDAO(emf);
     private final ProjectBillCustomItemDAO daoProjectBillCustomItem = new ProjectBillCustomItemDAO(emf);
+    private final ContactDAO daoContact = new ContactDAO(emf);
 
     private String pathProjectBill;
     
@@ -121,9 +115,6 @@ public class ProjectManagerService {
         return daoProjectBillItem;
     }
 
-    public TypeProjectDAO getDaoTypeProject() {
-        return daoTypeProject;
-    }
 
     public CollabsDAO getDaoCollab() {
         return daoCollabs;
@@ -131,14 +122,6 @@ public class ProjectManagerService {
 
     public CompanyDAO getDaoCompany() {
         return daoCompany;
-    }
-
-    public ExchangeDAO getDaoExchange() {
-        return daoExchange;
-    }
-
-    public EmailDAO getDaoEmail() {
-        return daoEmail;
     }
 
     public ItemDAO getDaoItem() {
@@ -180,8 +163,8 @@ public class ProjectManagerService {
     public VesselDAO getDaoVessel() {
         return daoVessel;
     }
-
-    public StatusProjectDAO getDaoStatusProject() {
-        return daoStatusProject;
+    
+    public ContactDAO getDaoContact() {
+        return daoContact;
     }
 }

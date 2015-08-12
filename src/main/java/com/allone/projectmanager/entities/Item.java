@@ -67,7 +67,7 @@ public class Item implements Serializable {
     @Column(name = "inventory_price")
     private BigDecimal inventoryPrice;
     @Column(name = "inventory_edit")
-    private Boolean inventoryEdit;
+    private Boolean  inventoryEdit;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId")
     private List<ProjectBillItem> projectBillItemList;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId")

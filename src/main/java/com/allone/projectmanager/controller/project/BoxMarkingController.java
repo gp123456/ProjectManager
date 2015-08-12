@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/project")
+@RequestMapping(value = "/project-box")
 public class BoxMarkingController extends Common {
     @RequestMapping(value = "box-markings")
     public String BoxMarking(Model model) {

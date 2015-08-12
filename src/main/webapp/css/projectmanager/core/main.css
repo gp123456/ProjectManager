@@ -22,6 +22,15 @@ select {
 
 .content {
     width: 70%;
+    float: right;
+    margin-top: -460px;
+}
+
+.criteriacontent {
+    width: 100%;
+}
+
+.critDivs {
 }
 
 /*a{ text-decoration: none;

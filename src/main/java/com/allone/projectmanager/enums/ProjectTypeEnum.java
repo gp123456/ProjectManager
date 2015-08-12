@@ -10,23 +10,17 @@ package com.allone.projectmanager.enums;
  * @author antonia
  */
 public enum ProjectTypeEnum {
-    SALE(1l, "SALE"), SERVICE(2l, "SERVICE");
+    SALE("Sale"), SERVICE("Service"), SALE_SERVICE("SaleSearvice"), MTS("MTS");
     
-    private Long id;
     private String value;
     
-    ProjectTypeEnum(Long id, String value) {
-        this.id = id;
+    ProjectTypeEnum(String value) {
         this.value = value;
     }
     
     @Override
     public String toString() {
         return this.value;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getValue() {

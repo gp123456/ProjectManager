@@ -274,7 +274,7 @@ public class JasperReport {
         PrintText(jasperPrint, page, normalStyle, type, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 225, 0,
                   10, false);
         PrintText(jasperPrint, page, boldStyle, "Create at:", HorizontalAlignEnum.RIGHT, 0, 240, 130, 10, false);
-        PrintText(jasperPrint, page, normalStyle, new SimpleDateFormat("yyyy-MM-dd").format(p.getCreateDate()),
+        PrintText(jasperPrint, page, normalStyle, new SimpleDateFormat("yyyy-MM-dd").format(p.getCreated()),
                   HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 240, 0, 10, false);
 
         jasperPrint.addPage(page);

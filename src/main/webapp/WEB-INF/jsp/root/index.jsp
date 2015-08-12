@@ -4,6 +4,7 @@
     Author     : antonia
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%String path = request.getContextPath();%>
@@ -12,12 +13,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${title}</title>
-        
+
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/main.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/header.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
-        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/views/challengecms.css">
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/ui.js"></script>
@@ -30,7 +30,7 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/setCustomDurationChallenge.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/layout.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
-        
+
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/ProjectBill.js"></script>
     </head>
@@ -38,9 +38,11 @@
         <div id="container">
             <div class="top-bar"><jsp:include page="header.jsp"/></div>
             <div class="maincontent">
-                <div class="leftmenucontainer">
-                    <jsp:include page="${side_bar}"/>
-                </div>
+                <c:if test="${side_bar != null}" >
+                    <div class="leftmenucontainer">
+                        <jsp:include page="${side_bar}"/>
+                    </div>
+                </c:if>
                 <div class="content"><jsp:include page="${content}"/></div>
             </div>
         </div>

@@ -29,6 +29,7 @@ import org.springframework.ui.Model;
  * @author antonia
  */
 public class Common {
+
     enum enumTypeCompany {
         Customer(1), Supplier(2), Shipper(3), Company(4);
 
@@ -66,20 +67,22 @@ public class Common {
     private String side_bar;
 
     private String content;
-    
+
     private String title;
 
     private SearchCriteria searchCriteria;
 
     private String createSearchType(ProjectManagerService srvProjectManager) {
-        List<SearchInfo> info = getSearchCriteriaTypeProject(srvProjectManager);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+        List<SearchInfo> info = getSearchCriteriaTypeProject();
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getId() + "\">" + si.
+                        getName() + "</option>";
             }
         }
 
@@ -87,14 +90,16 @@ public class Common {
     }
 
     private String createSearchStatus(ProjectManagerService srvProjectManager) {
-        List<SearchInfo> info = getSearchCriteriaStatusProject(srvProjectManager);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+        List<SearchInfo> info = getSearchCriteriaStatusProject();
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getId() + "\">" + si.
+                        getName() + "</option>";
             }
         }
 
@@ -103,13 +108,15 @@ public class Common {
 
     private String createSearchVessel(ProjectManagerService srvProjectManager) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getId() + "\">" + si.
+                        getName() + "</option>";
             }
         }
 
@@ -118,58 +125,86 @@ public class Common {
 
     private String createSearchCustomer(ProjectManagerService srvProjectManager) {
         List<SearchInfo> info = getSearchCriteriaCustomer(srvProjectManager);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getName() + "\">" + si.
+                        getName() + "</option>";
             }
         }
 
         return response;
     }
 
-    private String createSearchCompany(ProjectManagerService srvProjectManager) {
-        List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+    public String createSearchCompany() {
+        List<SearchInfo> info = getSearchCriteriaCompany();
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getName() + "\">" + si.
+                        getName() + "</option>";
+            }
+        }
+
+        return response;
+    }
+    
+    public String createContact(ProjectManagerService srvProjectManager) {
+        List<Contact> info = srvProjectManager.getDaoContact().getAll();
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
+
+        if (info != null && info.isEmpty() == false && info.get(0) != null) {
+            for (Iterator<Contact> it = info.iterator(); it.hasNext();) {
+                Contact c = it.next();
+
+                response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
             }
         }
 
         return response;
     }
 
-    public String createSearchReference(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
-        List<SearchInfo> info = getSearchCriteriaProject(srvProjectManager, offset, size);
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+
+    public String createSearchReference(ProjectManagerService srvProjectManager,
+            Integer offset, Integer size) {
+        List<SearchInfo> info = getSearchCriteriaProject(srvProjectManager,
+                offset, size);
+        String response =
+                "<option value=\"-1\" selected=\"selected\">Select</option>";
 
         if (info != null && !info.isEmpty() && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
+                response += "<option value=\"" + si.getId() + "\">" + si.
+                        getName() + "</option>";
             }
         }
 
         return response;
     }
 
-    public String refreshSearchContent(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
+    public String refreshSearchContent(ProjectManagerService srvProjectManager,
+            Integer offset, Integer size) {
         Map<String, String> content = new HashMap<>();
 
-        content.put("reference", createSearchReference(srvProjectManager, offset, size));
+        content.put("reference",
+                createSearchReference(srvProjectManager, offset, size));
         content.put("type", createSearchType(srvProjectManager));
         content.put("status", createSearchStatus(srvProjectManager));
         content.put("vessel", createSearchVessel(srvProjectManager));
         content.put("customer", createSearchCustomer(srvProjectManager));
-        content.put("company", createSearchCompany(srvProjectManager));
+        content.put("company", createSearchCompany());
+        content.put("contact", createContact(srvProjectManager));
 
         return new Gson().toJson(content);
     }
@@ -186,7 +221,7 @@ public class Common {
     }
 
     public void setItemInfo(Model model,
-                            ProjectManagerService srvProjectManager) {
+            ProjectManagerService srvProjectManager) {
         List<Item> items = srvProjectManager.getDaoItem().getAll();
 
         model.addAttribute("items", items);
@@ -202,7 +237,7 @@ public class Common {
 
     public ProjectBillItem getProjectBillItem(Long id) {
         System.out.println("id=" + id);
-        
+
         return mapProjectBillItems.get(id);
     }
 
@@ -242,52 +277,46 @@ public class Common {
         this.searchCriteria = searchCriteria;
     }
 
-    public List<SearchInfo> getSearchCriteriaProject(ProjectManagerService srvProjectManager, Integer offset,
-                                                     Integer size) {
-        List<Project> tp = srvProjectManager.getDaoProject().getAll(offset, size);
+    public List<SearchInfo> getSearchCriteriaProject(
+            ProjectManagerService srvProjectManager,
+            Integer offset, Integer size) {
+        List<Project> tp = srvProjectManager.getDaoProject().
+                getAll(offset, size);
 
         List<SearchInfo> si = new ArrayList<>();
 
         if (tp != null && tp.isEmpty() == false && tp.get(0) != null) {
             for (Project value : tp) {
-                si.add(new SearchInfo(value.getId(), value.getReference()));
+                si.add(new SearchInfo(value.getId().toString(), value.
+                        getReference()));
             }
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaTypeProject(ProjectManagerService srvProjectManager) {
-        List<TypeProject> tp = srvProjectManager.getDaoTypeProject().getAll();
-
+    public List<SearchInfo> getSearchCriteriaTypeProject() {
         List<SearchInfo> si = new ArrayList<>();
 
-        if (tp != null && tp.isEmpty() == false && tp.get(0) != null) {
-            for (Iterator<TypeProject> it = tp.iterator(); it.hasNext();) {
-                TypeProject value = it.next();
-                si.add(new SearchInfo(value.getId(), value.getAbbreviation()));
-            }
+        for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
+            si.add(new SearchInfo(type.getValue(), type.getValue()));
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaStatusProject(ProjectManagerService srvProjectManager) {
-        List<StatusProject> sp = srvProjectManager.getDaoStatusProject().getAll();
-
+    public List<SearchInfo> getSearchCriteriaStatusProject() {
         List<SearchInfo> si = new ArrayList<>();
 
-        if (sp != null && sp.isEmpty() == false && sp.get(0) != null) {
-            for (Iterator<StatusProject> it = sp.iterator(); it.hasNext();) {
-                StatusProject value = it.next();
-                si.add(new SearchInfo(value.getId(), value.getAbbreviation()));
-            }
+        for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
+            si.add(new SearchInfo(status.getValue(), status.getValue()));
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaVessel(ProjectManagerService srvProjectManager) {
+    public List<SearchInfo> getSearchCriteriaVessel(
+            ProjectManagerService srvProjectManager) {
         List<Vessel> v = srvProjectManager.getDaoVessel().getAll();
 
         List<SearchInfo> si = new ArrayList<>();
@@ -295,48 +324,48 @@ public class Common {
         if (v != null && v.isEmpty() == false && v.get(0) != null) {
             for (Iterator<Vessel> it = v.iterator(); it.hasNext();) {
                 Vessel value = it.next();
-                si.add(new SearchInfo(value.getId(), value.getName()));
+                si.
+                        add(new SearchInfo(value.getId().toString(), value.
+                                getName()));
             }
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaCustomer(ProjectManagerService srvProjectManager) {
-        List<Company> c = srvProjectManager.getDaoCompany().getAll(enumTypeCompany.Customer.getValue());
+    public List<SearchInfo> getSearchCriteriaCustomer(
+            ProjectManagerService srvProjectManager) {
+        List<Company> c = srvProjectManager.getDaoCompany().getAll(
+                enumTypeCompany.Customer.getValue());
 
         List<SearchInfo> si = new ArrayList<>();
 
         if (c != null && c.isEmpty() == false && c.get(0) != null) {
             for (Iterator<Company> it = c.iterator(); it.hasNext();) {
                 Company value = it.next();
-                si.add(new SearchInfo(0l, value.getName()));
+                si.add(new SearchInfo("0l", value.getName()));
             }
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaCompany(ProjectManagerService srvProjectManager) {
-        List<Company> c = srvProjectManager.getDaoCompany().getAll(enumTypeCompany.Company.getValue());
-
+    public List<SearchInfo> getSearchCriteriaCompany() {
         List<SearchInfo> si = new ArrayList<>();
 
-        if (c != null && c.isEmpty() == false && c.get(0) != null) {
-            for (Iterator<Company> it = c.iterator(); it.hasNext();) {
-                Company value = it.next();
-
-                si.add(new SearchInfo(0l, value.getName()));
-            }
+        for (CompanyEnum comp : CompanyEnum.values()) {
+            si.add(new SearchInfo(comp.getValue(), comp.getValue()));
         }
 
         return si;
     }
 
     public String setPrjReference(Model model,
-                                  ProjectManagerService srvProjectManager) {
-        Collabs collab = srvProjectManager.getDaoCollab().getById(getUser().getId());
-        String prj_reference = collab.getProjectId() + "/" + collab.getProjectPrefix();
+            ProjectManagerService srvProjectManager) {
+        Collabs collab = srvProjectManager.getDaoCollab().getById(getUser().
+                getId());
+        String prj_reference = collab.getProjectId() + "/" + collab.
+                getProjectPrefix();
 
         model.addAttribute("prj_reference", prj_reference);
 
@@ -344,23 +373,26 @@ public class Common {
     }
 
     public void setProjectBillInfo(Long projectId,
-                                   Model model,
-                                   ProjectManagerService srvProjectManager) {
-        ProjectBill pb = srvProjectManager.getDaoProjectBill().findByProjectId(projectId);
+            Model model,
+            ProjectManagerService srvProjectManager) {
+        ProjectBill pb = srvProjectManager.getDaoProjectBill().findByProjectId(
+                projectId);
 
         model.addAttribute("project-bill", pb);
     }
 
     public void setVirtualProjectBillInfo(Long itemId,
-                                          Model model,
-                                          ProjectManagerService srvProjectManager) {
+            Model model,
+            ProjectManagerService srvProjectManager) {
         Item item = srvProjectManager.getDaoItem().getById(itemId);
 
         if (item != null) {
-            mapProjectBillItems.put(itemId, new ProjectBillItem(0, item.getQuantity(), item.getPrice(), item));
+            mapProjectBillItems.put(itemId, new ProjectBillItem(0, item.
+                    getQuantity(), item.getPrice(), item));
         } else {
             item = srvProjectManager.getDaoItem().add(new Item(itemId));
-            mapProjectBillItems.put(itemId, new ProjectBillItem(0, 0, BigDecimal.ZERO, item));
+            mapProjectBillItems.put(itemId, new ProjectBillItem(0, 0,
+                    BigDecimal.ZERO, item));
         }
     }
 
@@ -383,20 +415,20 @@ public class Common {
         mapProjectBillItems.clear();
     }
 
-    public String getProjectTypeName(Long id) {
-        for (ProjectTypeEnum value : ProjectTypeEnum.values()) {
-            if (value.getId().equals(id)) {
-                return value.getValue();
+    public String getProjectTypeName(String id) {
+        for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
+            if (type.getValue().equals(id)) {
+                return type.getValue();
             }
         }
 
         return "";
     }
 
-    public String getProjectStatusName(Long id) {
-        for (ProjectStatusEnum value : ProjectStatusEnum.values()) {
-            if (value.getId().equals(id)) {
-                return value.getValue();
+    public String getProjectStatusName(String id) {
+        for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
+            if (status.getValue().equals(id)) {
+                return status.getValue();
             }
         }
 
@@ -411,13 +443,14 @@ public class Common {
         this.projectType = projectType;
     }
 
-    public Long getProjectType(String type) {
-        Long result = 0l;
+    public String getProjectType(String type) {
+        String result = "";
 
-        if (type.equals(ProjectTypeEnum.SALE.getValue()) || type.equals(CompanyEnum.MTS.name())) {
-            result = ProjectTypeEnum.SALE.getId();
+        if (type.equals(ProjectTypeEnum.SALE.getValue()) || type.equals(
+                CompanyEnum.MTS.name())) {
+            result = ProjectTypeEnum.SALE.getValue();
         } else if (type.equals(ProjectTypeEnum.SERVICE.getValue())) {
-            result = ProjectTypeEnum.SERVICE.getId();
+            result = ProjectTypeEnum.SERVICE.getValue();
         }
 
         return result;

@@ -182,10 +182,13 @@ function sendEnail(id) {
 }
 
 function saveProject() {
-    var data = "company=" + $("#company option:selected").attr("value") + "&vessel=" +
+    var data = "company=" + $("#company option:selected").attr("value") +
+            "&type=" + $("#typeF option:selected").attr("value") + "&vessel=" +
             $("#vessel option:selected").attr("value") + "&customer=" +
             $("#customer option:selected").attr("value") + "&contact=" +
             $("#contact option:selected").attr("value") + "&offset=0&size=10";
+
+    alert(data);
 
     $.ajax({
         type: "POST",

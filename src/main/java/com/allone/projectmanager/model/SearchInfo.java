@@ -10,11 +10,11 @@ package com.allone.projectmanager.model;
  * @author antonia
  */
 public class SearchInfo {
-    private final Long id;
+    private final String id;
     private final String name;
     private Boolean selected;
     
-    public SearchInfo(Long id, String name) {
+    public SearchInfo(String id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -27,7 +27,7 @@ public class SearchInfo {
         this.selected = selected;
     }
     
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

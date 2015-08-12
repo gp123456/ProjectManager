@@ -29,17 +29,13 @@
 </script>
 
 <nav>
-<!--    <div class="menu-item">
-        <h3 id="project-service-size" onclick="window.location.href = '<%=path%>/project/service';">Service</h3>
-        <ul id="project-service"></ul>
+    <div class="menu-item">
+        <h3 id="project-new-size" onclick="window.location.href = '<%=path%>/project/new';">New</h3>
+        <ul id="project-new"></ul>
     </div>
     <div class="menu-item">
-        <h3 id="project-sale-size" onclick="window.location.href = '<%=path%>/project/sale';">Sale</h3>
-        <ul id="project-sale"></ul>
-    </div>-->
-    <div class="menu-item">
-        <h3 id="project-mts-size" onclick="window.location.href = '<%=path%>/project/mts';">New</h3>
-        <ul id="project-mts"></ul>
+        <h3 id="project-edit-size" onclick="window.location.href = '<%=path%>/project/edit-form';">Edit</h3>
+        <ul id="project-edit"></ul>
     </div>
     <div class="menu-item">
         <h3 onclick="window.location.href = '<%=path%>/project/project-bill';">Bill</h3>
