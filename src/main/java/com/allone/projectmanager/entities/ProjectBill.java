@@ -22,6 +22,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,76 +36,83 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "ProjectBill.findAll", query = "SELECT p FROM ProjectBill p"),
                @NamedQuery(name = "ProjectBill.findById", query = "SELECT p FROM ProjectBill p WHERE p.id = :id"),
-               @NamedQuery(name = "ProjectBill.findByTotalCost", query =
-                                                                 "SELECT p FROM ProjectBill p WHERE p.totalCost = :totalCost"),
-               @NamedQuery(name = "ProjectBill.findByAverangeDiscount", query =
-                                                                        "SELECT p FROM ProjectBill p WHERE p.averangeDiscount = :averangeDiscount"),
-               @NamedQuery(name = "ProjectBill.findByTotalSalePrice", query =
-                                                                      "SELECT p FROM ProjectBill p WHERE p.totalSalePrice = :totalSalePrice"),
-               @NamedQuery(name = "ProjectBill.findByTotalNetPrice", query =
-                                                                     "SELECT p FROM ProjectBill p WHERE p.totalNetPrice = :totalNetPrice"),
-               @NamedQuery(name = "ProjectBill.findByExpress", query =
-                                                               "SELECT p FROM ProjectBill p WHERE p.express = :express"),
-               @NamedQuery(name = "ProjectBill.findByNotes", query =
-                                                             "SELECT p FROM ProjectBill p WHERE p.notes = :notes")})
+               @NamedQuery(name = "ProjectBill.findByTotalCost",
+                           query = "SELECT p FROM ProjectBill p WHERE p.totalCost = :totalCost"),
+               @NamedQuery(name = "ProjectBill.findByAverangeDiscount",
+                           query = "SELECT p FROM ProjectBill p WHERE p.averangeDiscount = :averangeDiscount"),
+               @NamedQuery(name = "ProjectBill.findByTotalSalePrice",
+                           query = "SELECT p FROM ProjectBill p WHERE p.totalSalePrice = :totalSalePrice"),
+               @NamedQuery(name = "ProjectBill.findByTotalNetPrice",
+                           query = "SELECT p FROM ProjectBill p WHERE p.totalNetPrice = :totalNetPrice")})
 public class ProjectBill implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "total_cost")
+    @NotNull
     private BigDecimal totalCost;
+
     @Basic(optional = false)
     @Column(name = "averange_discount")
+    @NotNull
     private BigDecimal averangeDiscount;
+
     @Basic(optional = false)
     @Column(name = "total_sale_price")
+    @NotNull
     private BigDecimal totalSalePrice;
+
     @Basic(optional = false)
     @Column(name = "total_net_price")
+    @NotNull
     private BigDecimal totalNetPrice;
+
+    @JoinColumn(nullable = false, insertable = true, updatable = true, name = "project", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull
+    private ProjectDetail project;
+
     @Column(name = "express")
     private String express;
-    @Column(name = "notes")
-    private String notes;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "projectBillId")
+
+    @Column(name = "note")
+    private String note;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "projectBill")
+    private List<ProjectBillCustomItem> listProjectBillCustomItem;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "projectBill")
     private List<ProjectBillItem> projectBillItemList;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "projectBillId")
-    private List<ProjectBillCustomItem> projectBillCustomItemList;
-    @JoinColumn(nullable = false, name = "project_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Project projectId;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "projectBillId")
-    private List<PurchaseOrder> purchaseOrderList;
+    
+    @Transient
+    Builder builder;
+
+    private ProjectBill(Builder builder) {
+        totalCost = builder.getTotalCost();
+        averangeDiscount = builder.getAverangeDiscount();
+        totalSalePrice = builder.getTotalSalePrice();
+        totalNetPrice = builder.getTotalNetPrice();
+        project = builder.getProject();
+        express = builder.getExpress();
+        note = builder.getNote();
+        listProjectBillCustomItem = builder.getListProjectBillCustomItem();
+        projectBillItemList = builder.getProjectBillItemList();
+    }
 
     public ProjectBill() {
-        totalCost = averangeDiscount = totalSalePrice = totalNetPrice = BigDecimal.ZERO;
-        express = notes = "";
+        builder = new Builder();
     }
 
-    public ProjectBill(Long id) {
-        this.id = id;
-    }
-
-    public ProjectBill(Long id, BigDecimal totalCost, BigDecimal averangeDiscount, BigDecimal totalSalePrice,
-                       BigDecimal totalNetPrice) {
-        this.id = id;
-        this.totalCost = totalCost;
-        this.averangeDiscount = averangeDiscount;
-        this.totalSalePrice = totalSalePrice;
-        this.totalNetPrice = totalNetPrice;
-    }
-    
-    public ProjectBill(BigDecimal totalCost, BigDecimal averangeDiscount, BigDecimal totalSalePrice,
-                       BigDecimal totalNetPrice) {
-        this.totalCost = totalCost;
-        this.averangeDiscount = averangeDiscount;
-        this.totalSalePrice = totalSalePrice;
-        this.totalNetPrice = totalNetPrice;
+    public Builder getBuilder() {
+        return builder;
     }
 
     public Long getId() {
@@ -154,12 +163,20 @@ public class ProjectBill implements Serializable {
         this.express = express;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public ProjectDetail getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectDetail project) {
+        this.project = project;
     }
 
     @XmlTransient
@@ -172,29 +189,12 @@ public class ProjectBill implements Serializable {
     }
 
     @XmlTransient
-    public List<ProjectBillCustomItem> getProjectBillCustomItemList() {
-        return projectBillCustomItemList;
+    public List<ProjectBillCustomItem> getListProjectBillCustomItem() {
+        return listProjectBillCustomItem;
     }
 
-    public void setProjectBillCustomItemList(List<ProjectBillCustomItem> projectBillCustomItemList) {
-        this.projectBillCustomItemList = projectBillCustomItemList;
-    }
-
-    public Project getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Project projectId) {
-        this.projectId = projectId;
-    }
-
-    @XmlTransient
-    public List<PurchaseOrder> getPurchaseOrderList() {
-        return purchaseOrderList;
-    }
-
-    public void setPurchaseOrderList(List<PurchaseOrder> purchaseOrderList) {
-        this.purchaseOrderList = purchaseOrderList;
+    public void setProjectListBillCustomItem(List<ProjectBillCustomItem> listProjectBillCustomItem) {
+        this.listProjectBillCustomItem = listProjectBillCustomItem;
     }
 
     @Override
@@ -221,5 +221,119 @@ public class ProjectBill implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.ProjectBill[ id=" + id + " ]";
     }
-    
+
+    public class Builder {
+
+        private BigDecimal totalCost;
+        
+        private BigDecimal averangeDiscount;
+        
+        private BigDecimal totalSalePrice;
+        
+        private BigDecimal totalNetPrice;
+        
+        private ProjectDetail project;
+
+        private String express;
+
+        private String note;
+
+        private List<ProjectBillCustomItem> listProjectBillCustomItem;
+
+        private List<ProjectBillItem> projectBillItemList;
+
+        public BigDecimal getTotalCost() {
+            return totalCost;
+        }
+
+        public Builder setTotalCost(BigDecimal totalCost) {
+            this.totalCost = totalCost;
+            
+            return this;
+        }
+
+        public BigDecimal getAverangeDiscount() {
+            return averangeDiscount;
+        }
+
+        public Builder setAverangeDiscount(BigDecimal averangeDiscount) {
+            this.averangeDiscount = averangeDiscount;
+            
+            return this;
+        }
+
+        public BigDecimal getTotalSalePrice() {
+            return totalSalePrice;
+        }
+
+        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
+            this.totalSalePrice = totalSalePrice;
+            
+            return this;
+        }
+
+        public BigDecimal getTotalNetPrice() {
+            return totalNetPrice;
+        }
+
+        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
+            this.totalNetPrice = totalNetPrice;
+            
+            return this;
+        }
+
+        public ProjectDetail getProject() {
+            return project;
+        }
+
+        public Builder setProject(ProjectDetail project) {
+            this.project = project;
+            
+            return this;
+        }
+
+        public String getExpress() {
+            return express;
+        }
+
+        public Builder setExpress(String express) {
+            this.express = express;
+            
+            return this;
+        }
+
+        public String getNote() {
+            return note;
+        }
+
+        public Builder setNote(String note) {
+            this.note = note;
+            
+            return this;
+        }
+
+        public List<ProjectBillCustomItem> getListProjectBillCustomItem() {
+            return listProjectBillCustomItem;
+        }
+
+        public Builder setListProjectBillCustomItem(List<ProjectBillCustomItem> listProjectBillCustomItem) {
+            this.listProjectBillCustomItem = listProjectBillCustomItem;
+            
+            return this;
+        }
+
+        public List<ProjectBillItem> getProjectBillItemList() {
+            return projectBillItemList;
+        }
+
+        public Builder setProjectBillItemList(List<ProjectBillItem> projectBillItemList) {
+            this.projectBillItemList = projectBillItemList;
+            
+            return this;
+        }
+        
+        public ProjectBill build() {
+            return new ProjectBill(this);
+        }
+    }
 }

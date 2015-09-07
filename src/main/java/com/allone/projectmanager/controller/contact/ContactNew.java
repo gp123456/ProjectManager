@@ -27,9 +27,19 @@ public class ContactNew extends Common {
     
     @RequestMapping(value = "/new")
     public String New(Model model) {
-        this.setTitle("Contacts-New");
-        this.setSide_bar("../contact/sidebar.jsp");
-        this.setContent("../contact/New.jsp");
+        setTitle("Contacts-New");
+        setHeader("header.jsp");
+        setSide_bar("../contact/sidebar.jsp");
+        setContent("../contact/New.jsp");
+        setHeaderInfo(model);
+
+        return "index";
+    }
+    
+    @RequestMapping(value = "/add")
+    public String Add(Model model) {
+        this.setTitle("Contact-Add");
+        setContent("../contact/New.jsp");
         setHeaderInfo(model);
 
         return "index";

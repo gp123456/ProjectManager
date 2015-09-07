@@ -33,10 +33,13 @@
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/ProjectBill.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/contact.js"></script>
     </head>
     <body>
         <div id="container">
-            <div class="top-bar"><jsp:include page="header.jsp"/></div>
+            <c:if test="${project_header != null}" >
+                <div class="top-bar"><jsp:include page="${project_header}"/></div>
+            </c:if>
             <div class="maincontent">
                 <c:if test="${side_bar != null}" >
                     <div class="leftmenucontainer">

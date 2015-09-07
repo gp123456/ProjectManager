@@ -9,6 +9,7 @@ import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Project;
+import com.allone.projectmanager.entities.ProjectDetail;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -49,7 +50,7 @@ public class PackingListController extends ProjectCommon {
 
     @RequestMapping(value = "/packing-list/id")
     public @ResponseBody
-    String getProjectPackingList(Project p, Model model) {
-        return searchProject(srvProjectManager, p, 0, Integer.MAX_VALUE, "view", model);
+    String getProjectPackingList(ProjectDetail pd, Model model) {
+        return searchProject(srvProjectManager, pd, 0, Integer.MAX_VALUE, "view", model);
     }
 }

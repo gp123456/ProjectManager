@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -8,16 +8,20 @@ package com.allone.projectmanager.controller.common;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Collabs;
+import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Project;
+import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
+import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.ui.Model;
 
@@ -26,7 +30,9 @@ import org.springframework.ui.Model;
  * @author antonia
  */
 enum ProjectMode {
+
     VIEW, EDIT;
+
 }
 
 public class ProjectCommon extends Common {
@@ -37,133 +43,60 @@ public class ProjectCommon extends Common {
 
     private String getStatusValueById(String id) {
         for (ProjectStatusEnum item : ProjectStatusEnum.values()) {
-            if (item.getValue().equals(id)) {
-                return item.getValue();
+            if (item.toString().equals(id)) {
+                return item.toString();
             }
         }
 
         return "";
     }
 
-    private String createProjectRow(ProjectManagerService srvProjectManager, Project p, List<String> statuses,
+    private String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
                                     String mode) {
         String response = "";
 
-        Collabs user = srvProjectManager.getDaoCollab().getById(p.getCreator());
-        Vessel vess = srvProjectManager.getDaoVessel().getById(p.getVessel());
-
+        Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
+        Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
         if (mode.equals(this.mode.EDIT.name())) {
             response +=
             "<tr>\n" +
-            "<td>" +
-            "<div onclick=\"projectPackingList(" + p.getId() + ")\">" +
-            p.getReference() + "</div>" +
-            "</td>\n" +
-            "<td>" +
-            getStatusValueById(p.getStatus()) +
-            "</td>\n" +
-            "<td>" +
-            ((user !=
-            null) ? user.getName() +
-                    " " +
-                    user.getSurname() : "") +
-            "</td>\n" +
-            "<td>" +
-            p.getCompany() +
-            "</td>\n" +
-            "<td>" +
-            ((vess !=
-            null) ? vess.getName() : "") +
-            "</td>\n" +
-            "<td>" +
-            p.getCustomer() +
-            "</td>" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(0) +
-            "\" style=\"text-align:center; " +
-            "vertical-align: middle;\" id=\"edit-project\" onclick=\"editRow(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(1) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"remove-project\" onclick=\"removeRow(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(2) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"create-pdf\" onclick=\"createPDF(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(3) +
-            "\" style=\"text-align:center; " +
-            "vertical-align: middle;\" id=\"print-pdf\" onclick=\"printPDF(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(4) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"create-xls\" onclick=\"saveXLS(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(5) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"create-xls\" onclick=\"printXLS(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(6) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"send-email\" onclick=\"sendEnail(" +
-            p.getId() +
-            ")\"></td>\n" +
+            "<td>" + "<div onclick=\"projectPackingList(" + p.getId() + ")\">" + p.getReference() + "</div>" + "</td>\n" +
+            "<td>" + getStatusValueById(pd.getStatus()) + "</td>\n" +
+            "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
+            "<td>" + pd.getCompany() + "</td>\n" +
+            "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
+            "<td>" + pd.getCustomer() + "</td>" +
+            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"edit-project\" onclick=\"editRow(" + p.
+            getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"remove-project\" onclick=\"removeRow(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"create-pdf\" onclick=\"createPDF(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(3) + "\" id=\"print-pdf\" onclick=\"printPDF(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(4) + "\" id=\"create-xls\" onclick=\"saveXLS(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(5) + "\" id=\"create-xls\" onclick=\"printXLS(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(6) + "\" id=\"send-email\" onclick=\"sendEnail(" +
+            p.getId() + ")\"></td>\n" +
             "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             response +=
             "<tr>" +
-            "<td>" +
-            p.getReference() +
-            "</td>\n" +
-            "<td>" +
-            getStatusValueById(p.getStatus()) +
-            "</td>\n" +
-            "<td>" +
-            ((user !=
-            null) ? user.getName() +
-                    " " +
-                    user.getSurname() : "") +
-            "</td>\n" +
-            "<td>" +
-            p.getCompany() +
-            "</td>" +
-            "<td>" +
-            ((vess !=
-            null) ? vess.getName() : "") +
-            "</td>\n" +
-            "<td>" +
-            p.getCustomer() +
-            "</td>" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(0) +
-            "\" style=\"text-align:center; " +
-            "vertical-align: middle;\" id=\"print-pdf\" onclick=\"printPDF(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(1) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"create-xls\" onclick=\"saveXLS(" +
-            p.getId() +
-            ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" +
-            statuses.get(2) +
-            "\" style=\"text-align:center; " +
-            "vertical-align:middle;\" id=\"send-email\" onclick=\"sendEnail(" +
-            p.getId() +
-            ")\"></td>\n" +
+            "<td>" + p.getReference() + "</td>\n" +
+            "<td>" + getStatusValueById(p.getStatus()) + "</td>\n" +
+            //            "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
+            //            "<td>" + pd.getCompany() + "</td>" +
+            //            "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
+            //            "<td>" + pd.getCustomer() + "</td>" +
+            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"print-pdf\" onclick=\"printPDF(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"create-xls\" onclick=\"saveXLS(" +
+            p.getId() + ")\"></td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"send-email\" onclick=\"sendEnail(" +
+            p.getId() + ")\"></td>\n" +
             "</tr>\n";
         }
 
@@ -183,10 +116,10 @@ public class ProjectCommon extends Common {
             return "<tr>\n" +
                     "<th>Reference</th>\n" +
                     "<th>Status</th>\n" +
-                    "<th>User</th>\n" +
-                    "<th>Company</th>\n" +
-                    "<th>Vessel</th>\n" +
-                    "<th>Customer</th>\n" +
+                    //                    "<th>User</th>\n" +
+                    //                    "<th>Company</th>\n" +
+                    //                    "<th>Vessel</th>\n" +
+                    //                    "<th>Customer</th>\n" +
                     "<th>Edit</th>\n" +
                     "<th>Delete</th>\n" +
                     "<th>Save to PDF</th>\n" +
@@ -199,10 +132,10 @@ public class ProjectCommon extends Common {
             return "<tr>\n" +
                     "<th>Reference</th>\n" +
                     "<th>Status</th>\n" +
-                    "<th>User</th>\n" +
-                    "<th>Company</th>\n" +
-                    "<th>Vessel</th>\n" +
-                    "<th>Customer</th>\n" +
+                    //                    "<th>User</th>\n" +
+                    //                    "<th>Company</th>\n" +
+                    //                    "<th>Vessel</th>\n" +
+                    //                    "<th>Customer</th>\n" +
                     "<th>Print to PDF</th>\n" +
                     "<th>Print to Excel</th>\n" +
                     "<th>Send eMail</th>\n" +
@@ -223,47 +156,61 @@ public class ProjectCommon extends Common {
                 "</tr>";
     }
 
-    public Object[] createProjectBody(ProjectManagerService srvProjectManager, Project p, List<String> statuses,
+    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
                                       String mode, Integer offset, Integer size) {
-        
         Boolean navTable = Boolean.FALSE;
         String response = "";
-        List<Project> lstPrj = null;
+
+        if (pd == null) {
+            return new Object[]{navTable, response};
+        }
+
+        List<ProjectDetail> lstPrj = null;
         Long countPrj = 0l;
-        Project onePrj = (!p.getReference().equals("-1")) ? srvProjectManager.getDaoProject().getByReference(p.
-                getReference()) : null;
+        Long id = pd.getId();
+        ProjectDetail onePrj = (id != null) ? srvProjectManager.getDaoProjectDetail().getById(id) : null;
 
         if (onePrj == null) {
-            lstPrj =
-            (!p.getType().equals(-1l)) ? srvProjectManager.getDaoProject().getByType(p.getType(), offset, size) : null;
-            countPrj = (!p.getType().equals(-1l)) ? srvProjectManager.getDaoProject().countByType(p.getType()) : null;
+            if (lstPrj == null) {
+                String status = pd.getStatus();
 
-            if (lstPrj == null) {
-                lstPrj = (!p.getStatus().equals(-1l)) ? srvProjectManager.getDaoProject().getByStatus(p.getStatus(),
-                                                                                                      offset, size) :
-                null;
-                countPrj =
-                (!p.getStatus().equals(-1l)) ? srvProjectManager.getDaoProject().countByStatus(p.getStatus()) : null;
+                lstPrj = (!Strings.isNullOrEmpty(status) && !status.equals("none")) ?
+                srvProjectManager.getDaoProjectDetail().getByStatus(status, offset, size) : null;
+                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByStatus(status) : null;
             }
             if (lstPrj == null) {
-                lstPrj = (!p.getVessel().equals(-1l)) ? srvProjectManager.getDaoProject().getByVessel(p.getVessel(),
-                                                                                                      offset, size) :
-                null;
-                countPrj =
-                (!p.getVessel().equals(-1l)) ? srvProjectManager.getDaoProject().countByVessel(p.getVessel()) : null;
+                Long projectId = pd.getProject();
+
+                lstPrj = (projectId != null && !projectId.equals(-1l)) ? srvProjectManager.getDaoProjectDetail().
+                getByProjectId(projectId) : null;
             }
             if (lstPrj == null) {
-                lstPrj = (!p.getCustomer().equals("-1")) ? srvProjectManager.getDaoProject().getByCustomer(p.
-                getCustomer(), offset, size) : null;
-                countPrj = (!p.getCustomer().equals(-1l)) ? srvProjectManager.getDaoProject().countByCustomer(p.
-                getCustomer()) : null;
+                String type = pd.getType();
+
+                lstPrj = (!Strings.isNullOrEmpty(type)) ? srvProjectManager.getDaoProjectDetail().
+                getByType(type, offset, size) : null;
+                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByType(type) : null;
             }
             if (lstPrj == null) {
-                lstPrj = (!p.getCompany().equals("-1")) ? srvProjectManager.getDaoProject().getByCompany(p.getCompany(),
-                                                                                                         offset, size) :
-                null;
-                countPrj = (!p.getCompany().equals(-1l)) ? srvProjectManager.getDaoProject().countByCompany(p.
-                getCompany()) : null;
+                Long vessel = pd.getVessel();
+
+                lstPrj = (vessel != null && !vessel.equals(-1)) ? srvProjectManager.getDaoProjectDetail().getByVessel(
+                vessel, offset, size) : null;
+                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByVessel(vessel) : null;
+            }
+            if (lstPrj == null) {
+                String customer = pd.getCustomer();
+
+                lstPrj = (!Strings.isNullOrEmpty(customer)) ? srvProjectManager.getDaoProjectDetail().getByCustomer(
+                customer, offset, size) : null;
+                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCustomer(customer) : null;
+            }
+            if (lstPrj == null) {
+                String company = pd.getCompany();
+
+                lstPrj = (!Strings.isNullOrEmpty(company)) ? srvProjectManager.getDaoProjectDetail().getByCompany(
+                company, offset, size) : null;
+                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCompany(company) : null;
             }
         }
 
@@ -271,7 +218,7 @@ public class ProjectCommon extends Common {
             response = createProjectRow(srvProjectManager, onePrj, statuses, mode);
         } else if (lstPrj != null && !lstPrj.isEmpty() && countPrj != null) {
             navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-            for (Project prj : lstPrj) {
+            for (ProjectDetail prj : lstPrj) {
                 response += createProjectRow(srvProjectManager, prj, statuses, mode);
             }
         } else {
@@ -280,7 +227,7 @@ public class ProjectCommon extends Common {
 
             if (lstPrj != null && !lstPrj.isEmpty()) {
                 navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-                for (Project prj : lstPrj) {
+                for (ProjectDetail prj : lstPrj) {
                     response += createProjectRow(srvProjectManager, prj, statuses, mode);
                 }
             }
@@ -289,9 +236,9 @@ public class ProjectCommon extends Common {
         return new Object[]{navTable, response};
     }
 
-    public String searchProject(ProjectManagerService srvProjectManager, Project p, Integer offset, Integer size,
+    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, Integer offset, Integer size,
                                 String mode, Model model) {
-        if (p != null) {
+        if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader;
             Object[] projectBody;
@@ -299,20 +246,20 @@ public class ProjectCommon extends Common {
 
             if (mode.equals("view")) {
                 projectHeader = createProjectHeader(getModeView());
-                projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                          "Start",
-                                                                                                          "Start")),
+                projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
+                                                                                                           "Start",
+                                                                                                           "Start")),
                                                 getModeView(), offset, size);
             } else {
                 projectHeader = createProjectHeader(getModeEdit());
-                projectBody = createProjectBody(srvProjectManager, p, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                          "Start",
-                                                                                                          "Start",
-                                                                                                          "Start",
-                                                                                                          "Start",
-                                                                                                          "Start",
-                                                                                                          "Start",
-                                                                                                          "Start")),
+                projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
+                                                                                                           "Start",
+                                                                                                           "Start",
+                                                                                                           "Start",
+                                                                                                           "Start",
+                                                                                                           "Start",
+                                                                                                           "Start",
+                                                                                                           "Start")),
                                                 getModeEdit(), offset, size);
             }
             projectFooter = (projectBody[0].equals(Boolean.TRUE)) ?

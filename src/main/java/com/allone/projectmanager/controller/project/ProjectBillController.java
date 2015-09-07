@@ -94,7 +94,7 @@ public class ProjectBillController extends ProjectCommon {
         if (projectBillKeys != null && projectBillKeys.isEmpty() == false) {
             for (Long key : projectBillKeys) {
                 ProjectBillItem pbi = getProjectBillItem(key);
-                Item item = pbi.getItemId();
+                Item item = pbi.getItem();
                 Integer quantity = pbi.getQuantity();
                 BigDecimal cost = pbi.getCost();
                 BigDecimal totalCost = pbi.getTotalCost();
@@ -186,7 +186,8 @@ public class ProjectBillController extends ProjectCommon {
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()));
         }
 
-        return new ProjectBill(totalCost, averangeDiscount, totalSalePrice, totalNetPrice);
+        return new ProjectBill().getBuilder().setTotalCost(totalCost).setAverangeDiscount(averangeDiscount).
+                setTotalSalePrice(totalSalePrice).setTotalNetPrice(totalNetPrice).build();
     }
 
     @RequestMapping(value = "project-bill")
@@ -271,16 +272,16 @@ public class ProjectBillController extends ProjectCommon {
             BigDecimal percent = new BigDecimal(100);
 
             if (!Strings.isNullOrEmpty(code)) {
-                temp.getItemId().setImno(code);
+                temp.getItem().setImno(code);
             }
             if (!Strings.isNullOrEmpty(description)) {
-                temp.getItemId().setDescription(description);
+                temp.getItem().setDescription(description);
             }
             if (available != null && !available.equals(0)) {
-                temp.getItemId().setQuantity(available);
+                temp.getItem().setQuantity(available);
             }
             if (price != null && !price.equals(0)) {
-                temp.getItemId().setPrice(price);
+                temp.getItem().setPrice(price);
             }
             if (quantity != null && !quantity.equals(0)) {
                 temp.setQuantity(quantity);

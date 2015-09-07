@@ -21,6 +21,7 @@ import com.allone.projectmanager.dao.StockDAO;
 import com.allone.projectmanager.dao.StockTransDAO;
 import com.allone.projectmanager.dao.VesselDAO;
 import com.allone.projectmanager.dao.ContactDAO;
+import com.allone.projectmanager.dao.ProjectDetailDAO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -54,6 +55,7 @@ public class ProjectManagerService {
     private final ItemDAO daoItem = new ItemDAO(emf);
     private final ItemTransDAO daoItemTrans = new ItemTransDAO(emf);
     private final ProjectDAO daoProject = new ProjectDAO(emf);
+    private final ProjectDetailDAO daoProjectDetail = new ProjectDetailDAO(emf);
     private final RepimageDAO daoRepimage = new RepimageDAO(emf);
     private final ReportsDAO daoReport = new ReportsDAO(emf);
     private final RightsDAO daoRights = new RightsDAO(emf);
@@ -70,6 +72,10 @@ public class ProjectManagerService {
     
     private String pathProject;
 
+    public ProjectDetailDAO getDaoProjectDetail() {
+        return daoProjectDetail;
+    }
+    
     public void loadPropertyValues() {
         InputStream in = getClass().getClassLoader().getResourceAsStream("project_manager.properties");
         Properties prop = new Properties();

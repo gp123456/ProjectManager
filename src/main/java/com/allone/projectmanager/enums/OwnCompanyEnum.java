@@ -9,24 +9,20 @@ package com.allone.projectmanager.enums;
  *
  * @author antonia
  */
-public enum CompanyEnum {
-    WCS("WCS"),
-    WCS_LCD("WCS LCD"),
-    WCS_HELLAS("WCS HELLAS"),
-    MTS("MTS");
+public enum OwnCompanyEnum {
+    WCS("wcs"),
+    WCS_LCD("wcs lcd"),
+    WCS_HELLAS("wcs hellas"),
+    MTS("mts");
     
-    private String value;
+    private final String value;
     
-    CompanyEnum(String value) {
+    OwnCompanyEnum(final String value) {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-    
     @Override
-    public String toString() {
+    public final String toString() {
         return this.value;
     }
 }

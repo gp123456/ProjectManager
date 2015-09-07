@@ -25,27 +25,38 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Rights.findAll", query = "SELECT r FROM Rights r")})
 public class Rights implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "viewing")
     private Boolean viewing;
+
     @Column(name = "project")
     private Boolean project;
+
     @Column(name = "offer")
     private Boolean offer;
+
     @Column(name = "technician")
     private Boolean technician;
+
     @Column(name = "order_supplier")
     private Boolean orderSupplier;
+
     @Column(name = "statistics_view")
     private Boolean statisticsView;
+
     @Column(name = "user_creator")
     private Boolean userCreator;
-    @Column(name = "notes")
-    private String notes;
+
+    @Column(name = "note")
+    private String note;
+
     @Column(name = "description")
     private String description;
 
@@ -120,12 +131,12 @@ public class Rights implements Serializable {
         this.userCreator = userCreator;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getDescription() {
@@ -160,5 +171,5 @@ public class Rights implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Rights[ id=" + id + " ]";
     }
-    
+
 }

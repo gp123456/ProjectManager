@@ -5,16 +5,15 @@
  */
 package com.allone.projectmanager.dao;
 
-import com.allone.projectmanager.entities.ItemTrans;
 import javax.persistence.EntityManagerFactory;
 
 /**
  *
  * @author antonia
  */
-public class ItemTransDAO extends ItemTrans {
+public class ItemTransDAO {
     private EntityManagerFactory emf;
-    
+
     public ItemTransDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }

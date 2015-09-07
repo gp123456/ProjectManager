@@ -6,20 +6,23 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -28,82 +31,58 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findAll",
-            query = "SELECT p FROM Project p"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.countAll",
-            query = "SELECT count(p) FROM Project p"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findById",
-            query = "SELECT p FROM Project p WHERE p.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByReference",
-            query = "SELECT p FROM Project p WHERE p.reference = :reference"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByStatus",
-            query = "SELECT p FROM Project p WHERE p.status = :status"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Project.countByStatus",
-            query = "SELECT count(p) FROM Project p WHERE p.status = :status")})
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Project.findAll",
+                           query = "SELECT p FROM Project p"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Project.countAll",
+                           query = "SELECT count(p) FROM Project p"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Project.findById",
+                           query = "SELECT p FROM Project p WHERE p.id = :id"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByStatus",
+                           query = "SELECT p FROM Project p WHERE p.status = :status"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Project.countByStatus",
+                           query = "SELECT count(p) FROM Project p WHERE p.status = :status")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "reference")
     private String reference;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "status")
     private String status;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "type")
-    private String type;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "creator")
-    private Long creator;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "created")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
-    @Basic(optional = true)
-    @Column(name = "expired")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expired;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "company")
-    private String company;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "vessel")
-    private Long vessel;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "customer")
-    private String customer;
-    @Basic(optional = true)
-    @Column(name = "contact")
-    private Long contact;
+    
+    @Transient
+    private Long projectDetail;
+
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "project")
+//    private List<ProjectDetail> listProjectDetail;
+
+    private Project(Builder builder) {
+        reference = builder.getReference();
+        status = builder.getStatus();
+        projectDetail = builder.getProjectDetail();
+//        listProjectDetail = builder.getListProjectDetail();
+    }
 
     public Project() {
     }
 
-    public Project(Long id) {
-        this.id = id;
-    }
-
-    public Project(Long id, String company) {
-        this.id = id;
-        this.company = company;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getReference() {
@@ -122,69 +101,22 @@ public class Project implements Serializable {
         this.status = status;
     }
 
-    public String getType() {
-        return type;
+    public Long getProjectDetail() {
+        return projectDetail;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setProjectDetail(Long projectDetail) {
+        this.projectDetail = projectDetail;
     }
 
-    public Long getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Long creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getExpired() {
-        return expired;
-    }
-
-    public void setExpired(Date expired) {
-        this.expired = expired;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public Long getVessel() {
-        return vessel;
-    }
-
-    public void setVessel(Long vessel) {
-        this.vessel = vessel;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(String customer) {
-        this.customer = customer;
-    }
-
-    public Long getContact() {
-        return contact;
-    }
-
-    public void setContact(Long contact) {
-        this.contact = contact;
-    }
+//    @XmlTransient
+//    public List<ProjectDetail> getListProjectDetail() {
+//        return listProjectDetail;
+//    }
+//
+//    public void setListProjectDetail(List<ProjectDetail> projectDetailList) {
+//        this.listProjectDetail = projectDetailList;
+//    }
 
     @Override
     public int hashCode() {
@@ -212,4 +144,57 @@ public class Project implements Serializable {
         return "com.allone.projectmanager.entities.Project[ id=" + id + " ]";
     }
 
+    public final static class Builder {
+        private String reference;
+        
+        private String status;
+        
+        private Long projectDetail;
+        
+//        private List<ProjectDetail> listProjectDetail;
+
+        public String getReference() {
+            return reference;
+        }
+
+        public Builder setReference(String reference) {
+            this.reference = reference;
+            
+            return this;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public Builder setStatus(String status) {
+            this.status = status;
+            
+            return this;
+        }
+
+        public Long getProjectDetail() {
+            return projectDetail;
+        }
+
+        public Builder setProjectDetail(Long projectDetail) {
+            this.projectDetail = projectDetail;
+            
+            return this;
+        }
+
+//        public List<ProjectDetail> getListProjectDetail() {
+//            return listProjectDetail;
+//        }
+//
+//        public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
+//            this.listProjectDetail = listProjectDetail;
+//            
+//            return this;
+//        }
+        
+        public Project build() {
+            return new Project(this);
+        }
+    }
 }

@@ -182,13 +182,11 @@ function sendEnail(id) {
 }
 
 function saveProject() {
-    var data = "company=" + $("#company option:selected").attr("value") +
-            "&type=" + $("#typeF option:selected").attr("value") + "&vessel=" +
-            $("#vessel option:selected").attr("value") + "&customer=" +
-            $("#customer option:selected").attr("value") + "&contact=" +
-            $("#contact option:selected").attr("value") + "&offset=0&size=10";
-
-    alert(data);
+    var data = "company=" + $("#new-project-company option:selected").attr("value") +
+            "&type=" + $("#new-project-type option:selected").attr("value") + "&vessel=" +
+            $("#new-project-vessel option:selected").attr("value") + "&customer=" +
+            $("#new-project-customer option:selected").attr("value") + "&contact=" +
+            $("#new-project-contact option:selected").attr("value") + "&offset=0&size=10";
 
     $.ajax({
         type: "POST",
@@ -243,6 +241,22 @@ function projectPackingList(id) {
             $("#project-header").html(content.project_header);
             $("#project-body").html(content.project_body);
             $("#project-footer").html(content.project_footer);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function projectFilterVessel() {
+    $.ajax({
+        type: "POST",
+        url: "filter-vessel",
+        data: "vessel=" + $("#new-project-vessel option:selected").attr("value"),
+        success: function (response) {
+            var content = JSON.parse(response)
+            
+            $("#new-project-customer").html(content.customer);
+            $("#new-project-contact").html(content.contact);
         },
         error: function (e) {
         }

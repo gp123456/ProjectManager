@@ -6,6 +6,7 @@
 package com.allone.projectmanager.tools;
 
 import com.allone.projectmanager.entities.Project;
+import com.allone.projectmanager.entities.ProjectDetail;
 import java.awt.Color;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -221,20 +222,16 @@ public class JasperReport {
         int nHeight = (nLines + 1) * 10;
         PrintTextArea(jasperPrint, page, normalStyle, strNotes, HorizontalAlignEnum.LEFT, 0, Offset + 30, nWidth,
                       nHeight, 10, false);
-        PrintText(jasperPrint, page, boldStyle, "FOR WCS HELLAS & CO", HorizontalAlignEnum.CENTER, 0, Offset + nHeight
-                                                                                                      + 45, 0, 10, false);
+        PrintText(jasperPrint, page, boldStyle, "FOR WCS HELLAS & CO", HorizontalAlignEnum.CENTER, 0, Offset + nHeight +
+                   45, 0, 10, false);
 
         jasperPrint.addPage(page);
 
         return jasperPrint;
     }
 
-    private static JasperPrint ProjectPrint(Project p,
-                                            String status,
-                                            String type,
-                                            String userName,
-                                            String vesselName) throws
-            JRException {
+    private static JasperPrint ProjectPrint(Project p, ProjectDetail pd, String status, String type, String userName,
+                                            String vesselName, String custName) throws JRException {
         //JasperPrint
         JasperPrint jasperPrint = new JasperPrint();
         JRPrintPage page = new JRBasePrintPage();
@@ -255,14 +252,14 @@ public class JasperReport {
         PrintText(jasperPrint, page, boldStyle, p.getReference(),
                   net.sf.jasperreports.engine.type.HorizontalAlignEnum.CENTER, 0, 105, 0, 14, true);
         PrintText(jasperPrint, page, boldStyle, "COMPANY:", HorizontalAlignEnum.RIGHT, 0, 135, 130, 10, false);
-        PrintText(jasperPrint, page, normalStyle, p.getCompany(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2)
-                                                                                            + 145, 135, 0, 10, false);
+        PrintText(jasperPrint, page, normalStyle, pd.getCompany(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
+                   145, 135, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "VESSEL:", HorizontalAlignEnum.RIGHT, 0, 150, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, vesselName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145,
                   150, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "CUSTOMER:", HorizontalAlignEnum.RIGHT, 0, 165, 130, 10, false);
-        PrintText(jasperPrint, page, normalStyle, p.getCustomer(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2)
-                                                                                             + 145, 165, 0, 10, false);
+        PrintText(jasperPrint, page, normalStyle, custName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
+                   145, 165, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "ATTN:", HorizontalAlignEnum.RIGHT, 0, 180, 130, 10, false);
         PrintText(jasperPrint, page, boldStyle, "USER:", HorizontalAlignEnum.RIGHT, 0, 195, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, userName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 195,
@@ -274,7 +271,7 @@ public class JasperReport {
         PrintText(jasperPrint, page, normalStyle, type, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 225, 0,
                   10, false);
         PrintText(jasperPrint, page, boldStyle, "Create at:", HorizontalAlignEnum.RIGHT, 0, 240, 130, 10, false);
-        PrintText(jasperPrint, page, normalStyle, new SimpleDateFormat("yyyy-MM-dd").format(p.getCreated()),
+        PrintText(jasperPrint, page, normalStyle, new SimpleDateFormat("yyyy-MM-dd").format(pd.getCreated()),
                   HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 240, 0, 10, false);
 
         jasperPrint.addPage(page);
@@ -283,7 +280,7 @@ public class JasperReport {
     }
 
     public static void createProjectBillReport(String path,
-                                            String fileName) throws JRException {
+                                               String fileName) throws JRException {
         File f = new File(PATH_PROJECT_BILL);
 
         if (!f.exists()) {
@@ -313,12 +310,8 @@ public class JasperReport {
         exporter.exportReport();
     }
 
-    public static void createProjectReport(Project p,
-                                           String status,
-                                           String type,
-                                           String userName,
-                                           String vesselName) throws
-            JRException {
+    public static void createProjectReport(Project p, ProjectDetail pd, String status, String type, String userName,
+                                           String vesselName, String custName) throws JRException {
         String fileName = p.getReference().replace("/", "_") + ".pdf";
         File f = new File(PATH_PROJECT);
 
@@ -337,7 +330,7 @@ public class JasperReport {
         File destFile = new File(strPath + fileName);
 
         JRPdfExporter exporter = new JRPdfExporter();
-        JasperPrint jasperPrint = ProjectPrint(p, status, type, userName, vesselName);
+        JasperPrint jasperPrint = ProjectPrint(p, pd, status, type, userName, vesselName, custName);
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
         exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
         exporter.exportReport();

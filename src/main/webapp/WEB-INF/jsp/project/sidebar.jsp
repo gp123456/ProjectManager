@@ -15,12 +15,8 @@
             success: function (response) {
                 var content = JSON.parse(response);
 
-                $(content.project_service_size_id).html(content.project_service_size);
-                $(content.project_service_id).html(content.project_service_info);
-                $(content.project_sale_size_id).html(content.project_sale_size);
-                $(content.project_sale_id).html(content.project_sale_info);
-                $(content.project_mts_size_id).html(content.project_mts_size);
-                $(content.project_mts_id).html(content.project_mts_info);
+                $(content.project_edit_size_id).html(content.project_edit_size);
+                $(content.project_edit_info_id).html(content.project_edit_info);
             },
             error: function (e) {
             }
