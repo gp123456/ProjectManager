@@ -18,6 +18,7 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/header.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/ui.js"></script>

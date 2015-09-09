@@ -22,9 +22,11 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -146,13 +148,18 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/new")
     public String NewProject(Model model) {
+        Calendar expired = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
+        
+        expired.setTime(new Date());
+//        expired.set(0, 0, getUser().getProject_expired());
         this.setTitle("Projects-New Project");
         this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
-        model.addAttribute("project_reference", "-1");
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
+        model.addAttribute("expired", format.format(expired.getTime()));
 
         return "index";
     }
@@ -179,6 +186,7 @@ public class ProjectController extends ProjectCommon {
             Map<String, Object> content = new HashMap<>();
             Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(getUser().
                     getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
+            
             pd.setProject(p.getId());
             pd.setCreated(new Date());
             pd.setCreator(user.getId());

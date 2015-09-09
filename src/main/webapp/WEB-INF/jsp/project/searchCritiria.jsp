@@ -7,6 +7,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <script>
+    $(function () {
+        $("#start").datepicker();
+        $("#end").datepicker();
+    });
+    
     function refreshSearchContent() {
         $.ajax({
             type: "POST",
@@ -44,10 +49,10 @@
     <label>Company</label>
     <select id="search-company"></select>
     <label>Start date</label>
-    <input name="sdate" class="content_align" type="text" id="Datefrom" value="${sdateVal}">
+    <input name="sdate" type="text" id="start" value="${sdateVal}">
     <span class="dateico"></span>
     <label>End date</label>
-    <input name="edate" class="content_align" type="text" id="Dateto" value="${edateVal}"><p/>
+    <input name="edate" type="text" id="end" value="${edateVal}"><p/>
     <input type="button" class="btnsubmit content_align" value="Search" id="search" onclick="searchContent()"/>
     <input type="button" class="btnsubmit content_align" value="Clear" id="search-clear" onclick="searchClear()"/>
 </div>

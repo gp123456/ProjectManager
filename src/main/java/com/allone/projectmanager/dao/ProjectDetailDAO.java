@@ -96,8 +96,8 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType").setFirstResult(
-            offset * size).setMaxResults(size);
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType").
+            setParameter("type", type).setFirstResult(offset * size).setMaxResults(size);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {

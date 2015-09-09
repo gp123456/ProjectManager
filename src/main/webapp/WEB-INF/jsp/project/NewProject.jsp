@@ -8,6 +8,8 @@
 
 <script>
     $(function () {
+        $("#expired").datepicker();
+        
         refreshSearchContent();
 
         var id = $("#project-edit-id").attr("value");
@@ -47,6 +49,10 @@
     <div class="critDivs">
         <label style="font: icon;size: 12">Type</label>
         <select id="new-project-type"></select>
+    </div>
+    <div class="critDivs">
+        <label>Expired date</label>
+        <input type="text" id="expired" value="${expired}">
     </div>
     <div class="critDivs">
         <label style="font: icon;size: 12">Vessel</label>

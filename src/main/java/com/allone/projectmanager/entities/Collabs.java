@@ -84,6 +84,10 @@ public class Collabs implements Serializable {
     @NotNull
     private Long projectId;
     
+    @Column(name = "project_expired")
+    @NotNull
+    private Integer projectExpired;
+    
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "creator")
     private List<ProjectDetail> listProjectDetail;
     
@@ -102,6 +106,7 @@ public class Collabs implements Serializable {
         password = builder.getPassword();
         projectPrefix = builder.getProjectPrefix();
         projectId = builder.getProjectId();
+        projectExpired = builder.getProjectExpired();
         listProjectDetail = builder.getListProjectDetail();
     }
 
@@ -208,6 +213,14 @@ public class Collabs implements Serializable {
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
+    
+    public Integer getProjectExpired() {
+        return projectExpired;
+    }
+
+    public void setProjectExpired(Integer projectExpired) {
+        this.projectExpired = projectExpired;
+    }
 
     @XmlTransient
     public List<ProjectDetail> getListProjectDetail() {
@@ -265,6 +278,8 @@ public class Collabs implements Serializable {
         private String projectPrefix;
 
         private Long projectId;
+        
+        private Integer projectExpired;
     
         private List<ProjectDetail> listProjectDetail;
 
@@ -333,6 +348,12 @@ public class Collabs implements Serializable {
             
             return this;
         }
+        
+        public Builder setProjectExpired(Integer projectExpired) {
+            this.projectExpired = projectExpired;
+            
+            return this;
+        }
 
         public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
             this.listProjectDetail = listProjectDetail;
@@ -382,6 +403,10 @@ public class Collabs implements Serializable {
 
         public Long getProjectId() {
             return projectId;
+        }
+        
+        public Integer getProjectExpired() {
+            return projectExpired;
         }
 
         public List<ProjectDetail> getListProjectDetail() {

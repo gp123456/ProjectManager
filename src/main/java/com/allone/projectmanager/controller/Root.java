@@ -72,6 +72,7 @@ public class Root extends ProjectCommon {
             getUser().setLast_login(ds.format(new Date()));
             getUser().setFull_name(collab.getSurname() + " " + collab.getName());
             getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
+            getUser().setProject_expired(collab.getProjectExpired());
             setTitle("Project - View");
             setHeader("header.jsp");
             setContent("../project/ViewProject.jsp");
