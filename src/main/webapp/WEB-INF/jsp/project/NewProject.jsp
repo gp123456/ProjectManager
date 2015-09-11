@@ -8,7 +8,7 @@
 
 <script>
     $(function () {
-        $("#expired").datepicker();
+        $("#new-project-expired").datepicker();
         
         refreshSearchContent();
 
@@ -51,8 +51,8 @@
         <select id="new-project-type"></select>
     </div>
     <div class="critDivs">
-        <label>Expired date</label>
-        <input type="text" id="expired" value="${expired}">
+        <label style="font: icon;size: 12">Expired date</label>
+        <input type="text" id="new-project-expired" value="${expired}">
     </div>
     <div class="critDivs">
         <label style="font: icon;size: 12">Vessel</label>

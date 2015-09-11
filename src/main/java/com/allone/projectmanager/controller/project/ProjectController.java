@@ -22,11 +22,9 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +37,6 @@ import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -148,18 +145,16 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/new")
     public String NewProject(Model model) {
-        Calendar expired = Calendar.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
+        Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/YYYY");
         
-        expired.setTime(new Date());
-//        expired.set(0, 0, getUser().getProject_expired());
         this.setTitle("Projects-New Project");
         this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
-        model.addAttribute("expired", format.format(expired.getTime()));
+        model.addAttribute("expired", format.format(expired));
 
         return "index";
     }
@@ -180,6 +175,8 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/save"})
     public @ResponseBody
     String saveProject(ProjectDetail pd, Integer offset, Integer size) {
+        logger.log(Level.INFO, "-----------expired={0},contact={1}", new Object[]{pd.getExpired(),pd.getContact()});
+        
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
 
         if (user != null) {
@@ -188,8 +185,9 @@ public class ProjectController extends ProjectCommon {
                     getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
             
             pd.setProject(p.getId());
-            pd.setCreated(new Date());
+            pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(user.getId());
+            pd.setCreated(new Date());
             srvProjectManager.getDaoProjectDetail().add(pd);
 
             user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());

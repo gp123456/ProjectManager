@@ -182,11 +182,15 @@ function sendEnail(id) {
 }
 
 function saveProject() {
-    var data = "company=" + $("#new-project-company option:selected").attr("value") +
-            "&type=" + $("#new-project-type option:selected").attr("value") + "&vessel=" +
-            $("#new-project-vessel option:selected").attr("value") + "&customer=" +
-            $("#new-project-customer option:selected").attr("value") + "&contact=" +
-            $("#new-project-contact option:selected").attr("value") + "&offset=0&size=10";
+    alert($("#new-project-expired").val());
+    
+    var data = "type=" + $("#new-project-type option:selected").attr("value")  +
+            "&expired=" + $("#new-project-expired").val() +
+            "&customer=" + $("#new-project-customer option:selected").attr("value") +
+            "&vessel=" + $("#new-project-vessel option:selected").attr("value") +
+            "&company=" + $("#new-project-company option:selected").attr("value") +
+            "&contact=" + $("#new-project-contact option:selected").attr("value") +
+            "&offset=0&size=10";
 
     $.ajax({
         type: "POST",
@@ -254,7 +258,7 @@ function projectFilterVessel() {
         data: "vessel=" + $("#new-project-vessel option:selected").attr("value"),
         success: function (response) {
             var content = JSON.parse(response)
-            
+
             $("#new-project-customer").html(content.customer);
             $("#new-project-contact").html(content.contact);
         },
