@@ -160,7 +160,7 @@ public class ProjectDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByReference").setParameter(
+            query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findById").setParameter(
             "id", id);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());

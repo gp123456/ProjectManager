@@ -12,6 +12,7 @@ import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectBill;
 import com.allone.projectmanager.entities.ProjectBillItem;
+import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.tools.JasperReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -34,10 +35,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/project-bill")
+@RequestMapping(value = "/project")
 public class ProjectBillController extends ProjectCommon {
 
-    private static final Logger LOG = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -190,14 +191,14 @@ public class ProjectBillController extends ProjectCommon {
                 setTotalSalePrice(totalSalePrice).setTotalNetPrice(totalNetPrice).build();
     }
 
-    @RequestMapping(value = "project-bill")
+    @RequestMapping(value = "/project-bill")
     public String ProjectBill(Model model) {
         setHeader("Projects-Bill", "../project/sidebar.jsp", "../project/ProjectBill.jsp", Boolean.TRUE, model);
 
         return "index";
     }
 
-    @RequestMapping(value = "new")
+    @RequestMapping(value = "/project-bill/new")
     public @ResponseBody
     String newItem(Item item, Model model) {
         Long itemId = 0l;
@@ -215,7 +216,7 @@ public class ProjectBillController extends ProjectCommon {
         return createProjectBillItems(itemId, custom, Boolean.FALSE, Boolean.FALSE);
     }
 
-    @RequestMapping(value = "new/info")
+    @RequestMapping(value = "/project-bill/new/info")
     public @ResponseBody
     String newItemInfo(ProjectBillItem item, Model model) {
         ProjectBillItem temp = getProjectBillItem(item.getId());
@@ -243,7 +244,7 @@ public class ProjectBillController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "remove/info")
+    @RequestMapping(value = "/project-bill/remove/info")
     public @ResponseBody
     String removeItemInfo(ProjectBillItem item, Model model) {
         Map<String, String> content = new HashMap<>();
@@ -256,7 +257,7 @@ public class ProjectBillController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "changevalues")
+    @RequestMapping(value = "/project-bill/changevalues")
     public @ResponseBody
     String changeCost(ProjectBillItem item, String description, String code, Model model) {
         Boolean findValues = Boolean.FALSE;
@@ -347,7 +348,7 @@ public class ProjectBillController extends ProjectCommon {
         return "";
     }
 
-    @RequestMapping(value = "save")
+    @RequestMapping(value = "/project-bill/save")
     public @ResponseBody
     String saveItem(ProjectBill pb, Model model) {
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
@@ -362,11 +363,17 @@ public class ProjectBillController extends ProjectCommon {
         return "index";
     }
 
-    @RequestMapping(value = "createpdf")
+    @RequestMapping(value = "/project-bill/createpdf")
     public String createPDF(ProjectBillController pb, Model model) throws JRException {
         JasperReport.createProjectBillReport(getSrvProjectManager().getPathProjectBill(), getUser().
                                              getProject_reference().replace("/", "_") + ".pdf");
 
         return "";
+    }
+
+    @RequestMapping(value = "/project-bill/search")
+    public @ResponseBody
+    String openProjects(ProjectDetail pd, Integer offset, Integer size, String mode) {
+        return searchProject(srvProjectManager, pd, offset, size, mode);
     }
 }

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping(value = "/company")
-public class CompanyHistory extends Common {
-    private static final Logger LOG = Logger.getLogger(CompanyHistory.class.getName());
+public class CompanyHistoryController extends Common {
+    private static final Logger LOG = Logger.getLogger(CompanyHistoryController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;

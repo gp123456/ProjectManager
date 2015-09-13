@@ -7,6 +7,7 @@ package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -339,7 +340,8 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findById").setParameter("id", id);
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findById").setParameter("id",
+                                                                                                                  id);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -356,9 +358,29 @@ public class ProjectDetailDAO {
 
         try {
             if (pd != null) {
-                em.getTransaction().begin();
-                em.persist(pd);
-                em.getTransaction().commit();
+                if (pd.getType().equals(ProjectTypeEnum.SALE_SERVICE.toString())) {
+                    ProjectDetail pdSale = new ProjectDetail.Builder().setCompany(pd.getCompany()).setContact(
+                                  pd.getContact()).setCreated(pd.getCreated()).setCreator(pd.getCreator()).setCustomer(
+                                  pd.getCustomer()).setExpired(pd.getExpired()).setProject(pd.getProject()).setStatus(
+                                  pd.getStatus()).setType(ProjectTypeEnum.SALE.toString()).setVessel(pd.getVessel()).
+                                  build();
+                    ProjectDetail pdService = new ProjectDetail.Builder().setCompany(pd.getCompany()).setContact(
+                                  pd.getContact()).setCreated(pd.getCreated()).setCreator(pd.getCreator()).setCustomer(
+                                  pd.getCustomer()).setExpired(pd.getExpired()).setProject(pd.getProject()).setStatus(
+                                  pd.getStatus()).setType(ProjectTypeEnum.SERVICE.toString()).setVessel(pd.getVessel()).
+                                  build();
+
+                    em.getTransaction().begin();
+                    em.persist(pdSale);
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.persist(pdService);
+                    em.getTransaction().commit();
+                } else {
+                    em.getTransaction().begin();
+                    em.persist(pd);
+                    em.getTransaction().commit();
+                }
             }
         } catch (Exception e) {
             System.out.printf("%s\n", e.getMessage());
@@ -382,6 +404,23 @@ public class ProjectDetailDAO {
             System.out.printf("%s", e.getMessage());
         } finally {
             em.close();
+        }
+    }
+
+    public Long countAll() {
+        Long values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countAll");
+
+            values = (Long) query.getSingleResult();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+
+            return values;
         }
     }
 }

@@ -19,17 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping(value = "/contact")
-public class ContactStatistic extends Common {
-    private static final Logger LOG = Logger.getLogger(ContactStatistic.class.getName());
+public class ContactHistoryController extends Common {
+    private static final Logger LOG = Logger.getLogger(ContactHistoryController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
     
-    @RequestMapping(value = "/statistic")
-    public String Statistic(Integer year, Model model) {
-        this.setTitle("Contacts-Statistic");
+    @RequestMapping(value = "/history")
+    public String History(Model model) {
+        this.setTitle("Contacts-History");
         this.setSide_bar("../contact/sidebar.jsp");
-        this.setContent("../contact/Statistic.jsp");
+        this.setContent("../contact/History.jsp");
         setHeaderInfo(model);
 
         return "index";

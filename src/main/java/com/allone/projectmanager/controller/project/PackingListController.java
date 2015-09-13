@@ -51,6 +51,6 @@ public class PackingListController extends ProjectCommon {
     @RequestMapping(value = "/packing-list/id")
     public @ResponseBody
     String getProjectPackingList(ProjectDetail pd, Model model) {
-        return searchProject(srvProjectManager, pd, 0, Integer.MAX_VALUE, "view", model);
+        return searchProject(srvProjectManager, pd, 0, Integer.MAX_VALUE, "view");
     }
 }

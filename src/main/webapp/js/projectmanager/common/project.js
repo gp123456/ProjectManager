@@ -182,9 +182,7 @@ function sendEnail(id) {
 }
 
 function saveProject() {
-    alert($("#new-project-expired").val());
-    
-    var data = "type=" + $("#new-project-type option:selected").attr("value")  +
+    var data = "type=" + $("#new-project-type option:selected").attr("value") +
             "&expired=" + $("#new-project-expired").val() +
             "&customer=" + $("#new-project-customer option:selected").attr("value") +
             "&vessel=" + $("#new-project-vessel option:selected").attr("value") +
@@ -199,19 +197,22 @@ function saveProject() {
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#search-reference").html(content.reference);
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
+            if (content.reference)
+                $("#search-reference").html(content.reference);
+            if (content.project_header)
+                $("#project-header").html(content.project_header);
+            if (project_body)
+                $("#project-body").html(content.project_body);
             $("#project-reference1").text(content.project_reference);
-            if (content.project_type == "SERVICE" || content.project_type == "SALE") {
-                $(content.project_size_id).html(content.project_size);
-                $(content.project_id).html(content.project_info);
-            } else if (content.project_type == "MTS") {
-                $(content.project_sale_size_id).html(content.project_sale_size);
-                $(content.project_sale_id).html(content.project_sale_info);
-                $(content.project_mts_size_id).html(content.project_mts_size);
-                $(content.project_mts_id).html(content.project_mts_info);
-            }
+//            if (content.project_type == "SERVICE" || content.project_type == "SALE") {
+//                $(content.project_size_id).html(content.project_size);
+//                $(content.project_id).html(content.project_info);
+//            } else if (content.project_type == "MTS") {
+//                $(content.project_sale_size_id).html(content.project_sale_size);
+//                $(content.project_sale_id).html(content.project_sale_info);
+//                $(content.project_mts_size_id).html(content.project_mts_size);
+//                $(content.project_mts_id).html(content.project_mts_info);
+//            }
         },
         error: function (e) {
         }

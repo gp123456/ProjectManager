@@ -55,7 +55,9 @@ import javax.xml.bind.annotation.XmlRootElement;
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCustomer",
                            query = "SELECT p FROM ProjectDetail p WHERE p.customer = :customer ORDER BY p.created"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByContact",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created")})
+                           query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countAll",
+                           query = "SELECT count(p) FROM ProjectDetail p"),})
 public class ProjectDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -148,7 +150,6 @@ public class ProjectDetail implements Serializable {
 //    
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "project")
 //    private List<RequestQuotation> listRequestQuotations;
-    
     private ProjectDetail(Builder builder) {
         project = builder.getProject();
         status = builder.getStatus();
@@ -168,6 +169,10 @@ public class ProjectDetail implements Serializable {
     }
 
     public ProjectDetail() {
+    }
+
+    public ProjectDetail(ProjectDetail pd) {
+        this.company = pd.company;
     }
 
     public Long getId() {

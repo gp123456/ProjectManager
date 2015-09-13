@@ -13,7 +13,7 @@ public enum CompanyTypeEnum {
     CUSTOMER("customer"),
     SHIPPER("shipper"),
     SUPPLIER("supplier");
-    
+
     private final String value;
 
     private CompanyTypeEnum(final String value) {

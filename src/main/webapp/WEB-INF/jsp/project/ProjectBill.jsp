@@ -24,7 +24,7 @@
     $(function () {
         refreshSearchContent();
         
-        var data = "id=-1&type=1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10&mode=view";
+        var data = "type=-1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10&mode=view";
 
         $.ajax({
             type: "POST",

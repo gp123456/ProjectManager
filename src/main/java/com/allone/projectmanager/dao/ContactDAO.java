@@ -7,7 +7,6 @@ package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.Contact;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -75,6 +74,24 @@ public class ContactDAO {
             em.close();
 
             return value;
+        }
+    }
+    
+    public Contact add(Contact c) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (c != null) {
+                em.getTransaction().begin();
+                em.persist(c);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            System.out.printf("%s\n", e.getMessage());
+        } finally {
+            em.close();
+
+            return c;
         }
     }
 }

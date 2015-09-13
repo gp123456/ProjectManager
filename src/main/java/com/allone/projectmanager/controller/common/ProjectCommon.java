@@ -8,13 +8,11 @@ package com.allone.projectmanager.controller.common;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Collabs;
-import com.allone.projectmanager.entities.Company;
+import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
-import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
-import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -22,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.ui.Model;
 
@@ -37,7 +36,7 @@ enum ProjectMode {
 
 public class ProjectCommon extends Common {
 
-    private static final Logger LOG = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     private ProjectMode mode;
 
@@ -54,30 +53,31 @@ public class ProjectCommon extends Common {
     private String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
                                     String mode) {
         String response = "";
-
         Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+        Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
         Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+        
         if (mode.equals(this.mode.EDIT.name())) {
             response +=
             "<tr>\n" +
             "<td>" + "<div onclick=\"projectPackingList(" + p.getId() + ")\">" + p.getReference() + "</div>" + "</td>\n" +
-            "<td>" + getStatusValueById(pd.getStatus()) + "</td>\n" +
+            "<td>" + pd.getType() + "</td>\n" +
+            "<td>" + pd.getStatus() + "</td>\n" +
             "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
+            "<td>" + pd.getCreated() + "</td>\n" +
+            "<td>" + pd.getExpired() + "</td>\n" +
             "<td>" + pd.getCompany() + "</td>\n" +
             "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
             "<td>" + pd.getCustomer() + "</td>" +
+            "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
             "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"edit-project\" onclick=\"editRow(" + p.
             getId() + ")\"></td>\n" +
             "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"remove-project\" onclick=\"removeRow(" +
             p.getId() + ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"create-pdf\" onclick=\"createPDF(" +
+            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"create-to\" onclick=\"createTo(" +
             p.getId() + ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(3) + "\" id=\"print-pdf\" onclick=\"printPDF(" +
-            p.getId() + ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(4) + "\" id=\"create-xls\" onclick=\"saveXLS(" +
-            p.getId() + ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(5) + "\" id=\"create-xls\" onclick=\"printXLS(" +
+            "<td><input type=\"button\" value=\"" + statuses.get(3) + "\" id=\"print-to\" onclick=\"printTo(" +
             p.getId() + ")\"></td>\n" +
             "<td><input type=\"button\" value=\"" + statuses.get(6) + "\" id=\"send-email\" onclick=\"sendEnail(" +
             p.getId() + ")\"></td>\n" +
@@ -86,14 +86,16 @@ public class ProjectCommon extends Common {
             response +=
             "<tr>" +
             "<td>" + p.getReference() + "</td>\n" +
-            "<td>" + getStatusValueById(p.getStatus()) + "</td>\n" +
-            //            "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
-            //            "<td>" + pd.getCompany() + "</td>" +
-            //            "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
-            //            "<td>" + pd.getCustomer() + "</td>" +
-            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"print-pdf\" onclick=\"printPDF(" +
-            p.getId() + ")\"></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"create-xls\" onclick=\"saveXLS(" +
+            "<td>" + pd.getType() + "</td>\n" +
+            "<td>" + pd.getStatus() + "</td>\n" +
+            "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
+            "<td>" + pd.getCreated() + "</td>\n" +
+            "<td>" + pd.getExpired() + "</td>\n" +
+            "<td>" + pd.getCompany() + "</td>" +
+            "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
+            "<td>" + pd.getCustomer() + "</td>" +
+            "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
+            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"print-to\" onclick=\"printTo(" +
             p.getId() + ")\"></td>\n" +
             "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"send-email\" onclick=\"sendEnail(" +
             p.getId() + ")\"></td>\n" +
@@ -115,17 +117,19 @@ public class ProjectCommon extends Common {
         if (mode.equals(this.mode.EDIT.name())) {
             return "<tr>\n" +
                     "<th>Reference</th>\n" +
+                    "<th>Type</th>\n" +
                     "<th>Status</th>\n" +
-                    //                    "<th>User</th>\n" +
-                    //                    "<th>Company</th>\n" +
-                    //                    "<th>Vessel</th>\n" +
-                    //                    "<th>Customer</th>\n" +
+                    "<th>User</th>\n" +
+                    "<th>Created</th>\n" +
+                    "<th>Expired</th>\n" +
+                    "<th>Company</th>\n" +
+                    "<th>Vessel</th>\n" +
+                    "<th>Customer</th>\n" +
+                    "<th>Contact</th>\n" +
                     "<th>Edit</th>\n" +
                     "<th>Delete</th>\n" +
-                    "<th>Save to PDF</th>\n" +
-                    "<th>Print to PDF</th>\n" +
-                    "<th>Save to Excel</th>\n" +
-                    "<th>Print to Excel</th>\n" +
+                    "<th>Save to ...</th>\n" +
+                    "<th>Print to ...</th>\n" +
                     "<th>Send eMail</th>\n" +
                     "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
@@ -222,8 +226,8 @@ public class ProjectCommon extends Common {
                 response += createProjectRow(srvProjectManager, prj, statuses, mode);
             }
         } else {
-            lstPrj = srvProjectManager.getDaoProject().getAll(offset, size);
-            countPrj = srvProjectManager.getDaoProject().countAll();
+            lstPrj = srvProjectManager.getDaoProjectDetail().getAll(offset, size);
+            countPrj = srvProjectManager.getDaoProjectDetail().countAll();
 
             if (lstPrj != null && !lstPrj.isEmpty()) {
                 navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
@@ -237,7 +241,7 @@ public class ProjectCommon extends Common {
     }
 
     public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, Integer offset, Integer size,
-                                String mode, Model model) {
+                                String mode) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader;

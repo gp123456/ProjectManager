@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.controller.Root;
+import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Vessel;
 import com.google.common.base.Strings;
 import javax.persistence.EntityManager;
@@ -61,6 +62,24 @@ public class VesselDAO {
             em.close();
             
             return value;
+        }
+    }
+    
+    public Vessel add(Vessel v) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (v != null) {
+                em.getTransaction().begin();
+                em.persist(v);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            System.out.printf("%s\n", e.getMessage());
+        } finally {
+            em.close();
+
+            return v;
         }
     }
 }

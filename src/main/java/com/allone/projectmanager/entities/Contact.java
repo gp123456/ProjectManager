@@ -6,24 +6,16 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -61,8 +53,8 @@ public class Contact implements Serializable {
 //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
 //    @NotNull
 //    private Company company;
-    @Column(name = "title")
-    private String title;
+//    @Column(name = "title")
+//    private String title;
 
     @Column(name = "phone")
     private String phone;
@@ -86,7 +78,6 @@ public class Contact implements Serializable {
         name = builder.getName();
         surname = builder.getSurname();
         company = builder.getCompany();
-        title = builder.getTitle();
         phone = builder.getPhone();
         email = builder.getEmail();
         note = builder.getNote();
@@ -119,14 +110,6 @@ public class Contact implements Serializable {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getPhone() {
@@ -216,7 +199,7 @@ public class Contact implements Serializable {
         return "com.allone.projectmanager.entities.Contact[ id=" + id + " ]";
     }
 
-    public class Builder {
+    public static class Builder {
 
         private String name;
 
@@ -224,8 +207,6 @@ public class Contact implements Serializable {
 
 //        private Company company;
         private String company;
-
-        private String title;
 
         private String phone;
 
@@ -272,16 +253,6 @@ public class Contact implements Serializable {
 
         public Builder setCompany(String company) {
             this.company = company;
-
-            return this;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public Builder setTitle(String title) {
-            this.title = title;
 
             return this;
         }

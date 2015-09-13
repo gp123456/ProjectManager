@@ -24,14 +24,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -41,7 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class Root extends ProjectCommon {
 
-    private static final Logger LOG = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -78,7 +77,6 @@ public class Root extends ProjectCommon {
             setContent("../project/ViewProject.jsp");
 
             setHeaderInfo(model);
-            model.addAttribute("view_project_url", "/view");
 
             return "index";
         } else {
@@ -91,13 +89,9 @@ public class Root extends ProjectCommon {
         return "items";
     }
 
-    @RequestMapping(value = "/view", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/view")
     public @ResponseBody
-    String getView(@RequestBody Map<String, Object> info) {
-        ProjectDetail pd = new Gson().fromJson(info.get("prjd").toString(), ProjectDetail.class);
-        Integer offset = (Integer) (info.get("offset"));
-        Integer size = (Integer) (info.get("size"));
-
+    String getView(ProjectDetail pd, Integer offset, Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());

@@ -59,4 +59,22 @@ public class CompanyDAO {
             return values;
         }
     }
+    
+    public Company add(Company c) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (c != null) {
+                em.getTransaction().begin();
+                em.persist(c);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            System.out.printf("%s\n", e.getMessage());
+        } finally {
+            em.close();
+
+            return c;
+        }
+    }
 }

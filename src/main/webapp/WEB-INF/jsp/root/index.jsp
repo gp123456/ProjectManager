@@ -35,6 +35,8 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/ProjectBill.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/contact.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/company.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/vessel.js"></script>
     </head>
     <body>
         <div id="container">

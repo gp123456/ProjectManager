@@ -68,7 +68,7 @@ public class CollabsDAO {
         try {
             if (id != null && id.compareTo(0l) >= 0) {
                 em.getTransaction().begin();
-                int countUpdate = em.createNamedQuery("com.allone.projectmanager.entities.Collabs.updatePr").
+                int countUpdate = em.createNamedQuery("com.allone.projectmanager.entities.Collabs.updateProjectId").
                     setParameter("id", id).executeUpdate();
                 em.getTransaction().commit();
 

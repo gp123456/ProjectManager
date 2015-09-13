@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import net.sf.jasperreports.engine.JRException;
@@ -38,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -108,8 +106,8 @@ public class ProjectController extends ProjectCommon {
 
                     if (p != null) {
                         response +=
-                        "<li onclick=\"window.location.href = '" + url + "?id=" + p.getId() + "&reference=" +
-                        p.getReference() + "';\">" + p.getReference() + "</li>";
+                        "<li onclick=\"window.location.href = '" + url + "?id=" + pd.getId() + "';\">" +
+                        p.getReference() + "</li>";
                     }
                     project = pd.getProject();
                 }
@@ -147,8 +145,8 @@ public class ProjectController extends ProjectCommon {
     public String NewProject(Model model) {
         Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/YYYY");
-        
-        this.setTitle("Projects-New Project");
+
+        this.setTitle("Project - New");
         this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
@@ -175,15 +173,13 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/save"})
     public @ResponseBody
     String saveProject(ProjectDetail pd, Integer offset, Integer size) {
-        logger.log(Level.INFO, "-----------expired={0},contact={1}", new Object[]{pd.getExpired(),pd.getContact()});
-        
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
 
         if (user != null) {
             Map<String, Object> content = new HashMap<>();
             Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(getUser().
                     getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
-            
+
             pd.setProject(p.getId());
             pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(user.getId());
@@ -218,7 +214,7 @@ public class ProjectController extends ProjectCommon {
     String searchProject(ProjectDetail pd, Integer offset, Integer size, String mode, Model model) {
         mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, pd, offset, size, mode, model);
+        return searchProject(srvProjectManager, pd, offset, size, mode);
     }
 
     @RequestMapping(value = {"/refresh"})
@@ -273,7 +269,7 @@ public class ProjectController extends ProjectCommon {
             Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
             Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, pd.
-                                                                               getCustomer());
+                                                                           getCustomer());
 
             JasperReport.createProjectReport(p, pd, getProjectStatusName(pd.getStatus()), getProjectTypeName(pd.
                                              getType()), (user != null) ? user.getSurname() + ", " + user.getName() : "",
@@ -399,7 +395,7 @@ public class ProjectController extends ProjectCommon {
     }
 
 //    @RequestMapping(value = "/view", method = RequestMethod.POST, consumes = "application/json")
-    @RequestMapping(value = "/view", method = RequestMethod.POST)
+    @RequestMapping(value = "/view")
     public @ResponseBody
 //    String getView(@RequestBody Map<String, Object> info) {
     String getView(ProjectDetail pd, Integer offset, Integer size) {
@@ -429,8 +425,10 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/edit")
     public @ResponseBody
-    String getEdit(ProjectDetail pd, Integer offset, Integer size) {
-        if (pd != null) {
+    String getEdit(Long pdId, Integer offset, Integer size) {
+        if (pdId != null) {
+            ProjectDetail pd = new ProjectDetail();
+            pd.setId(pdId);
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",

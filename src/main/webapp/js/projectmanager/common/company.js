@@ -4,40 +4,37 @@
  * and open the template in the editor.
  */
 
-function commitContact() {
-    var name = $("#contact-name").val();
-    var surname = $("#contact-surname").val();
-    var phone = $("#contact-phone").val();
-    var email = $("#contact-email").val();
+function commitCustomer() {
+    var name = $("#customer-name").val();
+    var referenceNumber = $("#customer-reference-number").val();
 
-    var data = "name=" + name + "&surname=" + surname + "&phone=" + phone +
-            "&email=" + email;
+    var data = "name=" + name + "&reference-number=" + referenceNumber;
 
     alert(data);
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/ProjectManager/contact/add",
+        url: "http://localhost:8080/ProjectManager/company/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)
-            
-            alert(content.contact);
 
-            $("#new-project-contact").html(content.contact);
+            alert(content.customer);
+
+            $("#new-project-customer").html(content.customer);
         },
         error: function (e) {
         }
     });
-    $("#add-contact").dialog("close");
+    $("#add-customer").dialog("close");
 }
 
-function addContact() {
-    var dialog = $("#add-contact").dialog({
+function addCustomer() {
+    var dialog = $("#add-customer").dialog({
         autoOpen: true,
         modal: true,
         buttons: {
-            "submit": commitContact
+            "submit": commitCustomer
         },
         show: {
             effect: "blind",
@@ -51,6 +48,6 @@ function addContact() {
 
     dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        commitContact();
+        commitCuatomer();
     });
 }

@@ -4,40 +4,37 @@
  * and open the template in the editor.
  */
 
-function commitContact() {
-    var name = $("#contact-name").val();
-    var surname = $("#contact-surname").val();
-    var phone = $("#contact-phone").val();
-    var email = $("#contact-email").val();
+function commitVessel() {
+    var name = $("#vessel-name").val();
+    var imo = $("#vessel-imo").val();
 
-    var data = "name=" + name + "&surname=" + surname + "&phone=" + phone +
-            "&email=" + email;
+    var data = "name=" + name + "&flag=" + imo;
 
     alert(data);
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/ProjectManager/contact/add",
+        url: "http://localhost:8080/ProjectManager/vessel/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)
-            
-            alert(content.contact);
 
-            $("#new-project-contact").html(content.contact);
+            alert(content.customer);
+
+            $("#new-project-vessel").html(content.vessel);
         },
         error: function (e) {
         }
     });
-    $("#add-contact").dialog("close");
+    $("#add-vessel").dialog("close");
 }
 
-function addContact() {
-    var dialog = $("#add-contact").dialog({
+function addVessel() {
+    var dialog = $("#add-vessel").dialog({
         autoOpen: true,
         modal: true,
         buttons: {
-            "submit": commitContact
+            "submit": commitVessel
         },
         show: {
             effect: "blind",
@@ -51,6 +48,6 @@ function addContact() {
 
     dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        commitContact();
+        commitVessel();
     });
 }
