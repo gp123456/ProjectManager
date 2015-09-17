@@ -116,7 +116,7 @@
     <label>Open Projects</label>
     <table class="table tablesorter">
         <thead id="project-header"></thead>
-        <tfoot id="project-footer"></tfoot>
         <tbody id="project-body"></tbody>
+        <!--<tfoot id="project-footer"></tfoot>-->
     </table>
 </div>

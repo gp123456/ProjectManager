@@ -75,8 +75,8 @@ public class Root extends ProjectCommon {
             setTitle("Project - View");
             setHeader("header.jsp");
             setContent("../project/ViewProject.jsp");
-
             setHeaderInfo(model);
+            model.addAttribute("login", "true");
 
             return "index";
         } else {

@@ -18,10 +18,10 @@
             data: info,
             success: function (response) {
                 var content = JSON.parse(response);
-                
+
                 $("#project-header").html(content.project_header);
-                $("#project-footer").html(content.project_footer);
                 $("#project-body").html(content.project_body);
+                $("#project-footer").html(content.project_footer);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -29,12 +29,25 @@
         });
     });
 </script>
+<style>
+    .ui-menu { position: absolute; width: 100px; }
+</style>
 
-<div><jsp:include page="../project/searchCritiria.jsp"/></div>
-<!--<div>-->
-<!--    <table class="table tablesorter">
+<div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
+<div>
+    <table class="table tablesorter">
         <thead id="project-header"></thead>
-        <tfoot id="project-footer"></tfoot>
         <tbody id="project-body"></tbody>
-    </table>-->
-<!--</div>>-->
+        <tfoot id="project-footer"></tfoot>
+    </table>
+    <div>
+        <div>
+            <button id="print-to-2" onclick="printTo(2)">start</button>
+            <button id="select-print-to-2" onclick="printTo(2)"></button>
+        </div>
+        <ul>
+            <li>PDF</li>
+            <li>XML</li>
+        </ul>
+    </div>
+</div>

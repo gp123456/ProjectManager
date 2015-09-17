@@ -49,7 +49,14 @@
                         <jsp:include page="${side_bar}"/>
                     </div>
                 </c:if>
-                <div class="content"><jsp:include page="${content}"/></div>
+                <c:choose>
+                    <c:when test="${login != null}" >
+                        <div class="login-content"><jsp:include page="${content}"/></div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="content"><jsp:include page="${content}"/></div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </body>

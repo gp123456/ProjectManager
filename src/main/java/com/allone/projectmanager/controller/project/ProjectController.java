@@ -394,17 +394,10 @@ public class ProjectController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-//    @RequestMapping(value = "/view", method = RequestMethod.POST, consumes = "application/json")
     @RequestMapping(value = "/view")
     public @ResponseBody
-//    String getView(@RequestBody Map<String, Object> info) {
     String getView(ProjectDetail pd, Integer offset, Integer size) {
-//        if (info != null) {
         if (pd != null) {
-//            ProjectDetail pd = new Gson().fromJson(info.get("prjd").toString(), ProjectDetail.class);
-//            Integer offset = (Integer) (info.get("offset"));
-//            Integer size = (Integer) (info.get("size"));
-
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",

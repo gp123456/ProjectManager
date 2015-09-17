@@ -26,6 +26,10 @@ select {
     margin-top: -460px;
 }
 
+.login-content {
+    width: 70%;
+}
+
 .criteriacontent {
     width: 100%;
     border: black;

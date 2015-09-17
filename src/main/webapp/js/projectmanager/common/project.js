@@ -101,7 +101,7 @@ function editRow(id) {
     });
 }
 
-function createPDF(id) {
+function createTo(id) {
     $.ajax({
         type: "POST",
         url: "createpdf",
@@ -117,20 +117,43 @@ function createPDF(id) {
     });
 }
 
-function printPDF(id) {
-    $.ajax({
-        type: "POST",
-        url: "printpdf",
-        data: "id=" + id + "&offset=0&size=10",
-        success: function (response) {
-            var content = JSON.parse(response)
-
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
-        },
-        error: function (e) {
+function printTo(id) {
+    $("#print-to-" + id).button().click(function () {
+        alert("Running the last action");
+    }).next().button({
+        text: false,
+        icons: {
+            primary: "ui-icon-triangle-1-s"
         }
+    }).click(function () {
+        var menu = $(this).parent().next().show().position({
+            my: "left top",
+            at: "left bottom",
+            of: this
+        });
+        $(document).one("click", function () {
+            menu.hide();
+        });
+        return false;
+    }).parent().buttonset().next().hide().menu();
+
+    $("#doc-to-" + id).button().click(function () {
+        alert($(this).text());
     });
+
+//    $.ajax({
+//        type: "POST",
+//        url: "printpdf",
+//        data: "id=" + id + "&offset=0&size=10",
+//        success: function (response) {
+//            var content = JSON.parse(response)
+//
+//            $("#project-header").html(content.project_header);
+//            $("#project-body").html(content.project_body);
+//        },
+//        error: function (e) {
+//        }
+//    });
 }
 
 function createXLS(id) {

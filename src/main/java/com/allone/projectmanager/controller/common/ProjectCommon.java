@@ -95,8 +95,7 @@ public class ProjectCommon extends Common {
             "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
             "<td>" + pd.getCustomer() + "</td>" +
             "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"print-to\" onclick=\"printTo(" +
-            p.getId() + ")\"></td>\n" +
+            "<td></td>\n" +
             "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"send-email\" onclick=\"sendEnail(" +
             p.getId() + ")\"></td>\n" +
             "</tr>\n";
@@ -135,13 +134,16 @@ public class ProjectCommon extends Common {
         } else if (mode.equals(this.mode.VIEW.name())) {
             return "<tr>\n" +
                     "<th>Reference</th>\n" +
+                    "<th>Type</th>\n" +
                     "<th>Status</th>\n" +
-                    //                    "<th>User</th>\n" +
-                    //                    "<th>Company</th>\n" +
-                    //                    "<th>Vessel</th>\n" +
-                    //                    "<th>Customer</th>\n" +
-                    "<th>Print to PDF</th>\n" +
-                    "<th>Print to Excel</th>\n" +
+                    "<th>User</th>\n" +
+                    "<th>Created</th>\n" +
+                    "<th>Expired</th>\n" +
+                    "<th>Company</th>\n" +
+                    "<th>Vessel</th>\n" +
+                    "<th>Customer</th>\n" +
+                    "<th>Contact</th>\n" +
+                    "<th>Print to ...</th>\n" +
                     "<th>Send eMail</th>\n" +
                     "</tr>\n";
         }
