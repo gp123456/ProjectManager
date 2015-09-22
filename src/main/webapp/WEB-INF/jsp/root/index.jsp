@@ -31,6 +31,7 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/setCustomDurationChallenge.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/layout.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/canvasjs-1.7.0/canvasjs.min.js"></script>
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/ProjectBill.js"></script>
@@ -54,7 +55,9 @@
                         <div class="login-content"><jsp:include page="${content}"/></div>
                     </c:when>
                     <c:otherwise>
-                        <div class="content"><jsp:include page="${content}"/></div>
+                        <c:if test="${content != null}" >
+                            <div class="content"><jsp:include page="${content}"/></div>
+                        </c:if>
                     </c:otherwise>
                 </c:choose>
             </div>

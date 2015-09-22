@@ -8,7 +8,6 @@ package com.allone.projectmanager.controller.project;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
-import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,7 +11,7 @@ package com.allone.projectmanager.enums;
  */
 public enum OwnCompanyEnum {
     WCS("wcs"),
-    WCS_LCD("wcs lcd"),
+    WCS_LTD("wcs ltd"),
     WCS_HELLAS("wcs hellas"),
     MTS("mts");
     

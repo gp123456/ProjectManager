@@ -135,7 +135,7 @@ public class ProjectController extends ProjectCommon {
         this.setTitle("Project");
         this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/ViewProject.jsp");
+//        this.setContent("../project/ViewProject.jsp");
         setHeaderInfo(model);
 
         return "index";
@@ -474,5 +474,22 @@ public class ProjectController extends ProjectCommon {
         }
 
         return "";
+    }
+    
+    @RequestMapping(value = "/lst-edit-project")
+    public @ResponseBody String lstEditProject(ProjectDetail _pd) {
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByStatus(_pd.getStatus(), 0, Integer.MAX_VALUE);
+        String response = "";
+        
+        if (pds!= null && pds.size() > 0) {
+            for (ProjectDetail pd : pds) {
+                Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+                
+                response += "<label for='name' style='display:block' onclick='editProject(" + pd.getProject() + ", " +
+                p.getReference() + ")'>" + p.getReference() + "</label>\n";
+            }
+        }
+        
+        return response;
     }
 }

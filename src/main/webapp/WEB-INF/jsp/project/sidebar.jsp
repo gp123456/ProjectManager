@@ -30,8 +30,16 @@
         <ul id="project-new"></ul>
     </div>
     <div class="menu-item">
-        <h3 id="project-edit-size" onclick="window.location.href = '<%=path%>/project/edit-form';">Edit</h3>
-        <ul id="project-edit"></ul>
+        <!--<h3 id="project-edit-size" onclick="window.location.href = '<%=path%>/project/edit-form';">Edit</h3>-->
+        <h3 id="project-edit-size" onclick="dlgEditProject('Create')">Edit</h3>
+        <div id="dlg-edit-project" hidden="true" title="Open Project">
+            <form>
+                <fieldset style="padding:0; border:0; margin-top:25px;">
+                    <div id="lst-edit-project"></div>
+                </fieldset>
+            </form>
+        </div>
+        <!--<ul id="project-edit"></ul>-->
     </div>
     <div class="menu-item">
         <h3 onclick="window.location.href = '<%=path%>/project/project-bill';">Bill</h3>

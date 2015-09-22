@@ -17,17 +17,16 @@ select {
 }
 
 .leftmenucontainer {
-    width: 25%;
+    width: 15%;
 }
 
 .content {
-    width: 70%;
+    width: 84%;
     float: right;
-    margin-top: -460px;
+    margin-top: -500px;
 }
 
 .login-content {
-    width: 70%;
 }
 
 .criteriacontent {

@@ -12,8 +12,7 @@ package com.allone.projectmanager.enums;
 public enum ProjectTypeEnum {
     SALE("sale"),
     SERVICE("service"),
-    SALE_SERVICE("sale/service"),
-    MTS("mts");
+    SALE_SERVICE("stock order");
 
     private final String value;
 

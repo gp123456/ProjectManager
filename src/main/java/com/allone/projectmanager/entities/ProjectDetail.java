@@ -5,6 +5,7 @@
  */
 package com.allone.projectmanager.entities;
 
+import com.allone.projectmanager.enums.ProjectStatusEnum;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -57,7 +58,13 @@ import javax.xml.bind.annotation.XmlRootElement;
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByContact",
                            query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countAll",
-                           query = "SELECT count(p) FROM ProjectDetail p"),})
+                           query = "SELECT count(p) FROM ProjectDetail p"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countOpenByType",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status = :status"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company")})
 public class ProjectDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;

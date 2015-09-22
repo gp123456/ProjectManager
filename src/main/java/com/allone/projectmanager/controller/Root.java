@@ -10,6 +10,7 @@ import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
 import org.springframework.stereotype.Controller;
 import com.allone.projectmanager.model.User;
 import com.allone.projectmanager.tools.JasperReport;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,24 +93,20 @@ public class Root extends ProjectCommon {
 
     @RequestMapping(value = "/view")
     public @ResponseBody
-    String getView(ProjectDetail pd, Integer offset, Integer size) {
-        if (pd != null) {
-            Map<String, String> content = new HashMap<>();
-            String projectHeader = createProjectHeader(getModeView());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeView(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+    String getView() {
+        Map<String, List<String>> content = new HashMap<>();
+        content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.
+                                                                       toString()));
+        content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.
+                                                                          toString()));
+        content.put("OpenProjectSaleCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SALE.
+                                                                          toString()));
+        content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.
+                                                                             toString()));
 
-            content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
-
-            return new Gson().toJson(content);
-        }
-
-        return "";
+        String info = new Gson().toJson(content);
+        
+        return info;
     }
 
     @RequestMapping(value = "/refresh")

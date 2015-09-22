@@ -13,12 +13,13 @@ public enum ProjectStatusEnum {
     CREATE("Create"),
     PROJECT_BILL("Project Bill"),
     REQUEST_QUOTATION("Request Quotation"),
-    PERCHASE_ORDER("Purchase Order"),
+    PURCHASE_ORDER("Purchase Order"),
     WORK_ORDER("Work Order"),
     ACK_ORDER("Acknowledge Order"),
     PACKING_LIST("Packing List"),
     DELIVERY_NOTE("Delivery Note"),
     SHIPPING_INVOICE("Shipping Invoice"),
+    INVOICE("Invoice"),
     BOX_MARKING("Box Marking"),
     CREDIT_NOTE("Credit Note");
     

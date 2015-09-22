@@ -12,9 +12,12 @@ import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
+import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.ui.Model;
 
 /**
  *
@@ -57,7 +59,7 @@ public class ProjectCommon extends Common {
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
         Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
-        
+
         if (mode.equals(this.mode.EDIT.name())) {
             response +=
             "<tr>\n" +
@@ -279,5 +281,71 @@ public class ProjectCommon extends Common {
         }
 
         return "";
+    }
+
+    public List<String> getOpenProjectStatusByType(ProjectManagerService srvProjectManager, String type) {
+        Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
+        Long allCreate = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREATE.
+                                                                                      toString());
+        Long allBill = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                    ProjectStatusEnum.PROJECT_BILL.
+                                                                                    toString());
+        Long allQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                     ProjectStatusEnum.REQUEST_QUOTATION.
+                                                                                     toString());
+        Long allPurchase = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                        ProjectStatusEnum.PURCHASE_ORDER.
+                                                                                        toString());
+        Long allWork = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.WORK_ORDER.
+                                                                                    toString());
+        Long allAck = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.ACK_ORDER.
+                                                                                   toString());
+        Long allPacking = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                       ProjectStatusEnum.PACKING_LIST.
+                                                                                       toString());
+        Long allDelivery = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                        ProjectStatusEnum.DELIVERY_NOTE.
+                                                                                        toString());
+        Long allShipping = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
+                                                                                        ProjectStatusEnum.SHIPPING_INVOICE.
+                                                                                        toString());
+        List<String> result = new ArrayList<>();
+        
+        if (allOpen != null && allOpen.compareTo(0l) > 0) {
+            result.add((allOpen.toString()));
+            result.add((new BigDecimal((allCreate / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allBill / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allQuota / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allPurchase / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allWork / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allAck / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allPacking / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allDelivery / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allShipping / allOpen) * 100).toString()));
+        }
+
+        return result;
+    }
+
+    public List<String> getOpenProjectCompanyByType(ProjectManagerService srvProjectManager, String type) {
+        Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
+        Long allWCS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS.toString());
+        Long allWCSLTD = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS_LTD.
+                                                                                       toString());
+        Long allWCSHELLAS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type,
+                                                                                          OwnCompanyEnum.WCS_HELLAS.
+                                                                                          toString());
+        Long allMTS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MTS.toString());
+        List<String> result = new ArrayList<>();
+
+        if (allOpen != null && allOpen.compareTo(0l) > 0) {
+            result.add((allOpen.toString()));
+            result.add((new BigDecimal((allWCS / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allWCSLTD / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allWCSHELLAS / allOpen) * 100).toString()));
+            result.add((new BigDecimal((allMTS / allOpen) * 100).toString()));
+        }
+
+        return result;
     }
 }
