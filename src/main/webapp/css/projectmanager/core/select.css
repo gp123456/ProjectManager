@@ -31,6 +31,7 @@ label.custom-select {
     -moz-border-radius: 6px;
     border-radius: 6px;
     cursor: pointer;
+    width: 100%;
 }
 
 /* for Webkit's CSS-only solution */
@@ -46,27 +47,3 @@ label.custom-select {
     -moz-box-shadow: 0 0 3px 1px #c00;
     box-shadow: 0 0 3px 1px #c00;
 }
-
-/* Select arrow styling */
-/*.custom-select:after {
-    content: "▼";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    font-size: 60%;
-    line-height: 30px;
-    padding: 0 7px;
-    background: #bbb;
-    color: white;
-
-    pointer-events:none;
-
-    -webkit-border-radius: 0 6px 6px 0;
-    -moz-border-radius: 0 6px 6px 0;
-    border-radius: 0 6px 6px 0;
-}*/
-
-/*.no-pointer-events .custom-select:after {
-    content: none;
-}*/

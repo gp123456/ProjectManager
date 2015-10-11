@@ -41,9 +41,7 @@
         <h3 id="project-edit-size" onclick="dlgEditProject()">Edit</h3>
         <div id="dlg-edit-project" hidden="true" title="Statuses">
             <form>
-                <fieldset style="padding:0; border:0; margin-top:25px;">
-                    <div id="lst-edit-project"></div>
-                </fieldset>
+                <div id="lst-edit-project" class="radio"></div>
             </form>
         </div>
     </div>

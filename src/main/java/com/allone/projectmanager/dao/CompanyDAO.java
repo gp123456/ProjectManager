@@ -52,14 +52,20 @@ public class CompanyDAO {
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            Company values = (query != null) ? (Company)query.getSingleResult(): null;
+            Company values = null;
 
-            em.close();
+            try {
+                values = (query != null) ? (Company) query.getSingleResult() : null;
+            } catch (HibernateException e) {
+                System.out.printf("%s", e.getMessage());
+            } finally {
+                em.close();
 
-            return values;
+                return values;
+            }
         }
     }
-    
+
     public Company add(Company c) {
         EntityManager em = emf.createEntityManager();
 

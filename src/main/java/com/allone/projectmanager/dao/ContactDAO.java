@@ -18,7 +18,8 @@ import org.hibernate.HibernateException;
  * @author antonia
  */
 public class ContactDAO {
-    private final Logger logger =  Logger.getLogger(ContactDAO.class.getName());
+
+    private final Logger logger = Logger.getLogger(ContactDAO.class.getName());
 
     private EntityManagerFactory emf;
 
@@ -69,14 +70,20 @@ public class ContactDAO {
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            List value = (query != null) ? query.getResultList() : null;
+            List value = null;
 
-            em.close();
+            try {
+                value = (query != null) ? query.getResultList() : null;
+            } catch (HibernateException e) {
+                System.out.printf("%s", e.getMessage());
+            } finally {
+                em.close();
 
-            return value;
+                return value;
+            }
         }
     }
-    
+
     public Contact add(Contact c) {
         EntityManager em = emf.createEntityManager();
 

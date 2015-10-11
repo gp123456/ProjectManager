@@ -49,7 +49,7 @@ public class Common {
 
     public String createSearchType() {
         List<SearchInfo> info = getSearchCriteriaTypeProject();
-        String response = "<option value=\"none\" selected=\"selected\">Select</option>";
+        String response = "<option value=\"none\" selected=\"selected\">Select Type</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
@@ -64,7 +64,7 @@ public class Common {
 
     private String createSearchStatus() {
         List<SearchInfo> info = getSearchCriteriaStatusProject();
-        String response = "<option value=\"none\" selected=\"selected\">Select</option>";
+        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
@@ -79,7 +79,7 @@ public class Common {
 
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select</option>" :
+        String response = (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
                "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
@@ -101,7 +101,7 @@ public class Common {
 
     public String createSearchCustomer(ProjectManagerService srvProjectManager) {
         List<SearchInfo> info = getSearchCriteriaCustomer(srvProjectManager);
-        String response = "<option value=\"none\" selected=\"selected\">Select</option>";
+        String response = "<option value=\"none\" selected=\"selected\">Select Customer</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
@@ -116,7 +116,7 @@ public class Common {
 
     public String createSearchCompany() {
         List<SearchInfo> info = getSearchCriteriaCompany();
-        String response = "<option value=\"none\" selected=\"selected\">Select</option>";
+        String response = "<option value=\"none\" selected=\"selected\">Select Company</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
@@ -131,7 +131,7 @@ public class Common {
 
     public String createSearchContact(ProjectManagerService srvProjectManager) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
-        String response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+        String response = "<option value=\"-1\" selected=\"selected\">Select Contact</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<Contact> it = info.iterator(); it.hasNext();) {

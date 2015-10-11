@@ -19,6 +19,8 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/input-text.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/select.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/button.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/radio-button.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/form-layout.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">

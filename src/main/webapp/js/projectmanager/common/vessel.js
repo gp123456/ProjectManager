@@ -10,16 +10,12 @@ function commitVessel() {
 
     var data = "name=" + name + "&flag=" + imo;
 
-    alert(data);
-
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/ProjectManager/vessel/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)
-
-            alert(content.customer);
 
             $("#new-project-vessel").html(content.vessel);
         },
@@ -29,11 +25,25 @@ function commitVessel() {
     $("#add-vessel").dialog("close");
 }
 
+function getCustomers() {
+    $.ajax({
+        type: "POST",
+        url: "lst-customer",
+        success: function (response) {
+            $("#new-vessel-customer").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
 function addVessel() {
+    getCustomers();
+    
     $("#add-vessel").dialog({
         autoOpen: true,
         modal: true,
-        width: 403,
+        width: 400,
         buttons: {
             "submit": commitVessel
         },

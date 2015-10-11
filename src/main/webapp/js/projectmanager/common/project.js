@@ -436,8 +436,6 @@ function getStatuses() {
 }
 
 function setProject(path) {
-//    var path = $(dest_path_id).val();
-
     $.ajax({
         type: "POST",
         url: "set-project",
@@ -464,6 +462,7 @@ function dlgProject(status, dlg_id, div_id, dest_path) {
         autoOpen: true,
         modal: true,
         title: status,
+        width: 374,
         buttons: {
             "submit": function () {
                 setProject(dest_path);
@@ -486,6 +485,7 @@ function dlgEditProject() {
     $("#dlg-edit-project").dialog({
         autoOpen: true,
         modal: true,
+        width: 372,
         buttons: {
             "submit": function () {
                 var status = $('input[name = "radio-project"]:checked').val();

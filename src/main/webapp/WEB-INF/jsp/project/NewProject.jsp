@@ -34,15 +34,14 @@
     });
 </script>
 
-<!--style="display:block; margin-bottom:12px; width:95%; padding:.4em"-->
-
-<h1 id="project-reference">${project_reference}</h1>
-<input type="hidden" id="edit-projectdetail-id" value=${pd_id} />
-<div>
+<div class="formLayout">
+    <h1 id="project-reference">${project_reference}</h1>
+    <input type="hidden" id="edit-projectdetail-id" value=${pd_id} />
     <table>
         <tbody>
+            <!- Company ->
             <tr>
-                <td><label style="font:icon;size:12;display:block">Company</label></td>
+                <td><label>Company</label></td>
                 <td>
                     <p>
                         <label class="custom-select">
@@ -52,8 +51,9 @@
                 </td>
                 <td></td>
             </tr>
+            <!- Type ->
             <tr>
-                <td><label style="font:icon;size:12;display:inline">Type</label></td>
+                <td><label>Type</label></td>
                 <td>
                     <p>
                         <label class="custom-select">
@@ -63,14 +63,16 @@
                 </td>
                 <td></td>
             </tr>
+            <!- Expire date ->
             <tr>
-                <td><label style="font:icon;size:12;display:block">Expired date</label></td>
+                <td><label>Expired date</label></td>
                 <td><input type="text" id="new-project-expired" value="${expired}"></td>
                 <td></td>
             </tr>
+            <!- Vessel ->
             <tr>
-                <td><label style="font:icon;size:12;display:block">Vessel</label></td>
-                <td>
+                <td><label>Vessel</label></td>
+                <td width="150px">
                     <p>
                         <label class="custom-select">
                             <select id="new-project-vessel" onchange="projectFilterVessel()"></select>
@@ -82,27 +84,32 @@
                         <form class="go-bottom">
                             <div>
                                 <input type="text" id="vessel-name" name="vessel-name" required>
-                                <label for="vessel-name">Name</label>
-                            </div>
-                            <div>
-                                <input type="text" id="vessel-company" required>
-                                <label for="vessel-company">Company</label>
+                                <label class="go-bottom-label" for="vessel-name">Name</label>
                             </div>
                             <div>
                                 <input type="text" id="vessel-imo" name="vessel-imo" required>
-                                <label for="vessel-imo">IMO</label>
+                                <label class="go-bottom-label" for="vessel-imo">IMO</label>
+                            </div>
+                            <div>
+                                <p>
+                                    <label class="custom-select">
+                                        <select id="new-vessel-customer"></select>
+                                    </label>
+                                    <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addCustomer()"/>
+                                </p>
                             </div>
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
                     </div>
                 </td>
             </tr>
+            <!- Customer ->
             <tr>
-                <td><label style="font:icon;size:12;display:block">Customer</label></td>
+                <td width="150px"><label>Customer</label></td>
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-customer" onchange="projectFilterVessel()"></select>
+                            <select id="new-project-customer"></select>
                         </label>
                     </p>
                 </td>
@@ -111,19 +118,20 @@
                         <form class="go-bottom">
                             <div>
                                 <input type="text" id="customer-name" required>
-                                <label for="customer-name">Name</label>
+                                <label class="go-bottom-label" for="customer-name">Name</label>
                             </div>
                             <div>
                                 <input type="text" id="customer-reference-number" required>
-                                <label for="customer-reference-number">Reference Number</label>
+                                <label class="go-bottom-label" for="customer-reference-number">Reference Number</label>
                             </div>
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
                     </div>
                 </td>
             </tr>
+            <!- Contact ->
             <tr>
-                <td><label style="font:icon;size:12;display:block">Contact</label></td>
+                <td width="150px"><label>Contact</label></td>
                 <td>
                     <p>
                         <label class="custom-select">
@@ -136,19 +144,19 @@
                         <form class="go-bottom">
                             <div>
                                 <input type="text" id="contact-name" required>
-                                <label for="contact-name">Name</label>
+                                <label class="go-bottom-label" for="contact-name">Name</label>
                             </div>
                             <div>
                                 <input type="text" id="contact-surname" required>
-                                <label for="contact-surname" >Surname</label>
+                                <label class="go-bottom-label" for="contact-surname" >Surname</label>
                             </div>
                             <div>
                                 <input type="text" id="contact-phone" required>
-                                <label for="contact-phone">Phone</label>
+                                <label class="go-bottom-label" for="contact-phone">Phone</label>
                             </div>
                             <div>
                                 <input type="text" id="contact-email" required>
-                                <label for="contact-email">eMail</label>
+                                <label class="go-bottom-label" for="contact-email">eMail</label>
                             </div>
                             <input type="submit" class="button" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
@@ -160,8 +168,9 @@
     <div class="critDivs">
         <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
     </div>
-    <table class="table tablesorter">
-        <thead id="project-header"></thead>
-        <tbody id="project-body"></tbody>
-    </table>
 </div>
+<!- Results ->
+<table class="table tablesorter">
+    <thead id="project-header"></thead>
+    <tbody id="project-body"></tbody>
+</table>

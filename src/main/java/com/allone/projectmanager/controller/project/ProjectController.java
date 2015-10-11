@@ -377,38 +377,36 @@ public class ProjectController extends ProjectCommon {
         Map<String, String> content = new HashMap<>();
 
         if (vessel != null) {
-            Vessel v = srvProjectManager.getDaoVessel().getById(vessel);
             String response = "";
+            Vessel v = srvProjectManager.getDaoVessel().getById(vessel);
+            Company co = (v != null) ? srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, v.
+                                                                                       getCompany()) : null;
+            List<Contact> contacts = (v != null) ? srvProjectManager.getDaoContact().getByVessel(v.getId()) : null;
 
-            if (v != null) {
-                Company co = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, v.getCompany());
-
-                if (co != null) {
-                    response += "<option value=\"" + co.getName() + "\">" + co.getName() + "</option>";
-                } else {
-                    response = "<option value=\"none\" selected=\"selected\">Select</option>";
-                }
+            if (co != null) {
+                response += "<option value=\"" + co.getName() + "\">" + co.getName() + "</option>";
                 content.put("customer", response);
+            } else if (vessel.equals(-1l)) {
+                content.put("customer", createSearchCustomer(srvProjectManager));
+            } else {
+                content.put("customer", response);
+            }
+            response = "";
+            if (contacts != null && contacts.isEmpty() == false) {
+                for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
+                    Contact c = it.next();
 
-                List<Contact> contacts = srvProjectManager.getDaoContact().getByVessel(v.getId());
-
-                response = "";
-                if (contacts != null && contacts.isEmpty() == false) {
-                    for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
-                        Contact c = it.next();
-
-                        response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
-                    }
-                } else {
-                    response = "<option value=\"-1\" selected=\"selected\">Select</option>";
+                    response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
+                    content.put("contact", response);
                 }
+            } else if (vessel.equals(-1l)) {
+                content.put("contact", createSearchContact(srvProjectManager));
+            } else {
                 content.put("contact", response);
             }
         }
 
-        String project = new Gson().toJson(content);
-
-        return project;
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/view")
@@ -499,8 +497,9 @@ public class ProjectController extends ProjectCommon {
             for (ProjectDetail pd : pds) {
                 Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
-                response += "<input type='radio'  name='radio-project' value='" + pd.getId() + "' />" + p.
-                getReference() + "[" + pd.getType() + "]<br />";
+                response += "<input type='radio' id='" + pd.getId() + "' name='radio-project' value='" + pd.getId() +
+                "'><label for='" + pd.getId() + "' class='radio-label'>" + p.getReference() + "[" + pd.getType() +
+                "]</label><br>";
             }
         }
 
@@ -513,10 +512,17 @@ public class ProjectController extends ProjectCommon {
         String response = "";
 
         for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
-            response += "<input type='radio'  name='radio-project' value='" + status.toString() + "' />" +
-            status.toString() + "<br/>";
+            response += "<input type='radio' id='" + status.toString() + "' name='radio-project' value='" + status.
+            toString() + "'><label for='" + status.toString() + "' class='radio-label'>" + status.toString() +
+            "</label><br>";
         }
-        
+
         return response;
+    }
+    
+    @RequestMapping(value = "/lst-customer")
+    public @ResponseBody
+    String lstCustomer() {
+        return createSearchCustomer(srvProjectManager);
     }
 }
