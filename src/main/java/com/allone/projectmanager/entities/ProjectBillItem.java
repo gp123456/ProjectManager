@@ -8,6 +8,7 @@ package com.allone.projectmanager.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -281,6 +282,15 @@ public class ProjectBillItem implements Serializable {
         return "com.allone.projectmanager.entities.ProjectBillItem[ id=" + id + " ]";
     }
 
+            
+            return this;
+        }
+        
+        public ProjectBillItem build() {
+            return new ProjectBillItem(this);
+        }
+    }
+}
     public static class Builder {
         private Integer available;
         
@@ -382,12 +392,3 @@ public class ProjectBillItem implements Serializable {
         
         public Builder setCurrency(String currency) {
             this.currency = currency;
-            
-            return this;
-        }
-        
-        public ProjectBillItem build() {
-            return new ProjectBillItem(this);
-        }
-    }
-}

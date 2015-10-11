@@ -5,6 +5,7 @@
  */
 package com.allone.projectmanager.entities;
 
+import com.allone.projectmanager.enums.ProjectStatusEnum;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -241,6 +242,50 @@ public class ProjectDetail implements Serializable {
         this.reference = reference;
     }
 
+//    @XmlTransient
+//    public List<ItemTrans> getListItemTrans() {
+//        return listItemTrans;
+//    }
+//
+//    public void setListItemTrans(List<ItemTrans> listItemTrans) {
+//        this.listItemTrans = listItemTrans;
+//    }
+//
+//    @XmlTransient
+//    public List<ProjectBill> getListProjectBill() {
+//        return listProjectBill;
+//    }
+//
+//    public void setListProjectBill(List<ProjectBill> listProjectBill) {
+//        this.listProjectBill = listProjectBill;
+//    }
+//
+//    @XmlTransient
+//    public List<PurchaseOrder> getListPurchaseOrders() {
+//        return listPurchaseOrders;
+//    }
+//
+//    public void setListPurchaseOrders(List<PurchaseOrder> listPurchaseOrders) {
+//        this.listPurchaseOrders = listPurchaseOrders;
+//    }
+//
+//    @XmlTransient
+//    public List<Repimage> getListRepimages() {
+//        return listRepimages;
+//    }
+//
+//    public void setListRepimages(List<Repimage> listRepimages) {
+//        this.listRepimages = listRepimages;
+//    }
+//
+//    @XmlTransient
+//    public List<RequestQuotation> getListRequestQuotations() {
+//        return listRequestQuotations;
+//    }
+//
+//    public void setListRequestQuotations(List<RequestQuotation> listRequestQuotations) {
+//        this.listRequestQuotations = listRequestQuotations;
+//    }
     @Override
     public int hashCode() {
         int hash = 0;

@@ -42,6 +42,8 @@ public class Common {
     private String content;
 
     private String title;
+    
+    private String header;
 
     private String header;
 
