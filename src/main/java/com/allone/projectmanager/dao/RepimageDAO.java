@@ -5,14 +5,13 @@
  */
 package com.allone.projectmanager.dao;
 
-import com.allone.projectmanager.entities.Repimage;
 import javax.persistence.EntityManagerFactory;
 
 /**
  *
  * @author antonia
  */
-public class RepimageDAO extends Repimage {
+public class RepimageDAO {
     private EntityManagerFactory emf;
     
     public RepimageDAO(EntityManagerFactory emf) {

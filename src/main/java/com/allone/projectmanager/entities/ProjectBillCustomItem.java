@@ -10,15 +10,13 @@ import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -29,41 +27,68 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "project_bill_custom_item")
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "ProjectBillCustomItem.findAll", query = "SELECT p FROM ProjectBillCustomItem p"),
-               @NamedQuery(name = "ProjectBillCustomItem.findById", query =
-                                                                    "SELECT p FROM ProjectBillCustomItem p WHERE p.id = :id"),
-               @NamedQuery(name = "ProjectBillCustomItem.findByAvailable", query =
-                                                                           "SELECT p FROM ProjectBillCustomItem p WHERE p.available = :available"),
-               @NamedQuery(name = "ProjectBillCustomItem.findByQuantity", query =
-                                                                          "SELECT p FROM ProjectBillCustomItem p WHERE p.quantity = :quantity"),
-               @NamedQuery(name = "ProjectBillCustomItem.findByPrice", query =
-                                                                       "SELECT p FROM ProjectBillCustomItem p WHERE p.price = :price"),
-               @NamedQuery(name = "ProjectBillCustomItem.findByCost", query =
-                                                                      "SELECT p FROM ProjectBillCustomItem p WHERE p.cost = :cost")})
+               @NamedQuery(name = "ProjectBillCustomItem.findById",
+                           query = "SELECT p FROM ProjectBillCustomItem p WHERE p.id = :id"),
+               @NamedQuery(name = "ProjectBillCustomItem.findByAvailable",
+                           query = "SELECT p FROM ProjectBillCustomItem p WHERE p.available = :available"),
+               @NamedQuery(name = "ProjectBillCustomItem.findByQuantity",
+                           query = "SELECT p FROM ProjectBillCustomItem p WHERE p.quantity = :quantity"),
+               @NamedQuery(name = "ProjectBillCustomItem.findByPrice",
+                           query = "SELECT p FROM ProjectBillCustomItem p WHERE p.price = :price"),
+               @NamedQuery(name = "ProjectBillCustomItem.findByCost",
+                           query = "SELECT p FROM ProjectBillCustomItem p WHERE p.cost = :cost")})
 public class ProjectBillCustomItem implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
+    @NotNull
     private Long id;
-    @Column(name = "available")
-    private Integer available;
-    @Column(name = "quantity")
-    private Integer quantity;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "price")
-    private BigDecimal price;
-    @Column(name = "cost")
-    private BigDecimal cost;
-    @JoinColumn(nullable = false, name = "project_bill_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProjectBill projectBillId;
 
-    public ProjectBillCustomItem() {
+    @Basic(optional = false)
+    @Column(name = "available")
+    @NotNull
+    private Integer available;
+
+    @Basic(optional = false)
+    @Column(name = "quantity")
+    @NotNull
+    private Integer quantity;
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @Column(name = "price")
+    @NotNull
+    private BigDecimal price;
+
+    @Basic(optional = false)
+    @Column(name = "cost")
+    @NotNull
+    private BigDecimal cost;
+
+    @Basic(optional = false)
+    @Column(name = "project_bill")
+    @NotNull
+    private Long projectBill;
+    
+    @Basic(optional = false)
+    @Column(name = "item")
+    @NotNull
+    private Long item;
+
+    private ProjectBillCustomItem(Builder builder) {
+        available = builder.available;
+        quantity = builder.quantity;
+        price = builder.price;
+        cost = builder.cost;
+        projectBill = builder.projectBill;
+        item = builder.item;
     }
 
-    public ProjectBillCustomItem(Long id) {
-        this.id = id;
+    public ProjectBillCustomItem() {
     }
 
     public Long getId() {
@@ -106,12 +131,20 @@ public class ProjectBillCustomItem implements Serializable {
         this.cost = cost;
     }
 
-    public ProjectBill getProjectBillId() {
-        return projectBillId;
+    public Long getProjectBill() {
+        return projectBill;
     }
 
-    public void setProjectBillId(ProjectBill projectBillId) {
-        this.projectBillId = projectBillId;
+    public void setProjectBill(Long projectBill) {
+        this.projectBill = projectBill;
+    }
+
+    public Long getItem() {
+        return item;
+    }
+
+    public void setItem(Long item) {
+        this.item = item;
     }
 
     @Override
@@ -138,5 +171,58 @@ public class ProjectBillCustomItem implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.ProjectBillCustomItem[ id=" + id + " ]";
     }
-    
+
+    public class Builder {
+        private Integer available;
+        
+        private Integer quantity;
+        
+        private BigDecimal price;
+        
+        private BigDecimal cost;
+        
+        private Long projectBill;
+        
+        private Long item;
+
+        public Builder setAvailable(Integer available) {
+            this.available = available;
+            
+            return this;
+        }
+
+        public Builder setQuantity(Integer quantity) {
+            this.quantity = quantity;
+            
+            return this;
+        }
+
+        public Builder setPrice(BigDecimal price) {
+            this.price = price;
+            
+            return this;
+        }
+
+        public Builder setCost(BigDecimal cost) {
+            this.cost = cost;
+            
+            return this;
+        }
+
+        public Builder setProjectBill(Long projectBill) {
+            this.projectBill = projectBill;
+            
+            return this;
+        }
+
+        public Builder setItem(Long item) {
+            this.item = item;
+            
+            return this;
+        }
+        
+        public ProjectBillCustomItem build() {
+            return new ProjectBillCustomItem(this);
+        }
+    }
 }

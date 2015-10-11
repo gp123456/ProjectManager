@@ -5,6 +5,8 @@
  */
 package com.allone.projectmanager.dao;
 
+import com.allone.projectmanager.entities.Company;
+import com.allone.projectmanager.enums.CompanyTypeEnum;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -23,20 +25,56 @@ public class CompanyDAO {
         this.emf = emf;
     }
 
-    public List getAll(Integer type) {
-        List values = null;
+    public List getAll(String type) {
+        Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (type != null && type.compareTo(0) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Company.findAll").setParameter("type", type) : null;
-            values = query.getResultList();
+            query = em.createNamedQuery("com.allone.projectmanager.entities.Company.findAll").setParameter("type", type);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
+            List values = (query != null) ? query.getResultList() : null;
+
             em.close();
 
             return values;
+        }
+    }
+
+    public Company getByTypeName(CompanyTypeEnum type, String name) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.Company.findByTypeName").
+            setParameter("type", type.toString()).setParameter("name", name);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            Company values = (query != null) ? (Company)query.getSingleResult(): null;
+
+            em.close();
+
+            return values;
+        }
+    }
+    
+    public Company add(Company c) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (c != null) {
+                em.getTransaction().begin();
+                em.persist(c);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            System.out.printf("%s\n", e.getMessage());
+        } finally {
+            em.close();
+
+            return c;
         }
     }
 }

@@ -7,11 +7,16 @@ package com.allone.projectmanager.controller.vessel;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
+import com.allone.projectmanager.entities.Vessel;
+import com.google.gson.Gson;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -19,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping(value = "/vessel")
-public class VesselNew extends Common {
-    private static final Logger LOG = Logger.getLogger(VesselNew.class.getName());
+public class VesselNewController extends Common {
+    private static final Logger LOG = Logger.getLogger(VesselNewController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -33,5 +38,19 @@ public class VesselNew extends Common {
         setHeaderInfo(model);
 
         return "index";
+    }
+    
+    @RequestMapping(value = "/add")
+    public @ResponseBody
+    String addVessel(Vessel vess) {
+        String response = "";
+        Map<String, String> content = new HashMap<>();
+
+        if (vess != null) {
+            vess = srvProjectManager.getDaoVessel().add(vess);
+            content.put("vessel", createSearchVessel(srvProjectManager, vess.getId().toString()));
+        }
+
+        return new Gson().toJson(content);
     }
 }

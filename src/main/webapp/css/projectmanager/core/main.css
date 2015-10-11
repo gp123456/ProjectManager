@@ -17,58 +17,19 @@ select {
 }
 
 .leftmenucontainer {
-    width: 25%;
+    width: 15%;
 }
 
 .content {
-    width: 70%;
+    width: 84%;
     float: right;
-    margin-top: -460px;
+    margin-top: -500px;
+}
+
+.login-content {
 }
 
 .criteriacontent {
     width: 100%;
+    border: black;
 }
-
-.critDivs {
-}
-
-/*a{ text-decoration: none;
-   color: #333;
-}
-
-h1{
-    margin-bottom: 10px;
-    clear: both;
-}
-
-input{
-    vertical-align: -3px;
-}
-
-#container{
-    height:100%;
-    width: 100%;
-}
-
-#container .maincontent {
-    width: 100%;
-}
-
-#container .maincontent .leftmenucontainer{  
-    max-width: 240px;
-    float: left;
-    min-width: 250px;
-    position: relative;
-    width: 30%;
-    min-width: 250px;       
-}
-
-#container .maincontent .content    {
-    height: 100%;
-    width: calc(100% - 270px);
-    float: left;
-    position: relative;
-    margin-left: 15px;
-    margin-right: 15px;
-}*/

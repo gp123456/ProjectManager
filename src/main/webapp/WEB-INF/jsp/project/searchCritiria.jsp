@@ -7,6 +7,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <script>
+    $(function () {
+        $("#start").datepicker();
+        $("#end").datepicker();
+    });
+    
     function refreshSearchContent() {
         $.ajax({
             type: "POST",
@@ -30,49 +35,24 @@
     }
 </script>
 
-<!--<div class="criteriacontent">-->
-    <div class="critDivs">
-        <label>Reference</label>
-        <select id="search-reference"></select>
-        <label>Type</label>
-        <select id="search-type" ></select>
-        <label>Status</label>
-        <select id="search-status"></select>
-        <label>Vessel</label>
-        <select id="search-vessel"></select>
-        <label>Customer</label>
-        <select id="search-customer"></select>
-        <label>Company</label>
-        <select id="search-company"></select>
-        <label>Starting date</label>
-        <input name="sdate" class="content_align" type="text" id="Datefrom" value="">
-        <span class="dateico"></span>
-    </div>
-    <!--<div class="critDivs">-->
-    <!--</div>-->
-<!--    <div class="critDivs">
-    </div>
-    <div class="critDivs">
-    </div>
-    <div class="critDivs">
-    </div>
-    <div class="critDivs">
-        
-    </div>
-    <div class="critDivs">
-        <label>Starting date</label>
-        <input name="sdate" class="content_align" type="text" id="Datefrom" value="]$(sdateVal}">
-        <span class="dateico"></span>
-    </div>
-    <div class="critDivs">
-        <label>Ending date</label>
-        <input name="edate" class="content_align"  type="text" id="Dateto" value="$edateVal}">
-        <span class="dateico"></span>
-    </div>
-    <div class="critDivs">
-        <input type="button" class="btnsubmit content_align" value="Search" id="search" onclick="searchContent()"/>
-    </div>
-    <div class="critDivs">
-        <input type="button" class="btnsubmit content_align" value="Clear" id="search-clear" onclick="searchClear()"/>
-    </div>-->
-<!--</div>-->
+<div class="criteriacontent">
+    <label>Reference</label>
+    <select id="search-reference"></select>
+    <label>Type</label>
+    <select id="search-type" ></select>
+    <label>Status</label>
+    <select id="search-status"></select>
+    <label>Vessel</label>
+    <select id="search-vessel"></select><p/>
+    <label>Customer</label>
+    <select id="search-customer"></select>
+    <label>Company</label>
+    <select id="search-company"></select>
+    <label>Start date</label>
+    <input name="sdate" type="text" id="start" value="${sdateVal}">
+    <span class="dateico"></span>
+    <label>End date</label>
+    <input name="edate" type="text" id="end" value="${edateVal}"><p/>
+    <input type="button" class="btnsubmit content_align" value="Search" id="search" onclick="searchContent()"/>
+    <input type="button" class="btnsubmit content_align" value="Clear" id="search-clear" onclick="searchClear()"/>
+</div>

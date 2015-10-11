@@ -7,19 +7,17 @@ package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -28,56 +26,96 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "item")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll", query = "SELECT i FROM Item i"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findLastId", query = "SELECT MAX(i.id) FROM Item i"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findByImno", query = "SELECT i FROM Item i WHERE i.imno = :imno")})
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll", query = "SELECT i FROM Item i"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findById",
+                           query = "SELECT i FROM Item i WHERE i.id = :id"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findLastId",
+                           query = "SELECT MAX(i.id) FROM Item i"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findByImno",
+                           query = "SELECT i FROM Item i WHERE i.imno = :imno")})
 public class Item implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "description")
     private String description;
+
     @Column(name = "location")
     private Long location;
+
     @Column(name = "quantity")
+    @NotNull
     private Integer quantity;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "price")
+    @NotNull
     private BigDecimal price;
-    @Column(name = "currency")
-    private Long currency;
-    @Column(name = "notes")
-    private String notes;
-    @Column(name = "company")
-    private String company;
-    @Column(name = "imno")
-    private String imno;
-    @Column(name = "start_quantity")
-    private Integer startQuantity;
-    @Column(name = "start_price")
-    private BigDecimal startPrice;
-    @Column(name = "offer_quantity")
-    private Integer offerQuantity;
-    @Column(name = "inventory_quantity")
-    private Integer inventoryQuantity;
-    @Column(name = "inventory_price")
-    private BigDecimal inventoryPrice;
-    @Column(name = "inventory_edit")
-    private Boolean  inventoryEdit;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId")
-    private List<ProjectBillItem> projectBillItemList;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId")
-    private List<RequestQuotationItem> requestQuotationItemList;
 
-    public Item() {
+    @Column(name = "currency")
+    @NotNull
+    private Long currency;
+
+    @Column(name = "note")
+    private String note;
+
+    @Column(name = "company")
+    @NotNull
+    private Long company;
+
+    @Column(name = "imno")
+    @NotNull
+    private String imno;
+
+    @Column(name = "start_quantity")
+    @NotNull
+    private Integer startQuantity;
+
+    @Column(name = "start_price")
+    @NotNull
+    private BigDecimal startPrice;
+
+    @Column(name = "offer_quantity")
+    @NotNull
+    private Integer offerQuantity;
+
+    @Column(name = "inventory_quantity")
+    @NotNull
+    private Integer inventoryQuantity;
+
+    @Column(name = "inventory_price")
+    @NotNull
+    private BigDecimal inventoryPrice;
+
+    @Column(name = "inventory_edit")
+    @NotNull
+    private Boolean inventoryEdit;
+
+    private Item(Builder builder) {
+        id = builder.id;
+        description = builder.description;
+        location = builder.location;
+        quantity = builder.quantity;
+        price = builder.price;
+        currency = builder.currency;
+        note = builder.note;
+        company = builder.company;
+        imno = builder.imno;
+        startQuantity = builder.startQuantity;
+        startPrice = builder.price;
+        offerQuantity = builder.offerQuantity;
+        inventoryQuantity = builder.inventoryQuantity;
+        inventoryPrice = builder.inventoryPrice;
+        inventoryEdit = builder.inventoryEdit;
     }
 
-    public Item(Long id) {
-        this.id = id;
+    public Item() {
     }
 
     public Long getId() {
@@ -128,20 +166,12 @@ public class Item implements Serializable {
         this.currency = currency;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getImno() {
@@ -200,22 +230,12 @@ public class Item implements Serializable {
         this.inventoryEdit = inventoryEdit;
     }
 
-    @XmlTransient
-    public List<ProjectBillItem> getProjectBillItemList() {
-        return projectBillItemList;
+    public Long getCompany() {
+        return company;
     }
 
-    public void setProjectBillItemList(List<ProjectBillItem> projectBillItemList) {
-        this.projectBillItemList = projectBillItemList;
-    }
-
-    @XmlTransient
-    public List<RequestQuotationItem> getRequestQuotationItemList() {
-        return requestQuotationItemList;
-    }
-
-    public void setRequestQuotationItemList(List<RequestQuotationItem> requestQuotationItemList) {
-        this.requestQuotationItemList = requestQuotationItemList;
+    public void setCompany(Long company) {
+        this.company = company;
     }
 
     @Override
@@ -242,5 +262,159 @@ public class Item implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Item[ id=" + id + " ]";
     }
-    
+
+    public static class Builder {
+
+        private Long id;
+
+        private String description;
+
+        private Long location;
+
+        private Integer quantity;
+
+        private BigDecimal price;
+
+        private Long currency;
+
+        private String note;
+
+        private Long company;
+
+        private String imno;
+
+        private Integer startQuantity;
+
+        private BigDecimal startPrice;
+
+        private Integer offerQuantity;
+
+        private Integer inventoryQuantity;
+
+        private BigDecimal inventoryPrice;
+
+        private Boolean inventoryEdit;
+
+        public Builder setId(Long id) {
+            this.id = id;
+
+            return this;
+        }
+
+        public Builder setDescription(String description) {
+            this.description = description;
+
+            return this;
+        }
+
+        public Builder setLocation(Long location) {
+            this.location = location;
+
+            return this;
+        }
+
+        public Builder setQuantity(Integer quantity) {
+            this.quantity = quantity;
+
+            return this;
+        }
+
+        public Builder setPrice(BigDecimal price) {
+            this.price = price;
+
+            return this;
+        }
+
+        public Builder setCurrency(Long currency) {
+            this.currency = currency;
+
+            return this;
+        }
+
+        public Builder setNote(String note) {
+            this.note = note;
+
+            return this;
+        }
+
+        public Builder setCompany(Long company) {
+            this.company = company;
+
+            return this;
+        }
+
+        public String getImno() {
+            return imno;
+        }
+
+        public Builder setImno(String imno) {
+            this.imno = imno;
+
+            return this;
+        }
+
+        public Integer getStartQuantity() {
+            return startQuantity;
+        }
+
+        public Builder setStartQuantity(Integer startQuantity) {
+            this.startQuantity = startQuantity;
+
+            return this;
+        }
+
+        public BigDecimal getStartPrice() {
+            return startPrice;
+        }
+
+        public Builder setStartPrice(BigDecimal startPrice) {
+            this.startPrice = startPrice;
+
+            return this;
+        }
+
+        public Integer getOfferQuantity() {
+            return offerQuantity;
+        }
+
+        public Builder setOfferQuantity(Integer offerQuantity) {
+            this.offerQuantity = offerQuantity;
+
+            return this;
+        }
+
+        public Integer getInventoryQuantity() {
+            return inventoryQuantity;
+        }
+
+        public Builder setInventoryQuantity(Integer inventoryQuantity) {
+            this.inventoryQuantity = inventoryQuantity;
+
+            return this;
+        }
+
+        public BigDecimal getInventoryPrice() {
+            return inventoryPrice;
+        }
+
+        public Builder setInventoryPrice(BigDecimal inventoryPrice) {
+            this.inventoryPrice = inventoryPrice;
+
+            return this;
+        }
+
+        public Boolean getInventoryEdit() {
+            return inventoryEdit;
+        }
+
+        public Builder setInventoryEdit(Boolean inventoryEdit) {
+            this.inventoryEdit = inventoryEdit;
+
+            return this;
+        }
+
+        public Item build() {
+            return new Item(this);
+        }
+    }
 }

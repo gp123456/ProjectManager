@@ -4,14 +4,8 @@
     Author     : antonia
 --%>
 
-<script>
-    $(function () {
-        refreshSearchContent();
-    });
-</script>
-
-<div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
-<h1>Purchase Order - REF : 14171/GP</h1>
+<h1>Purchase Order - REF:${project_reference}</h1>
+<input type="hidden" id="purchase-projectdetail-id" value=${pd_id} />
 <h3>Customer Info</h3>
 <div>
     <table class="table tablesorter">

@@ -29,36 +29,51 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Reports.findAll", query = "SELECT r FROM Reports r")})
 public class Reports implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "reference")
     private String reference;
+
     @Column(name = "status")
     private BigInteger status;
+
     @Column(name = "handling")
     private String handling;
+
     @Column(name = "engineer")
     private BigInteger engineer;
+
     @Column(name = "vessel")
     private BigInteger vessel;
+
     @Column(name = "customer")
     private BigInteger customer;
+
     @Column(name = "location")
     private String location;
+
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
     private Date date;
+
     @Column(name = "completion")
     private String completion;
+
     @Column(name = "images_count")
     private String imagesCount;
+
     @Column(name = "document_count")
     private String documentCount;
-    @Column(name = "notes")
-    private String notes;
+
+    @Column(name = "note")
+    private String note;
+
     @Column(name = "document")
     private String document;
 
@@ -165,12 +180,12 @@ public class Reports implements Serializable {
         this.documentCount = documentCount;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getDocument() {
@@ -205,5 +220,5 @@ public class Reports implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Reports[ id=" + id + " ]";
     }
-    
+
 }

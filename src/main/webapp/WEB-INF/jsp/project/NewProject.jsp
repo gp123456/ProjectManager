@@ -4,67 +4,161 @@
     Author     : antonia
 --%>
 
-<%String path = request.getContextPath();%>
-
 <script>
     $(function () {
-        refreshSearchContent();
+        $("#new-project-expired").datepicker();
 
-        var id = $("#project-edit-id").attr("value");
-        var data = "reference=-1&type=-1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10";
+        var id = $('#edit-projectdetail-id').val();
 
         $.ajax({
             type: "POST",
             url: "content",
-            data: data,
+            data: "id=" + id,
             success: function (response) {
                 var content = JSON.parse(response);
 
-                $("#company").html(content.company);
-                $("#type").html(content.type);
-                $("#vessel").html(content.vessel);
-                $("#customer").html(content.customer);
-                $("#contact").html(content.contact);
+                $("#new-project-company").html(content.company);
+                $("#new-project-type").html(content.type);
+                $("#new-project-vessel").html(content.vessel);
+                $("#new-project-customer").html(content.customer);
+                $("#new-project-contact").html(content.contact);
                 if (content.project_header != null && content.project_body != null) {
                     $("#project-header").html(content.project_header);
                     $("#project-body").html(content.project_body);
-//                    $("#project-save").hide();
-                } else {
-//                    $("#project-save").show();
                 }
             },
-            error: function (e) {
+            error: function (xhr, status, error) {
+                alert(error);
             }
         });
     });
 </script>
 
-<div><jsp:include page="../project/searchCritiria.jsp"/></div>
-<input type="hidden" id="project-edit-id" value="${project_reference}"/>
+<!--style="display:block; margin-bottom:12px; width:95%; padding:.4em"-->
+
 <h1 id="project-reference">${project_reference}</h1>
+<input type="hidden" id="edit-projectdetail-id" value=${pd_id} />
 <div>
+    <table>
+        <tbody>
+            <tr>
+                <td><label style="font:icon;size:12;display:block">Company</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-company"></select>
+                        </label>
+                    </p>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label style="font:icon;size:12;display:inline">Type</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-type"></select>
+                        </label>
+                    </p>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label style="font:icon;size:12;display:block">Expired date</label></td>
+                <td><input type="text" id="new-project-expired" value="${expired}"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label style="font:icon;size:12;display:block">Vessel</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-vessel" onchange="projectFilterVessel()"></select>
+                        </label>
+                    </p>
+                </td>
+                <td><input type="button" class="button" value="Add" id="new-project-add-vessel" onclick="addVessel()"/>
+                    <div id="add-vessel" hidden="true" title="Add Vessel">
+                        <form class="go-bottom">
+                            <div>
+                                <input type="text" id="vessel-name" name="vessel-name" required>
+                                <label for="vessel-name">Name</label>
+                            </div>
+                            <div>
+                                <input type="text" id="vessel-company" required>
+                                <label for="vessel-company">Company</label>
+                            </div>
+                            <div>
+                                <input type="text" id="vessel-imo" name="vessel-imo" required>
+                                <label for="vessel-imo">IMO</label>
+                            </div>
+                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><label style="font:icon;size:12;display:block">Customer</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-customer" onchange="projectFilterVessel()"></select>
+                        </label>
+                    </p>
+                </td>
+                <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCustomer()"/>
+                    <div id="add-customer" hidden="true" title="Add Customer">
+                        <form class="go-bottom">
+                            <div>
+                                <input type="text" id="customer-name" required>
+                                <label for="customer-name">Name</label>
+                            </div>
+                            <div>
+                                <input type="text" id="customer-reference-number" required>
+                                <label for="customer-reference-number">Reference Number</label>
+                            </div>
+                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><label style="font:icon;size:12;display:block">Contact</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-contact"></select>
+                        </label>
+                    </p>
+                </td>
+                <td><input type="button" class="button" value="Add" id="new-project-add-contact" onclick="addContact()"/>
+                    <div id="add-contact" hidden="true" title="Add Contact">
+                        <form class="go-bottom">
+                            <div>
+                                <input type="text" id="contact-name" required>
+                                <label for="contact-name">Name</label>
+                            </div>
+                            <div>
+                                <input type="text" id="contact-surname" required>
+                                <label for="contact-surname" >Surname</label>
+                            </div>
+                            <div>
+                                <input type="text" id="contact-phone" required>
+                                <label for="contact-phone">Phone</label>
+                            </div>
+                            <div>
+                                <input type="text" id="contact-email" required>
+                                <label for="contact-email">eMail</label>
+                            </div>
+                            <input type="submit" class="button" tabindex="-1" style="position:absolute; top:-1000px; display:block">
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <div class="critDivs">
-        <label style="font: icon;size: 12">Company</label>
-        <select id="company"></select>
-    </div>
-    <div class="critDivs">
-        <label style="font: icon;size: 12">Type</label>
-        <select id="type"></select>
-    </div>
-    <div class="critDivs">
-        <label style="font: icon;size: 12">Vessel</label>
-        <select id="vessel"></select>
-    </div>
-    <div class="critDivs">
-        <label style="font: icon;size: 12">Customer</label>
-        <select id="customer"></select>
-    </div>
-    <div class="critDivs">
-        <label style="font: icon;size: 12">Contact</label>
-        <select id="contact"></select>
-    </div>
-    <div class="critDivs">
-        <input type="button" value="Save" id="project-save" onclick="saveProject()"/>
+        <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
     </div>
     <table class="table tablesorter">
         <thead id="project-header"></thead>

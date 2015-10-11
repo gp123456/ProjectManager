@@ -53,16 +53,16 @@ nav {
     /*width: 200px;*/
 }
 
-.menu-item h3:hover {  
-    background: blue; /* Old browsers */
-    background: -moz-linear-gradient(top,  blue 0%, cyan 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, blue), color-stop(100%, cyan)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  blue 0%, cyan 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  cyan 0%,#6d0019 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  blue 0%, cyan 100%); /* IE10+ */
-    background: linear-gradient(top,  blue 0%, cyan 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='blue', endColorstr='cyan',GradientType=0 ); /* IE6-9 */
-}
+/*.menu-item h3:hover {  
+    background: blue;  Old browsers 
+    background: -moz-linear-gradient(top,  blue 0%, cyan 100%);  FF3.6+ 
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, blue), color-stop(100%, cyan));  Chrome,Safari4+ 
+    background: -webkit-linear-gradient(top,  blue 0%, cyan 100%);  Chrome10+,Safari5.1+ 
+    background: -o-linear-gradient(top,  cyan 0%,#6d0019 100%);  Opera 11.10+ 
+    background: -ms-linear-gradient(top,  blue 0%, cyan 100%);  IE10+ 
+    background: linear-gradient(top,  blue 0%, cyan 100%);  W3C 
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='blue', endColorstr='cyan',GradientType=0 );  IE6-9 
+}*/
 
 .menu-item ul a {
     margin-left: 20px;

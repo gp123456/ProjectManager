@@ -4,14 +4,8 @@
     Author     : user1
 --%>
 
-<script>
-    $(function () {
-        refreshSearchContent();
-    });
-</script>
-
-<div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
-<h1>REQUEST FOR QUOTATION - REF : 13421/GP</h1>
+<h1>REQUEST FOR QUOTATION - REF:${project_reference}</h1>
+<input type="hidden" id="quota-projectdetail-id" value=${pd_id} />
 <table border="1">
     <thead>
         <tr>

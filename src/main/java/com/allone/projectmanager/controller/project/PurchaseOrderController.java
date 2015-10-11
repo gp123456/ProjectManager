@@ -6,6 +6,7 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.controller.common.ProjectCommon;
+import com.allone.projectmanager.entities.Project;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/project")
 public class PurchaseOrderController extends ProjectCommon {
     @RequestMapping(value = "/purchase-order")
-    public String PurchaseOrder(Model model) {
-        this.setTitle("Projects-Purchase Order");
+    public String PurchaseOrder(Project p, Long pdId, Model model) {
+        this.setTitle("Projects - Purchase Order");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/PurchaseOrder.jsp");
         setHeaderInfo(model);
+        model.addAttribute("pd_id", pdId);
+        model.addAttribute("project_reference", p.getReference());
         
         return "index";
     }

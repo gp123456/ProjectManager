@@ -10,15 +10,13 @@ import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -30,84 +28,120 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "ProjectBillItem.findAll", query = "SELECT p FROM ProjectBillItem p"),
                @NamedQuery(name = "ProjectBillItem.findById", query = "SELECT p FROM ProjectBillItem p WHERE p.id = :id"),
-               @NamedQuery(name = "ProjectBillItem.findByAvailable", query =
-                                                                     "SELECT p FROM ProjectBillItem p WHERE p.available = :available"),
-               @NamedQuery(name = "ProjectBillItem.findByPrice", query =
-                                                                 "SELECT p FROM ProjectBillItem p WHERE p.price = :price"),
-               @NamedQuery(name = "ProjectBillItem.findByQuantity", query =
-                                                                    "SELECT p FROM ProjectBillItem p WHERE p.quantity = :quantity"),
-               @NamedQuery(name = "ProjectBillItem.findByCost", query =
-                                                                "SELECT p FROM ProjectBillItem p WHERE p.cost = :cost"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalCost", query =
-                                                                     "SELECT p FROM ProjectBillItem p WHERE p.totalCost = :totalCost"),
-               @NamedQuery(name = "ProjectBillItem.findByPercentage", query =
-                                                                      "SELECT p FROM ProjectBillItem p WHERE p.percentage = :percentage"),
-               @NamedQuery(name = "ProjectBillItem.findByDiscount", query =
-                                                                    "SELECT p FROM ProjectBillItem p WHERE p.discount = :discount"),
-               @NamedQuery(name = "ProjectBillItem.findBySalePrice", query =
-                                                                     "SELECT p FROM ProjectBillItem p WHERE p.salePrice = :salePrice"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalSalePrice", query =
-                                                                          "SELECT p FROM ProjectBillItem p WHERE p.totalSalePrice = :totalSalePrice"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalNetPrice", query =
-                                                                         "SELECT p FROM ProjectBillItem p WHERE p.totalNetPrice = :totalNetPrice")})
+               @NamedQuery(name = "ProjectBillItem.findByAvailable",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.available = :available"),
+               @NamedQuery(name = "ProjectBillItem.findByPrice",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.price = :price"),
+               @NamedQuery(name = "ProjectBillItem.findByQuantity",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.quantity = :quantity"),
+               @NamedQuery(name = "ProjectBillItem.findByCost",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.cost = :cost"),
+               @NamedQuery(name = "ProjectBillItem.findByTotalCost",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalCost = :totalCost"),
+               @NamedQuery(name = "ProjectBillItem.findByPercentage",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.percentage = :percentage"),
+               @NamedQuery(name = "ProjectBillItem.findByDiscount",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.discount = :discount"),
+               @NamedQuery(name = "ProjectBillItem.findBySalePrice",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.salePrice = :salePrice"),
+               @NamedQuery(name = "ProjectBillItem.findByTotalSalePrice",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalSalePrice = :totalSalePrice"),
+               @NamedQuery(name = "ProjectBillItem.findByTotalNetPrice",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalNetPrice = :totalNetPrice")})
 public class ProjectBillItem implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
+    @NotNull
     private Long id;
+
     @Basic(optional = false)
     @Column(name = "available")
-    private int available;
+    @NotNull
+    private Integer available;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
+    @NotNull
     private BigDecimal price;
+
     @Basic(optional = false)
     @Column(name = "quantity")
-    private int quantity;
+    @NotNull
+    private Integer quantity;
+
     @Basic(optional = false)
     @Column(name = "cost")
+    @NotNull
     private BigDecimal cost;
+
+    @Basic(optional = false)
     @Column(name = "total_cost")
+    @NotNull
     private BigDecimal totalCost;
+
+    @Basic(optional = false)
     @Column(name = "percentage")
+    @NotNull
     private BigDecimal percentage;
+
+    @Basic(optional = false)
     @Column(name = "discount")
+    @NotNull
     private BigDecimal discount;
+
+    @Basic(optional = false)
     @Column(name = "sale_price")
+    @NotNull
     private BigDecimal salePrice;
+
+    @Basic(optional = false)
     @Column(name = "total_sale_price")
+    @NotNull
     private BigDecimal totalSalePrice;
+
+    @Basic(optional = false)
     @Column(name = "total_net_price")
+    @NotNull
     private BigDecimal totalNetPrice;
-    @JoinColumn(nullable = false, name = "project_bill_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProjectBill projectBillId;
-    @JoinColumn(nullable = false, name = "item_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Item itemId;
 
-    public ProjectBillItem() {
-    }
+    @Basic(optional = false)
+    @Column(name = "project_bill")
+    @NotNull
+    private Long projectBill;
 
-    public ProjectBillItem(Long id) {
-        this.id = id;
-    }
-
-    public ProjectBillItem(int available, BigDecimal price, int quantity, BigDecimal cost) {
-        this.available = available;
-        this.price = price;
-        this.quantity = quantity;
-        this.cost = cost;
+    @Basic(optional = false)
+    @Column(name = "item")
+    @NotNull
+    private Long item;
+    
+    @Basic(optional = false)
+    @Column(name = "currency")
+    @NotNull
+    private String currency;
+    
+    private ProjectBillItem(Builder builder) {
+        available = builder.available;
+        price = builder.price;
+        quantity = builder.quantity;
+        cost = builder.cost;
+        totalCost = builder.totalCost;
+        percentage = builder.percentage;
+        discount = builder.discount;
+        salePrice = builder.salePrice;
+        totalSalePrice = builder.totalSalePrice;
+        totalNetPrice = builder.totalNetPrice;
+        projectBill = builder.projectBill;
+        item = builder.item;
+        currency = builder.currency;
     }
     
-    public ProjectBillItem(int quantity, int available, BigDecimal price, Item item) {
-        this.available = available;
-        this.price = price;
-        this.quantity = quantity;
-        this.itemId = item;
+    public ProjectBillItem() {
     }
 
     public Long getId() {
@@ -118,14 +152,6 @@ public class ProjectBillItem implements Serializable {
         this.id = id;
     }
 
-    public int getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(int available) {
-        this.available = available;
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -134,11 +160,11 @@ public class ProjectBillItem implements Serializable {
         this.price = price;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -198,20 +224,36 @@ public class ProjectBillItem implements Serializable {
         this.totalNetPrice = totalNetPrice;
     }
 
-    public ProjectBill getProjectBillId() {
-        return projectBillId;
+    public Long getProjectBill() {
+        return projectBill;
     }
 
-    public void setProjectBillId(ProjectBill projectBillId) {
-        this.projectBillId = projectBillId;
+    public void setProjectBill(Long projectBill) {
+        this.projectBill = projectBill;
     }
 
-    public Item getItemId() {
-        return itemId;
+    public Long getItem() {
+        return item;
     }
 
-    public void setItemId(Item itemId) {
-        this.itemId = itemId;
+    public void setItem(Long item) {
+        this.item = item;
+    }
+
+    public Integer getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Integer available) {
+        this.available = available;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     @Override
@@ -238,5 +280,114 @@ public class ProjectBillItem implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.ProjectBillItem[ id=" + id + " ]";
     }
-    
+
+    public static class Builder {
+        private Integer available;
+        
+        private BigDecimal price;
+        
+        private Integer quantity;
+        
+        private BigDecimal cost;
+        
+        private BigDecimal totalCost;
+        
+        private BigDecimal percentage;
+        
+        private BigDecimal discount;
+        
+        private BigDecimal salePrice;
+        
+        private BigDecimal totalSalePrice;
+        
+        private BigDecimal totalNetPrice;
+        
+        private Long projectBill;
+        
+        private Long item;
+        
+        private String currency;
+
+        public Builder setAvailable(Integer available) {
+            this.available = available;
+            
+            return this;
+        }
+
+        public Builder setPrice(BigDecimal price) {
+            this.price = price;
+            
+            return this;
+        }
+
+        public Builder setQuantity(Integer quantity) {
+            this.quantity = quantity;
+            
+            return this;
+        }
+
+        public Builder setCost(BigDecimal cost) {
+            this.cost = cost;
+            
+            return this;
+        }
+
+        public Builder setTotalCost(BigDecimal totalCost) {
+            this.totalCost = totalCost;
+            
+            return this;
+        }
+
+        public Builder setPercentage(BigDecimal percentage) {
+            this.percentage = percentage;
+            
+            return this;
+        }
+
+        public Builder setDiscount(BigDecimal discount) {
+            this.discount = discount;
+            
+            return this;
+        }
+
+        public Builder setSalePrice(BigDecimal salePrice) {
+            this.salePrice = salePrice;
+            
+            return this;
+        }
+
+        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
+            this.totalSalePrice = totalSalePrice;
+            
+            return this;
+        }
+
+        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
+            this.totalNetPrice = totalNetPrice;
+            
+            return this;
+        }
+
+        public Builder setProjectBill(Long projectBill) {
+            this.projectBill = projectBill;
+            
+            return this;
+        }
+
+        public Builder setItem(Long item) {
+            this.item = item;
+            
+            return this;
+        }
+        
+        public Builder setCurrency(String currency) {
+            this.currency = currency;
+            
+            return this;
+        }
+        
+        public ProjectBillItem build() {
+            return new ProjectBillItem(this);
+        }
+    }
 }

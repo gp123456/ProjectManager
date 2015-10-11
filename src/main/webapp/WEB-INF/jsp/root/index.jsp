@@ -16,8 +16,12 @@
 
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/main.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/header.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/input-text.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/select.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/button.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/ui.js"></script>
@@ -30,20 +34,36 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/setCustomDurationChallenge.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/layout.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/canvasjs-1.7.0/canvasjs.min.js"></script>
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/ProjectBill.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/contact.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/company.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/vessel.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/common.js"></script>
     </head>
     <body>
         <div id="container">
-            <div class="top-bar"><jsp:include page="header.jsp"/></div>
+            <c:if test="${project_header != null}" >
+                <div class="top-bar"><jsp:include page="${project_header}"/></div>
+            </c:if>
             <div class="maincontent">
                 <c:if test="${side_bar != null}" >
                     <div class="leftmenucontainer">
                         <jsp:include page="${side_bar}"/>
                     </div>
                 </c:if>
-                <div class="content"><jsp:include page="${content}"/></div>
+                <c:choose>
+                    <c:when test="${login != null}" >
+                        <div class="login-content"><jsp:include page="${content}"/></div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:if test="${content != null}" >
+                            <div class="content"><jsp:include page="${content}"/></div>
+                        </c:if>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </body>

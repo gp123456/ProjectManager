@@ -25,15 +25,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Stock.findAll", query = "SELECT s FROM Stock s")})
 public class Stock implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "location")
     private String location;
-    @Column(name = "notes")
-    private String notes;
+
+    @Column(name = "note")
+    private String note;
 
     public Stock() {
     }
@@ -58,12 +62,12 @@ public class Stock implements Serializable {
         this.location = location;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     @Override
@@ -90,5 +94,5 @@ public class Stock implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Stock[ id=" + id + " ]";
     }
-    
+
 }

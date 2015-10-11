@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.allone.projectmanager.controller.company;
+package com.allone.projectmanager.controller.vessel;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/company")
-public class CompanyEdit extends Common {
-    private static final Logger LOG = Logger.getLogger(CompanyEdit.class.getName());
+@RequestMapping(value = "/vessel")
+public class VesselViewController extends Common {
+    private static final Logger LOG = Logger.getLogger(VesselViewController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
     
-    @RequestMapping(value = "/edit")
-    public String Edit(Model model) {
-        this.setTitle("Companies-Edit");
-        this.setSide_bar("../company/sidebar.jsp");
-        this.setContent("../company/Edit.jsp");
+    @RequestMapping(value = "/view")
+    public String Snapshot(Model model) {
+        this.setTitle("Vessel-View");
+        this.setSide_bar("../vessel/sidebar.jsp");
+        this.setContent("../vessel/View.jsp");
         setHeaderInfo(model);
 
         return "index";

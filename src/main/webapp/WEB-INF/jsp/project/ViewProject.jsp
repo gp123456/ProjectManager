@@ -4,36 +4,16 @@
     Author     : antonia
 --%>
 
-<%String path = request.getContextPath();%>
-
 <script>
     $(function () {
-        refreshSearchContent();
-
-        var data = "reference=-1&type=-1&status=-1&vessel=-1&customer=-1&company=-1&offset=0&size=10";
-        
-        $.ajax({
-            type: "POST",
-            url: "view",
-            data: data,
-            success: function(response) {
-                var content = JSON.parse(response);
-
-                $("#project-header").html(content.project_header);
-                $("#project-footer").html(content.project_footer);
-                $("#project-body").html(content.project_body);
-            },
-            error: function(xhr, status, error) {
-            }
-        });
+        dashboardView();
     });
 </script>
+<style>
+    .ui-menu { position: absolute; width: 100px; }
+</style>
 
-<jsp:include page="../project/searchCritiria.jsp"/>
-<div>
-    <table class="table tablesorter">
-        <thead id="project-header"></thead>
-        <tfoot id="project-footer"></tfoot>
-        <tbody id="project-body"></tbody>
-    </table>
-</div>
+<div id="open-project-sale-status" style="height:300px; width:50%; position:absolute; margin-top:60px; margin-left:-50px"></div>
+<div id="open-project-service-status" style="height:300px; width:50%; position:absolute; margin-top:60px; margin-left:600px"></div>
+<div id="open-project-sale-company" style="height:300px; width:50%; position:absolute; margin-top:360px; margin-left:-50px"></div>
+<div id="open-project-service-company" style="height:300px; width:50%; position:absolute; margin-top:360px; margin-left:600px"></div>

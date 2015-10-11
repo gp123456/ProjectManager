@@ -29,102 +29,120 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project_detail")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findAll",
-                           query = "SELECT p FROM ProjectDetail p"),
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreator",
+                           query = "SELECT p FROM ProjectDetail p WHERE p.creator = :creator AND p.status = :status" +
+                           " ORDER BY p.created DESC"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findAll",
+                           query = "SELECT p FROM ProjectDetail p ORDER BY p.created DESC"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByProjectId",
+                           query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findById",
                            query = "SELECT p FROM ProjectDetail p WHERE p.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByProjectId",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.projectId = :projectId"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByStatus",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.status = :status"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.status = :status ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByType",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.type = :type"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreator",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.creator = :creator"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.type = :type ORDER BY p.created DESC"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByType",
+                           query = "SELECT count(p.id) FROM ProjectDetail p WHERE p.type = :type"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreated",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.created = :created"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.created = :created ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByExpired",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.expired = :expired"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.expired = :expired ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCompany",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.company = :company"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.company = :company ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByVessel",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.vessel = :vessel"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.vessel = :vessel ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCustomer",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.customer = :customer"),
+                           query = "SELECT p FROM ProjectDetail p WHERE p.customer = :customer ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByContact",
-                           query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact")})
+                           query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created DESC"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countAll",
+                           query = "SELECT count(p) FROM ProjectDetail p"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countOpenByType",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status = :status"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company")})
 public class ProjectDetail implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "project_id")
-    private long projectId;
+
+    @Column(name = "project")
+    private Long project;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "status")
-    private long status;
+    private String status;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "type")
-    private long type;
-    @Basic(optional = false)
-    @NotNull
+    private String type;
+
     @Column(name = "creator")
-    private long creator;
+    private Long creator;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "created")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "expired")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expired;
+    
+    @Column(name = "customer")
+    private String customer;
+
+    @Column(name = "vessel")
+    private Long vessel;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "company")
     private String company;
+
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "vessel")
-    private long vessel;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "customer")
-    private String customer;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "contact")
-    private long contact;
+    @NotNull
+    private Long contact;
+    
+    @Basic(optional = false)
+    @Column(name = "reference")
+    @NotNull
+    private String reference;
+
+    private ProjectDetail(Builder builder) {
+        project = builder.project;
+        status = builder.status;
+        type = builder.type;
+        creator = builder.creator;
+        created = builder.created;
+        expired = builder.expired;
+        customer = builder.customer;
+        vessel = builder.vessel;
+        company = builder.company;
+        contact = builder.contact;
+        reference = builder.reference;
+    }
 
     public ProjectDetail() {
     }
 
-    public ProjectDetail(Long id) {
-        this.id = id;
-    }
-
-    public ProjectDetail(Long id, long projectId, long status, long type, long creator, Date created, Date expired,
-                         String company, long vessel, String customer, long contact) {
-        this.id = id;
-        this.projectId = projectId;
-        this.status = status;
-        this.type = type;
-        this.creator = creator;
-        this.created = created;
-        this.expired = expired;
-        this.company = company;
-        this.vessel = vessel;
-        this.customer = customer;
-        this.contact = contact;
+    public ProjectDetail(ProjectDetail pd) {
+        this.company = pd.company;
     }
 
     public Long getId() {
@@ -135,36 +153,28 @@ public class ProjectDetail implements Serializable {
         this.id = id;
     }
 
-    public long getProjectId() {
-        return projectId;
+    public Long getProject() {
+        return project;
     }
 
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
+    public void setProject(Long project) {
+        this.project = project;
     }
 
-    public long getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(long status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public long getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(long type) {
+    public void setType(String type) {
         this.type = type;
-    }
-
-    public long getCreator() {
-        return creator;
-    }
-
-    public void setCreator(long creator) {
-        this.creator = creator;
     }
 
     public Date getCreated() {
@@ -191,14 +201,6 @@ public class ProjectDetail implements Serializable {
         this.company = company;
     }
 
-    public long getVessel() {
-        return vessel;
-    }
-
-    public void setVessel(long vessel) {
-        this.vessel = vessel;
-    }
-
     public String getCustomer() {
         return customer;
     }
@@ -207,12 +209,36 @@ public class ProjectDetail implements Serializable {
         this.customer = customer;
     }
 
-    public long getContact() {
+    public Long getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Long creator) {
+        this.creator = creator;
+    }
+
+    public Long getVessel() {
+        return vessel;
+    }
+
+    public void setVessel(Long vessel) {
+        this.vessel = vessel;
+    }
+
+    public Long getContact() {
         return contact;
     }
 
-    public void setContact(long contact) {
+    public void setContact(Long contact) {
         this.contact = contact;
+    }
+    
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 
     @Override
@@ -239,5 +265,99 @@ public class ProjectDetail implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.ProjectDetail[ id=" + id + " ]";
     }
-    
+
+    public final static class Builder {
+
+        private Long project;
+
+        private String status;
+
+        private String type;
+
+        private Long creator;
+
+        private Date created;
+
+        private Date expired;
+
+        private String customer;
+
+        private Long vessel;
+
+        private String company;
+
+        private Long contact;
+        
+        private String reference;
+
+        public Builder setProject(Long project) {
+            this.project = project;
+
+            return this;
+        }
+
+        public Builder setStatus(String status) {
+            this.status = status;
+
+            return this;
+        }
+
+        public Builder setType(String type) {
+            this.type = type;
+
+            return this;
+        }
+
+        public Builder setCreator(Long creator) {
+            this.creator = creator;
+
+            return this;
+        }
+
+        public Builder setCreated(Date created) {
+            this.created = created;
+
+            return this;
+        }
+
+        public Builder setExpired(Date expired) {
+            this.expired = expired;
+
+            return this;
+        }
+
+        public Builder setCustomer(String customer) {
+            this.customer = customer;
+
+            return this;
+        }
+
+        public Builder setVessel(Long vessel) {
+            this.vessel = vessel;
+
+            return this;
+        }
+
+        public Builder setCompany(String company) {
+            this.company = company;
+
+            return this;
+        }
+
+        public Builder setContact(Long contact) {
+            this.contact = contact;
+
+            return this;
+        }
+        
+        public Builder setReference(String reference) {
+            this.reference = reference;
+
+            return this;
+        }
+
+        public ProjectDetail build() {
+            return new ProjectDetail(this);
+        }
+    }
 }

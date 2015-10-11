@@ -31,10 +31,9 @@ public class CollabsDAO {
 
         try {
             Query query = (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword").setParameter(
-                                  "username",
-                                  username)
-                          .setParameter("password", password) : null;
+                  "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword").setParameter("username",
+                                                                                                          username)
+                  .setParameter("password", password) : null;
             value = (Collabs) query.getSingleResult();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
@@ -51,7 +50,7 @@ public class CollabsDAO {
 
         try {
             Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Collabs.findById").setParameter("id", id) : null;
+                  "com.allone.projectmanager.entities.Collabs.findById").setParameter("id", id) : null;
             value = (Collabs) query.getSingleResult();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());

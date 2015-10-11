@@ -19,6 +19,7 @@ public class User {
     private String last_login;
     private String avatar;
     private String project_reference;
+    private Integer project_expired;
 
     public String getProject_reference() {
         return project_reference;
@@ -82,5 +83,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getProject_expired() {
+        return project_expired;
+    }
+
+    public void setProject_expired(Integer project_expired) {
+        this.project_expired = project_expired;
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.allone.projectmanager.controller.company;
+package com.allone.projectmanager.controller.contact;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author antonia
  */
 @Controller
-@RequestMapping(value = "/company")
-public class CompanyHistory extends Common {
-    private static final Logger LOG = Logger.getLogger(CompanyHistory.class.getName());
+@RequestMapping(value = "/contact")
+public class ContactStatisticController extends Common {
+    private static final Logger LOG = Logger.getLogger(ContactStatisticController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
     
-    @RequestMapping(value = "/history")
-    public String History(Model model) {
-        this.setTitle("Companies-History");
-        this.setSide_bar("../company/sidebar.jsp");
-        this.setContent("../company/History.jsp");
+    @RequestMapping(value = "/statistic")
+    public String Statistic(Integer year, Model model) {
+        this.setTitle("Contacts-Statistic");
+        this.setSide_bar("../contact/sidebar.jsp");
+        this.setContent("../contact/Statistic.jsp");
         setHeaderInfo(model);
 
         return "index";

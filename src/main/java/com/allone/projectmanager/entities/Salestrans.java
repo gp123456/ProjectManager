@@ -30,29 +30,41 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Salestrans.findAll", query = "SELECT s FROM Salestrans s")})
 public class Salestrans implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "project")
     private BigInteger project;
+
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
     private Date date;
+
     @Column(name = "item")
     private BigInteger item;
+
     @Column(name = "supplier")
     private BigInteger supplier;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+
     @Column(name = "cost")
     private BigDecimal cost;
+
     @Column(name = "offer")
     private BigDecimal offer;
+
     @Column(name = "currency")
     private BigInteger currency;
-    @Column(name = "notes")
-    private String notes;
+
+    @Column(name = "note")
+    private String note;
+
     @Column(name = "accept")
     private Boolean accept;
 
@@ -127,12 +139,12 @@ public class Salestrans implements Serializable {
         this.currency = currency;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getNote() {
+        return note;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public Boolean getAccept() {
@@ -167,5 +179,5 @@ public class Salestrans implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Salestrans[ id=" + id + " ]";
     }
-    
+
 }

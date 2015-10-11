@@ -30,31 +30,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Stocktrans.findAll", query = "SELECT s FROM Stocktrans s")})
 public class Stocktrans implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "item")
     private BigInteger item;
+
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
     private Date date;
+
     @Column(name = "quantity")
     private Integer quantity;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+
     @Column(name = "price")
     private BigDecimal price;
+
     @Column(name = "supplier")
     private BigInteger supplier;
+
     @Column(name = "stock")
     private BigInteger stock;
+
     @Column(name = "notes")
     private String notes;
+
     @Column(name = "status")
     private BigInteger status;
-    @Column(name = "no_clalc_price")
-    private Boolean noClalcPrice;
+
+    @Column(name = "no_calc_price")
+    private Boolean noCalcPrice;
 
     public Stocktrans() {
     }
@@ -135,12 +147,12 @@ public class Stocktrans implements Serializable {
         this.status = status;
     }
 
-    public Boolean getNoClalcPrice() {
-        return noClalcPrice;
+    public Boolean getNoCalcPrice() {
+        return noCalcPrice;
     }
 
-    public void setNoClalcPrice(Boolean noClalcPrice) {
-        this.noClalcPrice = noClalcPrice;
+    public void setNoCalcPrice(Boolean noCalcPrice) {
+        this.noCalcPrice = noCalcPrice;
     }
 
     @Override
@@ -167,5 +179,5 @@ public class Stocktrans implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Stocktrans[ id=" + id + " ]";
     }
-    
+
 }
