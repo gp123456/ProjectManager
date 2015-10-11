@@ -45,8 +45,6 @@ public class Common {
     
     private String header;
 
-    private String header;
-
     private SearchCriteria searchCriteria;
 
     public String createSearchType() {
