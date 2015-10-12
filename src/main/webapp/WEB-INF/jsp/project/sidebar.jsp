@@ -36,8 +36,6 @@
 
 <nav>
     <div class="menu-item">
-        <!--        <h3 id="project-edit-size" onclick="dlgProject('Create', '#dlg-edit-project',
-                            '#lst-edit-project', '/ProjectManager/project/edit-form')">Edit</h3>-->
         <h3 id="project-edit-size" onclick="dlgEditProject()">Edit</h3>
         <div id="dlg-edit-project" hidden="true" title="Statuses">
             <form>
@@ -54,9 +52,7 @@
                         '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
-                <fieldset style="padding:0; border:0; margin-top:25px;">
-                    <div id="lst-bill-project"></div>
-                </fieldset>
+                <div id="lst-bill-project"></div>
             </form>
         </div>
     </div>

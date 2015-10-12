@@ -44,19 +44,13 @@ public class CompanyNewController extends Common {
 
     @RequestMapping(value = "/add")
     public @ResponseBody
-    String addContact(Company comp) {
-        String response = "";
+    String addCompany(Company comp) {
         Map<String, String> content = new HashMap<>();
 
         if (comp != null) {
             comp.setType(CompanyTypeEnum.CUSTOMER.name());
             comp = srvProjectManager.getDaoCompany().add(comp);
-
-            if (comp != null) {
-                response += "<option value=\"" + comp.getName() + "\">" + comp.getName() + "</option>";
-            }
-
-            content.put("customer", response);
+            content.put("customer", createSearchCustomer(srvProjectManager, comp.getName()));
         }
 
         return new Gson().toJson(content);

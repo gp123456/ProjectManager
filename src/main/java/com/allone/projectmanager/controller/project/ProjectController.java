@@ -66,8 +66,8 @@ public class ProjectController extends ProjectCommon {
         content.put("company", createSearchCompany());
         content.put("type", createSearchType());
         content.put("vessel", createSearchVessel(srvProjectManager, null));
-        content.put("customer", createSearchCustomer(srvProjectManager));
-        content.put("contact", createSearchContact(srvProjectManager));
+        content.put("customer", createSearchCustomer(srvProjectManager, null));
+        content.put("contact", createSearchContact(srvProjectManager, null));
 
         if (pd != null && !pd.getId().equals(-1l)) {
             String projectHeader = createProjectHeader(getModeEdit());
@@ -387,7 +387,7 @@ public class ProjectController extends ProjectCommon {
                 response += "<option value=\"" + co.getName() + "\">" + co.getName() + "</option>";
                 content.put("customer", response);
             } else if (vessel.equals(-1l)) {
-                content.put("customer", createSearchCustomer(srvProjectManager));
+                content.put("customer", createSearchCustomer(srvProjectManager, null));
             } else {
                 content.put("customer", response);
             }
@@ -400,7 +400,7 @@ public class ProjectController extends ProjectCommon {
                     content.put("contact", response);
                 }
             } else if (vessel.equals(-1l)) {
-                content.put("contact", createSearchContact(srvProjectManager));
+                content.put("contact", createSearchContact(srvProjectManager, null));
             } else {
                 content.put("contact", response);
             }
@@ -523,6 +523,6 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/lst-customer")
     public @ResponseBody
     String lstCustomer() {
-        return createSearchCustomer(srvProjectManager);
+        return createSearchCustomer(srvProjectManager, null);
     }
 }

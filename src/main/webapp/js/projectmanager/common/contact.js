@@ -15,8 +15,6 @@ function commitContact() {
     var data = "name=" + name + "&surname=" + surname + "&phone=" + phone +
             "&email=" + email + "&vessel=" + vessel + "&company=" + customer;
 
-    alert(data);
-
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/ProjectManager/contact/add",

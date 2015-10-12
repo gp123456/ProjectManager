@@ -52,11 +52,7 @@ public class ContactNewController extends Common {
         if (cont != null) {
             cont = srvProjectManager.getDaoContact().add(cont);
             
-            if (cont != null) {
-                response += "<option value=\"" + cont.getId() + "\">" + cont.getName() + "</option>";
-            }
-            
-            content.put("contact", response);
+            content.put("contact", createSearchContact(srvProjectManager, cont.getVessel()));
         }
         
         return new Gson().toJson(content);

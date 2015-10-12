@@ -90,24 +90,29 @@ public class Common {
                     if (si.getId().equals(id)) {
                         response += "<option value='" + si.getId() + "' selected='selected'>" + si.getName() + "</option>";
                     }
-                } else {
-                    response += "<option value='" + si.getId() + "'>" + si.getName() + "</option>";
-                }
+                } 
+                response += "<option value='" + si.getId() + "'>" + si.getName() + "</option>";
             }
         }
 
         return response;
     }
 
-    public String createSearchCustomer(ProjectManagerService srvProjectManager) {
+    public String createSearchCustomer(ProjectManagerService srvProjectManager, String name) {
         List<SearchInfo> info = getSearchCriteriaCustomer(srvProjectManager);
-        String response = "<option value=\"none\" selected=\"selected\">Select Customer</option>";
+        String response = (Strings.isNullOrEmpty(name)) ? "<option value='none' selected='selected'>Select Customer</option>" :
+               "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
                 SearchInfo si = it.next();
 
-                response += "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>";
+                if (!Strings.isNullOrEmpty(name)) {
+                    if (si.getId().equals(name)) {
+                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() + "</option>";
+                    }
+                }
+                response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
             }
         }
 
@@ -129,14 +134,20 @@ public class Common {
         return response;
     }
 
-    public String createSearchContact(ProjectManagerService srvProjectManager) {
+    public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
-        String response = "<option value=\"-1\" selected=\"selected\">Select Contact</option>";
+        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>" :
+               "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Iterator<Contact> it = info.iterator(); it.hasNext();) {
                 Contact c = it.next();
 
+                if (id != null) {
+                    if (c.getVessel().equals(id)) {
+                        response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
+                    }
+                }
                 response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
             }
         }
@@ -166,9 +177,9 @@ public class Common {
         content.put("type", createSearchType());
         content.put("status", createSearchStatus());
         content.put("vessel", createSearchVessel(srvProjectManager, null));
-        content.put("customer", createSearchCustomer(srvProjectManager));
+        content.put("customer", createSearchCustomer(srvProjectManager, null));
         content.put("company", createSearchCompany());
-        content.put("contact", createSearchContact(srvProjectManager));
+        content.put("contact", createSearchContact(srvProjectManager, null));
 
         return new Gson().toJson(content);
     }

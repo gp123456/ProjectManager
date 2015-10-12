@@ -95,10 +95,9 @@
                                     <label class="custom-select">
                                         <select id="new-vessel-customer"></select>
                                     </label>
-                                    <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addCustomer()"/>
+                                    <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addVesselCustomer()">
                                 </p>
                             </div>
-                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
                     </div>
                 </td>
@@ -124,7 +123,6 @@
                                 <input type="text" id="customer-reference-number" required>
                                 <label class="go-bottom-label" for="customer-reference-number">Reference Number</label>
                             </div>
-                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
                     </div>
                 </td>
@@ -158,7 +156,6 @@
                                 <input type="text" id="contact-email" required>
                                 <label class="go-bottom-label" for="contact-email">eMail</label>
                             </div>
-                            <input type="submit" class="button" tabindex="-1" style="position:absolute; top:-1000px; display:block">
                         </form>
                     </div>
                 </td>
