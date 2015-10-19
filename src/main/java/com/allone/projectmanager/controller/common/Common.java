@@ -169,7 +169,7 @@ public class Common {
 
         return response;
     }
-
+    
     public String refreshSearchContent(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
         Map<String, String> content = new HashMap<>();
 

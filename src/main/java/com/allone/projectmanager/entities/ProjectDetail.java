@@ -5,7 +5,6 @@
  */
 package com.allone.projectmanager.entities;
 
-import com.allone.projectmanager.enums.ProjectStatusEnum;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;

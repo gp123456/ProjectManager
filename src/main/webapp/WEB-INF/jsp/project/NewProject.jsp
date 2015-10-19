@@ -165,9 +165,9 @@
     <div class="critDivs">
         <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
     </div>
+    <!- Results ->
+    <table class="table tablesorter">
+        <thead id="project-header"></thead>
+        <tbody id="project-body"></tbody>
+    </table>
 </div>
-<!- Results ->
-<table class="table tablesorter">
-    <thead id="project-header"></thead>
-    <tbody id="project-body"></tbody>
-</table>

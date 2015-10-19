@@ -179,7 +179,7 @@ public class ProjectController extends ProjectCommon {
             pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(user.getId());
             pd.setCreated(new Date());
-            pd.setReference(p.getReference() + "/A");
+            pd.setReference(p.getReference() + "/1");
             pd = srvProjectManager.getDaoProjectDetail().add(pd);
 
             user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
@@ -384,7 +384,7 @@ public class ProjectController extends ProjectCommon {
             List<Contact> contacts = (v != null) ? srvProjectManager.getDaoContact().getByVessel(v.getId()) : null;
 
             if (co != null) {
-                response += "<option value=\"" + co.getName() + "\">" + co.getName() + "</option>";
+                response += "<option value='" + co.getName() + "'>" + co.getName() + "</option>";
                 content.put("customer", response);
             } else if (vessel.equals(-1l)) {
                 content.put("customer", createSearchCustomer(srvProjectManager, null));
@@ -396,7 +396,7 @@ public class ProjectController extends ProjectCommon {
                 for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
                     Contact c = it.next();
 
-                    response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
+                    response += "<option value='" + c.getId() + "'>" + c.getName() + "</option>";
                     content.put("contact", response);
                 }
             } else if (vessel.equals(-1l)) {
@@ -493,7 +493,7 @@ public class ProjectController extends ProjectCommon {
                                                                                       Integer.MAX_VALUE);
         String response = "";
 
-        if (pds != null && pds.size() > 0) {
+        if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
                 Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 

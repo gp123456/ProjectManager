@@ -181,11 +181,12 @@ function addSubProject() {
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#new-subproject-company").html(content.company);
-            $("#new-subproject-type").html(content.type);
-            $("#new-subproject-vessel").html(content.vessel);
-            $("#new-subproject-customer").html(content.customer);
-            $("#new-subproject-contact").html(content.contact);
+            $("#new-project-company").html(content.company);
+            $("#new-project-type").html(content.type);
+            $("#new-project-vessel").html(content.vessel);
+            $("#new-project-customer").html(content.customer);
+            $("#new-project-contact").html(content.contact);
+//            $("#new-project-expired").attr('value', content.expired);
             dlgNewSubProject();
         },
         error: function (e) {
@@ -194,13 +195,13 @@ function addSubProject() {
 }
 
 function dlgNewSubProject() {
-    $("#new-subproject-expired").datepicker();
-
     $("#new-subproject").dialog({
         autoOpen: true,
         modal: true,
+        width: 450,
         buttons: {
             "submit": function () {
+                saveSubProject();
             }
         },
         show: {
@@ -212,4 +213,55 @@ function dlgNewSubProject() {
             duration: 1000
         }
     });
+}
+
+function saveSubProject() {
+    var type = $("#new-project-type option:selected").attr("value");
+    var expired = $("#new-project-expired").val();
+    var expired_year = expired.split("-")[0];
+    var expired_month = expired.split("-")[1];
+    var expired_day = expired.split("-")[2];
+    var customer = $("#new-project-customer option:selected").attr("value");
+    var vessel = $("#new-project-vessel option:selected").attr("value");
+    var company = $("#new-project-company option:selected").attr("value");
+    var contact = $("#new-project-contact option:selected").attr("value");
+    var project = $("#bill-project-id").val();
+    var id = $("#bill-projectdetail-id").val();
+
+    if (company == "none") {
+        alert("you must select company");
+        return;
+    }
+    if (type == "none") {
+        alert("you must select type");
+        return;
+    }
+    if (vessel == -1) {
+        alert("you must select a vessel or add one");
+        return;
+    }
+    if (customer == "none") {
+        alert("you must select a customer or add one");
+        return;
+    }
+    if (contact == -1) {
+        alert("you must select a contact or add one");
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/subproject-save",
+        data: "id=" + id + "&project=" + project + "&type=" + type + "&expired=" +
+                expired_month + "/" + expired_day + "/" + expired_year + "&customer=" +
+                customer + "&vessel=" + vessel + "&company=" + company + "&contact=" +
+                contact,
+        success: function (response) {
+            $("#bill-subproject").html(response);
+        },
+        error: function (e) {
+        }
+    });
+
+    $("#new-subproject").dialog("close");
 }

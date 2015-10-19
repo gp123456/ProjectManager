@@ -26,7 +26,11 @@ import com.allone.projectmanager.tools.JasperReport;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,21 +66,37 @@ public class ProjectBillController extends ProjectCommon {
         this.srvProjectManager.loadPropertyValues();
     }
 
-    private void setHeader(String title, String sideBar, String content, Boolean itemInfo, Model model) {
-        this.setTitle(title);
-        this.setSide_bar(sideBar);
-        this.setContent(content);
-        setHeaderInfo(model);
-        if (itemInfo.equals(Boolean.TRUE)) {
-            setItemInfo(model, srvProjectManager);
+    private String createContent(ProjectDetail pd) {
+        Map<String, String> content = new HashMap<>();
+        List<Item> items = srvProjectManager.getDaoItem().getAll();
+
+        String response = "";
+
+        if (items != null && !items.isEmpty()) {
+            for (Item item : items) {
+                response += "<option value='" + item.getId() + "'>" + item.getImno() + "[" + item.getQuantity() +
+                "," + item.getPrice() + "]</option>";;
+            }
         }
+        content.put("items", response);
+
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
+
+        response = "";
+        if (pds != null && !pds.isEmpty()) {
+            for (ProjectDetail _pd : pds) {
+                response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "</option>";;
+            }
+        }
+        content.put("subprojects", response);
+
+        return new Gson().toJson(content);
     }
 
     private String createProjectBill(ProjectBill pb) {
         String response = "";
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
         String subproject = (pd != null) ? pd.getReference() : "";
-        
 
         response +=
         "<tr>" +
@@ -100,19 +120,19 @@ public class ProjectBillController extends ProjectCommon {
 
         return response;
     }
-    
+
     private String getCurrencies() {
         String currencies = "<select id='select-new-item-company' style='width:50px;'>\n" +
                "<option value='-1' selected='selected'>Select</option>\n";
-        
+
         for (CurrencyEnum cu : CurrencyEnum.values()) {
-            currencies += "<option value=\"" + cu.toString()+ "\">" + cu.toString()+ "</option>";
+            currencies += "<option value=\"" + cu.toString() + "\">" + cu.toString() + "</option>";
         }
         currencies += "</select>";
-        
+
         return currencies;
     }
-    
+
     private String createProjectBillItems() {
         String response = "";
         Set<Long> projectBillKeys = getProjectBillKeys();
@@ -138,8 +158,8 @@ public class ProjectBillController extends ProjectCommon {
                 "<td>" + item.getPrice() + "</td>" +
                 "<td id='quantity" + item.getId() + "'>" + "<div contenteditable></div>" + (!quantity.equals(0) ?
                 quantity : "") + "</td>" +
-                "<td id='cost" + item.getId() + "'><div contenteditable></div>" + ((cost != null) ? cost : "") + "</td>"
-                + "<td id='total_cost" + item.getId() + "'>" + ((totalCost != null) ? totalCost : "") + "</td>" +
+                "<td id='cost" + item.getId() + "'><div contenteditable></div>" + ((cost != null) ? cost : "") + "</td>" +
+                "<td id='total_cost" + item.getId() + "'>" + ((totalCost != null) ? totalCost : "") + "</td>" +
                 "<td id='percentage" + item.getId() + "'><div contenteditable></div>" + ((percentage != null) ?
                         percentage : "") + "</td>" +
                 "<td id='discount" + item.getId() + "'><div contenteditable></div>" + ((discount != null) ?
@@ -190,8 +210,12 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill")
     public String ProjectBill(Project p, Long pdId, Model model) {
-        setHeader("Projects - Bill of Material", "../project/sidebar.jsp", "../project/ProjectBill.jsp", Boolean.TRUE, model);
+        this.setTitle("Projects - Bill of Material");
+        this.setSide_bar("../project/sidebar.jsp");
+        this.setContent("../project/ProjectBill.jsp");
+        setHeaderInfo(model);
         model.addAttribute("pd_id", pdId);
+        model.addAttribute("p_id", p.getId());
         model.addAttribute("project_reference", p.getReference());
 
         return "index";
@@ -402,18 +426,20 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/new-subproject")
     public @ResponseBody
     String newSubProject() {
+        Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
         List<Vessel> vessels = srvProjectManager.getDaoVessel().getAll();
         List<Company> customers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.CUSTOMER.toString());
         List<Contact> contacts = srvProjectManager.getDaoContact().getAll();
         Map<String, String> content = new HashMap<>();
         String htmlCompany = "<select id='select-new-subproject-company'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+               "<option value='none' selected='selected'>Select</option>\n";
         String htmlType = "<select id='select-new-subproject-type'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+               "<option value='none' selected='selected'>Select</option>\n";
         String htmlVessel = "<select id='select-new-subproject-vessel'>\n" +
                "<option value='-1' selected='selected'>Select</option>\n";
         String htmlCustomer = "<select id='select-new-subproject-customer'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+               "<option value='none' selected='selected'>Select</option>\n";
         String htmlContact = "<select id='select-new-subproject-contact'>\n" +
                "<option value='-1' selected='selected'>Select</option>\n";
 
@@ -422,7 +448,7 @@ public class ProjectBillController extends ProjectCommon {
         }
         htmlCompany += "</select>";
         content.put("company", htmlCompany);
-        
+
         for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
             htmlType += "<option value='" + type.toString() + "'>" + type.toString() + "</option>\n";
         }
@@ -436,15 +462,15 @@ public class ProjectBillController extends ProjectCommon {
             htmlVessel += "</select>";
             content.put("vessel", htmlVessel);
         }
-        
+
         if (customers != null && !customers.isEmpty()) {
             for (Company customer : customers) {
-                htmlCustomer += "<option value='" + customer.getName()+ "'>" + customer.getName() + "</option>\n";
+                htmlCustomer += "<option value='" + customer.getName() + "'>" + customer.getName() + "</option>\n";
             }
             htmlCustomer += "</select>";
             content.put("customer", htmlCustomer);
         }
-        
+
         if (contacts != null && !contacts.isEmpty()) {
             for (Contact contact : contacts) {
                 htmlContact += "<option value='" + contact.getId() + "'>" + contact.getName() + "</option>\n";
@@ -452,10 +478,11 @@ public class ProjectBillController extends ProjectCommon {
             htmlContact += "</select>";
             content.put("contact", htmlContact);
         }
+        content.put("expired", format.format(expired));
 
         return new Gson().toJson(content);
     }
-    
+
     @RequestMapping(value = "/project-bill/insert-new-item")
     public @ResponseBody
     String insertNewItem(Item item, Model model) {
@@ -465,5 +492,49 @@ public class ProjectBillController extends ProjectCommon {
         }
 
         return createProjectBillItems();
+    }
+
+    @RequestMapping(value = "/project-bill/content")
+    public @ResponseBody
+    String getContent(ProjectDetail pd) {
+        return createContent(pd);
+    }
+
+    @RequestMapping(value = "/project-bill/subproject-save")
+    public @ResponseBody
+    String saveSubproject(ProjectDetail pd) {
+        if (pd != null) {
+            pd.setStatus(ProjectStatusEnum.CREATE.toString());
+            pd.setCreator(getUser().getId());
+            pd.setCreated(new Date());
+            
+            ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
+            
+            if (dbpd != null) {
+                String dbpdReference = dbpd.getReference();
+                String subid = dbpdReference.substring(dbpdReference.lastIndexOf("/") + 1);
+                Integer nextsubid = Integer.parseInt(subid) + 1;
+                
+                pd.setReference(dbpdReference.replace(subid, nextsubid.toString()));
+            } else {
+                pd.setReference(getUser().getProject_reference() + "/A");
+            }
+            
+            pd.setId(null);
+            pd = srvProjectManager.getDaoProjectDetail().add(pd);
+
+            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
+            String response = "";
+            
+            if (pds != null && !pds.isEmpty()) {
+                for (ProjectDetail _pd : pds) {
+                    response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "</option>";;
+                }
+            }
+            
+            return response;
+        } else {
+            return "";
+        }
     }
 }

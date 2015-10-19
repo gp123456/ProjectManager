@@ -13,12 +13,12 @@ and open the template in the editor.
     border: solid 1px #a1a1a1;
     padding: 10px;
     width: 100%;
-    height: 350px;
+    height: 100%;
 }
 
-.formLayout input[type=text] {
+.formLayout input[type=text], input[type=date] {
     display: block;
-    width: 150px;
+    width: 170px;
     float: left;
     border: 2px solid #bbb;
     border-radius: 6px;
@@ -28,7 +28,7 @@ and open the template in the editor.
 
 .formLayout label {
     display: block;
-    width: 150px;
+    width: 170px;
     float: left;
     text-align: right;
 }

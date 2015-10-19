@@ -52,7 +52,7 @@
                         '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
-                <div id="lst-bill-project"></div>
+                <div id="lst-bill-project" class="radio"></div>
             </form>
         </div>
     </div>
