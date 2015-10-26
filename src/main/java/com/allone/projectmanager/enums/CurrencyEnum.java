@@ -13,7 +13,7 @@ public enum CurrencyEnum {
     JPY("¥"),//&#165
     GBP("£"),//&#163
     USD("$"),//&#36
-    EUR("€");//&#8364
+    EUR("&#8364");//€
 
     private final String value;
 

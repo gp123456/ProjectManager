@@ -119,12 +119,12 @@ public class ProjectBillItem implements Serializable {
     @Column(name = "item")
     @NotNull
     private Long item;
-    
+
     @Basic(optional = false)
     @Column(name = "currency")
     @NotNull
     private String currency;
-    
+
     private ProjectBillItem(Builder builder) {
         available = builder.available;
         price = builder.price;
@@ -140,7 +140,23 @@ public class ProjectBillItem implements Serializable {
         item = builder.item;
         currency = builder.currency;
     }
-    
+
+    private ProjectBillItem(ProjectBillItem pbi) {
+        available = pbi.available;
+        price = pbi.price;
+        quantity = pbi.quantity;
+        cost = pbi.cost;
+        totalCost = pbi.totalCost;
+        percentage = pbi.percentage;
+        discount = pbi.discount;
+        salePrice = pbi.salePrice;
+        totalSalePrice = pbi.totalSalePrice;
+        totalNetPrice = pbi.totalNetPrice;
+        projectBill = pbi.projectBill;
+        item = pbi.item;
+        currency = pbi.currency;
+    }
+
     public ProjectBillItem() {
     }
 
@@ -278,116 +294,123 @@ public class ProjectBillItem implements Serializable {
 
     @Override
     public String toString() {
-        return "com.allone.projectmanager.entities.ProjectBillItem[ id=" + id + " ]";
+        return "id=" + id + ",available=" + available + ",price=" + price + ",quantity=" + quantity + ",cost=" + cost +
+                ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" + discount + ",salePrice=" +
+                salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" +
+                projectBill + ",item=" + item + ",currency=" + currency;
     }
 
-            
     public static class Builder {
+
         private Integer available;
-        
+
         private BigDecimal price;
-        
+
         private Integer quantity;
-        
+
         private BigDecimal cost;
-        
+
         private BigDecimal totalCost;
-        
+
         private BigDecimal percentage;
-        
+
         private BigDecimal discount;
-        
+
         private BigDecimal salePrice;
-        
+
         private BigDecimal totalSalePrice;
-        
+
         private BigDecimal totalNetPrice;
-        
+
         private Long projectBill;
-        
+
         private Long item;
-        
+
         private String currency;
 
         public Builder setAvailable(Integer available) {
             this.available = available;
-            
+
             return this;
         }
 
         public Builder setPrice(BigDecimal price) {
             this.price = price;
-            
+
             return this;
         }
 
         public Builder setQuantity(Integer quantity) {
             this.quantity = quantity;
-            
+
             return this;
         }
 
         public Builder setCost(BigDecimal cost) {
             this.cost = cost;
-            
+
             return this;
         }
 
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
-            
+
             return this;
         }
 
         public Builder setPercentage(BigDecimal percentage) {
             this.percentage = percentage;
-            
+
             return this;
         }
 
         public Builder setDiscount(BigDecimal discount) {
             this.discount = discount;
-            
+
             return this;
         }
 
         public Builder setSalePrice(BigDecimal salePrice) {
             this.salePrice = salePrice;
-            
+
             return this;
         }
 
         public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
             this.totalSalePrice = totalSalePrice;
-            
+
             return this;
         }
 
         public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
             this.totalNetPrice = totalNetPrice;
-            
+
             return this;
         }
 
         public Builder setProjectBill(Long projectBill) {
             this.projectBill = projectBill;
-            
+
             return this;
         }
 
         public Builder setItem(Long item) {
             this.item = item;
-            
+
             return this;
         }
-        
+
         public Builder setCurrency(String currency) {
             this.currency = currency;
             return this;
         }
-        
+
         public ProjectBillItem build() {
             return new ProjectBillItem(this);
+        }
+
+        public ProjectBillItem build(ProjectBillItem pbi) {
+            return new ProjectBillItem(pbi);
         }
     }
 }

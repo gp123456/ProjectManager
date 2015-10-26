@@ -42,7 +42,7 @@
         <h3>Select Subproject</h3>
         <p>
             <label class="custom-select">
-                <select id="bill-subproject" onchange="insertItem(this)"></select>
+                <select id="bill-subproject"></select>
             </label>
         </p>
         <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addSubProject()"/>
@@ -148,54 +148,50 @@
         </p>
         <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addItem()"/>
         <div id="add-item" hidden="true" title="Add Item">
-            <p class="validateTips">All form fields are required.</p>
-            <form>
-                <label>IMNO</label>
-                <input type="text" id="item-imno">
-                <label>Description</label>
-                <input type="text" id="item-desc">
-                <label>Locations</label>
-                <div id="item-location"></div>
-                <input type="button" value="Add" onclick="addLocation()"/>
-                <div id="add-location" hidden="true" title="Add Location">
-                    <p class="validateTips">All form fields are required.</p>
-                    <form>
-                        <label>Location</label>
-                        <input type="text" id="location">
-                        <label>Note</label>
-                        <textarea id="note">Note</textarea>
-                    </form>
-                </div><br/>
-                <label>Quantity</label>
-                <input type="text" id="item-quantity">
-                <label>Price</label>
-                <input type="text" id="item-price">
-                <label>Suppliers</label>
-                <div id="item-supplier"></div>
-                <input type="button" value="Add" id="new-project-add-customer" onclick="addSupplier()"/>
-                <div id="add-customer" hidden="true" title="Add Customer">
-                    <p class="validateTips">All form fields are required.</p>
-                    <form>
-                        <label>Name</label>
-                        <input type="text" id="supplier-name">
-                        <label>Reference Number</label>
-                        <input type="text" id="supplier-reference-number">
-                    </form>
-                </div><br/>
+            <form class="go-bottom">
+                <div>
+                    <input type="text" id="item-imno" required>
+                    <label class="go-bottom-label" for="item-imno">IMNO</label>
+                </div>
+                <div>
+                    <input type="text" id="item-desc" required>
+                    <label class="go-bottom-label" for="item-desc">Description</label>
+                </div>
+                <div>
+                    <input type="text" id="item-quantity" required>
+                    <label class="go-bottom-label" for="item-quantity">Quantity</label>
+                </div>
+                <div>
+                    <input type="text" id="item-price" required>
+                    <label class="go-bottom-label" for="item-price">Price</label>
+                </div>
+                <p>
+                    <label class="custom-select">
+                        <select id="item-location"></select>
+                    </label>
+                </p>
+                <p>
+                    <label class="custom-select">
+                        <select id="item-supplier"></select>
+                    </label>
+                </p>
             </form>
         </div>
         <input type="hidden" id="item_id" name="id"/>
     </div>
+    <h2>Bill of Material Summary</h2>
     <div>
         <table class="table tablesorter">
             <thead>
                 <tr>
+                    <th style="display:none">Project Id</th>
                     <th>Total Cost(&#8364)</th>
                     <th>Average Discount(%)</th>
                     <th>Sales Price(&#8364)</th>
                     <th>Total Net Price(&#8364)</th>
                     <th>Currency</th>
                     <th>Subproject</th>
+                    <th>Save</th>
                     <th>Delete</th>
                     <th>Save to PDF</th>
                     <th>Print to PDF</th>
@@ -206,13 +202,12 @@
             <tbody id="project-bill"></tbody>
         </table>
     </div>
-    <h2>Project Bill Items</h2>
+    <h2>Bill of Material Detial</h2>
     <div>
         <table class="table tablesorter">
             <thead>
                 <tr>
                     <th>Code</th>
-                    <th>Description</th>
                     <th>Available</th>
                     <th>Price(&#8364)</th>
                     <th >Quantity</th>
@@ -234,8 +229,5 @@
             <tbody id="project-bill-items"></tbody>
         </table>
     </div>
-    <div><p><label>Notes</label></p><textarea id="notes" name="notes" rows="10" style="width: 100%"></textarea></div>
-    <div class="critDivs" style="left:20px;">
-        <input type="button" class="btnsubmit content_align" value="Save" id="inquiry-quotation-xls" onclick="saveProjectBill()"/>
-    </div>
+    <div><h2>Notes</h2><textarea id="notes" name="notes" rows="10" style="width: 100%"></textarea></div>
 </div>

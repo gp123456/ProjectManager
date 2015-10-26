@@ -6,7 +6,6 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Contact;
@@ -27,8 +26,6 @@ import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/project")
 public class ProjectBillController extends ProjectCommon {
 
-    private static final Logger logger = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectBillController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -97,36 +94,37 @@ public class ProjectBillController extends ProjectCommon {
         String response = "";
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
         String subproject = (pd != null) ? pd.getReference() : "";
+        Long pdid = (pd != null) ? pd.getId() : 0l;
 
         response +=
         "<tr>" +
+        "<td id='bill-projectdetail-id' style='display:none'>" + pdid + "</td>" +
         "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>" +
         "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
         "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
         "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
         "<td id='m_currency'>" + pb.getCurrency() + "</td>" +
         "<td id='m_subproject'>" + subproject + "</td>" +
-        "<td><input type='button' value='Delete' style='text-align:center; " +
-        "vertical-align: middle;' id='delete' onclick='delete()'></td>\n" +
-        "<td><input type='button' value='Save PDF' style='text-align:center; " +
-        "vertical-align: middle;' id='save-pdf' onclick='savePDF()'></td>\n" +
-        "<td><input type='button' value='Print PDF' style='text-align:center; " +
-        "vertical-align: middle;' id='print-pdf' onclick='printPDF()'></td>\n" +
-        "<td><input type='button' value='Save Excel' style='text-align:center; " +
-        "vertical-align: middle;' id='save-xls' onclick='saveXLS()'></td>\n" +
-        "<td><input type='button' value='Send eMail' style='text-align:center; " +
-        "vertical-align: middle;' id='send-email' onclick='sendEmail()'></td>\n" +
+        "<td><input type='button' value='Save' class='button' id='save' onclick='saveProjectBill()'></td>\n" +
+        "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete()'></td>\n" +
+        "<td><input type='button' value='Save PDF' class='button' id='save-pdf' onclick='savePDF()'></td>\n" +
+        "<td><input type='button' value='Print PDF' class='button' id='print-pdf' onclick='printPDF()'></td>\n" +
+        "<td><input type='button' value='Save Excel' class='button' id='save-xls' onclick='saveXLS()'></td>\n" +
+        "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEmail()'></td>\n" +
         "</tr>";
 
         return response;
     }
 
     private String getCurrencies() {
-        String currencies = "<select id='select-new-item-company' style='width:50px;'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+        String currencies = "<select id='select-new-item-company' style='width:50px;'>\n";
 
         for (CurrencyEnum cu : CurrencyEnum.values()) {
-            currencies += "<option value=\"" + cu.toString() + "\">" + cu.toString() + "</option>";
+            if (cu.equals(CurrencyEnum.EUR)) {
+                currencies += "<option value='" + cu.toString() + "' selected='selected'>" + cu.toString() + "</option>";
+            } else {
+                currencies += "<option value='" + cu.toString() + "'>" + cu.toString() + "</option>";
+            }
         }
         currencies += "</select>";
 
@@ -135,59 +133,63 @@ public class ProjectBillController extends ProjectCommon {
 
     private String createProjectBillItems() {
         String response = "";
-        Set<Long> projectBillKeys = getProjectBillKeys();
+        Set<Long> pdIds = getProjectBillDetailIds();
 
-        if (projectBillKeys != null && projectBillKeys.isEmpty() == false) {
-            for (Long key : projectBillKeys) {
-                ProjectBillItem pbi = getProjectBillItem(key);
-                Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
-                Integer quantity = pbi.getQuantity();
-                BigDecimal cost = pbi.getCost();
-                BigDecimal totalCost = pbi.getTotalCost();
-                BigDecimal percentage = pbi.getPercentage();
-                BigDecimal discount = pbi.getDiscount();
-                BigDecimal salePrice = pbi.getSalePrice();
-                BigDecimal totalSalePrice = pbi.getTotalSalePrice();
-                BigDecimal totalNetPrice = pbi.getTotalNetPrice();
+        if (pdIds != null && pdIds.isEmpty() == false) {
+            for (Long pdId : pdIds) {
+                Collection<ProjectBillItem> pbItems = getProjectBillItems(pdId);
+                ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
-                response +=
-                "<tr>" +
-                "<td>" + item.getImno() + "</td>" +
-                "<td>" + item.getDescription() + "</td>" +
-                "<td id='available" + item.getId() + "'>" + item.getQuantity() + "</td>" +
-                "<td>" + item.getPrice() + "</td>" +
-                "<td id='quantity" + item.getId() + "'>" + "<div contenteditable></div>" + (!quantity.equals(0) ?
-                quantity : "") + "</td>" +
-                "<td id='cost" + item.getId() + "'><div contenteditable></div>" + ((cost != null) ? cost : "") + "</td>" +
-                "<td id='total_cost" + item.getId() + "'>" + ((totalCost != null) ? totalCost : "") + "</td>" +
-                "<td id='percentage" + item.getId() + "'><div contenteditable></div>" + ((percentage != null) ?
-                        percentage : "") + "</td>" +
-                "<td id='discount" + item.getId() + "'><div contenteditable></div>" + ((discount != null) ?
-                        discount : "") + "</td>" +
-                "<td id='sale_price" + item.getId() + "'>" + ((salePrice != null) ? salePrice : "") + "</td>" +
-                "<td id='total_sale_price" + item.getId() + "'>" + ((totalSalePrice != null) ? totalSalePrice :
-                        "") + "</td>" +
-                "<td id='total_net_price" + item.getId() + "'>" + ((totalNetPrice != null) ? totalNetPrice :
-                        "") + "</td>" +
-                "<td id='currency" + item.getId() + "'>" + getCurrencies() + "</td>" +
-                "<td id='subproject" + item.getId() + "'></td>" +
-                "<td><input type='button' value='Edit' style='text-align:center; vertical-align: middle;' " +
-                "onclick='editValues(" + item.getId() + ")'></td>" +
-                "<td><input type='button' value='Refresh' style='text-align:center; vertical-align: middle;' " +
-                "onclick='changeValues(" + item.getId() + ")'></td>" +
-                "<td><input type='button' value='Save' style='text-align:center;vertical-align:middle;' " +
-                "onclick='newProjectBillInfo(" + item.getId() + ")'></td>" +
-                "<td><input type='checkbox' value='checked' style='text-align:center; vertical-align: middle;' " +
-                "onclick='removeProjectBillInfo(" + item.getId() + ")'></td>" +
-                "</tr>";
+                if (pbItems != null && !pbItems.isEmpty()) {
+                    for (ProjectBillItem pbItem : pbItems) {
+                        Item item = srvProjectManager.getDaoItem().getById(pbItem.getItem());
+                        String quantity = (!pbItem.getQuantity().equals(0)) ? pbItem.getQuantity().toString() : "";
+                        String cost = (pbItem.getCost() != null) ? pbItem.getCost().toString() : "";
+                        String totalCost = (pbItem.getTotalCost() != null) ? pbItem.getTotalCost().toString() : "";
+                        String percentage = (pbItem.getPercentage() != null) ? pbItem.getPercentage().toString() : "";
+                        String discount = (pbItem.getDiscount() != null) ? pbItem.getDiscount().toString() : "";
+                        String salePrice = (pbItem.getSalePrice() != null) ? pbItem.getSalePrice().toString() : "";
+                        String totalSalePrice = (pbItem.getTotalSalePrice() != null) ? pbItem.getTotalSalePrice().
+                               toString() : "";
+                        String totalNetPrice = (pbItem.getTotalNetPrice() != null) ? pbItem.getTotalNetPrice().
+                               toString() : "";
+
+                        response +=
+                        "<tr>" +
+                        "<td>" + item.getImno() + "</td>" +
+                        "<td id='available" + pdId + item.getId() + "'>" + item.getQuantity() + "</td>" +
+                        "<td id='price" + pdId + item.getId() + "'>" + item.getPrice() + "</td>" +
+                        "<td id='quantity" + pdId + item.getId() + "'>" + "<div contenteditable></div>" + quantity +
+                        "</td>" +
+                        "<td id='cost" + pdId + item.getId() + "'><div contenteditable></div>" + cost + "</td>" +
+                        "<td id='total_cost" + pdId + item.getId() + "'>" + totalCost + "</td>" +
+                        "<td id='percentage" + pdId + item.getId() + "'><div contenteditable></div>" + percentage +
+                        "</td>" +
+                        "<td id='discount" + pdId + item.getId() + "'><div contenteditable></div>" + discount + "</td>" +
+                        "<td id='sale_price" + pdId + item.getId() + "'>" + salePrice + "</td>" +
+                        "<td id='total_sale_price" + pdId + item.getId() + "'>" + totalSalePrice + "</td>" +
+                        "<td id='total_net_price" + pdId + item.getId() + "'>" + totalNetPrice + "</td>" +
+                        "<td id='currency" + pdId + item.getId() + "'>" + getCurrencies() + "</td>" +
+                        "<td>" + pd.getReference() + "</td>" +
+                        "<td><input type='button' value='Edit' class='button' onclick='editValues(" + pdId + "," + item.
+                        getId() + ")'></td>" +
+                        "<td><input type='button' value='Refresh' class='button' onclick='refreshValues(" + pdId + "," +
+                        item.getId() + ")'></td>" +
+                        "<td><input type='button' value='Save' class='button' onclick='saveValues(" + pdId + "," + item.
+                        getId() + ")'></td>" +
+                        "<td><input type='button' value='Remove' class='button' onclick='removeValues(" + pdId + "," +
+                        item.getId() + ")'></td>" +
+                        "</tr>";
+                    }
+                }
             }
         }
 
         return response;
     }
 
-    private ProjectBill getAverangeDiscount() {
-        Collection<ProjectBillItem> items = getProjectBillItems();
+    private ProjectBill getAverangeDiscount(Long pdId) {
+        Collection<ProjectBillItem> items = getProjectBillItems(pdId);
         BigDecimal totalCost = BigDecimal.ZERO;
         BigDecimal averangeDiscount = BigDecimal.ZERO;
         BigDecimal totalSalePrice = BigDecimal.ZERO;
@@ -204,8 +206,8 @@ public class ProjectBillController extends ProjectCommon {
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()));
         }
 
-        return new ProjectBill.Builder().setTotalCost(totalCost).setAverangeDiscount(averangeDiscount).
-                setTotalSalePrice(totalSalePrice).setTotalNetPrice(totalNetPrice).build();
+        return new ProjectBill.Builder().setProject(pdId).setTotalCost(totalCost).setAverangeDiscount(averangeDiscount)
+                .setTotalSalePrice(totalSalePrice).setTotalNetPrice(totalNetPrice).build();
     }
 
     @RequestMapping(value = "/project-bill")
@@ -223,9 +225,9 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/new")
     public @ResponseBody
-    String newItem(Item item, Model model) {
+    String newItem(Long pdId, Item item, Model model) {
         if (!item.getId().equals(0l)) {
-            setVirtualProjectBillInfo(item.getId(), model, srvProjectManager);
+            setVirtualProjectBillInfo(pdId, item.getId(), srvProjectManager);
         }
 
         return createProjectBillItems();
@@ -233,8 +235,8 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/new/info")
     public @ResponseBody
-    String newItemInfo(ProjectBillItem item, Model model) {
-        ProjectBillItem temp = getProjectBillItem(item.getId());
+    String newItemInfo(Long pdId, ProjectBillItem item, Model model) {
+        ProjectBillItem temp = getProjectBillItem(pdId, item.getItem());
         Map<String, String> content = new HashMap<>();
 
         if (temp != null) {
@@ -248,48 +250,43 @@ public class ProjectBillController extends ProjectCommon {
                 temp.setCost(item.getCost());
             }
 
-            editVirtualProjectBillInfo(temp);
+            editVirtualProjectBillItem(pdId, temp);
         } else {
-            editVirtualProjectBillInfo(item);
+            editVirtualProjectBillItem(pdId, item);
         }
-        content.put("project_bill", createProjectBill(getAverangeDiscount()));
-        content.put("project_bill_items",
-                    createProjectBillItems());
+        content.put("project_bill", createProjectBill(getAverangeDiscount(pdId)));
+        content.put("project_bill_items", createProjectBillItems());
 
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "/project-bill/remove/info")
+    @RequestMapping(value = "/project-bill/remove")
     public @ResponseBody
-    String removeItemInfo(ProjectBillItem item, Model model) {
+    String removeItemInfo(Long pdId, ProjectBillItem item, Model model) {
         Map<String, String> content = new HashMap<>();
 
-        removeVirtualProjectBillInfo(item.getId());
-        content.put("project_bill", createProjectBill(getAverangeDiscount()));
-        content.put("project_bill_items",
-                    createProjectBillItems());
+        removeVirtualProjectBillInfo(pdId, item.getId());
+        content.put("project_bill", createProjectBill(getAverangeDiscount(pdId)));
+        content.put("project_bill_items", createProjectBillItems());
 
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "/project-bill/changevalues")
+    @RequestMapping(value = "/project-bill/refresh")
     public @ResponseBody
-    String changeCost(ProjectBillItem item, Long itemId, Model model) {
+    String refreshValues(Long pdId, ProjectBillItem item, Model model) {
+        logger.log(Level.INFO, "--------------{0}", item.toString());
+
         Boolean findValues = Boolean.FALSE;
-        ProjectBillItem temp = getProjectBillItem(item.getId());
+        ProjectBillItem temp = getProjectBillItem(pdId, item.getItem());
 
         if (temp != null) {
-            Integer available = item.getAvailable();
-            BigDecimal price = item.getPrice();
             Integer quantity = item.getQuantity();
             BigDecimal cost = item.getCost();
             BigDecimal percentage = item.getPercentage();
             BigDecimal discount = item.getDiscount();
             BigDecimal percent = new BigDecimal(100);
 
-            if (itemId != null) {
-                temp.setItem(itemId);
-            }
             if (quantity != null && !quantity.equals(0)) {
                 temp.setQuantity(quantity);
                 findValues = Boolean.TRUE;
@@ -345,8 +342,7 @@ public class ProjectBillController extends ProjectCommon {
                 }
             }
 
-            editVirtualProjectBillInfo(temp);
-//            srvProjectManager.getDaoItem().update(temp.getItemId());
+            editVirtualProjectBillItem(pdId, temp);
 
             return createProjectBillItems();
         }
@@ -356,7 +352,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/save")
     public @ResponseBody
-    String saveItem(ProjectBill pb, Model model) {
+    String Save(ProjectBill pb, Model model) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
 
         if (pd != null) {
@@ -371,8 +367,8 @@ public class ProjectBillController extends ProjectCommon {
             }
         }
         pb = srvProjectManager.getDaoProjectBill().add(pb);
-        editVirtualProjectBillInfo(pb);
-        srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems());
+        setVirtualProjectBillItemBillId(pb.getProject(), pd.getId());
+        srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pb.getId()));
         clearVirtualProjectBill();
         model.addAttribute("pd_id", 0);
         model.addAttribute("project_reference", "");
@@ -401,14 +397,14 @@ public class ProjectBillController extends ProjectCommon {
         List<Company> suppliers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.SUPPLIER.toString());
         Map<String, String> content = new HashMap<>();
         String htmlStock = "<select id='select-item-location'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+               "<option value='-1' selected='selected'>Select Location</option>\n";
         String htmlSupplier = "<select id='select-item-supplier'>\n" +
-               "<option value='-1' selected='selected'>Select</option>\n";
+               "<option value='-1' selected='selected'>Select Supplier</option>\n";
 
         if (stocks != null && !stocks.isEmpty()) {
-            for (Stock stock : stocks) {
-                htmlStock += "<option value='" + stock.getId() + "'>" + stock.getLocation() + "</option>\n";
-            }
+            htmlStock += stocks.stream()
+            .map((stock) -> "<option value='" + stock.getId() + "'>" + stock.getLocation() + "</option>\n")
+            .reduce(htmlStock, String::concat);
             htmlStock += "</select>";
             content.put("location", htmlStock);
         }
@@ -485,10 +481,10 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/insert-new-item")
     public @ResponseBody
-    String insertNewItem(Item item, Model model) {
+    String insertNewItem(Long pdId, Item item, Model model) {
         item = srvProjectManager.getDaoItem().add(item);
         if (!item.getId().equals(0l)) {
-            setVirtualProjectBillInfo(item.getId(), model, srvProjectManager);
+            setVirtualProjectBillInfo(pdId, item.getId(), srvProjectManager);
         }
 
         return createProjectBillItems();
@@ -507,31 +503,31 @@ public class ProjectBillController extends ProjectCommon {
             pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(getUser().getId());
             pd.setCreated(new Date());
-            
+
             ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
-            
+
             if (dbpd != null) {
                 String dbpdReference = dbpd.getReference();
                 String subid = dbpdReference.substring(dbpdReference.lastIndexOf("/") + 1);
                 Integer nextsubid = Integer.parseInt(subid) + 1;
-                
+
                 pd.setReference(dbpdReference.replace(subid, nextsubid.toString()));
             } else {
                 pd.setReference(getUser().getProject_reference() + "/A");
             }
-            
+
             pd.setId(null);
             pd = srvProjectManager.getDaoProjectDetail().add(pd);
 
             List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
             String response = "";
-            
+
             if (pds != null && !pds.isEmpty()) {
                 for (ProjectDetail _pd : pds) {
                     response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "</option>";;
                 }
             }
-            
+
             return response;
         } else {
             return "";

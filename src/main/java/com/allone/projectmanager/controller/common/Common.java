@@ -15,14 +15,17 @@ import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.ui.Model;
 
 /**
@@ -31,18 +34,20 @@ import org.springframework.ui.Model;
  */
 public class Common {
 
+    private static final Logger logger = Logger.getLogger(Common.class.getName());
+
     private ProjectTypeEnum projectType;
 
     private static final User user = new User();
 
-    private Map<Long, ProjectBillItem> mapProjectBillItems = new HashMap<>();
+    private final Map<Long, List<ProjectBillItem>> mapProjectBillItems = new HashMap<>();
 
     private String side_bar;
 
     private String content;
 
     private String title;
-    
+
     private String header;
 
     private SearchCriteria searchCriteria;
@@ -52,11 +57,9 @@ public class Common {
         String response = "<option value=\"none\" selected=\"selected\">Select Type</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
-            }
+            response += info.stream()
+            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+            reduce(response, String::concat);
         }
 
         return response;
@@ -67,11 +70,9 @@ public class Common {
         String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
-            }
+            response += info.stream()
+            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+            reduce(response, String::concat);
         }
 
         return response;
@@ -79,18 +80,18 @@ public class Common {
 
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
+        String response =
+               (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
                "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
+            for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(id)) {
                     if (si.getId().equals(id)) {
-                        response += "<option value='" + si.getId() + "' selected='selected'>" + si.getName() + "</option>";
+                        response += "<option value='" + si.getId() + "' selected='selected'>" + si.getName() +
+                        "</option>";
                     }
-                } 
+                }
                 response += "<option value='" + si.getId() + "'>" + si.getName() + "</option>";
             }
         }
@@ -100,16 +101,16 @@ public class Common {
 
     public String createSearchCustomer(ProjectManagerService srvProjectManager, String name) {
         List<SearchInfo> info = getSearchCriteriaCustomer(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(name)) ? "<option value='none' selected='selected'>Select Customer</option>" :
+        String response = (Strings.isNullOrEmpty(name)) ?
+               "<option value='none' selected='selected'>Select Customer</option>" :
                "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
+            for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(name)) {
                     if (si.getId().equals(name)) {
-                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() + "</option>";
+                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() +
+                        "</option>";
                     }
                 }
                 response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
@@ -124,11 +125,9 @@ public class Common {
         String response = "<option value=\"none\" selected=\"selected\">Select Company</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
-                response += "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>";
-            }
+            response += info.stream()
+            .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
+                                                                                                          String::concat);
         }
 
         return response;
@@ -140,9 +139,7 @@ public class Common {
                "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            for (Iterator<Contact> it = info.iterator(); it.hasNext();) {
-                Contact c = it.next();
-
+            for (Contact c : info) {
                 if (id != null) {
                     if (c.getVessel().equals(id)) {
                         response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
@@ -160,28 +157,26 @@ public class Common {
         String response = "<option value=\"none\" selected=\"selected\">Select</option>";
 
         if (info != null && !info.isEmpty() && info.get(0) != null) {
-            for (Iterator<SearchInfo> it = info.iterator(); it.hasNext();) {
-                SearchInfo si = it.next();
-
-                response += "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>";
-            }
+            response = info.stream().
+            map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").reduce(response,
+                                                                                                       String::concat);
         }
 
         return response;
     }
-    
+
     public String refreshSearchContent(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
-        Map<String, String> content = new HashMap<>();
+        Map<String, String> contentMap = new HashMap<>();
 
-        content.put("reference", createSearchReference(srvProjectManager, offset, size));
-        content.put("type", createSearchType());
-        content.put("status", createSearchStatus());
-        content.put("vessel", createSearchVessel(srvProjectManager, null));
-        content.put("customer", createSearchCustomer(srvProjectManager, null));
-        content.put("company", createSearchCompany());
-        content.put("contact", createSearchContact(srvProjectManager, null));
+        contentMap.put("reference", createSearchReference(srvProjectManager, offset, size));
+        contentMap.put("type", createSearchType());
+        contentMap.put("status", createSearchStatus());
+        contentMap.put("vessel", createSearchVessel(srvProjectManager, null));
+        contentMap.put("customer", createSearchCustomer(srvProjectManager, null));
+        contentMap.put("company", createSearchCompany());
+        contentMap.put("contact", createSearchContact(srvProjectManager, null));
 
-        return new Gson().toJson(content);
+        return new Gson().toJson(contentMap);
     }
 
     public void setHeaderInfo(Model model) {
@@ -202,16 +197,20 @@ public class Common {
         model.addAttribute("items", items);
     }
 
-    public Collection<ProjectBillItem> getProjectBillItems() {
-        return mapProjectBillItems.values();
+    public Collection<ProjectBillItem> getProjectBillItems(Long pdId) {
+        return mapProjectBillItems.get(pdId);
     }
 
-    public Set<Long> getProjectBillKeys() {
+    public Set<Long> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();
     }
 
-    public ProjectBillItem getProjectBillItem(Long id) {
-        return mapProjectBillItems.get(id);
+    public ProjectBillItem getProjectBillItem(Long pdId, Long itemId) {
+
+        Map<Long, ProjectBillItem> result = mapProjectBillItems.get(pdId).stream().collect(Collectors.toMap(
+                                   ProjectBillItem::getItem, (c) -> c));
+
+        return result.get(itemId);
     }
 
     public String getHeader() {
@@ -265,9 +264,9 @@ public class Common {
         List<SearchInfo> si = new ArrayList<>();
 
         if (tp != null && tp.isEmpty() == false && tp.get(0) != null) {
-            for (Project value : tp) {
+            tp.stream().forEach((Project value) -> {
                 si.add(new SearchInfo(value.getId().toString(), value.getReference()));
-            }
+            });
         }
 
         return si;
@@ -299,11 +298,9 @@ public class Common {
         List<SearchInfo> si = new ArrayList<>();
 
         if (v != null && v.isEmpty() == false && v.get(0) != null) {
-            for (Iterator<Vessel> it = v.iterator(); it.hasNext();) {
-                Vessel value = it.next();
-
+            v.stream().forEach((value) -> {
                 si.add(new SearchInfo(value.getId().toString(), value.getName()));
-            }
+            });
         }
 
         return si;
@@ -315,11 +312,9 @@ public class Common {
         List<SearchInfo> si = new ArrayList<>();
 
         if (c != null && c.isEmpty() == false && c.get(0) != null) {
-            for (Iterator<Company> it = c.iterator(); it.hasNext();) {
-                Company value = it.next();
-
+            c.stream().forEach((value) -> {
                 si.add(new SearchInfo(value.getName(), value.getName()));
-            }
+            });
         }
 
         return si;
@@ -350,28 +345,41 @@ public class Common {
         model.addAttribute("project-bill", pb);
     }
 
-    public void setVirtualProjectBillInfo(Long itemId, Model model, ProjectManagerService srvProjectManager) {
-        Item item = srvProjectManager.getDaoItem().getById(itemId);
+    public void setVirtualProjectBillInfo(Long pdId, Long itemId, ProjectManagerService srvProjectManager) {
+        if (pdId != null && itemId != null) {
+            Item item = srvProjectManager.getDaoItem().getById(itemId);
+            ProjectBillItem pbi = new ProjectBillItem.Builder().setAvailable(item.getQuantity()).setQuantity(0).
+                            setPrice(item.getPrice()).setItem(item.getId()).build();
+            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
 
-        if (item != null) {
-            mapProjectBillItems.put(itemId, new ProjectBillItem.Builder().setAvailable(0).setQuantity(0)
-                                    .setPrice(item.getPrice()).setItem(item.getId()).build());
+            if (items != null) {
+                items.add(pbi);
+            } else {
+                mapProjectBillItems.put(pdId, new ArrayList<>(Arrays.asList(pbi)));
+            }
         }
     }
 
-    public void editVirtualProjectBillInfo(ProjectBillItem pbi) {
-        mapProjectBillItems.put(pbi.getItem(), pbi);
-    }
-
-    public void editVirtualProjectBillInfo(ProjectBill pb) {
-        for (ProjectBillItem pbi : mapProjectBillItems.values()) {
-            pbi.setId(null);
-            pbi.setProjectBill(pb.getId());
+    public void editVirtualProjectBillItem(Long pdId, ProjectBillItem pbi) {
+        if (pdId != null && pbi != null && pbi.getItem() != null) {
+            mapProjectBillItems.get(pdId).add(new ProjectBillItem.Builder().build(pbi));
         }
     }
 
-    public void removeVirtualProjectBillInfo(Long itemid) {
-        mapProjectBillItems.remove(itemid);
+    public void setVirtualProjectBillItemBillId(Long pdId, Long billId) {
+        if (pdId != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+
+            if (items != null && !items.isEmpty()) {
+                items.forEach((item) -> {
+                    item.setProjectBill(billId);
+                });
+            }
+        }
+    }
+
+    public void removeVirtualProjectBillInfo(Long pdId, Long itemid) {
+        mapProjectBillItems.get(pdId).remove(itemid);
     }
 
     public void clearVirtualProjectBill() {

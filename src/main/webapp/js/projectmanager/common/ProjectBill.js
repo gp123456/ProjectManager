@@ -6,10 +6,12 @@
 
 //insert new item in Project Bill table
 function insertItem(sel) {
+    var data = "pdId=" + $("#bill-subproject option:selected").val() + "&id=" + sel.value;
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/new",
-        data: "id=" + sel.value,
+        data: data,
         success: function (response) {
             $("#project-bill-items").html(response);
         },
@@ -18,18 +20,17 @@ function insertItem(sel) {
     });
 }
 
-function newProjectBillInfo(id) {
-    var available = Number($("#available" + id).text());
-    var quantity = Number($("#quantity" + id).text());
+function saveValues(pdid, id) {
+    var available = Number($("#available" + pdid + id).text());
+    var quantity = Number($("#quantity" + pdid + id).text());
 
     if (available < quantity) {
         alert("The quantity must is less or equal than quantity of item [" + available + "," + quantity + "]");
     } else {
-        var data = "id=" + id + "&quantity=" + $("#quantity" + id).text() + "&cost=" + $("#cost" + id).text() +
-                "&totalCost=" + $("#total_cost" + id).text() + "&percentage=" + $("#percentage" + id).text() +
-                "&discount=" + $("#discount" + id).text() + "&salePrice=" + $("#sale_price" + id).text() +
-                "&totalSalePrice=" + $("#total_sale_price" + id).text() + "&totalNetPrice=" +
-                $("#total_net_price" + id).text();
+        var data = "pdId=" + pdid + "&item=" + id + "&quantity=" + $("#quantity" + pdid + id).text() + "&cost=" + $("#cost" + pdid + id).text() +
+                "&totalCost=" + $("#total_cost" + pdid + id).text() + "&percentage=" + $("#percentage" + pdid + id).text() + "&discount=" +
+                $("#discount" + pdid + id).text() + "&salePrice=" + $("#sale_price" + pdid + id).text() + "&totalSalePrice=" + $("#total_sale_price" +
+                pdid + id).text() + "&totalNetPrice=" + $("#total_net_price" + pdid + id).text();
 
         $.ajax({
             type: "POST",
@@ -47,11 +48,11 @@ function newProjectBillInfo(id) {
     }
 }
 
-function removeProjectBillInfo(id) {
+function removeValues(pdid, id) {
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/remove/info",
-        data: "id=" + id,
+        url: "/ProjectManager/project/project-bill/remove",
+        data: "pdId=" + pdid + "&id=" + id,
         success: function (response) {
             var content = JSON.parse(response);
 
@@ -63,17 +64,39 @@ function removeProjectBillInfo(id) {
     });
 }
 
+function refreshValues(pdid, id) {
+    var data = "pdId=" + pdid + "&item=" + id + "&available=" + $("#available" + pdid + id).text() + "&price=" + $("#price" + pdid + id).text() +
+            "&quantity=" + $("#quantity" + pdid + id).text() + "&cost=" + $("#cost" + pdid + id).text() + "&percentage=" + $("#percentage" +
+            pdid + id).text() + "&discount=" + $("#discount" + pdid + id).text() + "&currency=" + $("#currency" + pdid + id + " option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/refresh",
+        data: data,
+        success: function (response) {
+            $("#project-bill-items").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function editValues(pdid, id) {
+    $("#quantity" + pdid + id).html("<div contenteditable></div>");
+    $("#cost" + pdid + id).html("<div contenteditable></div>");
+    $("#percentage" + pdid + id).html("<div contenteditable></div>");
+    $("#discount" + pdid + id).html("<div contenteditable></div>");
+}
+
 function saveProjectBill() {
+    var data = "project=" + $("#bill-projectdetail-id").val() + "&total_cost=" + $("#m_total_cost").text() + "&averange_discount=" +
+            $("#m_average_discount").text() + "&total_sale_price=" + $("#m_sale_price").text() + "&total_net_price=" + $("#m_net_sale_price").text() +
+            "&note=" + $("#notes").val();
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/save",
-        data: "project=" + $("#bill-projectdetail-id").val() +
-                "&total_cost=" + $("#m_total_cost").text() +
-                "&averange_discount=" + $("#m_average_discount").text() +
-                "&total_sale_price=" + $("#m_sale_price").text() +
-                "&total_net_price=" + $("#m_net_sale_price").text() +
-                "&note=" + $("#notes").val(),
+        data: data,
         success: function () {
             location.reload();
         },
@@ -87,24 +110,6 @@ function createProjectBillPDF() {
         type: "POST",
         url: "/ProjectManager/project/project-bill/createpdf",
         success: function () {
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function changeValues(id) {
-    var data = "id=" + id + "&code=" + $("#code" + id).text() + "&description=" + $("#description" + id).text() +
-            "&available=" + $("#available" + id).text() + "&price=" + $("#price" + id).text() +
-            "&quantity=" + $("#quantity" + id).text() + "&cost=" + $("#cost" + id).text() +
-            "&percentage=" + $("#percentage" + id).text() + "&discount=" + $("#discount" + id).text();
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/project-bill/changevalues",
-        data: data,
-        success: function (response) {
-            $("#project-bill-items").html(response);
         },
         error: function (e) {
         }
@@ -127,16 +132,16 @@ function addItem() {
     });
 }
 
-function insertNewItem() {
+function stockNewItem() {
+    alert("pressed stock");
+
+    var data = "pdId=" + $("#bill-subproject option:selected").val() + "&imno=" + $("#item-imno").val() + "description=" + $("#item-desc").val() +
+            "location=" + $("#item-location option:selected").val() + "quantity=" + $("#item-quantity").val() + "price=" + $("#item-price").val() +
+            "company=" + $("#item-location option:selected").val();
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/insert-new-item",
-        data: "imno=" + $("#item-imno").val() +
-                "description=" + $("#item-desc").val() +
-                "location=" + $("#item-location option:selected").val() +
-                "quantity=" + $("#item-quantity").val() +
-                "price=" + $("#item-price").val() +
-                "company=" + $("#item-location option:selected").val(),
+        data: data,
         success: function (response) {
             $("#project-bill-items").html(response);
         },
@@ -147,13 +152,23 @@ function insertNewItem() {
     $("#add-item").dialog("close");
 }
 
+function nostockNewItem() {
+    alert("pressed no stock");
+
+    $("#add-item").dialog("close");
+}
+
 function dlgNewItem() {
     $("#add-item").dialog({
         autoOpen: true,
         modal: true,
+        widht: 365,
         buttons: {
-            "submit": function () {
-                insertNewItem();
+            "stock": function () {
+                stockNewItem();
+            },
+            "no stock": function () {
+                nostockNewItem();
             }
         },
         show: {
@@ -165,13 +180,6 @@ function dlgNewItem() {
             duration: 1000
         }
     });
-}
-
-function editValues(id) {
-    $("#quantity" + id).html("<div contenteditable></div>");
-    $("#cost" + id).html("<div contenteditable></div>");
-    $("#percentage" + id).html("<div contenteditable></div>");
-    $("#discount" + id).html("<div contenteditable></div>");
 }
 
 function addSubProject() {
