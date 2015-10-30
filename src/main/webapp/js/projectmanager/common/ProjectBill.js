@@ -52,7 +52,7 @@ function removeValues(pdid, id) {
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/remove",
-        data: "pdId=" + pdid + "&id=" + id,
+        data: "pdId=" + pdid + "&item=" + id,
         success: function (response) {
             var content = JSON.parse(response);
 

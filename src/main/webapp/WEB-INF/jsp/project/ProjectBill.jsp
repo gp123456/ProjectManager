@@ -24,6 +24,7 @@
 
                 $("#bill-subproject").html(content.subprojects);
                 $("#bill-item").html(content.items);
+                $("#project-bill-items").html(content.projectBillItems);
             },
             error: function (xhr, status, error) {
                 alert(xhr);

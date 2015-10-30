@@ -86,32 +86,36 @@ public class ProjectBillController extends ProjectCommon {
             }
         }
         content.put("subprojects", response);
+        content.put("projectBillItems", createProjectBillItems());
 
         return new Gson().toJson(content);
     }
 
     private String createProjectBill(ProjectBill pb) {
         String response = "";
-        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
-        String subproject = (pd != null) ? pd.getReference() : "";
-        Long pdid = (pd != null) ? pd.getId() : 0l;
 
-        response +=
-        "<tr>" +
-        "<td id='bill-projectdetail-id' style='display:none'>" + pdid + "</td>" +
-        "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>" +
-        "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
-        "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
-        "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
-        "<td id='m_currency'>" + pb.getCurrency() + "</td>" +
-        "<td id='m_subproject'>" + subproject + "</td>" +
-        "<td><input type='button' value='Save' class='button' id='save' onclick='saveProjectBill()'></td>\n" +
-        "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete()'></td>\n" +
-        "<td><input type='button' value='Save PDF' class='button' id='save-pdf' onclick='savePDF()'></td>\n" +
-        "<td><input type='button' value='Print PDF' class='button' id='print-pdf' onclick='printPDF()'></td>\n" +
-        "<td><input type='button' value='Save Excel' class='button' id='save-xls' onclick='saveXLS()'></td>\n" +
-        "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEmail()'></td>\n" +
-        "</tr>";
+        if (pb != null) {
+            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
+            String subproject = (pd != null) ? pd.getReference() : "";
+            Long pdid = (pd != null) ? pd.getId() : 0l;
+
+            response +=
+            "<tr>" +
+            "<td id='bill-projectdetail-id' style='display:none'>" + pdid + "</td>" +
+            "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>" +
+            "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
+            "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
+            "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
+            "<td id='m_currency'>" + pb.getCurrency() + "</td>" +
+            "<td id='m_subproject'>" + subproject + "</td>" +
+            "<td><input type='button' value='Save' class='button' id='save' onclick='saveProjectBill()'></td>\n" +
+            "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete()'></td>\n" +
+            "<td><input type='button' value='Save PDF' class='button' id='save-pdf' onclick='savePDF()'></td>\n" +
+            "<td><input type='button' value='Print PDF' class='button' id='print-pdf' onclick='printPDF()'></td>\n" +
+            "<td><input type='button' value='Save Excel' class='button' id='save-xls' onclick='saveXLS()'></td>\n" +
+            "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEmail()'></td>\n" +
+            "</tr>";
+        }
 
         return response;
     }
@@ -190,24 +194,34 @@ public class ProjectBillController extends ProjectCommon {
 
     private ProjectBill getAverangeDiscount(Long pdId) {
         Collection<ProjectBillItem> items = getProjectBillItems(pdId);
-        BigDecimal totalCost = BigDecimal.ZERO;
-        BigDecimal averangeDiscount = BigDecimal.ZERO;
-        BigDecimal totalSalePrice = BigDecimal.ZERO;
-        BigDecimal totalNetPrice = BigDecimal.ZERO;
 
         if (items != null && !items.isEmpty()) {
+            BigDecimal totalCost = BigDecimal.ZERO;
+            BigDecimal averangeDiscount = BigDecimal.ZERO;
+            BigDecimal totalSalePrice = BigDecimal.ZERO;
+            BigDecimal totalNetPrice = BigDecimal.ZERO;
+        
             for (ProjectBillItem item : items) {
-                totalCost = totalCost.add(item.getTotalCost());
-                averangeDiscount = averangeDiscount.add(item.getDiscount());
-                totalSalePrice = totalSalePrice.add(item.getTotalSalePrice());
-                totalNetPrice = totalNetPrice.add(item.getTotalNetPrice());
+                totalCost = (item.getTotalCost() != null) ? totalCost.add(item.getTotalCost()) : BigDecimal.ZERO;
+                averangeDiscount = (item.getDiscount() != null) ? averangeDiscount.add(item.getDiscount()) :
+                BigDecimal.ZERO;
+                totalSalePrice = (item.getTotalSalePrice() != null) ? totalSalePrice.add(item.getTotalSalePrice()) :
+                BigDecimal.ZERO;
+                totalNetPrice = (item.getTotalNetPrice() != null) ? totalNetPrice.add(item.getTotalNetPrice()) : BigDecimal.ZERO;
             }
 
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()));
-        }
 
-        return new ProjectBill.Builder().setProject(pdId).setTotalCost(totalCost).setAverangeDiscount(averangeDiscount)
-                .setTotalSalePrice(totalSalePrice).setTotalNetPrice(totalNetPrice).build();
+            return new ProjectBill.Builder()
+                    .setProject(pdId)
+                    .setTotalCost(totalCost)
+                    .setAverangeDiscount(averangeDiscount)
+                    .setTotalSalePrice(totalSalePrice)
+                    .setTotalNetPrice(totalNetPrice)
+                    .build();
+        } else {
+            return null;
+        }
     }
 
     @RequestMapping(value = "/project-bill")
@@ -265,7 +279,7 @@ public class ProjectBillController extends ProjectCommon {
     String removeItemInfo(Long pdId, ProjectBillItem item, Model model) {
         Map<String, String> content = new HashMap<>();
 
-        removeVirtualProjectBillInfo(pdId, item.getId());
+        removeVirtualProjectBillInfo(pdId, item.getItem());
         content.put("project_bill", createProjectBill(getAverangeDiscount(pdId)));
         content.put("project_bill_items", createProjectBillItems());
 
@@ -275,8 +289,6 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/refresh")
     public @ResponseBody
     String refreshValues(Long pdId, ProjectBillItem item, Model model) {
-        logger.log(Level.INFO, "--------------{0}", item.toString());
-
         Boolean findValues = Boolean.FALSE;
         ProjectBillItem temp = getProjectBillItem(pdId, item.getItem());
 

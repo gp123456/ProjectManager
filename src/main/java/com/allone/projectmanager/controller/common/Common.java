@@ -206,7 +206,6 @@ public class Common {
     }
 
     public ProjectBillItem getProjectBillItem(Long pdId, Long itemId) {
-
         Map<Long, ProjectBillItem> result = mapProjectBillItems.get(pdId).stream().collect(Collectors.toMap(
                                    ProjectBillItem::getItem, (c) -> c));
 
@@ -362,7 +361,15 @@ public class Common {
 
     public void editVirtualProjectBillItem(Long pdId, ProjectBillItem pbi) {
         if (pdId != null && pbi != null && pbi.getItem() != null) {
-            mapProjectBillItems.get(pdId).add(new ProjectBillItem.Builder().build(pbi));
+            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+
+            if (items != null && !items.isEmpty()) {
+                items.stream().
+                        filter((item) -> (item.getItem().equals(pbi.getItem()))).
+                        forEach((item) -> {
+                    item = pbi;
+                });
+            }
         }
     }
 
@@ -379,7 +386,16 @@ public class Common {
     }
 
     public void removeVirtualProjectBillInfo(Long pdId, Long itemid) {
-        mapProjectBillItems.get(pdId).remove(itemid);
+        List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+
+        if (items != null && !items.isEmpty()) {
+            for (ProjectBillItem item : items) {
+                if (item.getItem().equals(itemid)) {
+                    items.remove(item);
+                    break;
+                }
+            }
+        }
     }
 
     public void clearVirtualProjectBill() {

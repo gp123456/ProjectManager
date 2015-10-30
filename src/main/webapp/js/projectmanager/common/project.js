@@ -448,7 +448,7 @@ function setProject(path) {
                     content.pdId;
         },
         error: function (xhr, status, error) {
-            alert(error);
+            alert("You must select an existing project from the list");
         }
     });
 
