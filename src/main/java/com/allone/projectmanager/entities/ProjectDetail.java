@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
                            query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findById",
                            query = "SELECT p FROM ProjectDetail p WHERE p.id = :id"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findLastByProject",
+                           query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.id DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByStatus",
                            query = "SELECT p FROM ProjectDetail p WHERE p.status = :status ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByType",

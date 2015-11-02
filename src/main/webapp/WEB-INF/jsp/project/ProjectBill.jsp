@@ -25,10 +25,9 @@
                 $("#bill-subproject").html(content.subprojects);
                 $("#bill-item").html(content.items);
                 $("#project-bill-items").html(content.projectBillItems);
+                $("#project-bill").html(content.projectBill);
             },
             error: function (xhr, status, error) {
-                alert(xhr);
-                alert(status);
                 alert(error);
             }
         });
@@ -150,6 +149,7 @@
         <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addItem()"/>
         <div id="add-item" hidden="true" title="Add Item">
             <form class="go-bottom">
+                <p class="validateTips" id="validate-add-item">All form fields are required.</p>
                 <div>
                     <input type="text" id="item-imno" required>
                     <label class="go-bottom-label" for="item-imno">IMNO</label>

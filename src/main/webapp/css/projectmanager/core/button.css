@@ -30,12 +30,19 @@ and open the template in the editor.
     text-decoration: none;
     vertical-align: middle;
 }
+
 .button:hover {
     border-top-color: #28597a;
     background: #28597a;
     color: #ccc;
 }
+
 .button:active {
     border-top-color: #1b435e;
     background: #1b435e;
+}
+
+.alarm {
+    border-top-color: #1b435e;
+    background: #8b0000;
 }

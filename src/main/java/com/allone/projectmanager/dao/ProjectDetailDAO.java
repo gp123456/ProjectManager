@@ -347,6 +347,24 @@ public class ProjectDetailDAO {
         }
     }
 
+    public ProjectDetail getLastByProject(Long project) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findLastByProject")
+            .setParameter("project", project).setMaxResults(1);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            ProjectDetail values = (query != null) ? (ProjectDetail) query.getSingleResult() : null;
+
+            em.close();
+
+            return values;
+        }
+    }
+
     public ProjectDetail add(ProjectDetail pd) {
         EntityManager em = emf.createEntityManager();
 

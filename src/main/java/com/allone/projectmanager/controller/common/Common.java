@@ -15,7 +15,6 @@ import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +40,8 @@ public class Common {
     private static final User user = new User();
 
     private final Map<Long, List<ProjectBillItem>> mapProjectBillItems = new HashMap<>();
+
+    private final Map<Long, ProjectBill> mapProjectBill = new HashMap<>();
 
     private String side_bar;
 
@@ -197,12 +198,24 @@ public class Common {
         model.addAttribute("items", items);
     }
 
+    public Long getNextNoStockItemId() {
+        return 1000000l + mapProjectBillItems.size() + 1;
+    }
+    
     public Collection<ProjectBillItem> getProjectBillItems(Long pdId) {
         return mapProjectBillItems.get(pdId);
     }
 
     public Set<Long> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();
+    }
+
+    public ProjectBill getProjectBill(Long pdId) {
+        return mapProjectBill.get(pdId);
+    }
+
+    public Set<Long> getProjectBillIds() {
+        return mapProjectBill.keySet();
     }
 
     public ProjectBillItem getProjectBillItem(Long pdId, Long itemId) {
@@ -344,11 +357,14 @@ public class Common {
         model.addAttribute("project-bill", pb);
     }
 
-    public void setVirtualProjectBillInfo(Long pdId, Long itemId, ProjectManagerService srvProjectManager) {
-        if (pdId != null && itemId != null) {
-            Item item = srvProjectManager.getDaoItem().getById(itemId);
-            ProjectBillItem pbi = new ProjectBillItem.Builder().setAvailable(item.getQuantity()).setQuantity(0).
-                            setPrice(item.getPrice()).setItem(item.getId()).build();
+    public void setVirtualProjectBill(ProjectBill pb) {
+        if (pb != null) {
+            mapProjectBill.put(pb.getProject(), pb);
+        }
+    }
+
+    public void setVirtualProjectBillItem(Long pdId, ProjectBillItem pbi) {
+        if (pdId != null && pbi != null) {
             List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
 
             if (items != null) {

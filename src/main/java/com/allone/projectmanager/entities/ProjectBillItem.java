@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -124,6 +125,15 @@ public class ProjectBillItem implements Serializable {
     @Column(name = "currency")
     @NotNull
     private String currency;
+    
+    @Transient
+    private String classRefresh;
+    
+    @Transient
+    private String classSave;
+    
+    @Transient
+    private String itemImno;
 
     private ProjectBillItem(Builder builder) {
         available = builder.available;
@@ -139,6 +149,9 @@ public class ProjectBillItem implements Serializable {
         projectBill = builder.projectBill;
         item = builder.item;
         currency = builder.currency;
+        classRefresh = builder.classRefresh;
+        classSave = builder.classSave;
+        itemImno = builder.itemImno;
     }
 
     private ProjectBillItem(ProjectBillItem pbi) {
@@ -272,6 +285,30 @@ public class ProjectBillItem implements Serializable {
         this.currency = currency;
     }
 
+    public String getClassRefresh() {
+        return classRefresh;
+    }
+
+    public void setClassRefresh(String classRefresh) {
+        this.classRefresh = classRefresh;
+    }
+
+    public String getClassSave() {
+        return classSave;
+    }
+
+    public void setClassSave(String classSave) {
+        this.classSave = classSave;
+    }
+
+    public String getItemImno() {
+        return itemImno;
+    }
+
+    public void setItemImno(String itemImno) {
+        this.itemImno = itemImno;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -327,6 +364,12 @@ public class ProjectBillItem implements Serializable {
         private Long item;
 
         private String currency;
+        
+        private String classRefresh;
+        
+        private String classSave;
+    
+        private String itemImno;
 
         public Builder setAvailable(Integer available) {
             this.available = available;
@@ -402,6 +445,20 @@ public class ProjectBillItem implements Serializable {
 
         public Builder setCurrency(String currency) {
             this.currency = currency;
+            return this;
+        }
+        
+        public Builder setClassRefresh(String classRefresh) {
+            this.classRefresh = classRefresh;
+            return this;
+        }
+        public Builder setClassSave(String classSave) {
+            this.classSave = classSave;
+            return this;
+        }
+        
+        public Builder setItemImno(String itemImno) {
+            this.itemImno = itemImno;
             return this;
         }
 

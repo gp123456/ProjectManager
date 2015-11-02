@@ -25,8 +25,8 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/ui.js"></script>
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/chosen.jquery.min.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.dataTables.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/jstree/jquery.jstree.js"></script>
