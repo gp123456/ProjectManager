@@ -19,6 +19,7 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/input-text.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/select.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/button.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/checkbox.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/radio-button.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/form-layout.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">

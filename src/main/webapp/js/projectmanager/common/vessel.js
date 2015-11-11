@@ -7,7 +7,7 @@
 function commitVessel() {
     var name = $("#vessel-name").val();
     var imo = $("#vessel-imo").val();
-    var company = $("#new-vessel-customer option:selected").val();
+    var company = $("#new-project-customer option:selected").val();
 
     var data = "name=" + name + "&flag=" + imo + "&company=" + company;
 
@@ -19,8 +19,8 @@ function commitVessel() {
             var content = JSON.parse(response)
 
             $("#new-project-vessel").html(content.vessel);
-            $("#new-project-customer").html(content.customer);
-            $("#new-project-contact").html(content.contact);
+//            $("#new-project-customer").html(content.customer);
+//            $("#new-project-contact").html(content.contact);
         },
         error: function (e) {
         }
@@ -28,20 +28,20 @@ function commitVessel() {
     $("#add-vessel").dialog("close");
 }
 
-function getCustomers() {
-    $.ajax({
-        type: "POST",
-        url: "lst-customer",
-        success: function (response) {
-            $("#new-vessel-customer").html(response);
-        },
-        error: function (e) {
-        }
-    });
-}
+//function getCustomers() {
+//    $.ajax({
+//        type: "POST",
+//        url: "lst-customer",
+//        success: function (response) {
+//            $("#new-vessel-customer").html(response);
+//        },
+//        error: function (e) {
+//        }
+//    });
+//}
 
 function addVessel() {
-    getCustomers();
+//    getCustomers();
     
     $("#add-vessel").dialog({
         autoOpen: true,

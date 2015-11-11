@@ -38,6 +38,7 @@
     <h1>Bill of Material - REF:${project_reference}</h1>
     <input type="hidden" id="bill-project-id" value=${p_id} />
     <input type="hidden" id="bill-projectdetail-id" value=${pd_id} />
+    <input type="hidden" id="bill-location-id"/>
     <div style="overflow-y: scroll">
         <h3>Select Subproject</h3>
         <p>
@@ -80,63 +81,67 @@
                         <td><input type="date" id="new-project-expired"></td>
                         <td></td>
                     </tr>
-                    <!- Vessel ->
-                    <tr>
-                        <td><label>Vessel</label></td>
-                        <td width="150px">
-                            <p>
-                                <label class="custom-select">
-                                    <select id="new-project-vessel" onchange="projectFilterVessel()"></select>
-                                </label>
-                            </p>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <!- Customer ->
-                    <tr>
-                        <td width="150px"><label>Customer</label></td>
-                        <td>
-                            <p>
-                                <label class="custom-select">
-                                    <select id="new-project-customer"></select>
-                                </label>
-                            </p>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <!- Contact ->
-                    <tr>
-                        <td width="150px"><label>Contact</label></td>
-                        <td>
-                            <p>
-                                <label class="custom-select">
-                                    <select id="new-project-contact"></select>
-                                </label>
-                            </p>
-                        </td>
-                        <td><input type="button" class="button" value="Add" id="new-project-add-contact" onclick="addContact()"/>
-                            <div id="add-contact" hidden="true" title="Add Contact">
-                                <form class="go-bottom">
-                                    <div>
-                                        <input type="text" id="contact-name" required>
-                                        <label class="go-bottom-label" for="contact-name">Name</label>
-                                    </div>
-                                    <div>
-                                        <input type="text" id="contact-surname" required>
-                                        <label class="go-bottom-label" for="contact-surname" >Surname</label>
-                                    </div>
-                                    <div>
-                                        <input type="text" id="contact-phone" required>
-                                        <label class="go-bottom-label" for="contact-phone">Phone</label>
-                                    </div>
-                                    <div>
-                                        <input type="text" id="contact-email" required>
-                                        <label class="go-bottom-label" for="contact-email">eMail</label>
-                                    </div>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                    <!-- Vessel -->
+                    <!--                    <tr>
+                                            <td><label>Vessel</label></td>
+                                            <td width="150px">
+                                                <p>
+                                                    <label class="custom-select">
+                                                        <select id="new-project-vessel" onchange="projectFilterVessel()"></select>
+                                                    </label>
+                                                </p>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <!- Customer ->
+                                        <tr>
+                                            <td width="150px"><label>Customer</label></td>
+                                            <td>
+                                                <p>
+                                                    <label class="custom-select">
+                                                        <select id="new-project-customer"></select>
+                                                    </label>
+                                                </p>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <!- Contact ->
+                                        <tr>
+                                            <td width="150px"><label>Contact</label></td>
+                                            <td>
+                                                <p>
+                                                    <label class="custom-select">
+                                                        <select id="new-project-contact"></select>
+                                                    </label>
+                                                </p>
+                                            </td>
+                                            <td><input type="button" class="button" value="Add" id="new-project-add-contact" onclick="addContact()"/>
+                                                <div id="add-contact" hidden="true" title="Add Contact">
+                                                    <form class="go-bottom">
+                                                        <div>
+                                                            <input type="text" id="contact-department" required>
+                                                            <label class="go-bottom-label" for="contact-department">Department</label>
+                                                        </div>
+                                                        <div>
+                                                            <input type="text" id="contact-name" required>
+                                                            <label class="go-bottom-label" for="contact-name">Name</label>
+                                                        </div>
+                                                        <div>
+                                                            <input type="text" id="contact-surname" required>
+                                                            <label class="go-bottom-label" for="contact-surname" >Surname</label>
+                                                        </div>
+                                                        <div>
+                                                            <input type="text" id="contact-phone" required>
+                                                            <label class="go-bottom-label" for="contact-phone">Phone</label>
+                                                        </div>
+                                                        <div>
+                                                            <input type="text" id="contact-email" required>
+                                                            <label class="go-bottom-label" for="contact-email">eMail</label>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>-->
                 </tbody>
             </table>
         </div>
@@ -191,7 +196,9 @@
                     <th>Sales Price(&#8364)</th>
                     <th>Total Net Price(&#8364)</th>
                     <th>Currency</th>
+                    <th>Location*</th>
                     <th>Subproject</th>
+                    <th>Replace</th>
                     <th>Save</th>
                     <th>Delete</th>
                     <th>Save to PDF</th>
@@ -203,6 +210,11 @@
             <tbody id="project-bill"></tbody>
         </table>
     </div>
+    <div id="replace-project-bill-items" hidden="true" title="Add Project Bill Items">
+        <form class="go-bottom">
+            <div id="lst-project-bill-items"></div>
+        </form>
+    </div>
     <h2>Bill of Material Detial</h2>
     <div>
         <table class="table tablesorter">
@@ -211,11 +223,11 @@
                     <th>Code</th>
                     <th>Available</th>
                     <th>Price(&#8364)</th>
-                    <th >Quantity</th>
-                    <th>Cost/PC(&#8364)</th>
+                    <th >Quantity*</th>
+                    <th>Cost/PC(&#8364)*</th>
                     <th>Total Cost(&#8364)</th>
-                    <th>Percentage(%)</th>
-                    <th>Discount(%)</th>
+                    <th>Percentage(%)*</th>
+                    <th>Discount(%)*</th>
                     <th>Sales Price/PC(&#8364)</th>
                     <th>Sales Price(&#8364)</th>
                     <th>Total Net Price(&#8364)</th>

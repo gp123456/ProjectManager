@@ -60,6 +60,31 @@ public class ContactDAO {
         }
     }
 
+    public List getByCompanyVessel(String company, Long vessel) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.Contact.findByCompanyVessel").
+            setParameter("company", company).
+            setParameter("vessel", vessel);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            List value = null;
+
+            try {
+                value = (query != null) ? query.getResultList() : null;
+            } catch (HibernateException e) {
+                System.out.printf("%s", e.getMessage());
+            } finally {
+                em.close();
+
+                return value;
+            }
+        }
+    }
+    
     public List getByVessel(Long vessel) {
         Query query = null;
         EntityManager em = emf.createEntityManager();

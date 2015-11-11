@@ -28,8 +28,11 @@ import javax.xml.bind.annotation.XmlRootElement;
                            query = "SELECT c FROM Contact c ORDER BY c.name"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById",
                            query = "SELECT c FROM Contact c WHERE c.id = :id"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByCompanyVessel",
+                           query =
+                           "SELECT c FROM Contact c WHERE c.company=:company AND c.vessel=:vessel ORDER BY c.name"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByVessel",
-                           query = "SELECT c FROM Contact c WHERE c.vessel = :vessel ORDER BY c.name")})
+                           query = "SELECT c FROM Contact c WHERE c.vessel=:vessel ORDER BY c.name")})
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,7 +58,6 @@ public class Contact implements Serializable {
 //    private Company company;
 //    @Column(name = "title")
 //    private String title;
-
     @Column(name = "phone")
     private String phone;
 
@@ -71,17 +73,21 @@ public class Contact implements Serializable {
 //    private Vessel vessel;
     @Column(name = "vessel")
     private Long vessel;
+    
+    @Column(name = "department")
+    private String department;
 
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "contact")
 //    private List<ProjectDetail> listProjectDetail;
     private Contact(Builder builder) {
-        name = builder.getName();
-        surname = builder.getSurname();
-        company = builder.getCompany();
-        phone = builder.getPhone();
-        email = builder.getEmail();
-        note = builder.getNote();
-        vessel = builder.getVessel();
+        name = builder.name;
+        surname = builder.surname;
+        company = builder.company;
+        phone = builder.phone;
+        email = builder.email;
+        note = builder.note;
+        vessel = builder.vessel;
+        department = builder.department;
 //        listProjectDetail = builder.getListProjectDetail();
     }
 
@@ -174,6 +180,15 @@ public class Contact implements Serializable {
 //    public void setListProjectDetail(List<ProjectDetail> listProjectDetail) {
 //        this.listProjectDetail = listProjectDetail;
 //    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -216,20 +231,14 @@ public class Contact implements Serializable {
 
 //        private Vessel vessel;
         private Long vessel;
+        
+        private String department;
 
 //       private List<ProjectDetail> listProjectDetail;
-        public String getName() {
-            return name;
-        }
-
         public Builder setName(String name) {
             this.name = name;
 
             return this;
-        }
-
-        public String getSurname() {
-            return surname;
         }
 
         public Builder setSurname(String surname) {
@@ -238,27 +247,16 @@ public class Contact implements Serializable {
             return this;
         }
 
-//        public Company getCompany() {
-//            return company;
-//        }
-//
 //        public Builder setCompany(Company company) {
 //            this.company = company;
 //            
 //            return this;
 //        }
-        public String getCompany() {
-            return company;
-        }
 
         public Builder setCompany(String company) {
             this.company = company;
 
             return this;
-        }
-
-        public String getPhone() {
-            return phone;
         }
 
         public Builder setPhone(String phone) {
@@ -267,18 +265,10 @@ public class Contact implements Serializable {
             return this;
         }
 
-        public String getEmail() {
-            return email;
-        }
-
         public Builder setEmail(String email) {
             this.email = email;
 
             return this;
-        }
-
-        public String getNote() {
-            return note;
         }
 
         public Builder setNote(String note) {
@@ -287,28 +277,24 @@ public class Contact implements Serializable {
             return this;
         }
 
-//        public Vessel getVessel() {
-//            return vessel;
-//        }
-//
 //        public Builder setVessel(Vessel vessel) {
 //            this.vessel = vessel;
 //            
 //            return this;
 //        }
-        public Long getVessel() {
-            return vessel;
-        }
-
+        
         public Builder setVessel(Long vessel) {
             this.vessel = vessel;
 
             return this;
         }
+        
+        public Builder setDepartment(String department) {
+            this.department = department;
 
-//        public List<ProjectDetail> getListProjectDetail() {
-//            return listProjectDetail;
-//        }
+            return this;
+        }
+
 //        public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
 //            this.listProjectDetail = listProjectDetail;
 //            

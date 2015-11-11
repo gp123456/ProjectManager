@@ -11,6 +11,7 @@ import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.model.ProjectBillModel;
 import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.ui.Model;
@@ -39,9 +41,9 @@ public class Common {
 
     private static final User user = new User();
 
-    private final Map<Long, List<ProjectBillItem>> mapProjectBillItems = new HashMap<>();
+    private final Map<ProjectBillModel, List<ProjectBillItem>> mapProjectBillItems = new HashMap<>();
 
-    private final Map<Long, ProjectBill> mapProjectBill = new HashMap<>();
+    private final Map<ProjectBillModel, ProjectBill> mapProjectBill = new HashMap<>();
 
     private String side_bar;
 
@@ -201,28 +203,32 @@ public class Common {
     public Long getNextNoStockItemId() {
         return 1000000l + mapProjectBillItems.size() + 1;
     }
-    
-    public Collection<ProjectBillItem> getProjectBillItems(Long pdId) {
-        return mapProjectBillItems.get(pdId);
+
+    public Collection<ProjectBillItem> getProjectBillItems(ProjectBillModel pbm) {
+        return mapProjectBillItems.get(pbm);
     }
 
-    public Set<Long> getProjectBillDetailIds() {
+    public Set<ProjectBillModel> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();
     }
 
-    public ProjectBill getProjectBill(Long pdId) {
-        return mapProjectBill.get(pdId);
+    public ProjectBill getProjectBill(ProjectBillModel pdm) {
+        return mapProjectBill.get(pdm);
     }
 
-    public Set<Long> getProjectBillIds() {
+    public Set<ProjectBillModel> getProjectBillIds() {
         return mapProjectBill.keySet();
     }
 
-    public ProjectBillItem getProjectBillItem(Long pdId, Long itemId) {
-        Map<Long, ProjectBillItem> result = mapProjectBillItems.get(pdId).stream().collect(Collectors.toMap(
-                                   ProjectBillItem::getItem, (c) -> c));
+    public ProjectBillItem getProjectBillItem(ProjectBillModel pbm, Long itemId) {
+        if (!mapProjectBillItems.isEmpty()) {
+            Map<Long, ProjectBillItem> result = mapProjectBillItems.get(pbm).stream().collect(Collectors.toMap(
+                                       ProjectBillItem::getItem, (c) -> c));
 
-        return result.get(itemId);
+            return result.get(itemId);
+        }
+        
+        return null;
     }
 
     public String getHeader() {
@@ -357,20 +363,26 @@ public class Common {
         model.addAttribute("project-bill", pb);
     }
 
-    public void setVirtualProjectBill(ProjectBill pb) {
+    public void setVirtualProjectBill(ProjectBill pb, Integer locationId) {
         if (pb != null) {
-            mapProjectBill.put(pb.getProject(), pb);
+            mapProjectBill.put(new ProjectBillModel(pb.getProject(), locationId), pb);
         }
     }
 
-    public void setVirtualProjectBillItem(Long pdId, ProjectBillItem pbi) {
+    public void removeVirtualProjectBill(Long pdId, Integer locationId) {
+        if (pdId != null && locationId != null) {
+            mapProjectBill.remove(new ProjectBillModel(pdId, locationId));
+        }
+    }
+
+    public void setVirtualProjectBillItem(Long pdId, Integer location, ProjectBillItem pbi) {
         if (pdId != null && pbi != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+            List<ProjectBillItem> items = mapProjectBillItems.get(new ProjectBillModel(pdId, location));
 
             if (items != null) {
                 items.add(pbi);
             } else {
-                mapProjectBillItems.put(pdId, new ArrayList<>(Arrays.asList(pbi)));
+                mapProjectBillItems.put(new ProjectBillModel(pdId, location), new ArrayList<>(Arrays.asList(pbi)));
             }
         }
     }
@@ -389,9 +401,9 @@ public class Common {
         }
     }
 
-    public void setVirtualProjectBillItemBillId(Long pdId, Long billId) {
-        if (pdId != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+    public void setVirtualProjectBillItemBillId(ProjectBillModel pbm, Long billId) {
+        if (pbm != null && billId !=  null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 items.forEach((item) -> {
@@ -401,8 +413,8 @@ public class Common {
         }
     }
 
-    public void removeVirtualProjectBillInfo(Long pdId, Long itemid) {
-        List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+    public void removeVirtualProjectBillItem(Long pdId, Integer location, Long itemid) {
+        List<ProjectBillItem> items = mapProjectBillItems.get(new ProjectBillModel(pdId, location));
 
         if (items != null && !items.isEmpty()) {
             for (ProjectBillItem item : items) {
@@ -416,6 +428,7 @@ public class Common {
 
     public void clearVirtualProjectBill() {
         mapProjectBillItems.clear();
+        mapProjectBill.clear();
     }
 
     public String getProjectTypeName(String id) {

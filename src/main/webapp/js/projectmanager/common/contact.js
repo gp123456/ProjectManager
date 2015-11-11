@@ -5,6 +5,7 @@
  */
 
 function commitContact() {
+    var department = $("#contact-department").val();
     var name = $("#contact-name").val();
     var surname = $("#contact-surname").val();
     var phone = $("#contact-phone").val();
@@ -13,7 +14,8 @@ function commitContact() {
     var customer = $("#new-project-customer option:selected").attr("value");
 
     var data = "name=" + name + "&surname=" + surname + "&phone=" + phone +
-            "&email=" + email + "&vessel=" + vessel + "&company=" + customer;
+            "&email=" + email + "&vessel=" + vessel + "&company=" + customer
+            + "&department=" + department;
 
     $.ajax({
         type: "GET",

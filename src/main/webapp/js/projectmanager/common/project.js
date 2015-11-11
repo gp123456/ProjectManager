@@ -313,21 +313,37 @@ function projectPackingList(id) {
     });
 }
 
-function projectFilterVessel() {
+function projectFilterCustomer() {
     $.ajax({
         type: "POST",
-        url: "filter-vessel",
-        data: "vessel=" + $("#new-project-vessel option:selected").attr("value"),
+        url: "filter-customer",
+        data: "customer=" + $("#new-project-customer option:selected").attr("value"),
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#new-project-customer").html(content.customer);
+            $("#new-project-vessel").html(content.vessel);
             $("#new-project-contact").html(content.contact);
         },
         error: function (e) {
         }
     });
 }
+
+//function projectFilterVessel() {
+//    $.ajax({
+//        type: "POST",
+//        url: "filter-vessel",
+//        data: "vessel=" + $("#new-project-vessel option:selected").attr("value"),
+//        success: function (response) {
+//            var content = JSON.parse(response)
+//
+//            $("#new-project-customer").html(content.customer);
+//            $("#new-project-contact").html(content.contact);
+//        },
+//        error: function (e) {
+//        }
+//    });
+//}
 
 function plotStatusInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {

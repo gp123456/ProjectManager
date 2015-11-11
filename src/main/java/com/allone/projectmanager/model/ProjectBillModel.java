@@ -12,23 +12,16 @@ import java.math.BigDecimal;
  * @author antonia
  */
 public class ProjectBillModel {
-    Long id;
-    String code;
-    String description;
-    Integer available;
-    Integer qiantity;
-    BigDecimal price;
-    BigDecimal cost;
 
-    public ProjectBillModel(Long id, String code, String description, Integer available, BigDecimal price) {
+    Long id;
+
+    Integer location;
+
+    public ProjectBillModel(Long id, Integer location) {
         this.id = id;
-        this.code = code;
-        this.description = description;
-        this.available = available;
-        this.price = price;
+        this.location = location;
     }
 
-    
     public Long getId() {
         return id;
     }
@@ -37,51 +30,22 @@ public class ProjectBillModel {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
+    public Integer getLocation() {
+        return location;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setLocation(Integer location) {
+        this.location = location;
     }
 
-    public String getDescription() {
-        return description;
-    }
+    @Override
+    public boolean equals(Object obj) {
+        ProjectBillModel pbm = (ProjectBillModel) obj;
 
-    public void setDescription(String description) {
-        this.description = description;
+        return (this.id.equals(pbm.id)) ? this.location.equals(pbm.location) : false;
     }
-
-    public Integer getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Integer available) {
-        this.available = available;
-    }
-
-    public Integer getQiantity() {
-        return qiantity;
-    }
-
-    public void setQiantity(Integer qiantity) {
-        this.qiantity = qiantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
+    
+    public int compareTo(ProjectBillModel pbm) {
+        return (this.id.equals(pbm.id)) ? this.location.compareTo(pbm.location) : this.id.compareTo(pbm.id);
     }
 }

@@ -82,6 +82,10 @@ public class ProjectBill implements Serializable {
     @Column(name = "currency")
     @NotNull
     private String currency;
+    
+    @Basic(optional = false)
+    @Column(name = "location")
+    private String location;
 
     private ProjectBill(Builder builder) {
         totalCost = builder.totalCost;
@@ -92,6 +96,7 @@ public class ProjectBill implements Serializable {
         express = builder.express;
         note = builder.note;
         currency = builder.currency;
+        location = builder.location;
     }
 
     public ProjectBill() {
@@ -169,6 +174,14 @@ public class ProjectBill implements Serializable {
         this.project = project;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -211,6 +224,8 @@ public class ProjectBill implements Serializable {
         private String note;
 
         private String currency;
+     
+        private String location;
 
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
@@ -256,6 +271,12 @@ public class ProjectBill implements Serializable {
         
         public Builder setCurrency(String currency) {
             this.currency = currency;
+
+            return this;
+        }
+        
+        public Builder setLocation(String location) {
+            this.location = location;
 
             return this;
         }

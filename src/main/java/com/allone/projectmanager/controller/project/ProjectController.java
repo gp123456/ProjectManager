@@ -371,36 +371,40 @@ public class ProjectController extends ProjectCommon {
         return createContent(pd);
     }
 
-    @RequestMapping(value = {"/filter-vessel"})
+    @RequestMapping(value = {"/filter-customer"})
     public @ResponseBody
-    String filterVessel(Long vessel) {
+    String filterCustomer(String customer) {
         Map<String, String> content = new HashMap<>();
 
-        if (vessel != null) {
+        if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
-            Vessel v = srvProjectManager.getDaoVessel().getById(vessel);
-            Company co = (v != null) ? srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, v.
-                                                                                       getCompany()) : null;
-            List<Contact> contacts = (v != null) ? srvProjectManager.getDaoContact().getByVessel(v.getId()) : null;
+            Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, customer);
+            List<Vessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
+                         ((!customer.equals("none")) ?
+                         srvProjectManager.getDaoVessel().getByCompany(customer) :
+                         srvProjectManager.getDaoVessel().getAll()) :
+                         null;
+            List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
+                          ((!customer.equals("none")) ?
+                          srvProjectManager.getDaoContact().getByCompanyVessel(customer, vessels.get(0).getId()) :
+                          srvProjectManager.getDaoContact().getAll()) :
+                          null;
 
-            if (co != null) {
-                response += "<option value='" + co.getName() + "'>" + co.getName() + "</option>";
-                content.put("customer", response);
-            } else if (vessel.equals(-1l)) {
-                content.put("customer", createSearchCustomer(srvProjectManager, null));
+            response = "";
+            if (vessels != null && vessels.isEmpty() == false) {
+                for (Vessel vessel : vessels) {
+                    response += "<option value='" + vessel.getId() + "'>" + vessel.getName() + "</option>";
+                    content.put("vessel", response);
+                }
             } else {
-                content.put("customer", response);
+                content.put("vessel", response);
             }
             response = "";
             if (contacts != null && contacts.isEmpty() == false) {
-                for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
-                    Contact c = it.next();
-
-                    response += "<option value='" + c.getId() + "'>" + c.getName() + "</option>";
+                for (Contact contact : contacts) {
+                    response += "<option value='" + contact.getId() + "'>" + contact.getName() + "</option>";
                     content.put("contact", response);
                 }
-            } else if (vessel.equals(-1l)) {
-                content.put("contact", createSearchContact(srvProjectManager, null));
             } else {
                 content.put("contact", response);
             }
@@ -408,6 +412,44 @@ public class ProjectController extends ProjectCommon {
 
         return new Gson().toJson(content);
     }
+
+//    @RequestMapping(value = {"/filter-vessel"})
+//    public @ResponseBody
+//    String filterVessel(Long vessel) {
+//        Map<String, String> content = new HashMap<>();
+//
+//        if (vessel != null) {
+//            String response = "";
+//            Vessel v = srvProjectManager.getDaoVessel().getById(vessel);
+//            Company co = (v != null) ? srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, v.
+//                                                                                       getCompany()) : null;
+//            List<Contact> contacts = (v != null) ? srvProjectManager.getDaoContact().getByVessel(v.getId()) : null;
+//
+//            if (co != null) {
+//                response += "<option value='" + co.getName() + "'>" + co.getName() + "</option>";
+//                content.put("customer", response);
+//            } else if (vessel.equals(-1l)) {
+//                content.put("customer", createSearchCustomer(srvProjectManager, null));
+//            } else {
+//                content.put("customer", response);
+//            }
+//            response = "";
+//            if (contacts != null && contacts.isEmpty() == false) {
+//                for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
+//                    Contact c = it.next();
+//
+//                    response += "<option value='" + c.getId() + "'>" + c.getName() + "</option>";
+//                    content.put("contact", response);
+//                }
+//            } else if (vessel.equals(-1l)) {
+//                content.put("contact", createSearchContact(srvProjectManager, null));
+//            } else {
+//                content.put("contact", response);
+//            }
+//        }
+//
+//        return new Gson().toJson(content);
+//    }
 
     @RequestMapping(value = "/view")
     public @ResponseBody
@@ -518,11 +560,5 @@ public class ProjectController extends ProjectCommon {
         }
 
         return response;
-    }
-    
-    @RequestMapping(value = "/lst-customer")
-    public @ResponseBody
-    String lstCustomer() {
-        return createSearchCustomer(srvProjectManager, null);
     }
 }

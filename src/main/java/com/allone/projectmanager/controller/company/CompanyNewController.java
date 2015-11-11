@@ -55,4 +55,10 @@ public class CompanyNewController extends Common {
 
         return new Gson().toJson(content);
     }
+    
+//    @RequestMapping(value = "/lst-customer")
+//    public @ResponseBody
+//    String lstCustomer() {
+//        return createSearchCustomer(srvProjectManager, null);
+//    }
 }

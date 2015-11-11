@@ -69,13 +69,39 @@
                 <td><input type="text" id="new-project-expired" value="${expired}"></td>
                 <td></td>
             </tr>
+            <!- Customer ->
+            <tr>
+                <td width="150px"><label>Customer</label></td>
+                <td>
+                    <p>
+                        <label class="custom-select">
+                            <select id="new-project-customer" onchange="projectFilterCustomer()"></select>
+                        </label>
+                    </p>
+                </td>
+                <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCustomer()"/>
+                    <div id="add-customer" hidden="true" title="Add Customer">
+                        <form class="go-bottom">
+                            <div>
+                                <input type="text" id="customer-name" required>
+                                <label class="go-bottom-label" for="customer-name">Name</label>
+                            </div>
+                            <div>
+                                <input type="text" id="customer-email" required>
+                                <label class="go-bottom-label" for="customer-email">eMail</label>
+                            </div>
+                        </form>
+                    </div>
+                </td>
+            </tr>
             <!- Vessel ->
             <tr>
                 <td><label>Vessel</label></td>
                 <td width="150px">
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-vessel" onchange="projectFilterVessel()"></select>
+                            <!--<select id="new-project-vessel" onchange="projectFilterVessel()"></select>-->
+                            <select id="new-project-vessel"></select>
                         </label>
                     </p>
                 </td>
@@ -90,39 +116,14 @@
                                 <input type="text" id="vessel-imo" name="vessel-imo" required>
                                 <label class="go-bottom-label" for="vessel-imo">IMO</label>
                             </div>
-                            <div>
+<!--                            <div>
                                 <p>
                                     <label class="custom-select">
                                         <select id="new-vessel-customer"></select>
                                     </label>
                                     <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addVesselCustomer()">
                                 </p>
-                            </div>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            <!- Customer ->
-            <tr>
-                <td width="150px"><label>Customer</label></td>
-                <td>
-                    <p>
-                        <label class="custom-select">
-                            <select id="new-project-customer"></select>
-                        </label>
-                    </p>
-                </td>
-                <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCustomer()"/>
-                    <div id="add-customer" hidden="true" title="Add Customer">
-                        <form class="go-bottom">
-                            <div>
-                                <input type="text" id="customer-name" required>
-                                <label class="go-bottom-label" for="customer-name">Name</label>
-                            </div>
-                            <div>
-                                <input type="text" id="customer-reference-number" required>
-                                <label class="go-bottom-label" for="customer-reference-number">Reference Number</label>
-                            </div>
+                            </div>-->
                         </form>
                     </div>
                 </td>
@@ -140,6 +141,10 @@
                 <td><input type="button" class="button" value="Add" id="new-project-add-contact" onclick="addContact()"/>
                     <div id="add-contact" hidden="true" title="Add Contact">
                         <form class="go-bottom">
+                            <div>
+                                <input type="text" id="contact-department" required>
+                                <label class="go-bottom-label" for="contact-department">Department</label>
+                            </div>
                             <div>
                                 <input type="text" id="contact-name" required>
                                 <label class="go-bottom-label" for="contact-name">Name</label>

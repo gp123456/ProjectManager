@@ -6,8 +6,6 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.Item;
-import com.allone.projectmanager.entities.ProjectBillCustomItem;
-import com.allone.projectmanager.entities.ProjectBillItem;
 import com.google.common.base.Strings;
 import java.util.List;
 import javax.persistence.EntityManager;

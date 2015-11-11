@@ -29,7 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findAll",
                 query = "SELECT v FROM Vessel v ORDER BY v.name"),
     @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findById",
-                query = "SELECT v FROM Vessel v WHERE v.id = :id")})
+                query = "SELECT v FROM Vessel v WHERE v.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findByCompany",
+                query = "SELECT v FROM Vessel v WHERE v.company = :company ORDER BY v.name")})
 public class Vessel implements Serializable {
 
     private static final long serialVersionUID = 1L;
