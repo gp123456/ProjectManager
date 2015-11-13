@@ -192,37 +192,28 @@ public class ProjectBillController extends ProjectCommon {
                         "<td>" + imno + "</td>" +
                         "<td id='available" + pbm.getId() + pbm.getLocation() + itemId + "'>" + itemQuantity + "</td>" +
                         "<td id='price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + itemPrice + "</td>" +
-                        "<td id='quantity" + pbm.getId() + pbm.getLocation() + itemId + "'>" +
-                        "<div contenteditable></div>" + quantity +
-                        "</td>" +
-                        "<td id='cost" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" +
-                        cost + "</td>" +
+                        "<td id='quantity" + pbm.getId() + pbm.getLocation() + itemId + "'>" + "<div contenteditable></div>" +
+                        quantity + "</td>" +
+                        "<td id='cost" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" + cost + "</td>" +
                         "<td id='total_cost" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalCost + "</td>" +
-                        "<td id='percentage" + pbm.getId() + pbm.getLocation() + itemId +
-                        "'><div contenteditable></div>" + percentage + "</td>" +
+                        "<td id='percentage" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" +
+                        percentage + "</td>" +
                         "<td id='discount" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" +
                         discount + "</td>" +
                         "<td id='sale_price" + pbm.getId() + pbm.getLocation() + pbm.getLocation() + itemId + "'>" +
                         salePrice + "</td>" +
-                        "<td id='total_sale_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalSalePrice +
-                        "</td>" +
-                        "<td id='total_net_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalNetPrice +
-                        "</td>" +
+                        "<td id='total_sale_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalSalePrice + "</td>" +
+                        "<td id='total_net_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalNetPrice + "</td>" +
                         "<td id='currency" + pbm.getId() + pbm.getLocation() + itemId + "'>" + getCurrencies() + "</td>" +
                         "<td>" + pd.getReference() + "</td>" +
                         "<td><input type='button' value='Edit' class='button' onclick='editValues(" + pbm.getId() + "," +
-                        pbm.getLocation() + "," +
-                        itemId +
-                        ")'></td>" +
+                        pbm.getLocation() + "," + itemId + ")'></td>" +
                         "<td><input type='button' value='Refresh' class='" + pbItem.getClassRefresh() +
                         "' onclick='refreshValues(" + pbm.getId() + "," + pbm.getLocation() + "," + itemId + ")'></td>" +
                         "<td><input type='button' value='Save' class='" + pbItem.getClassSave() +
-                        "' onclick='saveValues(" +
-                        pbm.getId() + "," + pbm.getLocation() + "," + itemId + ")'></td>" +
+                        "' onclick='saveValues(" + pbm.getId() + "," + pbm.getLocation() + "," + itemId + ")'></td>" +
                         "<td><input type='button' value='Remove' class='button' onclick='removeValues(" + pbm.getId() +
-                        "," + pbm.getLocation() + "," +
-                        itemId + ")'></td>" +
-                        "</tr>";
+                        "," + pbm.getLocation() + "," + itemId + ")'></td>" + "</tr>";
                     }
                 }
             }
@@ -312,8 +303,8 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/save")
     public @ResponseBody
-    String itemSave(Long pdId, Integer locationId, ProjectBillItem pbi, Model model) {
-        ProjectBillItem temp = getProjectBillItem(new ProjectBillModel(pdId, locationId), pbi.getItem());
+    String itemSave(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
+        ProjectBillItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
         Map<String, String> content = new HashMap<>();
 
         if (temp != null) {
@@ -334,10 +325,10 @@ public class ProjectBillController extends ProjectCommon {
         } else {
             editVirtualProjectBillItem(pdId, pbi);
         }
-        ProjectBill pb = getAverangeDiscount(pdId, locationId);
+        ProjectBill pb = getAverangeDiscount(pdId, location);
 
-        pb.setLocation(getLocationNameById(locationId));
-        setVirtualProjectBill(pb, locationId);
+        pb.setLocation(getLocationNameById(location));
+        setVirtualProjectBill(pb, location);
         content.put("projectBill", createProjectBill());
         content.put("projectBillItems", createProjectBillItems());
 
@@ -346,11 +337,11 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/remove")
     public @ResponseBody
-    String itemRemove(Long pdId, Integer locationId, ProjectBillItem pbi, Model model) {
+    String itemRemove(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
         Map<String, String> content = new HashMap<>();
 
-        removeVirtualProjectBillItem(pdId, locationId, pbi.getItem());
-        setVirtualProjectBill(getAverangeDiscount(pdId, locationId), locationId);
+        removeVirtualProjectBillItem(pdId, location, pbi.getItem());
+        setVirtualProjectBill(getAverangeDiscount(pdId, location), location);
         content.put("projectBill", createProjectBill());
         content.put("projectBillItems", createProjectBillItems());
 
@@ -584,11 +575,9 @@ public class ProjectBillController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "/project-bill/item-stock/insert1")
+    @RequestMapping(value = "/project-bill/item-stock/insert")
     public @ResponseBody
     String itemStockInsert(Long pdId, Item item) {
-        logger.log(Level.INFO, "-------------itemStockInsert");
-
 //        item.setCurrency(0l);
 //        item.setStartQuantity(item.getQuantity());
 //        item.setOfferQuantity(item.getQuantity());

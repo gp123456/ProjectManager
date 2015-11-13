@@ -6,7 +6,7 @@
 
 //insert new item in Project Bill table
 function insertItem(sel) {
-    var data = "pdId=" + $("#bill-subproject option:selected").val() + "&item=" +
+    var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&item=" +
             sel.value + "&classRefresh=button alarm&classSave=button alarm";
 
     $.ajax({
@@ -21,19 +21,18 @@ function insertItem(sel) {
     });
 }
 
-function saveValues(pdid, id) {
-    var location = $("#bill-location-id").text();
-    var quantity = Number($("#quantity" + pdid + id).text());
-    var cost = Number($("#cost" + pdid + id).text());
-    var percentage = Number($("#percentage" + pdid + id).text());
-    var discount = Number($("#discount" + pdid + id).text());
-    var currency = $("#currency" + pdid + id + " option:selected").val();
-    var total_cost = $("#total_cost" + pdid + id).text();
-    var sale_price = $("#sale_price" + pdid + id).text();
-    var total_sale_price = $("#total_sale_price" + pdid + id).text();
-    var total_net_price = $("#total_net_price" + pdid + id).text();
+function saveValues(pdid, location, id) {
+    var quantity = Number($("#quantity" + pdid + location + id).text());
+    var cost = Number($("#cost" + pdid + location + id).text());
+    var percentage = Number($("#percentage" + pdid + location + id).text());
+    var discount = Number($("#discount" + pdid + location + id).text());
+    var currency = $("#currency" + pdid + location + id + " option:selected").val();
+    var total_cost = $("#total_cost" + pdid + location + id).text();
+    var sale_price = $("#sale_price" + pdid + location + id).text();
+    var total_sale_price = $("#total_sale_price" + pdid + location + id).text();
+    var total_net_price = $("#total_net_price" + pdid + location + id).text();
 
-    var data = "pdId=" + pdid + "&locationId=" + location + "&item=" + id + "&quantity=" +
+    var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&quantity=" +
             quantity + "&cost=" + cost + "&totalCost=" + total_cost + "&percentage=" +
             percentage + "&discount=" + discount + "&salePrice=" + sale_price +
             "&totalSalePrice=" + total_sale_price + "&totalNetPrice=" + total_net_price +
@@ -54,11 +53,11 @@ function saveValues(pdid, id) {
     });
 }
 
-function removeValues(pdid, id) {
+function removeValues(pdid, location, id) {
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/item/remove",
-        data: "pdId=" + pdid + "&item=" + id,
+        data: "pdId=" + pdid + "&location=" + location + "&item=" + id,
         success: function (response) {
             var content = JSON.parse(response);
 
@@ -70,12 +69,12 @@ function removeValues(pdid, id) {
     });
 }
 
-function refreshValues(pdid, id) {
-    var available = Number($("#available" + pdid + id).text());
-    var quantity = Number($("#quantity" + pdid + id).text());
-    var cost = Number($("#cost" + pdid + id).text());
-    var percentage = Number($("#percentage" + pdid + id).text());
-    var discount = Number($("#discount" + pdid + id).text());
+function refreshValues(pdid, location, id) {
+    var available = Number($("#available" + pdid + location + id).text());
+    var quantity = Number($("#quantity" + pdid + location + id).text());
+    var cost = Number($("#cost" + pdid + location + id).text());
+    var percentage = Number($("#percentage" + pdid + location + id).text());
+    var discount = Number($("#discount" + pdid + location + id).text());
 
     if (isNaN(quantity) || quantity == 0) {
         alert("You must give a valid number quantity");
@@ -92,8 +91,9 @@ function refreshValues(pdid, id) {
         }
 
         if (conf == true) {
-            var data = "pdId=" + pdid + "&item=" + id + "&available=" + available + "&price=" + $("#price" + pdid + id).text() +
-                    "&quantity=" + quantity + "&cost=" + cost + "&percentage=" + percentage + "&discount=" + discount +
+            var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&available=" +
+                    available + "&price=" + $("#price" + pdid + id).text() + "&quantity=" +
+                    quantity + "&cost=" + cost + "&percentage=" + percentage + "&discount=" + discount +
                     "&currency=" + $("#currency" + pdid + id + " option:selected").val() +
                     "&classRefresh=button&classSave=button alarm";
 
@@ -111,8 +111,9 @@ function refreshValues(pdid, id) {
     }
 }
 
-function editValues(pdid, id) {
-    var data = "pdId=" + pdid + "&item=" + id + "&classRefresh=button alarm&classSave=button alarm";
+function editValues(pdid, location, id) {
+    var data = "pdId=" + pdid + "&location=" + location + "&item=" + id +
+            "&classRefresh=button alarm&classSave=button alarm";
 
     $.ajax({
         type: "POST",
@@ -225,8 +226,8 @@ function nostockNewItem() {
     } else if (isNaN(price) || price == 0) {
         $("#validate-add-item").text("You must give a valid number price");
     } else {
-        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&imno=" + imno +
-                "&quantity=" + quantity + "&price=" + price;
+        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
+                imno + "&quantity=" + quantity + "&price=" + price;
         $.ajax({
             type: "POST",
             url: "/ProjectManager/project/project-bill/item-nostock/insert",
