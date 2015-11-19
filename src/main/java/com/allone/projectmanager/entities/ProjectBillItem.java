@@ -168,6 +168,7 @@ public class ProjectBillItem implements Serializable {
         projectBill = pbi.projectBill;
         item = pbi.item;
         currency = pbi.currency;
+        itemImno = pbi.itemImno;
     }
 
     public ProjectBillItem() {

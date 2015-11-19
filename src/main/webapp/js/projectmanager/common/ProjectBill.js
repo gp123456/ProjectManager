@@ -122,20 +122,42 @@ function editValues(pdid, location, id) {
         success: function (response) {
             $("#project-bill-items").html(response);
 
-            $("#quantity" + pdid + id).html("<div contenteditable></div>");
-            $("#cost" + pdid + id).html("<div contenteditable></div>");
-            $("#percentage" + pdid + id).html("<div contenteditable></div>");
-            $("#discount" + pdid + id).html("<div contenteditable></div>");
+            $("#quantity" + pdid + location + id).html("<div contenteditable></div>");
+            $("#cost" + pdid + location + id).html("<div contenteditable></div>");
+            $("#percentage" + pdid + location + id).html("<div contenteditable></div>");
+            $("#discount" + pdid + location + id).html("<div contenteditable></div>");
         },
         error: function (e) {
         }
     });
 }
 
-function saveProjectBill() {
-    var data = "project=" + $("#bill-projectdetail-id").val() + "&total_cost=" + $("#m_total_cost").text() + "&averange_discount=" +
-            $("#m_average_discount").text() + "&total_sale_price=" + $("#m_sale_price").text() + "&total_net_price=" + $("#m_net_sale_price").text() +
-            "&note=" + $("#notes").val();
+function viewLocation(pdid, location, id) {
+    var data = "location=" + location;
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/item/view-location",
+        data: data,
+        success: function (response) {
+            $("#Edit" + pdid + location + id).tooltip({
+                track: true,
+                content: function () {
+                    return response;
+                }
+            });
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function saveProjectBill(pdid, location) {
+    var data = "location=" + location + "&project=" + pdid + "&total_cost=" +
+            $("#m_total_cost").text() + "&averange_discount=" + $("#m_average_discount").text() +
+            "&total_sale_price=" + $("#m_sale_price").text() + "&total_net_price=" +
+            $("#m_net_sale_price").text() + "&note=" + $("#notes").val() + "&currency=" +
+            ("#m_currency").text();
 
     $.ajax({
         type: "POST",
@@ -197,16 +219,17 @@ function stockNewItem() {
         var data = "pdId=" + $("#bill-subproject option:selected").val() + "&imno=" +
                 imno + "&description=" + $("#item-desc").val() + "&location=" + location +
                 "&quantity=" + quantity + "&price=" + price + "&company=" + company;
-
+        
+        alert(data);
+        
         $.ajax({
             type: "POST",
-            url: "/ProjectManager/project/project-bill/item-stock/insert1",
+            url: "/ProjectManager/project/project-bill/item-stock",
             data: data,
             success: function (response) {
                 $("#project-bill-items").html(response);
             },
             error: function (xhr, status, error) {
-                alarm(error);
             }
         });
 
@@ -340,12 +363,14 @@ function saveSubProject() {
 //        return;
 //    }
 
+    var data = "project=" + project + "&type=" + type + "&expired=" + expired_month +
+            "/" + expired_day + "/" + expired_year + "&company=" + company;
+    // + "&customer=" + customer + "&vessel=" + vessel + "&contact=" + contact
+
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/subproject-save",
-        data: "project=" + project + "&type=" + type + "&expired=" + expired_month +
-                "/" + expired_day + "/" + expired_year, // + "&customer=" + customer +
-//                "&vessel=" + vessel + "&company=" + company + "&contact=" + contact,
+        url: "/ProjectManager/project/project-bill/save-subproject",
+        data: data,
         success: function (response) {
             var content = JSON.parse(response);
 
@@ -360,13 +385,33 @@ function saveSubProject() {
 }
 
 function addProjectBillItems() {
+    var items = [];
+    $(':checkbox:checked').each(function (i) {
+        items[i] = $(this).val();
+    });
+    var data = "id=" + $("#bill-subproject option:selected").attr("value") +
+            "&location=" + $("#select-new-location option:selected").attr("value") +
+            "&itemIds=" + items;
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/add-project-bill-items",
+        data: data,
+        success: function (response) {
+            $("#project-bill-items").html(response);
+        },
+        error: function (e) {
+        }
+    });
+
+    $("#replace-project-bill-items").dialog("close");
 }
 
 function dlgReplaceProjectBillItems() {
     $("#replace-project-bill-items").dialog({
         autoOpen: true,
         modal: true,
-        width: 250,
+        width: 275,
         buttons: {
             "submit": function () {
                 addProjectBillItems();
@@ -383,14 +428,32 @@ function dlgReplaceProjectBillItems() {
     });
 }
 
-function replaceProjectBillItems(pdid) {
+function replaceProjectBillItems(pdid, location) {
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/replace-project-bill-items",
-        data: "pdid=" + pdid,
+        data: "pdid=" + pdid + "&location=" + location,
         success: function (response) {
             $("#lst-project-bill-items").html(response);
             dlgReplaceProjectBillItems();
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function getProjectBillItems() {
+    var data = "id=" + $("#bill-subproject option:selected").attr("value");
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/get-project-bill-items",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#project-bill").html(content.projectBill);
+            $("#project-bill-items").html(content.projectBillItems);
         },
         error: function (e) {
         }

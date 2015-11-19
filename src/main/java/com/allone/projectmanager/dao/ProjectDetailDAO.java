@@ -316,7 +316,7 @@ public class ProjectDetailDAO {
 
         try {
             query = (!Strings.isNullOrEmpty(status)) ?
-            em.createNamedQuery("com.allone.projectmanager.entities.Project.countByStatus").setParameter("status",
+            em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByStatus").setParameter("status",
                                                                                                          status) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());

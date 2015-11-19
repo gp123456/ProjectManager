@@ -60,6 +60,8 @@ import javax.xml.bind.annotation.XmlRootElement;
                            query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countAll",
                            query = "SELECT count(p) FROM ProjectDetail p"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByStatus",
+                           query = "SELECT count(p) FROM ProjectDetail p WHERE p.status = :status"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countOpenByType",
                            query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status"),
                @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus",

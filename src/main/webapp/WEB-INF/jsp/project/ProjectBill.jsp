@@ -24,8 +24,8 @@
 
                 $("#bill-subproject").html(content.subprojects);
                 $("#bill-item").html(content.items);
-                $("#project-bill-items").html(content.projectBillItems);
                 $("#project-bill").html(content.projectBill);
+                $("#project-bill-items").html(content.projectBillItems);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -43,7 +43,7 @@
         <h3>Select Subproject</h3>
         <p>
             <label class="custom-select">
-                <select id="bill-subproject"></select>
+                <select id="bill-subproject" onchange="getProjectBillItems()"></select>
             </label>
         </p>
         <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addSubProject()"/>

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -211,6 +212,20 @@ public class Common {
     public Set<ProjectBillModel> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();
     }
+    
+    public Set<ProjectBillModel> getPBMIKeysByPDId(ProjectBillModel pbm) {
+        if (pbm != null && !mapProjectBillItems.isEmpty()) {
+            Set<ProjectBillModel> keys = new HashSet<>();
+
+            getProjectBillDetailIds().stream().filter((key) -> (key.equals(pbm))).forEach((key) -> {
+                keys.add(key);
+            });
+
+            return keys;
+        }
+
+        return null;
+    }
 
     public ProjectBill getProjectBill(ProjectBillModel pdm) {
         return mapProjectBill.get(pdm);
@@ -220,14 +235,32 @@ public class Common {
         return mapProjectBill.keySet();
     }
 
+    public Set<ProjectBillModel> getPBMKeysByPDId(ProjectBillModel pbm) {
+        if (pbm != null && !mapProjectBill.isEmpty()) {
+            Set<ProjectBillModel> keys = new HashSet<>();
+
+            getProjectBillIds().stream().filter((key) -> (key.equals(pbm))).forEach((key) -> {
+                keys.add(key);
+            });
+
+            return keys;
+        }
+
+        return null;
+    }
+
     public ProjectBillItem getProjectBillItem(ProjectBillModel pbm, Long itemId) {
         if (!mapProjectBillItems.isEmpty()) {
-            Map<Long, ProjectBillItem> result = mapProjectBillItems.get(pbm).stream().collect(Collectors.toMap(
-                                       ProjectBillItem::getItem, (c) -> c));
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
 
-            return result.get(itemId);
+            if (items != null && !items.isEmpty()) {
+                Map<Long, ProjectBillItem> result = items.stream().collect(Collectors.toMap(
+                                           ProjectBillItem::getItem, (c) -> c));
+
+                return result.get(itemId);
+            }
         }
-        
+
         return null;
     }
 
@@ -402,7 +435,7 @@ public class Common {
     }
 
     public void setVirtualProjectBillItemBillId(ProjectBillModel pbm, Long billId) {
-        if (pbm != null && billId !=  null) {
+        if (pbm != null && billId != null) {
             List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
@@ -426,9 +459,9 @@ public class Common {
         }
     }
 
-    public void clearVirtualProjectBill() {
-        mapProjectBillItems.clear();
-        mapProjectBill.clear();
+    public void clearVirtualProjectBill(ProjectBillModel pbm) {
+        mapProjectBillItems.remove(pbm);
+        mapProjectBill.remove(pbm);
     }
 
     public String getProjectTypeName(String id) {

@@ -450,7 +450,6 @@ public class ProjectController extends ProjectCommon {
 //
 //        return new Gson().toJson(content);
 //    }
-
     @RequestMapping(value = "/view")
     public @ResponseBody
     String getView(ProjectDetail pd, Integer offset, Integer size) {
@@ -531,17 +530,15 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/lst-project")
     public @ResponseBody
     String lstProjects(ProjectDetail _pd) {
-        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByStatus(_pd.getStatus(), 0,
-                                                                                      Integer.MAX_VALUE);
+        List<Project> pds = srvProjectManager.getDaoProject().getByStatus(_pd.getStatus(), 0, Integer.MAX_VALUE);
         String response = "";
 
         if (pds != null && !pds.isEmpty()) {
-            for (ProjectDetail pd : pds) {
-                Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+            for (Project pd : pds) {
+                Project p = srvProjectManager.getDaoProject().getById(pd.getId());
 
                 response += "<input type='radio' id='" + pd.getId() + "' name='radio-project' value='" + pd.getId() +
-                "'><label for='" + pd.getId() + "' class='radio-label'>" + p.getReference() + "[" + pd.getType() +
-                "]</label><br>";
+                "'><label for='" + pd.getId() + "' class='radio-label'>" + p.getReference() + "</label><br>";
             }
         }
 

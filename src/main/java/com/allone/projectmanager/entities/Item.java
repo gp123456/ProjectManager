@@ -68,34 +68,28 @@ public class Item implements Serializable {
 
     @Column(name = "company")
     @NotNull
-    private Long company;
+    private String company;
 
     @Column(name = "imno")
     @NotNull
     private String imno;
 
     @Column(name = "start_quantity")
-    @NotNull
     private Integer startQuantity;
 
     @Column(name = "start_price")
-    @NotNull
     private BigDecimal startPrice;
 
     @Column(name = "offer_quantity")
-    @NotNull
     private Integer offerQuantity;
 
     @Column(name = "inventory_quantity")
-    @NotNull
     private Integer inventoryQuantity;
 
     @Column(name = "inventory_price")
-    @NotNull
     private BigDecimal inventoryPrice;
 
     @Column(name = "inventory_edit")
-    @NotNull
     private Boolean inventoryEdit;
 
     private Item(Builder builder) {
@@ -231,11 +225,11 @@ public class Item implements Serializable {
         this.inventoryEdit = inventoryEdit;
     }
 
-    public Long getCompany() {
+    public String getCompany() {
         return company;
     }
 
-    public void setCompany(Long company) {
+    public void setCompany(String company) {
         this.company = company;
     }
 
@@ -280,7 +274,7 @@ public class Item implements Serializable {
 
         private String note;
 
-        private Long company;
+        private String company;
 
         private String imno;
 
@@ -338,7 +332,7 @@ public class Item implements Serializable {
             return this;
         }
 
-        public Builder setCompany(Long company) {
+        public Builder setCompany(String company) {
             this.company = company;
 
             return this;

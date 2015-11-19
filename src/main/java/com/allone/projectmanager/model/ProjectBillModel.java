@@ -5,17 +5,15 @@
  */
 package com.allone.projectmanager.model;
 
-import java.math.BigDecimal;
-
 /**
  *
  * @author antonia
  */
 public class ProjectBillModel {
 
-    Long id;
+    private Long id;
 
-    Integer location;
+    private Integer location;
 
     public ProjectBillModel(Long id, Integer location) {
         this.id = id;
@@ -41,11 +39,21 @@ public class ProjectBillModel {
     @Override
     public boolean equals(Object obj) {
         ProjectBillModel pbm = (ProjectBillModel) obj;
-
-        return (this.id.equals(pbm.id)) ? this.location.equals(pbm.location) : false;
+        
+        if (pbm.location != null) {
+            return (this.id.equals(pbm.id)) ? this.location.equals(pbm.location) : false;
+        } else {
+            return (this.id.equals(pbm.id));
+        }
     }
-    
-    public int compareTo(ProjectBillModel pbm) {
-        return (this.id.equals(pbm.id)) ? this.location.compareTo(pbm.location) : this.id.compareTo(pbm.id);
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+
+        result = prime * result + this.id.intValue() + this.location;
+
+        return result;
     }
 }
