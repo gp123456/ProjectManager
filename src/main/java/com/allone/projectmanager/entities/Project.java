@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
                @NamedQuery(name = "com.allone.projectmanager.entities.Project.findById",
                            query = "SELECT p FROM Project p WHERE p.id = :id"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByStatus",
-                           query = "SELECT p FROM Project p WHERE p.status = :status"),
+                           query = "SELECT DISTINCT p FROM Project p, ProjectDetail pd WHERE p.id = pd.project AND p.status = :status ORDER BY p.id"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Project.countByStatus",
                            query = "SELECT count(p) FROM Project p WHERE p.status = :status")})
 public class Project implements Serializable {

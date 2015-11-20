@@ -60,7 +60,7 @@ public class ProjectController extends ProjectCommon {
         return srvProjectManager;
     }
 
-    private String createContent(ProjectDetail pd) {
+    private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
 
         content.put("company", createSearchCompany());
@@ -69,15 +69,25 @@ public class ProjectController extends ProjectCommon {
         content.put("customer", createSearchCustomer(srvProjectManager, null));
         content.put("contact", createSearchContact(srvProjectManager, null));
 
-        if (pd != null && !pd.getId().equals(-1l)) {
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                     "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
-                                                     getModeEdit(), 0, 1);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
-            content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+        if (p != null && !p.getId().equals(-1)) {
+            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+            String projectBody = "";
+
+            if (pds != null && !pds.isEmpty()) {
+                for (ProjectDetail pd : pds) {
+                    projectBody += createProjectRow(srvProjectManager, pd, new ArrayList<>(Arrays.asList("Start",
+                                                                                                         "Start",
+                                                                                                         "Start",
+                                                                                                         "Start",
+                                                                                                         "Start",
+                                                                                                         "Start",
+                                                                                                         "Start")),
+                                                    getModeEdit());
+                }
+            }
+            content.put("project_header", createProjectHeader(getModeEdit()));
+            content.put("project_body", projectBody);
+            content.put("project_footer", (pds.size() > 10) ? createProjectFooter() : "");
         }
 
         return new Gson().toJson(content);
@@ -139,7 +149,7 @@ public class ProjectController extends ProjectCommon {
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
-        model.addAttribute("pd_id", -1);
+        model.addAttribute("p_id", -1);
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
         model.addAttribute("expired", format.format(expired));
         model.addAttribute("project_button_value", "Save");
@@ -150,14 +160,17 @@ public class ProjectController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/edit-form")
-    public String EditProject(Project p, Long pdId, Model model) {
+    public String EditProject(Project p, Model model) {
         this.setTitle("Projects - Edit");
         this.setHeader(null);
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
-        model.addAttribute("pd_id", pdId);
-        model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
+        p = srvProjectManager.getDaoProject().getById(p.getId());
+        if (p != null) {
+            model.addAttribute("p_id", p.getId());
+            model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
+        }
         model.addAttribute("project_button_value", "Edit");
         model.addAttribute("project_button_id", "project-edit");
         model.addAttribute("project_button_action", "editRow()");
@@ -245,15 +258,11 @@ public class ProjectController extends ProjectCommon {
                 }
                 srvProjectManager.getDaoProjectDetail().edit(dbpd);
 
-                String projectHeader = createProjectHeader(getModeEdit());
-                Object[] projectBody = createProjectBody(srvProjectManager, dbpd, new ArrayList<String>(Arrays.asList(
-                                                         "Processed", "Start", "Start", "Start", "Start", "Start",
-                                                         "Start")), getModeEdit(), 0, 1);
-                String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
-
-                content.put("project_header", projectHeader);
-                content.put("project_body", projectBody[1].toString());
-                content.put("project_footer", projectFooter);
+                content.put("project_header", createProjectHeader(getModeEdit()));
+                content.put("project_body", createProjectRow(srvProjectManager, dbpd, new ArrayList<String>(Arrays.
+                                                             asList("Processed", "Start", "Start", "Start", "Start",
+                                                                    "Start", "Start")), getModeEdit()));
+//                content.put("project_footer", (size.compareTo(10) > 0) ? createProjectFooter() : "");
 
                 return new Gson().toJson(content);
             }
@@ -367,8 +376,8 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/content"})
     public @ResponseBody
-    String getContent(ProjectDetail pd) {
-        return createContent(pd);
+    String getContent(Project p) {
+        return createContent(p);
     }
 
     @RequestMapping(value = {"/filter-customer"})
@@ -412,44 +421,7 @@ public class ProjectController extends ProjectCommon {
 
         return new Gson().toJson(content);
     }
-
-//    @RequestMapping(value = {"/filter-vessel"})
-//    public @ResponseBody
-//    String filterVessel(Long vessel) {
-//        Map<String, String> content = new HashMap<>();
-//
-//        if (vessel != null) {
-//            String response = "";
-//            Vessel v = srvProjectManager.getDaoVessel().getById(vessel);
-//            Company co = (v != null) ? srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, v.
-//                                                                                       getCompany()) : null;
-//            List<Contact> contacts = (v != null) ? srvProjectManager.getDaoContact().getByVessel(v.getId()) : null;
-//
-//            if (co != null) {
-//                response += "<option value='" + co.getName() + "'>" + co.getName() + "</option>";
-//                content.put("customer", response);
-//            } else if (vessel.equals(-1l)) {
-//                content.put("customer", createSearchCustomer(srvProjectManager, null));
-//            } else {
-//                content.put("customer", response);
-//            }
-//            response = "";
-//            if (contacts != null && contacts.isEmpty() == false) {
-//                for (Iterator<Contact> it = contacts.iterator(); it.hasNext();) {
-//                    Contact c = it.next();
-//
-//                    response += "<option value='" + c.getId() + "'>" + c.getName() + "</option>";
-//                    content.put("contact", response);
-//                }
-//            } else if (vessel.equals(-1l)) {
-//                content.put("contact", createSearchContact(srvProjectManager, null));
-//            } else {
-//                content.put("contact", response);
-//            }
-//        }
-//
-//        return new Gson().toJson(content);
-//    }
+    
     @RequestMapping(value = "/view")
     public @ResponseBody
     String getView(ProjectDetail pd, Integer offset, Integer size) {
@@ -465,25 +437,6 @@ public class ProjectController extends ProjectCommon {
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
             content.put("project_footer", projectFooter);
-
-            return new Gson().toJson(content);
-        }
-
-        return "";
-    }
-
-    @RequestMapping(value = "/set-project")
-    public @ResponseBody
-    String getSetProject(ProjectDetail pd) {
-        if (pd != null) {
-            Map<String, String> content = new HashMap<>();
-            pd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
-
-            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
-
-            content.put("project_id", pd.getProject().toString());
-            content.put("project_reference", p.getReference());
-            content.put("pdId", pd.getId().toString());
 
             return new Gson().toJson(content);
         }
@@ -529,16 +482,14 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/lst-project")
     public @ResponseBody
-    String lstProjects(ProjectDetail _pd) {
-        List<Project> pds = srvProjectManager.getDaoProject().getByStatus(_pd.getStatus(), 0, Integer.MAX_VALUE);
+    String lstProjects(Project prj) {
+        List<Project> prjs = srvProjectManager.getDaoProject().getByStatus(prj.getStatus(), 0, Integer.MAX_VALUE);
         String response = "";
 
-        if (pds != null && !pds.isEmpty()) {
-            for (Project pd : pds) {
-                Project p = srvProjectManager.getDaoProject().getById(pd.getId());
-
-                response += "<input type='radio' id='" + pd.getId() + "' name='radio-project' value='" + pd.getId() +
-                "'><label for='" + pd.getId() + "' class='radio-label'>" + p.getReference() + "</label><br>";
+        if (prjs != null && !prjs.isEmpty()) {
+            for (Project p : prjs) {
+                response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId() +
+                "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "</label><br>";
             }
         }
 

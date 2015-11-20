@@ -57,7 +57,6 @@ public class ProjectBillItem implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    @NotNull
     private Long id;
 
     @Basic(optional = false)

@@ -8,7 +8,7 @@
     $(function () {
         $("#new-project-expired").datepicker();
 
-        var id = $('#edit-projectdetail-id').val();
+        var id = $('#edit-project-id').val();
 
         $.ajax({
             type: "POST",
@@ -36,7 +36,7 @@
 
 <div class="formLayout">
     <h1 id="project-reference">${project_reference}</h1>
-    <input type="hidden" id="edit-projectdetail-id" value=${pd_id} />
+    <input type="hidden" id="edit-project-id" value=${p_id} />
     <table>
         <tbody>
             <!- Company ->

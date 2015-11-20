@@ -63,32 +63,38 @@ public class ProjectBillController extends ProjectCommon {
         this.srvProjectManager.loadPropertyValues();
     }
 
-    private String createContent(ProjectDetail pd) {
+    private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
         List<Item> items = srvProjectManager.getDaoItem().getAll();
-
         String response = "";
 
         if (items != null && !items.isEmpty()) {
+            response = "<option value='-1'>Select</option>";
             for (Item item : items) {
                 response += "<option value='" + item.getId() + "'>" + item.getImno() + "[" + item.getQuantity() +
-                "," + item.getPrice() + "]</option>";;
+                "," + item.getPrice() + "]</option>";
             }
         }
         content.put("items", response);
 
-        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+        Long pdId = null;
 
         response = "";
         if (pds != null && !pds.isEmpty()) {
-            for (ProjectDetail _pd : pds) {
-                response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "-" + _pd.getCompany() +
-                "</option>";;
+            for (ProjectDetail pd : pds) {
+                response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "-" + pd.getCompany() +
+                "</option>";
+                pdId = pd.getId();
             }
+            content.put("subprojects", response);
+            content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
+            content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, null)));
+        } else {
+            content.put("subprojects", response);
+            content.put("projectBill", response);
+            content.put("projectBillItems", response);
         }
-        content.put("subprojects", response);
-        content.put("projectBill", createProjectBill(new ProjectBillModel(pd.getId(), null)));
-        content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pd.getId(), null)));
 
         return new Gson().toJson(content);
     }
@@ -291,14 +297,17 @@ public class ProjectBillController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/project-bill")
-    public String ProjectBill(Project p, Long pdId, Model model) {
+    public String ProjectBill(Project p, Model model) {
         this.setTitle("Projects - Bill of Material");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/ProjectBill.jsp");
         setHeaderInfo(model);
-        model.addAttribute("pd_id", pdId);
-        model.addAttribute("p_id", p.getId());
-        model.addAttribute("project_reference", p.getReference());
+        p = srvProjectManager.getDaoProject().getById(p.getId());
+
+        if (p != null) {
+            model.addAttribute("p_id", p.getId());
+            model.addAttribute("project_reference", p.getReference());
+        }
 
         return "index";
     }
@@ -307,7 +316,13 @@ public class ProjectBillController extends ProjectCommon {
     public @ResponseBody
     String itemInsert(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
         if (!pbi.getItem().equals(0l) && getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem()) == null) {
-            setVirtualProjectBillItem(pdId, location, pbi);
+            Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
+
+            if (item != null) {
+                pbi.setAvailable(item.getQuantity());
+                pbi.setPrice(item.getPrice());
+                setVirtualProjectBillItem(pdId, location, pbi);
+            }
         }
 
         return createProjectBillItems(new ProjectBillModel(pdId, null));
@@ -456,7 +471,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/save")
     public @ResponseBody
-    String Save(Integer location, ProjectBill pb, Model model) {
+    String saveProjectBill(Integer location, ProjectBill pb, Model model) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
 
         if (pd != null) {
@@ -608,7 +623,7 @@ public class ProjectBillController extends ProjectCommon {
         return createProjectBillItems(new ProjectBillModel(pdId, null));
     }
 
-    @RequestMapping(value = "/project-bill/item-nostock/insert")
+    @RequestMapping(value = "/project-bill/item-nostock")
     public @ResponseBody
     String itemNoStockInsert(Long pdId, Integer location, Item item, Model model) {
         item.setId(getNextNoStockItemId());
@@ -623,7 +638,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/content")
     public @ResponseBody
-    String getContent(ProjectDetail pd) {
+    String getContent(Project pd) {
         return createContent(pd);
     }
 

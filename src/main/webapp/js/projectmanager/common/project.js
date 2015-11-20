@@ -78,8 +78,7 @@ function removeRow(id) {
     });
 }
 
-function editRow() {
-    var id = $('#edit-projectdetail-id').val();
+function editRow(pdId) {
     var company = $("#new-project-company option:selected").attr("value");
     var type = $("#new-project-type option:selected").attr("value");
     var expired = $("#new-project-expired").val();
@@ -88,11 +87,11 @@ function editRow() {
     var contact = $("#new-project-contact option:selected").attr("value");
     var data = "";
 
-    if (id == -1) {
+    if (pdId == -1) {
         alert("No edit the project detail with id:" + id);
         return;
     } else {
-        data += "id=" + id;
+        data += "id=" + pdId;
     }
     if (company != "none") {
         data += "&company=" + company;
@@ -451,22 +450,10 @@ function getStatuses() {
     });
 }
 
-function setProject(path) {
-    $.ajax({
-        type: "POST",
-        url: "set-project",
-        data: "id=" + $('input[name = "radio-project"]:checked').val(),
-        success: function (response) {
-            var content = JSON.parse(response);
-
-            window.location.href = path + "?id=" + content.project_id +
-                    "&reference=" + content.project_reference + "&pdId=" +
-                    content.pdId;
-        },
-        error: function (xhr, status, error) {
-            alert("You must select an existing project from the list");
-        }
-    });
+function setProjectBill(path) {
+    var id = $('input[name = "radio-project"]:checked').val();
+    
+    window.location.href = path + "?id=" + id;
 
     $("#dlg-edit-project").dialog("close");
 }
@@ -481,7 +468,7 @@ function dlgProject(status, dlg_id, div_id, dest_path) {
         width: 374,
         buttons: {
             "submit": function () {
-                setProject(dest_path);
+                setProjectBill(dest_path);
             }
         },
         show: {
@@ -497,7 +484,7 @@ function dlgProject(status, dlg_id, div_id, dest_path) {
 
 function dlgEditProject() {
     getStatuses()
-    
+
     $("#dlg-edit-project").dialog({
         autoOpen: true,
         modal: true,
@@ -507,8 +494,15 @@ function dlgEditProject() {
                 var status = $('input[name = "radio-project"]:checked').val();
                 var dlg_id = "#dlg-edit-project";
                 var div_id = "#lst-edit-project";
-                var dest_path = "/ProjectManager/project/edit-form";
+                var dest_path = null;
                 
+                if (status == 'Create') {
+                    dest_path = "/ProjectManager/project/edit-form";
+                }
+                else if (status == 'Project Bill') {
+                    dest_path = "/ProjectManager/project/project-bill";
+                }
+
                 dlgProject(status, dlg_id, div_id, dest_path);
             }
         },

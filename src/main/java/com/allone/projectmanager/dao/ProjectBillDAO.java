@@ -29,8 +29,8 @@ public class ProjectBillDAO extends ProjectBill {
 
         try {
             Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.ProjectBill.findByProjectId").setParameter("id", id) :
-                          null;
+                  "com.allone.projectmanager.entities.ProjectBill.findByProjectId").setParameter("id", id) :
+                  null;
 
             values = (ProjectBill) query.getSingleResult();
         } catch (HibernateException e) {
@@ -47,12 +47,16 @@ public class ProjectBillDAO extends ProjectBill {
 
         try {
             if (ms != null) {
+                System.out.printf("dbpb is not null\n");
                 em.getTransaction().begin();
+                System.out.printf("dbpb begin\n");
                 em.persist(ms);
+                System.out.printf("dbpb persist");
                 em.getTransaction().commit();
+                System.out.printf("dbpb=%d", ms.getId());
             }
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             em.close();
 

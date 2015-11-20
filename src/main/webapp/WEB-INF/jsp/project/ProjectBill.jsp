@@ -12,8 +12,7 @@
 
 <script>
     $(function () {
-        var data = "id=" + $('#bill-projectdetail-id').val() +
-                "&project=" + $('#bill-project-id').val();
+        var data = "id=" + $('#bill-project-id').val();
 
         $.ajax({
             type: "POST",
@@ -37,7 +36,6 @@
 <div class="formLayout">
     <h1>Bill of Material - REF:${project_reference}</h1>
     <input type="hidden" id="bill-project-id" value=${p_id} />
-    <input type="hidden" id="bill-projectdetail-id" value=${pd_id} />
     <input type="hidden" id="bill-location-id"/>
     <div style="overflow-y: scroll">
         <h3>Select Subproject</h3>

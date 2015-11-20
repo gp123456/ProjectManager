@@ -40,6 +40,7 @@
         <div id="dlg-edit-project" hidden="true" title="Statuses">
             <form>
                 <div id="lst-edit-project" class="radio"></div>
+                <input type="hidden" id="edit-path" value=${edit_path} />
             </form>
         </div>
     </div>

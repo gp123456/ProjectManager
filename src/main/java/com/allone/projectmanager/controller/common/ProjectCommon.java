@@ -43,28 +43,17 @@ public class ProjectCommon extends Common {
 
     private ProjectMode mode;
 
-    private String getStatusValueById(String id) {
-        for (ProjectStatusEnum item : ProjectStatusEnum.values()) {
-            if (item.toString().equals(id)) {
-                return item.toString();
-            }
-        }
-
-        return "";
-    }
-
-    private String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
-                                    String mode) {
+    public String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
+                                   String mode) {
         String response = "";
         Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
-        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
         if (mode.equals(this.mode.EDIT.name())) {
             response +=
             "<tr>\n" +
-            "<td>" + p.getReference() + "</td>\n" +
+            "<td>" + pd.getReference() + "</td>\n" +
             "<td>" + pd.getType() + "</td>\n" +
             "<td>" + pd.getStatus() + "</td>\n" +
             "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
@@ -73,9 +62,9 @@ public class ProjectCommon extends Common {
             "<td>" + pd.getCompany() + "</td>\n" +
             "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
             "<td>" + pd.getCustomer() + "</td>" +
-            "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n";
-//            "<td><input type=\"button\" value=\"" + statuses.get(0) + "\" id=\"edit-project\" onclick=\"editRow(" + pd.
-//            getId() + ")\"></td>\n" +
+            "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
+            "<td><input type='button' value='Edit' class='button' id='edit-project' onclick='editRow(" + pd.getId() +
+            ")'></td>\n";
 //            "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"remove-project\" onclick=\"removeRow(" +
 //            pd.getId() + ")\"></td>\n" +
 //            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"create-to\" onclick=\"createTo(" +
@@ -88,7 +77,7 @@ public class ProjectCommon extends Common {
         } else if (mode.equals(this.mode.VIEW.name())) {
             response +=
             "<tr>" +
-            "<td>" + p.getReference() + "</td>\n" +
+            "<td>" + pd.getReference() + "</td>\n" +
             "<td>" + pd.getType() + "</td>\n" +
             "<td>" + pd.getStatus() + "</td>\n" +
             "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
@@ -99,8 +88,8 @@ public class ProjectCommon extends Common {
             "<td>" + pd.getCustomer() + "</td>" +
             "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
             "<td></td>\n" +
-            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"send-email\" onclick=\"sendEnail(" +
-            pd.getId() + ")\"></td>\n" +
+            "<td><input type='button' value='" + statuses.get(2) + "' id='send-email' onclick='sendEnail(" +
+            pd.getId() + ")'></td>\n" +
             "</tr>\n";
         }
 
@@ -128,11 +117,11 @@ public class ProjectCommon extends Common {
                     "<th>Vessel</th>\n" +
                     "<th>Customer</th>\n" +
                     "<th>Contact</th>\n" +
-//                    "<th>Edit</th>\n" +
-//                    "<th>Delete</th>\n" +
-//                    "<th>Save to ...</th>\n" +
-//                    "<th>Print to ...</th>\n" +
-//                    "<th>Send eMail</th>\n" +
+                    "<th>Edit</th>\n" +
+                    //                    "<th>Delete</th>\n" +
+                    //                    "<th>Save to ...</th>\n" +
+                    //                    "<th>Print to ...</th>\n" +
+                    //                    "<th>Send eMail</th>\n" +
                     "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             return "<tr>\n" +
@@ -320,7 +309,7 @@ public class ProjectCommon extends Common {
 //        Double persentDelivery = ((allDelivery.doubleValue() / allOpen.doubleValue()) * 100.0);
 //        Double persentShipping = ((allShipping.doubleValue() / allOpen.doubleValue()) * 100.0);
         List<String> result = new ArrayList<>();
-        
+
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
             result.add((allOpen.toString()));
             result.add(allCreate.toString());
@@ -350,7 +339,7 @@ public class ProjectCommon extends Common {
 //        Double persentWCSHellas = (allWCSHellas.doubleValue() / allOpen.doubleValue()) * 100.0;
 //        Double persentWCSLTD = (allWCSLTD.doubleValue() / allOpen.doubleValue()) * 100.0;
 //        Double persentMTS = (allMTS.doubleValue() / allOpen.doubleValue()) * 100.0;
-        
+
         List<String> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {

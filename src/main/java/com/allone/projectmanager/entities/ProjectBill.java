@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author antonia
  */
-    @Entity
+@Entity
 @Table(name = "project_bill")
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "ProjectBill.findAll", query = "SELECT p FROM ProjectBill p"),
@@ -77,17 +77,29 @@ public class ProjectBill implements Serializable {
 
     @Column(name = "note")
     private String note;
-    
+
     @Basic(optional = false)
     @Column(name = "currency")
     @NotNull
     private String currency;
-    
+
     @Basic(optional = false)
     @Column(name = "location")
     private String location;
 
     private ProjectBill(Builder builder) {
+        totalCost = builder.totalCost;
+        averangeDiscount = builder.averangeDiscount;
+        totalSalePrice = builder.totalSalePrice;
+        totalNetPrice = builder.totalNetPrice;
+        project = builder.project;
+        express = builder.express;
+        note = builder.note;
+        currency = builder.currency;
+        location = builder.location;
+    }
+    
+    private ProjectBill(ProjectBill builder) {
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
         totalSalePrice = builder.totalSalePrice;
@@ -157,7 +169,7 @@ public class ProjectBill implements Serializable {
     public void setNote(String note) {
         this.note = note;
     }
-    
+
     public String getCurrency() {
         return currency;
     }
@@ -224,7 +236,7 @@ public class ProjectBill implements Serializable {
         private String note;
 
         private String currency;
-     
+
         private String location;
 
         public Builder setTotalCost(BigDecimal totalCost) {
@@ -268,13 +280,13 @@ public class ProjectBill implements Serializable {
 
             return this;
         }
-        
+
         public Builder setCurrency(String currency) {
             this.currency = currency;
 
             return this;
         }
-        
+
         public Builder setLocation(String location) {
             this.location = location;
 
@@ -283,6 +295,10 @@ public class ProjectBill implements Serializable {
 
         public ProjectBill build() {
             return new ProjectBill(this);
+        }
+        
+        public ProjectBill build(ProjectBill pb) {
+            return new ProjectBill(pb);
         }
     }
 }
