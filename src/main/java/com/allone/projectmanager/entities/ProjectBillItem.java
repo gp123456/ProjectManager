@@ -27,28 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project_bill_item")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "ProjectBillItem.findAll", query = "SELECT p FROM ProjectBillItem p"),
-               @NamedQuery(name = "ProjectBillItem.findById", query = "SELECT p FROM ProjectBillItem p WHERE p.id = :id"),
-               @NamedQuery(name = "ProjectBillItem.findByAvailable",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.available = :available"),
-               @NamedQuery(name = "ProjectBillItem.findByPrice",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.price = :price"),
-               @NamedQuery(name = "ProjectBillItem.findByQuantity",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.quantity = :quantity"),
-               @NamedQuery(name = "ProjectBillItem.findByCost",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.cost = :cost"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalCost",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalCost = :totalCost"),
-               @NamedQuery(name = "ProjectBillItem.findByPercentage",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.percentage = :percentage"),
-               @NamedQuery(name = "ProjectBillItem.findByDiscount",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.discount = :discount"),
-               @NamedQuery(name = "ProjectBillItem.findBySalePrice",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.salePrice = :salePrice"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalSalePrice",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalSalePrice = :totalSalePrice"),
-               @NamedQuery(name = "ProjectBillItem.findByTotalNetPrice",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.totalNetPrice = :totalNetPrice")})
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectBillItem.findByProjectBill",
+                           query = "SELECT p FROM ProjectBillItem p WHERE p.projectBill=:projectBill")})
 public class ProjectBillItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -119,6 +99,16 @@ public class ProjectBillItem implements Serializable {
     @Column(name = "item")
     @NotNull
     private Long item;
+    
+    @Basic(optional = false)
+    @Column(name = "itemImno")
+    @NotNull
+    private String itemImno;
+    
+    @Basic(optional = false)
+    @Column(name = "itemDescription")
+    @NotNull
+    private String itemDescription;
 
     @Basic(optional = false)
     @Column(name = "currency")
@@ -130,9 +120,6 @@ public class ProjectBillItem implements Serializable {
     
     @Transient
     private String classSave;
-    
-    @Transient
-    private String itemImno;
 
     private ProjectBillItem(Builder builder) {
         available = builder.available;
@@ -151,6 +138,7 @@ public class ProjectBillItem implements Serializable {
         classRefresh = builder.classRefresh;
         classSave = builder.classSave;
         itemImno = builder.itemImno;
+        itemDescription = builder.itemDescription;
     }
 
     private ProjectBillItem(ProjectBillItem pbi) {
@@ -168,6 +156,7 @@ public class ProjectBillItem implements Serializable {
         item = pbi.item;
         currency = pbi.currency;
         itemImno = pbi.itemImno;
+        itemDescription = pbi.itemDescription;
     }
 
     public ProjectBillItem() {
@@ -308,6 +297,14 @@ public class ProjectBillItem implements Serializable {
     public void setItemImno(String itemImno) {
         this.itemImno = itemImno;
     }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
     
     @Override
     public int hashCode() {
@@ -370,6 +367,8 @@ public class ProjectBillItem implements Serializable {
         private String classSave;
     
         private String itemImno;
+
+        private String itemDescription;
 
         public Builder setAvailable(Integer available) {
             this.available = available;
@@ -459,6 +458,12 @@ public class ProjectBillItem implements Serializable {
         
         public Builder setItemImno(String itemImno) {
             this.itemImno = itemImno;
+            return this;
+        }
+        
+        public Builder setItemDescription(String itemDescription) {
+            this.itemDescription = itemDescription;
+            
             return this;
         }
 

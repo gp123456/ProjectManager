@@ -239,6 +239,7 @@ function stockNewItem() {
 
 function nostockNewItem() {
     var imno = $("#item-imno").val();
+    var description = Number($("#item-desc").val());
     var quantity = Number($("#item-quantity").val());
     var price = Number($("#item-price").val());
 
@@ -250,7 +251,8 @@ function nostockNewItem() {
         $("#validate-add-item").text("You must give a valid number price");
     } else {
         var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
-                imno + "&quantity=" + quantity + "&price=" + price;
+                imno + "&quantity=" + quantity + "&price=" + price + "&itemDescription=" +
+                description;
         $.ajax({
             type: "POST",
             url: "/ProjectManager/project/project-bill/item-nostock",

@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -26,16 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project_bill")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "ProjectBill.findAll", query = "SELECT p FROM ProjectBill p"),
-               @NamedQuery(name = "ProjectBill.findById", query = "SELECT p FROM ProjectBill p WHERE p.id = :id"),
-               @NamedQuery(name = "ProjectBill.findByTotalCost",
-                           query = "SELECT p FROM ProjectBill p WHERE p.totalCost = :totalCost"),
-               @NamedQuery(name = "ProjectBill.findByAverangeDiscount",
-                           query = "SELECT p FROM ProjectBill p WHERE p.averangeDiscount = :averangeDiscount"),
-               @NamedQuery(name = "ProjectBill.findByTotalSalePrice",
-                           query = "SELECT p FROM ProjectBill p WHERE p.totalSalePrice = :totalSalePrice"),
-               @NamedQuery(name = "ProjectBill.findByTotalNetPrice",
-                           query = "SELECT p FROM ProjectBill p WHERE p.totalNetPrice = :totalNetPrice")})
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectBill.findByProject",
+                           query = "SELECT p FROM ProjectBill p WHERE p.project=:project")})
 public class ProjectBill implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -86,6 +79,9 @@ public class ProjectBill implements Serializable {
     @Basic(optional = false)
     @Column(name = "location")
     private String location;
+    
+    @Transient
+    private String classSave;
 
     private ProjectBill(Builder builder) {
         totalCost = builder.totalCost;
@@ -97,6 +93,7 @@ public class ProjectBill implements Serializable {
         note = builder.note;
         currency = builder.currency;
         location = builder.location;
+        classSave = builder.classSave;
     }
     
     private ProjectBill(ProjectBill builder) {
@@ -109,6 +106,7 @@ public class ProjectBill implements Serializable {
         note = builder.note;
         currency = builder.currency;
         location = builder.location;
+        classSave = builder.classSave;
     }
 
     public ProjectBill() {
@@ -194,6 +192,14 @@ public class ProjectBill implements Serializable {
         this.location = location;
     }
 
+    public String getClassSave() {
+        return classSave;
+    }
+
+    public void setClassSave(String classSave) {
+        this.classSave = classSave;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -238,6 +244,8 @@ public class ProjectBill implements Serializable {
         private String currency;
 
         private String location;
+     
+        private String classSave;
 
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
@@ -289,6 +297,12 @@ public class ProjectBill implements Serializable {
 
         public Builder setLocation(String location) {
             this.location = location;
+
+            return this;
+        }
+        
+        public Builder setClassSave(String classSave) {
+            this.classSave = classSave;
 
             return this;
         }

@@ -85,6 +85,7 @@ public class ProjectBillController extends ProjectCommon {
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "-" + pd.getCompany() +
                 "</option>";
+                pushProjectBillMaterial(pd.getId());
                 pdId = pd.getId();
             }
             content.put("subprojects", response);
@@ -97,6 +98,28 @@ public class ProjectBillController extends ProjectCommon {
         }
 
         return new Gson().toJson(content);
+    }
+
+    private void pushProjectBillMaterial(Long projectDetailId) {
+        List<ProjectBill> pbs = srvProjectManager.getDaoProjectBill().getByProject(projectDetailId);
+
+        if (pbs != null && !pbs.isEmpty()) {
+            for (ProjectBill pb : pbs) {
+                Integer location = getLocationIdByName(pb.getLocation());
+                
+                setVirtualProjectBill(pb, location);
+                
+                List<ProjectBillItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
+                
+                if (pbis != null && !pbis.isEmpty()) {
+                    for (ProjectBillItem pbi : pbis) {
+                        pbi.setClassRefresh("button alarm");
+                        pbi.setClassSave("button alarm");
+                        setVirtualProjectBillItem(pb.getProject(), location, pbi);
+                    }
+                }
+            }
+        }
     }
 
     private String createProjectBill(ProjectBillModel _pbm) {

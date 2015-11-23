@@ -25,19 +25,19 @@ public class ProjectBillItemDAO {
         this.emf = emf;
     }
 
-    public List getByProjectBillId(Long id) {
-        List values = null;
+    public List getByProjectBill(Long projectBill) {
+        Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.ProjectBillItem.findByProjectBillId").setParameter(
-                                  "projectBillId", id) : null;
-            
-            values = query.getResultList();
+            query = (projectBill != null && projectBill.compareTo(0l) >= 0) ? em.createNamedQuery(
+                  "com.allone.projectmanager.entities.ProjectBillItem.findByProjectBill").setParameter(
+                          "projectBill", projectBill) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
+            List values = query.getResultList();
+            
             em.close();
 
             return values;
@@ -82,9 +82,9 @@ public class ProjectBillItemDAO {
         }
     }
 
-    public void edit(Long projectBillId, List<ProjectBillItem> mss) {
+    public void edit(Long projectBill, List<ProjectBillItem> mss) {
         EntityManager em = emf.createEntityManager();
-        List<ProjectBillItem> mi = getByProjectBillId(projectBillId);
+        List<ProjectBillItem> mi = getByProjectBill(projectBill);
 
         try {
             em.getTransaction().begin();
@@ -106,9 +106,9 @@ public class ProjectBillItemDAO {
         }
     }
 
-    public void delete(Long projectBillId) {
+    public void delete(Long projectBill) {
         EntityManager em = emf.createEntityManager();
-        List<ProjectBillItem> mi = getByProjectBillId(projectBillId);
+        List<ProjectBillItem> mi = getByProjectBill(projectBill);
 
         try {
             if (mi != null && !mi.isEmpty()) {

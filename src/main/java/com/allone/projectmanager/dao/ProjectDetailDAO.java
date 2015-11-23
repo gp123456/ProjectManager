@@ -7,7 +7,6 @@ package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
-import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import java.util.List;
 import javax.persistence.EntityManager;

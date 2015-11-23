@@ -390,12 +390,6 @@ public class Common {
         return prj_reference;
     }
 
-    public void setProjectBillInfo(Long projectId, Model model, ProjectManagerService srvProjectManager) {
-        ProjectBill pb = srvProjectManager.getDaoProjectBill().findByProjectId(projectId);
-
-        model.addAttribute("project-bill", pb);
-    }
-
     public void setVirtualProjectBill(ProjectBill pb, Integer locationId) {
         if (pb != null) {
             mapProjectBill.put(new ProjectBillModel(pb.getProject(), locationId), pb);
