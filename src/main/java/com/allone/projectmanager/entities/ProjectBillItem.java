@@ -101,19 +101,18 @@ public class ProjectBillItem implements Serializable {
     private Long item;
     
     @Basic(optional = false)
-    @Column(name = "itemImno")
+    @Column(name = "item_imno")
     @NotNull
     private String itemImno;
     
     @Basic(optional = false)
-    @Column(name = "itemDescription")
-    @NotNull
+    @Column(name = "item_description")
     private String itemDescription;
 
     @Basic(optional = false)
     @Column(name = "currency")
     @NotNull
-    private String currency;
+    private Integer currency;
     
     @Transient
     private String classRefresh;
@@ -266,11 +265,11 @@ public class ProjectBillItem implements Serializable {
         this.available = available;
     }
 
-    public String getCurrency() {
+    public Integer getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(Integer currency) {
         this.currency = currency;
     }
 
@@ -360,7 +359,7 @@ public class ProjectBillItem implements Serializable {
 
         private Long item;
 
-        private String currency;
+        private Integer currency;
         
         private String classRefresh;
         
@@ -442,8 +441,9 @@ public class ProjectBillItem implements Serializable {
             return this;
         }
 
-        public Builder setCurrency(String currency) {
+        public Builder setCurrency(Integer currency) {
             this.currency = currency;
+            
             return this;
         }
         

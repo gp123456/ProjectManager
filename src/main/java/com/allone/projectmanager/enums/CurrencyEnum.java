@@ -10,15 +10,22 @@ package com.allone.projectmanager.enums;
  * @author Admin
  */
 public enum CurrencyEnum {
-    JPY("¥"),//&#165
-    GBP("£"),//&#163
-    USD("$"),//&#36
-    EUR("&#8364");//€
+    JPY(1, "&#165"),//¥
+    GBP(2, "&#163"),//£
+    USD(3, "&#36"),//$
+    EUR(4, "&#8364");//€
 
+    private final Integer id;
+    
     private final String value;
 
-    private CurrencyEnum(final String value) {
+    private CurrencyEnum(final Integer id, final String value) {
+        this.id = id;
         this.value = value;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override

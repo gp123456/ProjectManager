@@ -94,7 +94,7 @@ function refreshValues(pdid, location, id) {
             var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&available=" +
                     available + "&price=" + $("#price" + pdid + id).text() + "&quantity=" +
                     quantity + "&cost=" + cost + "&percentage=" + percentage + "&discount=" + discount +
-                    "&currency=" + $("#currency" + pdid + id + " option:selected").val() +
+                    "&currency=" + $("#currency" + pdid + location + id + " option:selected").val() +
                     "&classRefresh=button&classSave=button alarm";
 
             $.ajax({
@@ -216,15 +216,15 @@ function stockNewItem() {
     } else if (company == -1) {
         $("#validate-add-item").text("You must select a supplier");
     } else {
-        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&imno=" +
+        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
                 imno + "&description=" + $("#item-desc").val() + "&location=" + location +
                 "&quantity=" + quantity + "&price=" + price + "&company=" + company;
-        
+
         alert(data);
-        
+
         $.ajax({
             type: "POST",
-            url: "/ProjectManager/project/project-bill/item-stock",
+            url: "/ProjectManager/project/project-bill/item/stock",
             data: data,
             success: function (response) {
                 $("#project-bill-items").html(response);
@@ -251,11 +251,11 @@ function nostockNewItem() {
         $("#validate-add-item").text("You must give a valid number price");
     } else {
         var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
-                imno + "&quantity=" + quantity + "&price=" + price + "&itemDescription=" +
+                imno + "&quantity=" + quantity + "&price=" + price + "&description=" +
                 description;
         $.ajax({
             type: "POST",
-            url: "/ProjectManager/project/project-bill/item-nostock",
+            url: "/ProjectManager/project/project-bill/item/nostock",
             data: data,
             success: function (response) {
                 $("#project-bill-items").html(response);

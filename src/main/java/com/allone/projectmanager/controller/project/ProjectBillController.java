@@ -106,16 +106,16 @@ public class ProjectBillController extends ProjectCommon {
         if (pbs != null && !pbs.isEmpty()) {
             for (ProjectBill pb : pbs) {
                 Integer location = getLocationIdByName(pb.getLocation());
-                
+
                 setVirtualProjectBill(pb, location);
-                
+
                 List<ProjectBillItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
-                
+
                 if (pbis != null && !pbis.isEmpty()) {
                     for (ProjectBillItem pbi : pbis) {
                         pbi.setClassRefresh("button alarm");
                         pbi.setClassSave("button alarm");
-                        setVirtualProjectBillItem(pb.getProject(), location, pbi);
+                        setVirtualProjectBillItem(new ProjectBillModel(pb.getProject(), location), pbi);
                     }
                 }
             }
@@ -162,14 +162,16 @@ public class ProjectBillController extends ProjectCommon {
         return response;
     }
 
-    private String getCurrencies() {
-        String currencies = "<select id='select-new-item-company' style='width:50px;'>\n";
+    private String getCurrencies(Long pdId, Integer location, Long itemId, Integer currency, Boolean first) {
+        String currencies = "<select id='currency" + pdId + location + itemId + "' style='width:50px;'>\n";
+
+        logger.log(Level.INFO, "currency:{0}", currency);
 
         for (CurrencyEnum cu : CurrencyEnum.values()) {
-            if (cu.equals(CurrencyEnum.EUR)) {
-                currencies += "<option value='" + cu.toString() + "' selected='selected'>" + cu.toString() + "</option>";
-            } else {
-                currencies += "<option value='" + cu.toString() + "'>" + cu.toString() + "</option>";
+            if (cu.getId().equals(currency)) {
+                currencies += "<option value='" + cu.getId() + "' selected='selected'>" + cu.toString() + "</option>";
+            } else if (first == true) {
+                currencies += "<option value='" + cu.getId() + "'>" + cu.toString() + "</option>";
             }
         }
         currencies += "</select>";
@@ -202,6 +204,7 @@ public class ProjectBillController extends ProjectCommon {
             for (ProjectBillModel pbm : pbms) {
                 Collection<ProjectBillItem> pbItems = getProjectBillItems(pbm);
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pbm.getId());
+                Integer count = 0;
 
                 if (pbItems != null && !pbItems.isEmpty()) {
                     for (ProjectBillItem pbItem : pbItems) {
@@ -220,7 +223,11 @@ public class ProjectBillController extends ProjectCommon {
                                toString() : "";
                         String totalNetPrice = (pbItem.getTotalNetPrice() != null) ? pbItem.getTotalNetPrice().
                                toString() : "";
+                        Integer currency = (pbItem.getCurrency() == null) ? CurrencyEnum.EUR.getId() : pbItem.
+                                getCurrency();
+                        Boolean firstItem = count.equals(0);
 
+                        count++;
                         response +=
                         "<tr>" +
                         "<td>" + imno + "</td>" +
@@ -243,7 +250,7 @@ public class ProjectBillController extends ProjectCommon {
                         "</td>" +
                         "<td id='total_net_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalNetPrice +
                         "</td>" +
-                        "<td id='currency" + pbm.getId() + pbm.getLocation() + itemId + "'>" + getCurrencies() + "</td>" +
+                        "<td>" + getCurrencies(pbm.getId(), pbm.getLocation(), itemId, currency, firstItem) + "</td>" +
                         "<td>" + pd.getReference() + "</td>" +
                         "<td><input type='button' id='Edit" + pbm.getId() + pbm.getLocation() + itemId +
                         "' value='Edit' class='button' onclick='editValues(" + pbm.getId() + "," + pbm.getLocation() +
@@ -280,9 +287,10 @@ public class ProjectBillController extends ProjectCommon {
                 BigDecimal.ZERO;
                 totalNetPrice = (item.getTotalNetPrice() != null) ? totalNetPrice.add(item.getTotalNetPrice()) :
                 BigDecimal.ZERO;
+                item.setClassSave("button");
             }
 
-            averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()));
+            averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()), 2);
 
             return new ProjectBill.Builder()
                     .setProject(pdId)
@@ -293,7 +301,7 @@ public class ProjectBillController extends ProjectCommon {
                     .setCurrency(CurrencyEnum.EUR.toString())
                     .build();
         } else {
-            removeVirtualProjectBill(pdId, location);
+            removeVirtualProjectBill(new ProjectBillModel(pdId, location));
 
             return null;
         }
@@ -340,11 +348,16 @@ public class ProjectBillController extends ProjectCommon {
     String itemInsert(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
         if (!pbi.getItem().equals(0l) && getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem()) == null) {
             Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
+            ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+            Integer currency = (temp != null) ? temp.getCurrency() : null;
 
             if (item != null) {
                 pbi.setAvailable(item.getQuantity());
                 pbi.setPrice(item.getPrice());
-                setVirtualProjectBillItem(pdId, location, pbi);
+                pbi.setItemImno(item.getImno());
+                pbi.setItemDescription(item.getDescription());
+                pbi.setCurrency((currency != null) ? currency : pbi.getCurrency());
+                setVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
             }
         }
 
@@ -371,14 +384,15 @@ public class ProjectBillController extends ProjectCommon {
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
             temp.setCurrency(pbi.getCurrency());
-            editVirtualProjectBillItem(pdId, temp);
+            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
         } else {
-            editVirtualProjectBillItem(pdId, pbi);
+            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
         }
         ProjectBill pb = getAverangeDiscount(pdId, location);
-
+        
         pb.setLocation(getLocationNameById(location));
         setVirtualProjectBill(pb, location);
+        saveVirtualProjectBillItem(new ProjectBillModel(pdId, location));
         content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
         content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, null)));
 
@@ -466,9 +480,13 @@ public class ProjectBillController extends ProjectCommon {
                 }
             }
 
+            if (changeCurrencyFirstItem(new ProjectBillModel(pdId, location), pbi)) {
+                editCurrencyVirtualProjectBillItems(new ProjectBillModel(pdId, location), pbi.getCurrency());
+            }
+            temp.setCurrency(pbi.getCurrency());
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
-            editVirtualProjectBillItem(pdId, temp);
+            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
 
             return createProjectBillItems(new ProjectBillModel(pdId, null));
         }
@@ -484,7 +502,7 @@ public class ProjectBillController extends ProjectCommon {
         if (temp != null) {
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
-            editVirtualProjectBillItem(pdId, temp);
+            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
 
             return createProjectBillItems(new ProjectBillModel(pdId, null));
         }
@@ -626,10 +644,13 @@ public class ProjectBillController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "/project-bill/item-stock")
+    @RequestMapping(value = "/project-bill/item/stock")
     public @ResponseBody
-    String itemStockInsert(Long pdId, Item item) {
-        item.setCurrency(0l);
+    String itemStockInsert(Long pdId, Integer location, Item item) {
+        ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+        Integer currency = (temp != null) ? temp.getCurrency() : null;
+
+        item.setCurrency((currency != null) ? currency : CurrencyEnum.EUR.getId().longValue());
         item.setStartQuantity(item.getQuantity());
         item.setOfferQuantity(item.getQuantity());
         item.setInventoryQuantity(item.getQuantity());
@@ -638,22 +659,30 @@ public class ProjectBillController extends ProjectCommon {
         item.setInventoryEdit(Boolean.FALSE);
         item = srvProjectManager.getDaoItem().add(item);
         if (item.getId() != null) {
-            setVirtualProjectBillItem(pdId, BillLocationEnum.GREECE.getId(), new ProjectBillItem.Builder().setAvailable(
-                                      item.getQuantity()).setQuantity(0).setPrice(item.getPrice()).setItem(item.getId())
-                                      .setClassRefresh("button alarm").setClassSave("button alarm").build());
+            setVirtualProjectBillItem(new ProjectBillModel(pdId, BillLocationEnum.GREECE.getId()),
+                                      new ProjectBillItem.Builder().setAvailable(item.getQuantity()).setQuantity(0)
+                                      .setPrice(item.getPrice()).setItem(item.getId()).setItemImno(item.getImno())
+                                      .setItemDescription(item.getDescription()).setCurrency(item.getCurrency()
+                                      .intValue()).setClassRefresh("button alarm").setClassSave("button alarm").build());
         }
 
         return createProjectBillItems(new ProjectBillModel(pdId, null));
     }
 
-    @RequestMapping(value = "/project-bill/item-nostock")
+    @RequestMapping(value = "/project-bill/item/nostock")
     public @ResponseBody
     String itemNoStockInsert(Long pdId, Integer location, Item item, Model model) {
+        ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+        Integer currency = (temp != null) ? temp.getCurrency() : null;
+
+        item.setCurrency((currency != null) ? currency : CurrencyEnum.EUR.getId().longValue());
         item.setId(getNextNoStockItemId());
         if (item.getId() != null) {
-            setVirtualProjectBillItem(pdId, location, new ProjectBillItem.Builder().setAvailable(item.getQuantity())
-                                      .setPrice(item.getPrice()).setItem(item.getId()).setClassRefresh("button alarm")
-                                      .setClassSave("button alarm").setItemImno(item.getImno()).build());
+            setVirtualProjectBillItem(new ProjectBillModel(pdId, location), new ProjectBillItem.Builder()
+                                      .setAvailable(item.getQuantity()).setPrice(item.getPrice()).setItem(item.getId())
+                                      .setItemImno(item.getImno()).setItemDescription(item.getDescription())
+                                      .setCurrency(item.getCurrency().intValue()).setClassRefresh("button alarm")
+                                      .setClassSave("button alarm").build());
         }
 
         return createProjectBillItems(new ProjectBillModel(pdId, null));
@@ -753,7 +782,7 @@ public class ProjectBillController extends ProjectCommon {
                 if (item != null) {
                     item.setClassRefresh("button");
                     item.setClassSave("button alarm");
-                    setVirtualProjectBillItem(id, location, item);
+                    setVirtualProjectBillItem(new ProjectBillModel(id, location), item);
                 }
             }
 

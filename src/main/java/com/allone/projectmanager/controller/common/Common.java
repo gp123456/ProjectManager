@@ -212,7 +212,7 @@ public class Common {
     public Set<ProjectBillModel> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();
     }
-    
+
     public Set<ProjectBillModel> getPBMIKeysByPDId(ProjectBillModel pbm) {
         if (pbm != null && !mapProjectBillItems.isEmpty()) {
             Set<ProjectBillModel> keys = new HashSet<>();
@@ -262,6 +262,33 @@ public class Common {
         }
 
         return null;
+    }
+
+    public ProjectBillItem getFirstProjectBillItem(ProjectBillModel pbm) {
+        if (!mapProjectBillItems.isEmpty() && pbm != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+
+            if (items != null && !items.isEmpty()) {
+                return items.get(0);
+            }
+        }
+
+        return null;
+    }
+
+    public Boolean changeCurrencyFirstItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+        if (!mapProjectBillItems.isEmpty() && pbm != null && pbi != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+
+            if (items != null && !items.isEmpty()) {
+                ProjectBillItem item = items.get(0);
+                Integer currency = item.getCurrency();
+
+                return item.getItem().equals(pbi.getItem()) && currency != null && !currency.equals(pbi.getCurrency());
+            }
+        }
+
+        return Boolean.FALSE;
     }
 
     public String getHeader() {
@@ -396,33 +423,57 @@ public class Common {
         }
     }
 
-    public void removeVirtualProjectBill(Long pdId, Integer locationId) {
-        if (pdId != null && locationId != null) {
-            mapProjectBill.remove(new ProjectBillModel(pdId, locationId));
+    public void removeVirtualProjectBill(ProjectBillModel pbm) {
+        if (pbm != null) {
+            mapProjectBill.remove(pbm);
         }
     }
 
-    public void setVirtualProjectBillItem(Long pdId, Integer location, ProjectBillItem pbi) {
-        if (pdId != null && pbi != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(new ProjectBillModel(pdId, location));
+    public void setVirtualProjectBillItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+        if (pbm != null && pbi != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null) {
                 items.add(pbi);
             } else {
-                mapProjectBillItems.put(new ProjectBillModel(pdId, location), new ArrayList<>(Arrays.asList(pbi)));
+                mapProjectBillItems.put(pbm, new ArrayList<>(Arrays.asList(pbi)));
             }
         }
     }
 
-    public void editVirtualProjectBillItem(Long pdId, ProjectBillItem pbi) {
-        if (pdId != null && pbi != null && pbi.getItem() != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pdId);
+    public void editVirtualProjectBillItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+        if (pbm != null && pbi != null && pbi.getItem() != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 items.stream().
                         filter((item) -> (item.getItem().equals(pbi.getItem()))).
                         forEach((item) -> {
                     item = pbi;
+                });
+            }
+        }
+    }
+    
+    public void saveVirtualProjectBillItem(ProjectBillModel pbm) {
+        if (pbm != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+
+            if (items != null && !items.isEmpty()) {
+                items.stream().forEach((item) -> {
+                    item.setClassSave("button");
+                });
+            }
+        }
+    }
+
+    public void editCurrencyVirtualProjectBillItems(ProjectBillModel pdm, Integer currency) {
+        if (pdm != null && currency != null) {
+            List<ProjectBillItem> items = mapProjectBillItems.get(pdm);
+
+            if (items != null && !items.isEmpty()) {
+                items.stream().forEach((item) -> {
+                    item.setCurrency(currency);
                 });
             }
         }
