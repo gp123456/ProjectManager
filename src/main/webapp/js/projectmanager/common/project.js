@@ -328,22 +328,6 @@ function projectFilterCustomer() {
     });
 }
 
-//function projectFilterVessel() {
-//    $.ajax({
-//        type: "POST",
-//        url: "filter-vessel",
-//        data: "vessel=" + $("#new-project-vessel option:selected").attr("value"),
-//        success: function (response) {
-//            var content = JSON.parse(response)
-//
-//            $("#new-project-customer").html(content.customer);
-//            $("#new-project-contact").html(content.contact);
-//        },
-//        error: function (e) {
-//        }
-//    });
-//}
-
 function plotStatusInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {
         title: {
@@ -352,15 +336,15 @@ function plotStatusInfo(id, title, info) {
         data: [{
                 type: "pie",
                 dataPoints: [
-                    {label: "Create[" + info[1] + "]", y: info[1]},
-                    {label: "Bill Material[" + info[2] + "]", y: info[2]},
-                    {label: "Request Quota[" + info[3] + "]", y: info[3]},
-                    {label: "Purchase Order[" + info[4] + "]", y: info[4]},
-                    {label: "Work Order[" + info[5] + "]", y: info[5]},
-                    {label: "Ack Order[" + info[6] + "]", y: info[6]},
-                    {label: "Packing List[" + info[7] + "]", y: info[7]},
-                    {label: "Delivery Note[" + info[8] + "]", y: info[8]},
-                    {label: "Ship Invoice[" + info[9] + "]", y: info[9]}
+                    {label: info[0]["name"] + "[" + info[0]["value"] + "]", y: info[0]["value"]},
+                    {label: info[1]["name"] + "[" + info[1]["value"] + "]", y: info[1]["value"]},
+                    {label: info[2]["name"] + "[" + info[2]["value"] + "]", y: info[2]["value"]},
+                    {label: info[3]["name"] + "[" + info[3]["value"] + "]", y: info[3]["value"]},
+                    {label: info[4]["name"] + "[" + info[4]["value"] + "]", y: info[4]["value"]},
+                    {label: info[5]["name"] + "[" + info[5]["value"] + "]", y: info[5]["value"]},
+                    {label: info[6]["name"] + "[" + info[6]["value"] + "]", y: info[6]["value"]},
+                    {label: info[7]["name"] + "[" + info[7]["value"] + "]", y: info[7]["value"]},
+                    {label: info[8]["name"] + "[" + info[8]["value"] + "]", y: info[8]["value"]}
                 ]
             }
         ]
@@ -377,10 +361,10 @@ function plotCompanyInfo(id, title, info) {
         data: [{
                 type: "pie",
                 dataPoints: [
-                    {label: "WCS[" + info[1] + "]", y: info[1]},
-                    {label: "WCS HELLAS[" + info[2] + "]", y: info[2]},
-                    {label: "WCS LTD[" + info[3] + "]", y: info[3]},
-                    {label: "MTS[" + info[4] + "]", y: info[4]}
+                    {label: info[0]["name"] + "[" + info[0]["value"] + "]", y: info[0]["value"]},
+                    {label: info[1]["name"] + "[" + info[1]["value"] + "]", y: info[1]["value"]},
+                    {label: info[2]["name"] + "[" + info[2]["value"] + "]", y: info[2]["value"]},
+                    {label: info[3]["name"] + "[" + info[3]["value"] + "]", y: info[3]["value"]}
                 ]
             }
         ]
@@ -389,34 +373,67 @@ function plotCompanyInfo(id, title, info) {
     chart.render();
 }
 
+function sortNumber(a, b) {
+    return b["value"] - a["value"];
+}
+
 function dashboardView() {
     $.ajax({
         type: "POST",
         url: "view",
         success: function (response) {
             var content = JSON.parse(response);
+            var totalSaleStatus = null, totalServiceStatus = null, totalSaleCompany = null,
+                    totalServiceCompany = null;
+            var SaleStatus = [], ServiceStatus = [], SaleCompany = [], ServiceCompany = [];
 
-            if (content.OpenProjectSaleStatus != null &&
-                    content.OpenProjectServiceStatus != null &&
-                    content.OpenProjectSaleCompany != null &&
-                    content.OpenProjectServiceCompany != null) {
-                var totalSaleStatus = content.OpenProjectSaleStatus[0];
-                var totalServiceStatus = content.OpenProjectServiceStatus[0];
-                var totalSaleCompany = content.OpenProjectSaleCompany[0];
-                var totalServiceCompany = content.OpenProjectServiceCompany[0];
+            if (content.OpenProjectSaleStatus.length !== 0) {
+                totalSaleStatus = content.OpenProjectSaleStatus[0]["value"];
+                for (var i = 1; i < content.OpenProjectSaleStatus.length; i++) {
+                    SaleStatus.push(content.OpenProjectSaleStatus[i]);
+                }
+            }
 
+            if (content.OpenProjectServiceStatus.length !== 0) {
+                totalServiceStatus = content.OpenProjectServiceStatus[0]["value"];
+                for (var i = 1; i < content.OpenProjectServiceStatus.length; i++) {
+                    ServiceStatus.push(content.OpenProjectServiceStatus[i]);
+                }
+            }
+
+            if (content.OpenProjectSaleCompany.length !== 0) {
+                totalSaleCompany = content.OpenProjectSaleCompany[0]["value"];
+                for (var i = 1; i < content.OpenProjectSaleCompany.length; i++) {
+                    SaleCompany.push(content.OpenProjectSaleCompany[i]);
+                }
+            }
+
+            if (content.OpenProjectServiceCompany.length !== 0) {
+                totalServiceCompany = content.OpenProjectServiceCompany[0]["value"];
+                for (var i = 1; i < content.OpenProjectServiceCompany.length; i++) {
+                    ServiceCompany.push(content.OpenProjectServiceCompany[i]);
+                }
+            }
+
+            if (totalSaleStatus !== null) {
                 plotStatusInfo("open-project-sale-status",
                         "Open Projects of Sale per Status[" + totalSaleStatus + "]",
-                        content.OpenProjectSaleStatus);
+                        SaleStatus.sort(sortNumber));
+            }
+            if (totalServiceStatus !== null) {
                 plotStatusInfo("open-project-service-status",
                         "Open Projects of Services per Status[" + totalServiceStatus
-                        + "]", content.OpenProjectServiceStatus);
+                        + "]", ServiceStatus.sort(sortNumber));
+            }
+            if (totalSaleCompany !== null) {
                 plotCompanyInfo("open-project-sale-company",
                         "Open Projects of Sale per Company[" + totalSaleCompany
-                        + "]", content.OpenProjectSaleCompany);
+                        + "]", SaleCompany.sort(sortNumber));
+            }
+            if (totalServiceCompany !== null) {
                 plotCompanyInfo("open-project-service-company",
                         "Open Projects of Services per Company[" +
-                        totalServiceCompany + "]", content.OpenProjectServiceCompany);
+                        totalServiceCompany + "]", ServiceCompany.sort(sortNumber));
             }
         },
         error: function (xhr, status, error) {
@@ -452,7 +469,7 @@ function getStatuses() {
 
 function setProjectBill(path) {
     var id = $('input[name = "radio-project"]:checked').val();
-    
+
     window.location.href = path + "?id=" + id;
 
     $("#dlg-edit-project").dialog("close");
@@ -495,11 +512,10 @@ function dlgEditProject() {
                 var dlg_id = "#dlg-edit-project";
                 var div_id = "#lst-edit-project";
                 var dest_path = null;
-                
+
                 if (status == 'Create') {
                     dest_path = "/ProjectManager/project/edit-form";
-                }
-                else if (status == 'Project Bill') {
+                } else if (status == 'Project Bill') {
                     dest_path = "/ProjectManager/project/project-bill";
                 }
 

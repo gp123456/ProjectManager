@@ -15,6 +15,7 @@ import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.model.PlotInfoModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
@@ -273,7 +274,7 @@ public class ProjectCommon extends Common {
         return "";
     }
 
-    public List<String> getOpenProjectStatusByType(ProjectManagerService srvProjectManager, String type) {
+    public List<PlotInfoModel> getOpenProjectStatusByType(ProjectManagerService srvProjectManager, String type) {
         Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
         Long allCreate = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREATE.
                                                                                       toString());
@@ -299,55 +300,42 @@ public class ProjectCommon extends Common {
         Long allShipping = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type,
                                                                                         ProjectStatusEnum.SHIPPING_INVOICE.
                                                                                         toString());
-//        Double persentCreate = ((allCreate.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentBill = ((allBill.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentQuota = ((allQuota.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentPurchase = ((allPurchase.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentWork = ((allWork.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentAck = ((allAck.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentPacking = ((allPacking.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentDelivery = ((allDelivery.doubleValue() / allOpen.doubleValue()) * 100.0);
-//        Double persentShipping = ((allShipping.doubleValue() / allOpen.doubleValue()) * 100.0);
-        List<String> result = new ArrayList<>();
+        List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
-            result.add((allOpen.toString()));
-            result.add(allCreate.toString());
-            result.add(allBill.toString());
-            result.add(allQuota.toString());
-            result.add(allPurchase.toString());
-            result.add(allWork.toString());
-            result.add(allAck.toString());
-            result.add(allPacking.toString());
-            result.add(allDelivery.toString());
-            result.add(allShipping.toString());
+            result.add(new PlotInfoModel("All", (allOpen.toString())));
+            result.add(new PlotInfoModel("Create", allCreate.toString()));
+            result.add(new PlotInfoModel("Bill Material", allBill.toString()));
+            result.add(new PlotInfoModel("Request Quota", allQuota.toString()));
+            result.add(new PlotInfoModel("Purchase Order", allPurchase.toString()));
+            result.add(new PlotInfoModel("Work Order", allWork.toString()));
+            result.add(new PlotInfoModel("Ack Order", allAck.toString()));
+            result.add(new PlotInfoModel("Packing List", allPacking.toString()));
+            result.add(new PlotInfoModel("Delivery Note", allDelivery.toString()));
+            result.add(new PlotInfoModel("Ship Invoice", allShipping.toString()));
         }
 
         return result;
     }
 
-    public List<String> getOpenProjectCompanyByType(ProjectManagerService srvProjectManager, String type) {
+    public List<PlotInfoModel> getOpenProjectCompanyByType(ProjectManagerService srvProjectManager, String type) {
         Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
-        Long allWCS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS.toString());
+        Long allMARPO = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MARPO.toString());
         Long allWCSLTD = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS_LTD.
                                                                                        toString());
         Long allWCSHellas = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type,
                                                                                           OwnCompanyEnum.WCS_HELLAS.
                                                                                           toString());
         Long allMTS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MTS.toString());
-//        Double persentWCS = (allWCS.doubleValue() / allOpen.doubleValue()) * 100.0;
-//        Double persentWCSHellas = (allWCSHellas.doubleValue() / allOpen.doubleValue()) * 100.0;
-//        Double persentWCSLTD = (allWCSLTD.doubleValue() / allOpen.doubleValue()) * 100.0;
-//        Double persentMTS = (allMTS.doubleValue() / allOpen.doubleValue()) * 100.0;
 
-        List<String> result = new ArrayList<>();
+        List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
-            result.add(allOpen.toString());
-            result.add(allWCS.toString());
-            result.add(allWCSHellas.toString());
-            result.add(allWCSLTD.toString());
-            result.add(allMTS.toString());
+            result.add(new PlotInfoModel("ALL", allOpen.toString()));
+            result.add(new PlotInfoModel("MARPO", allMARPO.toString()));
+            result.add(new PlotInfoModel("WCS HELLAS", allWCSHellas.toString()));
+            result.add(new PlotInfoModel("WCS LTD", allWCSLTD.toString()));
+            result.add(new PlotInfoModel("MTS", allMTS.toString()));
         }
 
         return result;

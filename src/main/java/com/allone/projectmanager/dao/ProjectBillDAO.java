@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.ProjectBill;
+import com.allone.projectmanager.entities.ProjectDetail;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,6 +23,24 @@ public class ProjectBillDAO extends ProjectBill {
 
     public ProjectBillDAO(EntityManagerFactory emf) {
         this.emf = emf;
+    }
+
+    public ProjectBill getById(Long id) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectBill.findById").setParameter("id",
+                                                                                                                id);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            ProjectBill values = (query != null) ? (ProjectBill) query.getSingleResult() : null;
+
+            em.close();
+
+            return values;
+        }
     }
 
     public List getByProject(Long project) {

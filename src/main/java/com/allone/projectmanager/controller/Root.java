@@ -11,6 +11,7 @@ import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.model.PlotInfoModel;
 import org.springframework.stereotype.Controller;
 import com.allone.projectmanager.model.User;
 import com.allone.projectmanager.tools.JasperReport;
@@ -18,6 +19,7 @@ import com.allone.projectmanager.tools.Printing;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,15 +64,16 @@ public class Root extends ProjectCommon {
     }
 
     @RequestMapping(value = "/home")
-    public String index(@Validated User user, Model model) throws ParseException {
+    public String index(@Validated User user, Model model) throws ParseException, UnsupportedEncodingException {
         Collabs collab = srvProjectManager.getDaoCollab().login(user.getUsername(), user.getPassword());
 
         if (collab != null) {
-            SimpleDateFormat ds = new SimpleDateFormat("d MMM Y HH:mm");
-
+            SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String current = ds.format(new Date());
+            
             getUser().setId(collab.getId());
             getUser().setScreen_name(user.getUsername());
-            getUser().setLast_login(ds.format(new Date()));
+            getUser().setLast_login(new String(current.getBytes("ISO-8859-1")));
             getUser().setFull_name(collab.getSurname() + " " + collab.getName());
             getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
             getUser().setProject_expired(collab.getProjectExpired());
@@ -94,7 +97,7 @@ public class Root extends ProjectCommon {
     @RequestMapping(value = "/view")
     public @ResponseBody
     String getView() {
-        Map<String, List<String>> content = new HashMap<>();
+        Map<String, List<PlotInfoModel>> content = new HashMap<>();
         content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.
                                                                        toString()));
         content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.
@@ -104,9 +107,7 @@ public class Root extends ProjectCommon {
         content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.
                                                                              toString()));
 
-        String info = new Gson().toJson(content);
-        
-        return info;
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/refresh")

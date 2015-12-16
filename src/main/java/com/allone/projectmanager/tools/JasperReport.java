@@ -45,9 +45,9 @@ public class JasperReport {
 
     static {
 //        PATH_MATERIAL = "C:\\ProjectManager\\Material\\";
-        PATH_PROJECT_BILL = "/home/antonia/ProjectManager/ProjectBill/";
-//        PATH_PROJECT = "C:\\ProjectManager\\Project\\";
-        PATH_PROJECT = "/home/antonia/ProjectManager/Project/";
+        PATH_PROJECT_BILL = "C:\\ProgramManager\\ProjectBill";
+        PATH_PROJECT = "C:\\ProjectManager\\ProjectBill\\";
+//        PATH_PROJECT = "/home/antonia/ProjectManager/Project/";
         PAGE_WIDTH = 600;
         PAGE_HEIGHT = 850;
         PAGE_MARGIN = 20;
@@ -223,7 +223,7 @@ public class JasperReport {
         PrintTextArea(jasperPrint, page, normalStyle, strNotes, HorizontalAlignEnum.LEFT, 0, Offset + 30, nWidth,
                       nHeight, 10, false);
         PrintText(jasperPrint, page, boldStyle, "FOR WCS HELLAS & CO", HorizontalAlignEnum.CENTER, 0, Offset + nHeight +
-                   45, 0, 10, false);
+                  45, 0, 10, false);
 
         jasperPrint.addPage(page);
 
@@ -253,13 +253,13 @@ public class JasperReport {
                   net.sf.jasperreports.engine.type.HorizontalAlignEnum.CENTER, 0, 105, 0, 14, true);
         PrintText(jasperPrint, page, boldStyle, "COMPANY:", HorizontalAlignEnum.RIGHT, 0, 135, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, pd.getCompany(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                   145, 135, 0, 10, false);
+                  145, 135, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "VESSEL:", HorizontalAlignEnum.RIGHT, 0, 150, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, vesselName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145,
                   150, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "CUSTOMER:", HorizontalAlignEnum.RIGHT, 0, 165, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, custName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                   145, 165, 0, 10, false);
+                  145, 165, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "ATTN:", HorizontalAlignEnum.RIGHT, 0, 180, 130, 10, false);
         PrintText(jasperPrint, page, boldStyle, "USER:", HorizontalAlignEnum.RIGHT, 0, 195, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, userName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 195,
@@ -279,28 +279,21 @@ public class JasperReport {
         return jasperPrint;
     }
 
-    public static void createProjectBillReport(String path,
-                                               String fileName) throws JRException {
+    public static void createProjectBillReport(String fileName) throws JRException {
         File f = new File(PATH_PROJECT_BILL);
 
         if (!f.exists()) {
             f.mkdirs();
         }
 
-        String strPath = PATH_PROJECT_BILL + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "/";
+        String strPath = PATH_PROJECT_BILL + "/" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "/";
 
         f = new File(strPath);
 
         if (!f.exists()) {
             f.mkdirs();
-        } else {
-            File[] files = f.listFiles(new FileFilter(fileName));
-
-            for (File file : files) {
-                file.delete();
-            }
         }
-
+        
         File destFile = new File(strPath + fileName);
 
         JRPdfExporter exporter = new JRPdfExporter();

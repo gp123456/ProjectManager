@@ -28,7 +28,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "project_bill")
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectBill.findByProject",
-                           query = "SELECT p FROM ProjectBill p WHERE p.project=:project")})
+                           query = "SELECT p FROM ProjectBill p WHERE p.project=:project"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectBill.findById",
+                           query = "SELECT p FROM ProjectBill p WHERE p.id=:id")})
 public class ProjectBill implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -74,12 +76,12 @@ public class ProjectBill implements Serializable {
     @Basic(optional = false)
     @Column(name = "currency")
     @NotNull
-    private String currency;
+    private Integer currency;
 
     @Basic(optional = false)
     @Column(name = "location")
     private String location;
-    
+
     @Transient
     private String classSave;
 
@@ -95,7 +97,7 @@ public class ProjectBill implements Serializable {
         location = builder.location;
         classSave = builder.classSave;
     }
-    
+
     private ProjectBill(ProjectBill builder) {
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
@@ -168,11 +170,11 @@ public class ProjectBill implements Serializable {
         this.note = note;
     }
 
-    public String getCurrency() {
+    public Integer getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(Integer currency) {
         this.currency = currency;
     }
 
@@ -241,10 +243,10 @@ public class ProjectBill implements Serializable {
 
         private String note;
 
-        private String currency;
+        private Integer currency;
 
         private String location;
-     
+
         private String classSave;
 
         public Builder setTotalCost(BigDecimal totalCost) {
@@ -289,7 +291,7 @@ public class ProjectBill implements Serializable {
             return this;
         }
 
-        public Builder setCurrency(String currency) {
+        public Builder setCurrency(Integer currency) {
             this.currency = currency;
 
             return this;
@@ -300,7 +302,7 @@ public class ProjectBill implements Serializable {
 
             return this;
         }
-        
+
         public Builder setClassSave(String classSave) {
             this.classSave = classSave;
 
@@ -310,7 +312,7 @@ public class ProjectBill implements Serializable {
         public ProjectBill build() {
             return new ProjectBill(this);
         }
-        
+
         public ProjectBill build(ProjectBill pb) {
             return new ProjectBill(pb);
         }

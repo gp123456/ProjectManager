@@ -26,7 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "item")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll", query = "SELECT i FROM Item i"),
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll",
+                           query = "SELECT i FROM Item i, Stock s WHERE i.location=s.id"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Item.findById",
                            query = "SELECT i FROM Item i WHERE i.id = :id"),
                @NamedQuery(name = "com.allone.projectmanager.entities.Item.findLastId",

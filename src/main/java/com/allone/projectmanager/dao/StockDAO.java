@@ -5,6 +5,7 @@
  */
 package com.allone.projectmanager.dao;
 
+import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.Stock;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -37,6 +38,24 @@ public class StockDAO extends Stock {
         } finally {
             List values = query.getResultList();
 
+            em.close();
+
+            return values;
+        }
+    }
+    
+    public Stock getById(Long id) {
+        Stock values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
+                          "com.allone.projectmanager.entities.Stock.findById").setParameter("id", id) : null;
+            
+            values = (Stock) query.getSingleResult();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
             em.close();
 
             return values;

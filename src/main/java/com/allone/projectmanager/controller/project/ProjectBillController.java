@@ -63,6 +63,18 @@ public class ProjectBillController extends ProjectCommon {
         this.srvProjectManager.loadPropertyValues();
     }
 
+    private String getCurrencyById(Integer id) {
+        String currency = CurrencyEnum.EUR.toString();
+
+        for (CurrencyEnum value : CurrencyEnum.values()) {
+            if (value.getId().equals(id)) {
+                currency = value.toString();
+            }
+        }
+
+        return currency;
+    }
+
     private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
         List<Item> items = srvProjectManager.getDaoItem().getAll();
@@ -82,11 +94,15 @@ public class ProjectBillController extends ProjectCommon {
 
         response = "";
         if (pds != null && !pds.isEmpty()) {
+            pdId = pds.get(0).getId();
+            Set<ProjectBillModel> pbKeys = getProjectBillIds();
+
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "-" + pd.getCompany() +
                 "</option>";
-                pushProjectBillMaterial(pd.getId());
-                pdId = pd.getId();
+                if (pbKeys == null) {
+                    pushProjectBillMaterial(pd.getId());
+                }
             }
             content.put("subprojects", response);
             content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
@@ -107,8 +123,8 @@ public class ProjectBillController extends ProjectCommon {
             for (ProjectBill pb : pbs) {
                 Integer location = getLocationIdByName(pb.getLocation());
 
+                pb.setClassSave("button alarm");
                 setVirtualProjectBill(pb, location);
-
                 List<ProjectBillItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
 
                 if (pbis != null && !pbis.isEmpty()) {
@@ -138,23 +154,15 @@ public class ProjectBillController extends ProjectCommon {
                 "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
                 "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
                 "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
-                "<td id='m_currency'>" + pb.getCurrency() + "</td>" +
+                "<td id='m_currency'>" + getCurrencyById(pb.getCurrency()) + "</td>" +
                 "<td id='location" + pdid + "'>" + pb.getLocation() + "</td>" +
                 "<td id='m_subproject'>" + subproject + "</td>" +
                 "<td><input type='button' value='Replace' class='button' onclick='replaceProjectBillItems(" + pdid +
                 "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Save' class='button' id='save' onclick='saveProjectBill(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Save PDF' class='button' id='save-pdf' onclick='savePDF(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Print PDF' class='button' id='print-pdf' onclick='printPDF(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Save Excel' class='button' id='save-xls' onclick='saveXLS(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEmail(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
+                "<td><input type='button' value='Save' class='" + pb.getClassSave() + "' onclick='saveProjectBill(" +
+                pdid + "," + pbm.getLocation() + ")'></td>\n" +
+                "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," +
+                pbm.getLocation() + ")'></td>\n" +
                 "</tr>";
             }
         }
@@ -164,8 +172,6 @@ public class ProjectBillController extends ProjectCommon {
 
     private String getCurrencies(Long pdId, Integer location, Long itemId, Integer currency, Boolean first) {
         String currencies = "<select id='currency" + pdId + location + itemId + "' style='width:50px;'>\n";
-
-        logger.log(Level.INFO, "currency:{0}", currency);
 
         for (CurrencyEnum cu : CurrencyEnum.values()) {
             if (cu.getId().equals(currency)) {
@@ -209,10 +215,12 @@ public class ProjectBillController extends ProjectCommon {
                 if (pbItems != null && !pbItems.isEmpty()) {
                     for (ProjectBillItem pbItem : pbItems) {
                         Item item = srvProjectManager.getDaoItem().getById(pbItem.getItem());
+                        Stock stock = (item != null) ? srvProjectManager.getDaoStock().getById(item.getLocation()) :
+                              null;
                         String imno = (item != null) ? item.getImno() : pbItem.getItemImno();
+                        String stockName = (stock != null) ? stock.getLocation() : "";
                         Long itemId = (item != null) ? item.getId() : pbItem.getItem();
                         Integer itemQuantity = (item != null) ? item.getQuantity() : pbItem.getAvailable();
-                        BigDecimal itemPrice = (item != null) ? item.getPrice() : pbItem.getPrice();
                         String quantity = (pbItem.getQuantity() != null) ? pbItem.getQuantity().toString() : "";
                         String cost = (pbItem.getCost() != null) ? pbItem.getCost().toString() : "";
                         String totalCost = (pbItem.getTotalCost() != null) ? pbItem.getTotalCost().toString() : "";
@@ -231,19 +239,20 @@ public class ProjectBillController extends ProjectCommon {
                         response +=
                         "<tr>" +
                         "<td>" + imno + "</td>" +
-                        "<td id='available" + pbm.getId() + pbm.getLocation() + itemId + "'>" + itemQuantity + "</td>" +
-                        "<td id='price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + itemPrice + "</td>" +
-                        "<td id='quantity" + pbm.getId() + pbm.getLocation() + itemId + "'>" +
-                        "<div contenteditable></div>" +
-                        quantity + "</td>" +
-                        "<td id='cost" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" +
-                        cost + "</td>" +
+                        "<td>" + stockName + "</td>" +
+                        "<td id='quantity" + pbm.getId() + pbm.getLocation() + itemId +
+                        "' style='background: #333;color:#E7E5DC'>" +
+                        "<div contenteditable></div>" + quantity + "</td>" +
+                        "<td id='cost" + pbm.getId() + pbm.getLocation() + itemId +
+                        "' style='background: #333;color:#E7E5DC'>" +
+                        "<div contenteditable></div>" + cost + "</td>" +
                         "<td id='total_cost" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalCost + "</td>" +
                         "<td id='percentage" + pbm.getId() + pbm.getLocation() + itemId +
-                        "'><div contenteditable></div>" +
-                        percentage + "</td>" +
-                        "<td id='discount" + pbm.getId() + pbm.getLocation() + itemId + "'><div contenteditable></div>" +
-                        discount + "</td>" +
+                        "' style='background: #333;color:#E7E5DC'>" +
+                        "<div contenteditable></div>" + percentage + "</td>" +
+                        "<td id='discount" + pbm.getId() + pbm.getLocation() + itemId +
+                        "' style='background: #333;color:#E7E5DC'>" +
+                        "<div contenteditable></div>" + discount + "</td>" +
                         "<td id='sale_price" + pbm.getId() + pbm.getLocation() + pbm.getLocation() + itemId + "'>" +
                         salePrice + "</td>" +
                         "<td id='total_sale_price" + pbm.getId() + pbm.getLocation() + itemId + "'>" + totalSalePrice +
@@ -252,12 +261,14 @@ public class ProjectBillController extends ProjectCommon {
                         "</td>" +
                         "<td>" + getCurrencies(pbm.getId(), pbm.getLocation(), itemId, currency, firstItem) + "</td>" +
                         "<td>" + pd.getReference() + "</td>" +
+                        "<td>" + getLocationNameById(pbm.getLocation()) + "</td>" +
                         "<td><input type='button' id='Edit" + pbm.getId() + pbm.getLocation() + itemId +
                         "' value='Edit' class='button' onclick='editValues(" + pbm.getId() + "," + pbm.getLocation() +
                         "," + itemId + ")' onmouseover='viewLocation(" + pbm.getId() + "," + pbm.getLocation() + "," +
                         itemId + ")' title=''></td>" +
                         "<td><input type='button' value='Refresh' class='" + pbItem.getClassRefresh() +
-                        "' onclick='refreshValues(" + pbm.getId() + "," + pbm.getLocation() + "," + itemId + ")'></td>" +
+                        "' onclick='refreshValues(" + pbm.getId() + "," + pbm.getLocation() + "," + itemId + "," +
+                        itemQuantity + ")'></td>" +
                         "<td><input type='button' value='Save' class='" + pbItem.getClassSave() +
                         "' onclick='saveValues(" + pbm.getId() + "," + pbm.getLocation() + "," + itemId + ")'></td>" +
                         "<td><input type='button' value='Remove' class='button' onclick='removeValues(" + pbm.getId() +
@@ -278,6 +289,7 @@ public class ProjectBillController extends ProjectCommon {
             BigDecimal averangeDiscount = BigDecimal.ZERO;
             BigDecimal totalSalePrice = BigDecimal.ZERO;
             BigDecimal totalNetPrice = BigDecimal.ZERO;
+            Integer currency = 0;
 
             for (ProjectBillItem item : items) {
                 totalCost = (item.getTotalCost() != null) ? totalCost.add(item.getTotalCost()) : BigDecimal.ZERO;
@@ -288,6 +300,7 @@ public class ProjectBillController extends ProjectCommon {
                 totalNetPrice = (item.getTotalNetPrice() != null) ? totalNetPrice.add(item.getTotalNetPrice()) :
                 BigDecimal.ZERO;
                 item.setClassSave("button");
+                currency = item.getCurrency();
             }
 
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()), 2);
@@ -298,7 +311,7 @@ public class ProjectBillController extends ProjectCommon {
                     .setAverangeDiscount(averangeDiscount)
                     .setTotalSalePrice(totalSalePrice)
                     .setTotalNetPrice(totalNetPrice)
-                    .setCurrency(CurrencyEnum.EUR.toString())
+                    .setCurrency(currency)
                     .build();
         } else {
             removeVirtualProjectBill(new ProjectBillModel(pdId, location));
@@ -338,6 +351,12 @@ public class ProjectBillController extends ProjectCommon {
         if (p != null) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", p.getReference());
+            model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" +
+                    p.getReference() + "\")'>");
+            model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" +
+                    p.getReference() + "\")'>");
+            model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" +
+                    p.getId() + "\")'>");
         }
 
         return "index";
@@ -389,7 +408,8 @@ public class ProjectBillController extends ProjectCommon {
             editVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
         }
         ProjectBill pb = getAverangeDiscount(pdId, location);
-        
+
+        pb.setClassSave("button alarm");
         pb.setLocation(getLocationNameById(location));
         setVirtualProjectBill(pb, location);
         saveVirtualProjectBillItem(new ProjectBillModel(pdId, location));
@@ -514,37 +534,60 @@ public class ProjectBillController extends ProjectCommon {
     public @ResponseBody
     String saveProjectBill(Integer location, ProjectBill pb, Model model) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
+        ProjectBillModel pbm = new ProjectBillModel(pb.getProject(), location);
+        ProjectBill vpb = getProjectBill(pbm);
+        Map<String, String> content = new HashMap<>();
 
         if (pd != null) {
             pd.setStatus(ProjectStatusEnum.PROJECT_BILL.toString());
             srvProjectManager.getDaoProjectDetail().edit(pd);
+            model.addAttribute("pd_id", pd.getId());
 
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
             if (p != null) {
                 p.setStatus(pd.getStatus());
                 srvProjectManager.getDaoProject().edit(p);
+                model.addAttribute("project_reference", p.getReference());
             }
         }
         pb.setLocation(getLocationNameById(location));
+        pb.setCurrency(vpb.getCurrency());
         pb = srvProjectManager.getDaoProjectBill().add(pb);
-
-        ProjectBillModel pbm = new ProjectBillModel(pb.getProject(), location);
 
         setVirtualProjectBillItemBillId(pbm, pd.getId());
         srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
         clearVirtualProjectBill(pbm);
-        model.addAttribute("pd_id", 0);
-        model.addAttribute("project_reference", "");
 
-        return "index";
+//        return "index";
+        Set<ProjectBillModel> pbKeys = getProjectBillIds();
+        
+        if (pbKeys != null && !pbKeys.isEmpty()) {
+            String response = "";
+
+            for (ProjectBillModel pbKey : pbKeys) {
+                vpb = getProjectBill(pbKey);
+                ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(vpb.getProject());
+                response += "<option value='" + dbpd.getId() + "'>" + dbpd.getReference() + "-" + dbpd.getCompany() +
+                "</option>";
+            }
+            content.put("subproject", response);
+            content.put("projectBill", createProjectBill(new ProjectBillModel(pb.getProject(), null)));
+            content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pb.getProject(), null)));
+        } else {
+            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+            content.put("billHeader", "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>");
+        }
+
+        return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = "/project-bill/createpdf")
-    public String createPDF(ProjectBillController pb, Model model) throws JRException {
-        JasperReport.createProjectBillReport(getSrvProjectManager().getPathProjectBill(), getUser().
-                                             getProject_reference().replace("/", "_") + ".pdf");
-
+    @RequestMapping(value = "/project-bill/savepdf")
+    public String savePDF(String projectReference) throws JRException {
+//        model.addAttribute("button_action_message", "save the pdf by named " + projectReference.replace("/", "_") + ".pdf");
+        
+        JasperReport.createProjectBillReport(projectReference.replace("/", "_") + ".pdf");
+        
         return "";
     }
 
@@ -589,20 +632,11 @@ public class ProjectBillController extends ProjectCommon {
     String newSubProject() {
         Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
-//        List<Vessel> vessels = srvProjectManager.getDaoVessel().getAll();
-//        List<Company> customers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.CUSTOMER.toString());
-//        List<Contact> contacts = srvProjectManager.getDaoContact().getAll();
         Map<String, String> content = new HashMap<>();
         String htmlCompany = "<select id='select-new-subproject-company'>\n" +
                "<option value='none' selected='selected'>Select</option>\n";
         String htmlType = "<select id='select-new-subproject-type'>\n" +
                "<option value='none' selected='selected'>Select</option>\n";
-//        String htmlVessel = "<select id='select-new-subproject-vessel'>\n" +
-//               "<option value='-1' selected='selected'>Select</option>\n";
-//        String htmlCustomer = "<select id='select-new-subproject-customer'>\n" +
-//               "<option value='none' selected='selected'>Select</option>\n";
-//        String htmlContact = "<select id='select-new-subproject-contact'>\n" +
-//               "<option value='-1' selected='selected'>Select</option>\n";
 
         for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
             htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
@@ -616,29 +650,6 @@ public class ProjectBillController extends ProjectCommon {
         htmlType += "</select>";
         content.put("type", htmlType);
 
-//        if (vessels != null && !vessels.isEmpty()) {
-//            for (Vessel vessel : vessels) {
-//                htmlVessel += "<option value='" + vessel.getId() + "'>" + vessel.getName() + "</option>\n";
-//            }
-//            htmlVessel += "</select>";
-//            content.put("vessel", htmlVessel);
-//        }
-//
-//        if (customers != null && !customers.isEmpty()) {
-//            for (Company customer : customers) {
-//                htmlCustomer += "<option value='" + customer.getName() + "'>" + customer.getName() + "</option>\n";
-//            }
-//            htmlCustomer += "</select>";
-//            content.put("customer", htmlCustomer);
-//        }
-//
-//        if (contacts != null && !contacts.isEmpty()) {
-//            for (Contact contact : contacts) {
-//                htmlContact += "<option value='" + contact.getId() + "'>" + contact.getName() + "</option>\n";
-//            }
-//            htmlContact += "</select>";
-//            content.put("contact", htmlContact);
-//        }
         content.put("expired", format.format(expired));
 
         return new Gson().toJson(content);
@@ -707,10 +718,11 @@ public class ProjectBillController extends ProjectCommon {
 
             if (dbpd != null) {
                 String dbpdReference = dbpd.getReference();
+                String reference = dbpdReference.substring(0, dbpdReference.lastIndexOf("/"));
                 String subid = dbpdReference.substring(dbpdReference.lastIndexOf("/") + 1);
                 Integer nextsubid = Integer.parseInt(subid) + 1;
 
-                pd.setReference(dbpdReference.replace(subid, nextsubid.toString()));
+                pd.setReference(reference + "/" + nextsubid.toString());
                 pd.setCustomer(dbpd.getCustomer());
                 pd.setVessel(dbpd.getVessel());
                 pd.setContact(dbpd.getContact());
@@ -718,19 +730,20 @@ public class ProjectBillController extends ProjectCommon {
                 pd = srvProjectManager.getDaoProjectDetail().add(pd);
             }
 
-            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
-            String response = "";
-
-            if (pds != null && !pds.isEmpty()) {
-                for (ProjectDetail _pd : pds) {
-                    response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "-" + _pd.getCompany() +
-                    "</option>";;
-                }
-                content.put("projectDetails", response);
-                content.put("projectId", pd.getProject().toString());
-            }
-
-            return new Gson().toJson(content);
+//            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pd.getProject());
+//            String response = "";
+//
+//            if (pds != null && !pds.isEmpty()) {
+//                for (ProjectDetail _pd : pds) {
+//                    response += "<option value='" + _pd.getId() + "'>" + _pd.getReference() + "-" + _pd.getCompany() +
+//                    "</option>";;
+//                }
+//                content.put("projectDetails", response);
+//                content.put("projectId", pd.getProject().toString());
+//            }
+//
+//            return new Gson().toJson(content);
+            return "index";
         } else {
             return "";
         }

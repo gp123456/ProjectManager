@@ -232,7 +232,7 @@ public class Common {
     }
 
     public Set<ProjectBillModel> getProjectBillIds() {
-        return mapProjectBill.keySet();
+        return (mapProjectBill != null && !mapProjectBill.isEmpty()) ? mapProjectBill.keySet() : null;
     }
 
     public Set<ProjectBillModel> getPBMKeysByPDId(ProjectBillModel pbm) {

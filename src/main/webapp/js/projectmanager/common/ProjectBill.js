@@ -69,20 +69,19 @@ function removeValues(pdid, location, id) {
     });
 }
 
-function refreshValues(pdid, location, id) {
-    var available = Number($("#available" + pdid + location + id).text());
+function refreshValues(pdid, location, id, available) {
     var quantity = Number($("#quantity" + pdid + location + id).text());
     var cost = Number($("#cost" + pdid + location + id).text());
     var percentage = Number($("#percentage" + pdid + location + id).text());
     var discount = Number($("#discount" + pdid + location + id).text());
 
-    if (isNaN(quantity) || quantity == 0) {
+    if (isNaN(quantity) || quantity === 0) {
         alert("You must give a valid number quantity");
-    } else if (isNaN(cost) || cost == 0) {
+    } else if (isNaN(cost) || cost === 0) {
         alert("You must give a valid number cost");
-    } else if (isNaN(percentage) || percentage == 0) {
+    } else if (isNaN(percentage) || percentage === 0) {
         alert("You must give a valid number percentage");
-    } else if (isNaN(discount) || discount == 0) {
+    } else if (isNaN(discount) || discount === 0) {
         alert("You must give a valid number discount");
     } else {
         var conf = true;
@@ -90,7 +89,7 @@ function refreshValues(pdid, location, id) {
             conf = confirm("The quantity must is less or equal than quantity of item: " + available);
         }
 
-        if (conf == true) {
+        if (conf === true) {
             var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&available=" +
                     available + "&price=" + $("#price" + pdid + id).text() + "&quantity=" +
                     quantity + "&cost=" + cost + "&percentage=" + percentage + "&discount=" + discount +
@@ -156,26 +155,68 @@ function saveProjectBill(pdid, locationId) {
     var data = "location=" + locationId + "&project=" + pdid + "&totalCost=" +
             $("#m_total_cost").text() + "&averangeDiscount=" + $("#m_average_discount").text() +
             "&totalSalePrice=" + $("#m_sale_price").text() + "&totalNetPrice=" +
-            $("#m_net_sale_price").text() + "&note=" + $("#notes").val() + "&currency=" +
-            $("#m_currency").text();
+            $("#m_net_sale_price").text() + "&note=" + $("#notes").val();
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/save",
         data: data,
-        success: function () {
-            location.reload();
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            if (content.billHeader === null) {
+                $("#bill-subproject").html(content.subprojects);
+                $("#project-bill").html(content.projectBill);
+                $("#project-bill-items").html(content.projectBillItems);
+            } else {
+                $("#bill-header").html(content.billHeader);
+            }
         },
         error: function (e) {
         }
     });
 }
 
-function createProjectBillPDF() {
+function savePDF(prjRef) {
+    var data = "projectReference=" + prjRef;
+
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/createpdf",
+        url: "/ProjectManager/project/project-bill/savepdf",
+        data: data,
         success: function () {
+        },
+        error: function () {
+        }
+    });
+}
+
+function saveXLS(prjRef) {
+    var data = "projectReference=" + prjRef;
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/savexls",
+        data: data,
+        success: function (response) {
+            alert(response);
+            
+            $("#button-action-message").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function sendEmail(prjRef) {
+    var data = "projectReference=" + prjRef;
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/project-bill/sendemail",
+        data: data,
+        success: function (response) {
+            $("#button-action-message").html(response);
         },
         error: function (e) {
         }
@@ -219,8 +260,6 @@ function stockNewItem() {
         var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
                 imno + "&description=" + $("#item-desc").val() + "&location=" + location +
                 "&quantity=" + quantity + "&price=" + price + "&company=" + company;
-
-        alert(data);
 
         $.ajax({
             type: "POST",
@@ -301,9 +340,6 @@ function addSubProject() {
 
             $("#new-project-company").html(content.company);
             $("#new-project-type").html(content.type);
-//            $("#new-project-vessel").html(content.vessel);
-//            $("#new-project-customer").html(content.customer);
-//            $("#new-project-contact").html(content.contact);
             dlgNewSubProject();
         },
         error: function (e) {
@@ -340,9 +376,6 @@ function saveSubProject() {
     var expired_day = expired.split("-")[2];
     var company = $("#new-project-company option:selected").attr("value");
     var project = $("#bill-project-id").val();
-//    var customer = $("#new-project-customer option:selected").attr("value");
-//    var vessel = $("#new-project-vessel option:selected").attr("value");
-//    var contact = $("#new-project-contact option:selected").attr("value");
 
     if (company == "none") {
         alert("you must select company");
@@ -352,32 +385,16 @@ function saveSubProject() {
         alert("you must select type");
         return;
     }
-//    if (vessel == -1) {
-//        alert("you must select a vessel or add one");
-//        return;
-//    }
-//    if (customer == "none") {
-//        alert("you must select a customer or add one");
-//        return;
-//    }
-//    if (contact == -1) {
-//        alert("you must select a contact or add one");
-//        return;
-//    }
 
     var data = "project=" + project + "&type=" + type + "&expired=" + expired_month +
             "/" + expired_day + "/" + expired_year + "&company=" + company;
-    // + "&customer=" + customer + "&vessel=" + vessel + "&contact=" + contact
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/project-bill/save-subproject",
         data: data,
         success: function (response) {
-            var content = JSON.parse(response);
-
-            $("#bill-subproject").html(content.projectDetails);
-            $("#bill-project-id").html(content.projectId);
+            location.reload();
         },
         error: function (e) {
         }

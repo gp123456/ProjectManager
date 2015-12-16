@@ -421,7 +421,7 @@ public class ProjectController extends ProjectCommon {
 
         return new Gson().toJson(content);
     }
-    
+
     @RequestMapping(value = "/view")
     public @ResponseBody
     String getView(ProjectDetail pd, Integer offset, Integer size) {
@@ -487,9 +487,21 @@ public class ProjectController extends ProjectCommon {
         String response = "";
 
         if (prjs != null && !prjs.isEmpty()) {
+            String vessel = "";
+
             for (Project p : prjs) {
+                ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getLastByProject(p.getId());
+
+                if (pd != null) {
+                    Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+
+                    if (v != null) {
+                        vessel = v.getName();
+                    }
+                }
                 response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId() +
-                "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "</label><br>";
+                "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel +
+                "</label><br>";
             }
         }
 
