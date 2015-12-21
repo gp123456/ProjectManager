@@ -11,21 +11,27 @@ import java.awt.Color;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRImageRenderer;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.base.JRBasePrintImage;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -45,7 +51,7 @@ public class JasperReport {
 
     static {
 //        PATH_MATERIAL = "C:\\ProjectManager\\Material\\";
-        PATH_PROJECT_BILL = "C:\\ProgramManager\\ProjectBill";
+        PATH_PROJECT_BILL = "/home/antonia/ProjectManager";
         PATH_PROJECT = "C:\\ProjectManager\\ProjectBill\\";
 //        PATH_PROJECT = "/home/antonia/ProjectManager/Project/";
         PAGE_WIDTH = 600;
@@ -199,12 +205,34 @@ public class JasperReport {
 
         //Body
         PrintImage(jasperPrint, page, "images/wcslogo.jpg", ScaleImageEnum.CLIP, 10, 550, 100);
-        PrintText(jasperPrint, page, boldStyle, "EVALUATION",
-                  net.sf.jasperreports.engine.type.HorizontalAlignEnum.CENTER, 0, 105, 0, 14, true);
-        PrintText(jasperPrint, page, boldStyle, "COMPANY:", HorizontalAlignEnum.RIGHT, 0, 135, 130, 10, false);
-        PrintText(jasperPrint, page, boldStyle, "ATTN:", HorizontalAlignEnum.RIGHT, 0, 150, 130, 10, false);
-        int Offset = 250;
-        PrintText(jasperPrint, page, boldStyle, "COMMENTS", HorizontalAlignEnum.LEFT, 0, Offset + 15, 0, 10, true);
+        PrintText(jasperPrint, page, boldStyle, "To:", HorizontalAlignEnum.LEFT, 0, 105, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "INTELSHIP", HorizontalAlignEnum.LEFT, 50, 105, 200, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Our Ref:", HorizontalAlignEnum.LEFT, 400, 105, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "13790/GP", HorizontalAlignEnum.LEFT, 460, 105, 200, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Tel:", HorizontalAlignEnum.LEFT, 0, 120, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "210-8980602", HorizontalAlignEnum.LEFT, 50, 120, 200, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Pages:", HorizontalAlignEnum.LEFT, 400, 120, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "01 (including this)", HorizontalAlignEnum.LEFT, 460, 120, 200, 12,
+                  false);
+        PrintText(jasperPrint, page, boldStyle, "Attn:", HorizontalAlignEnum.LEFT, 0, 135, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Mr. Idomeneus Kandarakis", HorizontalAlignEnum.LEFT, 50, 135, 200, 12,
+                  false);
+        PrintText(jasperPrint, page, boldStyle, "Date:", HorizontalAlignEnum.LEFT, 400, 135, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "02-10-15", HorizontalAlignEnum.LEFT, 460, 135, 200, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Re:", HorizontalAlignEnum.LEFT, 0, 150, 50, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "MGPS ANODES", HorizontalAlignEnum.LEFT, 50, 150, 200, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "Your Ref:", HorizontalAlignEnum.LEFT, 400, 150, 100, 12, false);
+        PrintText(jasperPrint, page, boldStyle, "15-1567", HorizontalAlignEnum.LEFT, 460, 150, 200, 12, false);
+        int Offset = 200;
+        PrintText(jasperPrint, page, normalStyle, "Good day,", HorizontalAlignEnum.LEFT, 0, Offset + 0, 400, 12, false);
+        Offset = 250;
+        PrintText(jasperPrint, page, normalStyle, "Many thanks for your inquiry.", HorizontalAlignEnum.LEFT, 0,
+                  Offset + 0, 400, 12, false);
+        PrintText(jasperPrint, page, normalStyle, "We are pleased to offer for vessel's MGPS as requested.",
+                  HorizontalAlignEnum.LEFT, 0, Offset + 15, 400, 12, false);
+        Offset = 300;
+        PrintText(jasperPrint, page, normalStyle, "OFFER DETAILS", HorizontalAlignEnum.CENTER, 0, Offset, 400, 14, false);
+
         String strNotes = "".toString(), strTemp = strNotes + (char) Character.LINE_SEPARATOR, strLine;
         int nWidth = PAGE_WIDTH - (2 * PAGE_MARGIN);
         int nLines = 0, nPos = strTemp.indexOf(Character.LINE_SEPARATOR);
@@ -222,8 +250,6 @@ public class JasperReport {
         int nHeight = (nLines + 1) * 10;
         PrintTextArea(jasperPrint, page, normalStyle, strNotes, HorizontalAlignEnum.LEFT, 0, Offset + 30, nWidth,
                       nHeight, 10, false);
-        PrintText(jasperPrint, page, boldStyle, "FOR WCS HELLAS & CO", HorizontalAlignEnum.CENTER, 0, Offset + nHeight +
-                  45, 0, 10, false);
 
         jasperPrint.addPage(page);
 
@@ -253,13 +279,13 @@ public class JasperReport {
                   net.sf.jasperreports.engine.type.HorizontalAlignEnum.CENTER, 0, 105, 0, 14, true);
         PrintText(jasperPrint, page, boldStyle, "COMPANY:", HorizontalAlignEnum.RIGHT, 0, 135, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, pd.getCompany(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                  145, 135, 0, 10, false);
+                                                                                             145, 135, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "VESSEL:", HorizontalAlignEnum.RIGHT, 0, 150, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, vesselName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145,
                   150, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "CUSTOMER:", HorizontalAlignEnum.RIGHT, 0, 165, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, custName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                  145, 165, 0, 10, false);
+                                                                                      145, 165, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "ATTN:", HorizontalAlignEnum.RIGHT, 0, 180, 130, 10, false);
         PrintText(jasperPrint, page, boldStyle, "USER:", HorizontalAlignEnum.RIGHT, 0, 195, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, userName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 195,
@@ -293,14 +319,15 @@ public class JasperReport {
         if (!f.exists()) {
             f.mkdirs();
         }
-        
-        File destFile = new File(strPath + fileName);
-
-        JRPdfExporter exporter = new JRPdfExporter();
-        JasperPrint jasperPrint = ProjectBillPrint();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
-        exporter.exportReport();
+//
+//        File destFile = new File(strPath + fileName);
+//
+//        JRPdfExporter exporter = new JRPdfExporter();
+//        JasperPrint jasperPrint = ProjectBillPrint();
+//        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+//        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
+//        exporter.exportReport();
+        SimpleReport(strPath + fileName);
     }
 
     public static void createProjectReport(Project p, ProjectDetail pd, String status, String type, String userName,
@@ -327,6 +354,45 @@ public class JasperReport {
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
         exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
         exporter.exportReport();
+    }
+
+    private static DefaultTableModel TableModelData() {
+        String[] columnNames = {"Id", "Name", "Department", "Email"};
+        String[][] data = {
+            {"111", "G Conger", " Orthopaedic", "jim@wheremail.com"},
+            {"222", "A Date", "ENT", "adate@somemail.com"},
+            {"333", "R Linz", "Paedriatics", "rlinz@heremail.com"},
+            {"444", "V Sethi", "Nephrology", "vsethi@whomail.com"},
+            {"555", "K Rao", "Orthopaedics", "krao@whatmail.com"},
+            {"666", "V Santana", "Nephrology", "vsan@whenmail.com"},
+            {"777", "J Pollock", "Nephrology", "jpol@domail.com"},
+            {"888", "H David", "Nephrology", "hdavid@donemail.com"},
+            {"999", "P Patel", "Nephrology", "ppatel@gomail.com"},
+            {"101", "C Comer", "Nephrology", "ccomer@whymail.com"}
+        };
+
+        return new DefaultTableModel(data, columnNames);
+    }
+
+    private static void SimpleReport(String destFile) {
+        JasperPrint jasperPrint = null;
+        DefaultTableModel tableModel = TableModelData();
+
+        try {
+            String jasperReport = JasperCompileManager.compileReportToFile(
+                   "/home/antonia/gpat/git-projects/ProjectManager/src/main/resources/reports/ProjectBill.jrxml");
+            jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap(), new JRTableModelDataSource(
+                                                       tableModel));
+            JRPdfExporter exporter = new JRPdfExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile);
+            exporter.exportReport();
+
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint);
+            jasperViewer.setVisible(true);
+        } catch (JRException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static String getPATH_PROJECT_BILL() {
