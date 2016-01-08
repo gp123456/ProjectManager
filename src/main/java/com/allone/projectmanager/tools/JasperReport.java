@@ -9,11 +9,15 @@ import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRImageRenderer;
 import net.sf.jasperreports.engine.JRPrintImage;
@@ -279,13 +283,13 @@ public class JasperReport {
                   net.sf.jasperreports.engine.type.HorizontalAlignEnum.CENTER, 0, 105, 0, 14, true);
         PrintText(jasperPrint, page, boldStyle, "COMPANY:", HorizontalAlignEnum.RIGHT, 0, 135, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, pd.getCompany(), HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                                                                                             145, 135, 0, 10, false);
+                  145, 135, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "VESSEL:", HorizontalAlignEnum.RIGHT, 0, 150, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, vesselName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145,
                   150, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "CUSTOMER:", HorizontalAlignEnum.RIGHT, 0, 165, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, custName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) +
-                                                                                      145, 165, 0, 10, false);
+                  145, 165, 0, 10, false);
         PrintText(jasperPrint, page, boldStyle, "ATTN:", HorizontalAlignEnum.RIGHT, 0, 180, 130, 10, false);
         PrintText(jasperPrint, page, boldStyle, "USER:", HorizontalAlignEnum.RIGHT, 0, 195, 130, 10, false);
         PrintText(jasperPrint, page, normalStyle, userName, HorizontalAlignEnum.LEFT, (int) (PAGE_MARGIN / 2) + 145, 195,
@@ -305,7 +309,7 @@ public class JasperReport {
         return jasperPrint;
     }
 
-    public static void createProjectBillReport(String fileName) throws JRException {
+    public static void createProjectBillReport(String fileName) throws JRException, FileNotFoundException {
         File f = new File(PATH_PROJECT_BILL);
 
         if (!f.exists()) {
@@ -374,22 +378,24 @@ public class JasperReport {
         return new DefaultTableModel(data, columnNames);
     }
 
-    private static void SimpleReport(String destFile) {
+    private static void SimpleReport(String destFile) throws FileNotFoundException {
         JasperPrint jasperPrint = null;
         DefaultTableModel tableModel = TableModelData();
 
         try {
             String jasperReport = JasperCompileManager.compileReportToFile(
-                   "/home/antonia/gpat/git-projects/ProjectManager/src/main/resources/reports/ProjectBill.jrxml");
-            jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap(), new JRTableModelDataSource(
-                                                       tableModel));
-            JRPdfExporter exporter = new JRPdfExporter();
+                   "C:\\gpat\\git_projects\\ProjectManager\\src\\main\\resources\\reports\\ProjectBill.jrxml");
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            jasperPrint = JasperFillManager.fillReport(
+            "C:\\gpat\\git_projects\\ProjectManager\\src\\main\\resources\\reports\\ProjectBill.jasper", parameters,
+            new JRTableModelDataSource(tableModel));
+            JRExporter exporter = new JRPdfExporter();
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile);
+            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(destFile));
             exporter.exportReport();
 
-            JasperViewer jasperViewer = new JasperViewer(jasperPrint);
-            jasperViewer.setVisible(true);
+//            JasperViewer jasperViewer = new JasperViewer(jasperPrint);
+//            jasperViewer.setVisible(true);
         } catch (JRException ex) {
             ex.printStackTrace();
         }

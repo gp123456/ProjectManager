@@ -23,6 +23,7 @@ import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.ProjectBillModel;
 import com.allone.projectmanager.tools.JasperReport;
 import com.google.gson.Gson;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -583,7 +584,7 @@ public class ProjectBillController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/project-bill/savepdf")
-    public String savePDF(String projectReference) throws JRException {
+    public String savePDF(String projectReference) throws JRException, FileNotFoundException {
 //        model.addAttribute("button_action_message", "save the pdf by named " + projectReference.replace("/", "_") + ".pdf");
         
         JasperReport.createProjectBillReport(projectReference.replace("/", "_") + ".pdf");
