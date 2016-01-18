@@ -9,50 +9,37 @@
 <script>
     $(function () {
         $("#start").datepicker();
+        $("#start").val("");
         $("#end").datepicker();
+        $("#end").val("");
+        $("#search-reference").val("");
     });
-    
-    function refreshSearchContent() {
-        $.ajax({
-            type: "POST",
-            url: "refresh",
-            data: "offset=0&size=10",
-            success: function (response) {
-                var content = JSON.parse(response)
-
-                $("#search-reference").html(content.reference);
-                $("#search-type").html(content.type);
-                $("#search-status").html(content.status);
-                $("#search-vessel").html(content.vessel);
-                $("#search-customer").html(content.customer);
-                $("#search-company").html(content.company);
-
-                response;
-            },
-            error: function (e) {
-            }
-        });
-    }
 </script>
 
-<div class="criteriacontent">
-    <label>Reference</label>
-    <select id="search-reference"></select>
-    <label>Type</label>
+<label class="custom-select">Reference
+    <input type="text" id="search-reference" value="">
+</label>
+<label class="custom-select">Type
     <select id="search-type" ></select>
-    <label>Status</label>
+</label>
+<label class="custom-select">Status
     <select id="search-status"></select>
-    <label>Vessel</label>
-    <select id="search-vessel"></select><p/>
-    <label>Customer</label>
+</label>
+<label class="custom-select">Vessel
+    <select id="search-vessel"></select>
+</label>
+<label class="custom-select">Customer
     <select id="search-customer"></select>
-    <label>Company</label>
+</label>
+<label class="custom-select">Company
     <select id="search-company"></select>
-    <label>Start date</label>
+</label>
+<label class="custom-select">Start date
     <input name="sdate" type="text" id="start" value="${sdateVal}">
-    <span class="dateico"></span>
-    <label>End date</label>
-    <input name="edate" type="text" id="end" value="${edateVal}"><p/>
-    <input type="button" class="btnsubmit content_align" value="Search" id="search" onclick="searchContent()"/>
-    <input type="button" class="btnsubmit content_align" value="Clear" id="search-clear" onclick="searchClear()"/>
-</div>
+</label>
+<span class="dateico"></span>
+<label class="custom-select">End date
+    <input name="edate" type="text" id="end" value="${edateVal}">
+</label><br>
+<input type="button" class="button" value="Search" id="search" onclick="searchContent($('#project-version').val())"/>
+<input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>

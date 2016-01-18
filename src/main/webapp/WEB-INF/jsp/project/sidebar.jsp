@@ -49,7 +49,7 @@
         <ul id="project-new"></ul>
     </div>
     <div class="menu-item">
-        <h3 id="project-bill-size" onclick="dlgProject('Create', '#dlg-bill-project',
+        <h3 id="project-bill-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
                         '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-quota-size" onclick="dlgProject('Project Bill', '#dlg-quota-project',
+        <h3 id="project-quota-size" onclick="dlgProject('new', 'Project Bill', '#dlg-quota-project',
                         '#lst-quota-project', '/ProjectManager/project/request-quotation')">Request for Quotation</h3>
         <div id="dlg-quota-project" hidden="true" title="Project Bill">
             <form>
@@ -69,7 +69,7 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-purchase-size" onclick="dlgProject('Project Bill', '#dlg-purchase-project',
+        <h3 id="project-purchase-size" onclick="dlgProject('new', 'Project Bill', '#dlg-purchase-project',
                         '#lst-purchase-project', '/ProjectManager/project/purchase-order')">Purchase Order</h3>
         <div id="dlg-purchase-project" hidden="true" title="Project Bill">
             <form>
@@ -104,8 +104,8 @@
         <h3 id="project-credit-size" onclick="">Credit Note</h3>
     </div>
     <div class="menu-item">
-        <h3 onclick="dlgProject('', '#dlg-statistics-project',
-                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics</h3>
+        <h3 onclick="dlgProject('old','', '#dlg-statistics-project',
+                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of New Project</h3>
         <div id="dlg-statistics-project" hidden="true" title="Project Statistics">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
@@ -126,6 +126,20 @@
                 </ul>-->
     </div>
     <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/project/history';">History</h3>
+        <h3 onclick="dlgProject('old','', '#dlg-statistics-project',
+                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of Old Project</h3>
+        <div id="dlg-statistics-project" hidden="true" title="Project Statistics">
+            <form>
+                <fieldset style="padding:0; border:0; margin-top:25px;">
+                    <div id="lst-statistics-project"></div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="menu-item">
+        <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History of New Project</h3>
+    </div>
+    <div class="menu-item">
+        <h3 onclick="window.location.href = '<%=path%>/project/history-old-project';">History of Old Project</h3>
     </div>
 </nav>

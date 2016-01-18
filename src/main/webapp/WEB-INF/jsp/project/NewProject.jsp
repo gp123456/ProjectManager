@@ -116,14 +116,14 @@
                                 <input type="text" id="vessel-imo" name="vessel-imo" required>
                                 <label class="go-bottom-label" for="vessel-imo">IMO</label>
                             </div>
-<!--                            <div>
-                                <p>
-                                    <label class="custom-select">
-                                        <select id="new-vessel-customer"></select>
-                                    </label>
-                                    <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addVesselCustomer()">
-                                </p>
-                            </div>-->
+                            <!--                            <div>
+                                                            <p>
+                                                                <label class="custom-select">
+                                                                    <select id="new-vessel-customer"></select>
+                                                                </label>
+                                                                <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addVesselCustomer()">
+                                                            </p>
+                                                        </div>-->
                         </form>
                     </div>
                 </td>
@@ -167,9 +167,7 @@
             </tr>
         </tbody>
     </table>
-    <div class="critDivs">
-        <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
-    </div>
+    <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
     <!- Results ->
     <table class="table tablesorter">
         <thead id="project-header"></thead>

@@ -595,7 +595,7 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/search")
     public @ResponseBody
     String openProjects(ProjectDetail pd, Integer offset, Integer size, String mode) {
-        return searchProject(srvProjectManager, pd, offset, size, mode);
+        return searchProject(srvProjectManager, null, "new", pd, offset, size, mode);
     }
 
     @RequestMapping(value = "/project-bill/add-item")

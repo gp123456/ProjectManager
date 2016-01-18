@@ -28,4 +28,10 @@
     <bean id="root" class="com.allone.projectmanager.controller.Root">
         <property name="srvProjectManager" ref="projectManagerService"/>
     </bean>
+    
+    <bean id="projectManagerServiceWCS" class="com.allone.projectmanager.WCSProjectManagerService"/>
+    
+    <bean id="project" class="com.allone.projectmanager.controller.project.ProjectController">
+        <property name="srvWCSProjectManager" ref="projectManagerServiceWCS"/>
+    </bean>
 </beans>

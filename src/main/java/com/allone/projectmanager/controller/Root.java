@@ -70,7 +70,7 @@ public class Root extends ProjectCommon {
         if (collab != null) {
             SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
             String current = ds.format(new Date());
-            
+
             getUser().setId(collab.getId());
             getUser().setScreen_name(user.getUsername());
             getUser().setLast_login(new String(current.getBytes("ISO-8859-1")));
@@ -82,7 +82,7 @@ public class Root extends ProjectCommon {
             setContent("../project/ViewProject.jsp");
             setHeaderInfo(model);
             model.addAttribute("login", "true");
-            
+
             return "index";
         } else {
             return "login";
@@ -99,21 +99,15 @@ public class Root extends ProjectCommon {
     String getView() {
         Map<String, List<PlotInfoModel>> content = new HashMap<>();
         content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.
-                                                                       toString()));
+                                                                        toString()));
         content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.
-                                                                          toString()));
+                                                                           toString()));
         content.put("OpenProjectSaleCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SALE.
                                                                           toString()));
         content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.
                                                                              toString()));
 
         return new Gson().toJson(content);
-    }
-
-    @RequestMapping(value = "/refresh")
-    public @ResponseBody
-    String refreshSearchContent(Integer offset, Integer size) {
-        return refreshSearchContent(srvProjectManager, offset, size);
     }
 
     @RequestMapping(value = "/sendemail")
@@ -149,9 +143,10 @@ public class Root extends ProjectCommon {
             Printing.printing(strPath);
 
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, dbpd, new ArrayList<String>(Arrays.asList(
-                                                     "Start", "Start", "Processed", "Start", "Start", "Start", "Start")),
-                                                     getModeEdit(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, dbpd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Processed", "Start", "Start", "Start",
+                                                        "Start")),
+                                                        getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -170,10 +165,8 @@ public class Root extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeView(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Start")), getModeView(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);

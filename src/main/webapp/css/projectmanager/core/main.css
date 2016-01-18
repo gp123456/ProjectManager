@@ -13,7 +13,7 @@ select {
 }
 
 .maincontent {
-    width: 100%;
+    width: 99%;
 }
 
 .leftmenucontainer {
@@ -23,7 +23,8 @@ select {
 .content {
     width: 84%;
     float: right;
-    margin-top: -500px;
+    margin-top: -550px;
+    height: 500px;
 }
 
 .login-content {

@@ -6,26 +6,25 @@
 package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
+import com.allone.projectmanager.entities.wcs.WCSProject;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
-import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.PlotInfoModel;
+import com.allone.projectmanager.model.SearchInfo;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -43,6 +42,19 @@ public class ProjectCommon extends Common {
     private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     private ProjectMode mode;
+
+    private String createSearchStatus() {
+        List<SearchInfo> info = getSearchCriteriaStatusProject();
+        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
+
+        if (info != null && info.isEmpty() == false && info.get(0) != null) {
+            response += info.stream()
+            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+            reduce(response, String::concat);
+        }
+
+        return response;
+    }
 
     public String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
                                    String mode) {
@@ -120,7 +132,6 @@ public class ProjectCommon extends Common {
                     "<th>Contact</th>\n" +
                     "<th>Edit</th>\n" +
                     //                    "<th>Delete</th>\n" +
-                    //                    "<th>Save to ...</th>\n" +
                     //                    "<th>Print to ...</th>\n" +
                     //                    "<th>Send eMail</th>\n" +
                     "</tr>\n";
@@ -155,8 +166,9 @@ public class ProjectCommon extends Common {
                 "</tr>";
     }
 
-    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses,
-                                      String mode, Integer offset, Integer size) {
+    public Object[] createNewProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd,
+                                         List<String> statuses,
+                                         String mode, Integer offset, Integer size) {
         Boolean navTable = Boolean.FALSE;
         String response = "";
 
@@ -235,8 +247,72 @@ public class ProjectCommon extends Common {
         return new Object[]{navTable, response};
     }
 
-    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, Integer offset, Integer size,
-                                String mode) {
+    public Object[] createOldProjectBody(WCSProjectManagerService srvWCSProjectManager, ProjectDetail pd,
+                                         List<String> statuses, String mode, Integer offset, Integer size) {
+        Boolean navTable = Boolean.FALSE;
+        String response = "";
+
+        if (pd == null) {
+            return new Object[]{navTable, response};
+        }
+
+        Long countPrj = 0l;
+        String reference = pd.getReference();
+        WCSProject onePrj = (!Strings.isNullOrEmpty(reference)) ?
+                   srvWCSProjectManager.getDaoWCSProject().getByReference(reference) : null;
+
+        if (onePrj == null) {
+            List<WCSProject> lstPrj = null;
+            Map<String, String> criteria = new HashMap<>();
+            String type = pd.getType();
+            String status = pd.getStatus();
+            Long vessel = pd.getVessel();
+            String customer = pd.getCustomer();
+            String company = pd.getCompany();
+            
+            if (!Strings.isNullOrEmpty(type)) { 
+                criteria.put("type", type);
+            }
+            if (!Strings.isNullOrEmpty(status)) {
+                criteria.put("status", status);
+            }
+            if (vessel != null) {
+                criteria.put("vessel", vessel.toString());
+            }
+            if (!Strings.isNullOrEmpty(customer)) {
+                criteria.put("customer", customer);
+            }
+            if (!Strings.isNullOrEmpty(company)) {
+                criteria.put("company", company);
+            }
+            
+            lstPrj = srvWCSProjectManager.getDaoWCSProject().getByCriteria(criteria, offset, size);
+        }
+
+//        if (onePrj != null) {
+//            response = createProjectRow(srvProjectManager, onePrj, statuses, mode);
+//        } else if (lstPrj != null && !lstPrj.isEmpty() && countPrj != null) {
+//            navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
+//            for (ProjectDetail prj : lstPrj) {
+//                response += createProjectRow(srvProjectManager, prj, statuses, mode);
+//            }
+//        } else {
+//            lstPrj = srvProjectManager.getDaoProjectDetail().getAll(offset, size);
+//            countPrj = srvProjectManager.getDaoProjectDetail().countAll();
+//
+//            if (lstPrj != null && !lstPrj.isEmpty()) {
+//                navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
+//                for (ProjectDetail prj : lstPrj) {
+//                    response += createProjectRow(srvProjectManager, prj, statuses, mode);
+//                }
+//            }
+//        }
+
+        return new Object[]{navTable, response};
+    }
+
+    public String searchProject(ProjectManagerService srvProjectManager, WCSProjectManagerService srvWCSProjectManager,
+                                String version, ProjectDetail pd, Integer offset, Integer size, String mode) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader;
@@ -245,21 +321,24 @@ public class ProjectCommon extends Common {
 
             if (mode.equals("view")) {
                 projectHeader = createProjectHeader(getModeView());
-                projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                           "Start",
-                                                                                                           "Start")),
-                                                getModeView(), offset, size);
+                if (version.equals("new")) {
+                    projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                       "Start", "Start", "Start")), getModeView(), offset, size);
+                } else if (version.equals("new")) {
+                    projectBody = createOldProjectBody(srvWCSProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                       "Start", "Start", "Start")), getModeView(), offset, size);
+                }
             } else {
                 projectHeader = createProjectHeader(getModeEdit());
-                projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                           "Start",
-                                                                                                           "Start",
-                                                                                                           "Start",
-                                                                                                           "Start",
-                                                                                                           "Start",
-                                                                                                           "Start",
-                                                                                                           "Start")),
-                                                getModeEdit(), offset, size);
+                projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
+                                                                                                              "Start",
+                                                                                                              "Start",
+                                                                                                              "Start",
+                                                                                                              "Start",
+                                                                                                              "Start",
+                                                                                                              "Start",
+                                                                                                              "Start")),
+                                                   getModeEdit(), offset, size);
             }
             projectFooter = (projectBody[0].equals(Boolean.TRUE)) ?
             createProjectFooter() : "";
@@ -320,7 +399,8 @@ public class ProjectCommon extends Common {
 
     public List<PlotInfoModel> getOpenProjectCompanyByType(ProjectManagerService srvProjectManager, String type) {
         Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
-        Long allMARPO = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MARPO.toString());
+        Long allMARPO = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MARPO.
+                                                                                      toString());
         Long allWCSLTD = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS_LTD.
                                                                                        toString());
         Long allWCSHellas = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type,
@@ -339,5 +419,18 @@ public class ProjectCommon extends Common {
         }
 
         return result;
+    }
+
+    public String searchCriteria(ProjectManagerService srvProjectManager) {
+        Map<String, String> contentMap = new HashMap<>();
+
+        contentMap.put("type", createSearchType());
+        contentMap.put("status", createSearchStatus());
+        contentMap.put("vessel", createSearchVessel(srvProjectManager, null));
+        contentMap.put("customer", createSearchCustomer(srvProjectManager, null));
+        contentMap.put("company", createSearchCompany());
+        contentMap.put("contact", createSearchContact(srvProjectManager, null));
+
+        return new Gson().toJson(contentMap);
     }
 }

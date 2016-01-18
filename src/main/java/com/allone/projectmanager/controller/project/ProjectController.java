@@ -6,6 +6,7 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Collabs;
@@ -27,9 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import net.sf.jasperreports.engine.JRException;
@@ -51,6 +52,8 @@ public class ProjectController extends ProjectCommon {
 
     @Autowired ProjectManagerService srvProjectManager;
 
+    @Autowired WCSProjectManagerService srvWCSProjectManager;
+
     public void setSrvProjectManager(ProjectManagerService srvProjectManager) {
         this.srvProjectManager = srvProjectManager;
         this.srvProjectManager.loadPropertyValues();
@@ -58,6 +61,14 @@ public class ProjectController extends ProjectCommon {
 
     public ProjectManagerService getSrvProjectManager() {
         return srvProjectManager;
+    }
+
+    public WCSProjectManagerService getSrvWCSProjectManager() {
+        return srvWCSProjectManager;
+    }
+
+    public void setSrvWCSProjectManager(WCSProjectManagerService srvWCSProjectManager) {
+        this.srvWCSProjectManager = srvWCSProjectManager;
     }
 
     private String createContent(Project p) {
@@ -199,9 +210,9 @@ public class ProjectController extends ProjectCommon {
             getUser().setProject_reference((user.getProjectId() + 1) + "/" + user.getProjectPrefix());
 
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                     "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
-                                                     getModeEdit(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
+                                                        getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -218,16 +229,16 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(ProjectDetail pd, Integer offset, Integer size, String mode, Model model) {
+    String searchProject(String version, ProjectDetail pd, Integer offset, Integer size, String mode) {
         mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, pd, offset, size, mode);
+        return searchProject(srvProjectManager, srvWCSProjectManager, version, pd, offset, size, mode);
     }
 
-    @RequestMapping(value = {"/refresh"})
+    @RequestMapping(value = {"/search-criteria"})
     public @ResponseBody
-    String refreshSearchContent(Integer offset, Integer size) {
-        return refreshSearchContent(srvProjectManager, offset, size);
+    String searchCriteria() {
+        return searchCriteria(srvProjectManager);
     }
 
     @RequestMapping(value = {"/project-edit"})
@@ -273,12 +284,11 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/remove"})
     public @ResponseBody
-    String removeProject(Project p, Integer offset, Integer size) {
+    String removeProject(Project p) {
         Map<String, String> content = new HashMap<>();
 
         srvProjectManager.getDaoProject().delete(p.getId());
 
-        content.put("reference", createSearchReference(srvProjectManager, offset, size));
         content.put("rows", "");
 
         return new Gson().toJson(content);
@@ -300,15 +310,9 @@ public class ProjectController extends ProjectCommon {
                                              (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
 
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Processed",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeEdit(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Processed", "Start", "Start", "Start", "Start",
+                                                        "Start", "Start")), getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -336,14 +340,9 @@ public class ProjectController extends ProjectCommon {
             Printing.printing(strPath);
 
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Start",
-                                                                                                                "Processed",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeEdit(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Processed", "Start", "Start", "Start",
+                                                        "Start")), getModeEdit(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -428,10 +427,8 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeView());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeView(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Start")), getModeView(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -460,14 +457,9 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList("Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start",
-                                                                                                                "Start")),
-                                                     getModeView(), offset, size);
+            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+                                                        "Start", "Start", "Start", "Start", "Start", "Start",
+                                                        "Start")), getModeView(), offset, size);
             String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);

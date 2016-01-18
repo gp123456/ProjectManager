@@ -50,7 +50,6 @@ public class ProjectManagerService {
     }
 
     private final CollabsDAO daoCollabs = new CollabsDAO(emf);
-
     private final CompanyDAO daoCompany = new CompanyDAO(emf);
     private final ItemDAO daoItem = new ItemDAO(emf);
     private final ItemTransDAO daoItemTrans = new ItemTransDAO(emf);

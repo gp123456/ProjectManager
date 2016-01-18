@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-function searchContent() {
-    var data = "id=" + $("#search-reference option:selected").attr("value") + "&type=" +
+function searchContent(version) {
+    var data = "version=" + version + "&reference=" +
+            $("#search-reference").attr("value") + "&type=" +
             $("#search-type option:selected").attr("value") + "&status=" +
             $("#search-status option:selected").attr("value") + "&vessel=" +
             $("#search-vessel option:selected").attr("value") + "&customer=" +
@@ -65,7 +66,7 @@ function removeRow(id) {
     $.ajax({
         type: "POST",
         url: "remove",
-        data: "id=" + id + "&offset=0&size=10",
+        data: "id=" + id,
         success: function (response) {
             var content = JSON.parse(response)
 
@@ -475,8 +476,10 @@ function setProjectBill(path) {
     $("#dlg-edit-project").dialog("close");
 }
 
-function dlgProject(status, dlg_id, div_id, dest_path) {
-    getProjectByStatus(status, div_id);
+function dlgProject(version, status, dlg_id, div_id, dest_path) {
+    if (version == 'new') {
+        getProjectByStatus(status, div_id);
+    }
 
     $(dlg_id).dialog({
         autoOpen: true,
@@ -519,7 +522,7 @@ function dlgEditProject() {
                     dest_path = "/ProjectManager/project/project-bill";
                 }
 
-                dlgProject(status, dlg_id, div_id, dest_path);
+                dlgProject('new', status, dlg_id, div_id, dest_path);
             }
         },
         show: {
@@ -529,6 +532,26 @@ function dlgEditProject() {
         hide: {
             effect: "explode",
             duration: 1000
+        }
+    });
+}
+
+function fillSearchCriteriaProject() {
+    $.ajax({
+        type: "POST",
+        url: "search-criteria",
+        success: function (response) {
+            var content = JSON.parse(response)
+
+            $("#search-type").html(content.type);
+            $("#search-status").html(content.status);
+            $("#search-vessel").html(content.vessel);
+            $("#search-customer").html(content.customer);
+            $("#search-company").html(content.company);
+
+            response;
+        },
+        error: function (e) {
         }
     });
 }

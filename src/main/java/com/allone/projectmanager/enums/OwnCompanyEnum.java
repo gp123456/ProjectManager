@@ -10,10 +10,10 @@ package com.allone.projectmanager.enums;
  * @author antonia
  */
 public enum OwnCompanyEnum {
-    MARPO("marpo"),
-    WCS_LTD("wcs ltd"),
-    WCS_HELLAS("wcs hellas"),
-    MTS("mts");
+    MARPO("MARPO"),
+    WCS_LTD("WCS LTD"),
+    WCS_HELLAS("WCS HELLAS"),
+    MTS("MTS");
     
     private final String value;
     

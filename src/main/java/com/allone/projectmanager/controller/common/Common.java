@@ -69,19 +69,6 @@ public class Common {
         return response;
     }
 
-    private String createSearchStatus() {
-        List<SearchInfo> info = getSearchCriteriaStatusProject();
-        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
-
-        if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream()
-            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
-            reduce(response, String::concat);
-        }
-
-        return response;
-    }
-
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
         String response =
@@ -154,33 +141,6 @@ public class Common {
         }
 
         return response;
-    }
-
-    public String createSearchReference(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
-        List<SearchInfo> info = getSearchCriteriaProject(srvProjectManager, offset, size);
-        String response = "<option value=\"none\" selected=\"selected\">Select</option>";
-
-        if (info != null && !info.isEmpty() && info.get(0) != null) {
-            response = info.stream().
-            map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").reduce(response,
-                                                                                                       String::concat);
-        }
-
-        return response;
-    }
-
-    public String refreshSearchContent(ProjectManagerService srvProjectManager, Integer offset, Integer size) {
-        Map<String, String> contentMap = new HashMap<>();
-
-        contentMap.put("reference", createSearchReference(srvProjectManager, offset, size));
-        contentMap.put("type", createSearchType());
-        contentMap.put("status", createSearchStatus());
-        contentMap.put("vessel", createSearchVessel(srvProjectManager, null));
-        contentMap.put("customer", createSearchCustomer(srvProjectManager, null));
-        contentMap.put("company", createSearchCompany());
-        contentMap.put("contact", createSearchContact(srvProjectManager, null));
-
-        return new Gson().toJson(contentMap);
     }
 
     public void setHeaderInfo(Model model) {
@@ -333,21 +293,6 @@ public class Common {
 
     public void setSearchCriteria(SearchCriteria searchCriteria) {
         this.searchCriteria = searchCriteria;
-    }
-
-    public List<SearchInfo> getSearchCriteriaProject(ProjectManagerService srvProjectManager, Integer offset,
-                                                     Integer size) {
-        List<Project> tp = srvProjectManager.getDaoProject().getAll(offset, size);
-
-        List<SearchInfo> si = new ArrayList<>();
-
-        if (tp != null && tp.isEmpty() == false && tp.get(0) != null) {
-            tp.stream().forEach((Project value) -> {
-                si.add(new SearchInfo(value.getId().toString(), value.getReference()));
-            });
-        }
-
-        return si;
     }
 
     public List<SearchInfo> getSearchCriteriaTypeProject() {
