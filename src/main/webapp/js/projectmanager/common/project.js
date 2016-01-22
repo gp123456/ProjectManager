@@ -4,14 +4,29 @@
  * and open the template in the editor.
  */
 
-function searchContent(version) {
-    var data = "version=" + version + "&reference=" +
-            $("#search-reference").attr("value") + "&type=" +
-            $("#search-type option:selected").attr("value") + "&status=" +
-            $("#search-status option:selected").attr("value") + "&vessel=" +
-            $("#search-vessel option:selected").attr("value") + "&customer=" +
-            $("#search-customer option:selected").attr("value") + "&company=" +
-            $("#search-company option:selected").attr("value") + "&offset=0&size=10";
+function searchContent(version, mode, offset, size) {
+    var reference = $("#search-reference").val();
+    var type = $("#search-type option:selected").attr("value");
+    var status = $("#search-status option:selected").attr("value");
+    var vessel = $("#search-vessel option:selected").attr("value");
+    var customer = $("#search-customer option:selected").attr("value");
+    var company = $("#search-company option:selected").attr("value");
+    var date_start = $("#date-start").val();
+    var date_end = $("#date-end").val();
+    var data = "";
+    
+    if (reference != '') data = "reference=" + reference;
+    if (type != "none") data += "&type=" + type;
+    if (status != "none") data += "&status=" + status;
+    if (vessel != -1) data += "&vessel=" + vessel;
+    if (customer != "none") data += "&customer=" + customer;
+    if (company != "none") data += "&company=" + company;
+    if (date_start != '') data += "&date_start=" + date_start;
+    if (date_end != '') data += "&date_end=" + date_end;
+    if (version != null) data += "&version=" + version;
+    if (mode != null) data += "&mode=" + mode;
+    data += (offset != null) ? "&offset=" + offset : "&offset=0";
+    data += (size != null) ? "&size=" + size : "&size=10";
 
     $.ajax({
         type: "POST",
@@ -280,20 +295,20 @@ function saveProject() {
     });
 }
 
-function projectFirstPage() {
-    alert("projectFirstPage");
+function projectFirstPage(version, mode, offset, size) {
+    searchContent(version, mode, offset, size)
 }
 
-function projectPreviousPage() {
-    alert("projectPreviousPage");
+function projectPreviousPage(version, mode, offset, size) {
+    searchContent(version, mode, --offset, size);
 }
 
-function projectNextPage() {
-    alert("projectNextPage");
+function projectNextPage(version, mode, offset, size) {
+    searchContent(version, mode, ++offset, size);
 }
 
-function projectLastPage() {
-    alert("projectLastPage");
+function projectLastPage(version, mode, offset, size) {
+    searchContent(version, mode, offset, size);
 }
 
 function projectPackingList(id) {
@@ -536,9 +551,10 @@ function dlgEditProject() {
     });
 }
 
-function fillSearchCriteriaProject() {
+function fillSearchCriteriaProject(version) {
     $.ajax({
         type: "POST",
+        data: "version=" + version,
         url: "search-criteria",
         success: function (response) {
             var content = JSON.parse(response)

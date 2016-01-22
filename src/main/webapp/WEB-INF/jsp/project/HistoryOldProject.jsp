@@ -6,10 +6,17 @@
 
 <script>
     $(function () {
-        fillSearchCriteriaProject();
+        fillSearchCriteriaProject("old");
     });
 </script>
 
 <h1>History of Old Project</h1>
 <input type="hidden" id="project-version" value=${prj_version} />
-<div class="formLayout"><jsp:include page="../project/searchCritiria.jsp"/></div>
+<div class="formLayout">
+    <jsp:include page="../project/searchCritiria.jsp"/>
+    <table class="table tablesorter">
+        <thead id="project-header"></thead>
+        <tbody id="project-body"></tbody>
+        <tbody id="project-footer"></tbody>
+    </table>
+</div>

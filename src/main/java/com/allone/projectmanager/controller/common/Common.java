@@ -11,6 +11,7 @@ import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.enums.WCSProjectStatusEnum;
 import com.allone.projectmanager.model.ProjectBillModel;
 import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
@@ -305,11 +306,17 @@ public class Common {
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaStatusProject() {
+    public List<SearchInfo> getSearchCriteriaStatusProject(String version) {
         List<SearchInfo> si = new ArrayList<>();
 
-        for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
-            si.add(new SearchInfo(status.toString(), status.toString()));
+        if (version.equals("new")) {
+            for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
+                si.add(new SearchInfo(status.toString(), status.toString()));
+            }
+        } else if (version.equals("old")) {
+            for (WCSProjectStatusEnum status : WCSProjectStatusEnum.values()) {
+                si.add(new SearchInfo(status.toString(), status.toString()));
+            }
         }
 
         return si;
@@ -399,7 +406,7 @@ public class Common {
             }
         }
     }
-    
+
     public void saveVirtualProjectBillItem(ProjectBillModel pbm) {
         if (pbm != null) {
             List<ProjectBillItem> items = mapProjectBillItems.get(pbm);

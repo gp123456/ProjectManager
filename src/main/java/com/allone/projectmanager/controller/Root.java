@@ -147,11 +147,11 @@ public class Root extends ProjectCommon {
                                                         "Start", "Start", "Processed", "Start", "Start", "Start",
                                                         "Start")),
                                                         getModeEdit(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -167,11 +167,11 @@ public class Root extends ProjectCommon {
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Start")), getModeView(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }

@@ -10,7 +10,6 @@ import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
-import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.entities.wcs.WCSProject;
@@ -25,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -39,12 +39,12 @@ enum ProjectMode {
 
 public class ProjectCommon extends Common {
 
-    private static final Logger logger = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectCommon.class.getName());
 
     private ProjectMode mode;
 
-    private String createSearchStatus() {
-        List<SearchInfo> info = getSearchCriteriaStatusProject();
+    private String createSearchStatus(String version) {
+        List<SearchInfo> info = getSearchCriteriaStatusProject(version);
         String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
@@ -109,6 +109,25 @@ public class ProjectCommon extends Common {
         return response;
     }
 
+    public String createWCSProjectRow(WCSProjectManagerService srvProjectManager, WCSProject p) {
+        String response = "";
+
+        response +=
+        "<tr>\n" +
+        "<td>" + p.getReference() + "</td>\n" +
+        "<td>" + p.getDesciptionType() + "</td>\n" +
+        "<td>" + p.getDescriptionStatus() + "</td>\n" +
+        "<td>" + p.getDescriptionUser() + "</td>\n" +
+        "<td>" + p.getDateRequest() + "</td>\n" +
+        "<td>" + p.getCompany() + "</td>\n" +
+        "<td>" + p.getNameVessel() + "</td>\n" +
+        "<td>" + p.getCustomer() + "</td>" +
+        "<td>" + p.getDateInvoice() + "</td>" +
+        "<td>" + p.getReferenceInvoice() + "</td>";
+
+        return response;
+    }
+
     public String getModeEdit() {
         return mode.EDIT.name();
     }
@@ -155,13 +174,31 @@ public class ProjectCommon extends Common {
         return null;
     }
 
-    public String createProjectFooter() {
+    public String createWCSProjectHeader() {
+        return "<tr>\n" +
+                "<th>Reference</th>\n" +
+                "<th>Type</th>\n" +
+                "<th>Status</th>\n" +
+                "<th>User</th>\n" +
+                "<th>Created</th>\n" +
+                "<th>Company</th>\n" +
+                "<th>Vessel</th>\n" +
+                "<th>Customer</th>\n" +
+                "<th>Invoice Date</th>\n" +
+                "<th>Invoice Ref</th>\n";
+    }
+
+    public String createProjectFooter(String version, String mode, Integer offset, Integer last, Integer size) {
         return "<tr>" +
                 "<td>" +
-                "<div class=\"img last-page\" title=\"Last Page\" onclick=\"projectLastPage()\"/> " +
-                "<div class=\"img previous-page\" title=\"Previous Page\" onclick=\"projectPreviousPage()\"/> " +
-                "<div class=\"img next-page\" title=\"Next Page\" onclick=\"projectNextPage()\"/> " +
-                "<div class=\"img first-page\" title=\"First Page\" onclick=\"projectFirstPage()\"/> " +
+                "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('" + version + "','" + mode + "'," +
+                last + "," + size + ")\"/>" +
+                "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('" + version +
+                "','" + mode + "'," + offset + "," + size + ")\"/>" +
+                "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('" + version + "','" + mode +
+                "'," + offset + "," + size + ")\"/>" +
+                "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('" + version + "','" + mode +
+                "'," + 0 + "," + size + ")\"/>" +
                 "</td>" +
                 "</tr>";
     }
@@ -248,33 +285,32 @@ public class ProjectCommon extends Common {
     }
 
     public Object[] createOldProjectBody(WCSProjectManagerService srvWCSProjectManager, ProjectDetail pd,
-                                         List<String> statuses, String mode, Integer offset, Integer size) {
-        Boolean navTable = Boolean.FALSE;
+                                         String date_start, String date_end, Integer offset, Integer size) {
+        Long prjCount = 0l;
         String response = "";
 
         if (pd == null) {
-            return new Object[]{navTable, response};
+            return new Object[]{prjCount, response};
         }
 
-        Long countPrj = 0l;
         String reference = pd.getReference();
         WCSProject onePrj = (!Strings.isNullOrEmpty(reference)) ?
                    srvWCSProjectManager.getDaoWCSProject().getByReference(reference) : null;
+        List<WCSProject> lstPrj = null;
 
         if (onePrj == null) {
-            List<WCSProject> lstPrj = null;
             Map<String, String> criteria = new HashMap<>();
             String type = pd.getType();
             String status = pd.getStatus();
             Long vessel = pd.getVessel();
             String customer = pd.getCustomer();
             String company = pd.getCompany();
-            
-            if (!Strings.isNullOrEmpty(type)) { 
-                criteria.put("type", type);
+
+            if (!Strings.isNullOrEmpty(type)) {
+                criteria.put("desciptionType", type);
             }
             if (!Strings.isNullOrEmpty(status)) {
-                criteria.put("status", status);
+                criteria.put("descriptionStatus", status);
             }
             if (vessel != null) {
                 criteria.put("vessel", vessel.toString());
@@ -285,48 +321,53 @@ public class ProjectCommon extends Common {
             if (!Strings.isNullOrEmpty(company)) {
                 criteria.put("company", company);
             }
-            
+            if (!Strings.isNullOrEmpty(date_start)) {
+                criteria.put("date_start", date_start);
+            }
+            if (!Strings.isNullOrEmpty(date_end)) {
+                criteria.put("date_end", date_end);
+            }
+
             lstPrj = srvWCSProjectManager.getDaoWCSProject().getByCriteria(criteria, offset, size);
+            prjCount = srvWCSProjectManager.getDaoWCSProject().getCountByCriteria(criteria);
         }
 
-//        if (onePrj != null) {
-//            response = createProjectRow(srvProjectManager, onePrj, statuses, mode);
-//        } else if (lstPrj != null && !lstPrj.isEmpty() && countPrj != null) {
-//            navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-//            for (ProjectDetail prj : lstPrj) {
-//                response += createProjectRow(srvProjectManager, prj, statuses, mode);
-//            }
-//        } else {
-//            lstPrj = srvProjectManager.getDaoProjectDetail().getAll(offset, size);
-//            countPrj = srvProjectManager.getDaoProjectDetail().countAll();
-//
-//            if (lstPrj != null && !lstPrj.isEmpty()) {
-//                navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-//                for (ProjectDetail prj : lstPrj) {
-//                    response += createProjectRow(srvProjectManager, prj, statuses, mode);
-//                }
-//            }
-//        }
+        if (onePrj != null) {
+            response = createWCSProjectRow(srvWCSProjectManager, onePrj);
+        } else if (lstPrj != null && !lstPrj.isEmpty()) {
+            for (WCSProject prj : lstPrj) {
+                response += createWCSProjectRow(srvWCSProjectManager, prj);
+            }
+        } else {
+            lstPrj = srvWCSProjectManager.getDaoWCSProject().getAll(offset, size);
+            prjCount = srvWCSProjectManager.getDaoWCSProject().getCountByCriteria(null);
 
-        return new Object[]{navTable, response};
+            if (lstPrj != null && !lstPrj.isEmpty()) {
+                for (WCSProject prj : lstPrj) {
+                    response += createWCSProjectRow(srvWCSProjectManager, prj);
+                }
+            }
+        }
+        return new Object[]{prjCount, response};
     }
 
     public String searchProject(ProjectManagerService srvProjectManager, WCSProjectManagerService srvWCSProjectManager,
-                                String version, ProjectDetail pd, Integer offset, Integer size, String mode) {
+                                String version, ProjectDetail pd, String date_start, String date_end, Integer offset,
+                                Integer size, String mode) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
-            String projectHeader;
-            Object[] projectBody;
+            String projectHeader = null;
+            Object[] projectBody = null;
             String projectFooter;
 
             if (mode.equals("view")) {
-                projectHeader = createProjectHeader(getModeView());
                 if (version.equals("new")) {
+                    projectHeader = createProjectHeader(getModeView());
                     projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                        "Start", "Start", "Start")), getModeView(), offset, size);
-                } else if (version.equals("new")) {
-                    projectBody = createOldProjectBody(srvWCSProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                       "Start", "Start", "Start")), getModeView(), offset, size);
+                } else if (version.equals("old")) {
+                    projectHeader = createWCSProjectHeader();
+                    projectBody = createOldProjectBody(srvWCSProjectManager, pd, date_start, date_end, offset, size);
                 }
             } else {
                 projectHeader = createProjectHeader(getModeEdit());
@@ -340,11 +381,20 @@ public class ProjectCommon extends Common {
                                                                                                               "Start")),
                                                    getModeEdit(), offset, size);
             }
-            projectFooter = (projectBody[0].equals(Boolean.TRUE)) ?
-            createProjectFooter() : "";
+            if (projectBody != null && ((Long)projectBody[0]).compareTo(new Long(size)) > 0) {
+                logger.log(Level.INFO, "count all={0}", (Long)projectBody[0]);
+                
+                Long last = ((Long)projectBody[0] / size) - 1l;
+                
+                logger.log(Level.INFO, "last ={0}", last);
+                
+                projectFooter = createProjectFooter(version, mode, offset, last.intValue(), size);
+            } else {
+                projectFooter = "";
+            }
 
             content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
+            content.put("project_body", (projectBody != null) ? projectBody[1].toString() : "");
             content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
@@ -421,11 +471,11 @@ public class ProjectCommon extends Common {
         return result;
     }
 
-    public String searchCriteria(ProjectManagerService srvProjectManager) {
+    public String searchCriteria(ProjectManagerService srvProjectManager, String version) {
         Map<String, String> contentMap = new HashMap<>();
 
         contentMap.put("type", createSearchType());
-        contentMap.put("status", createSearchStatus());
+        contentMap.put("status", createSearchStatus(version));
         contentMap.put("vessel", createSearchVessel(srvProjectManager, null));
         contentMap.put("customer", createSearchCustomer(srvProjectManager, null));
         contentMap.put("company", createSearchCompany());

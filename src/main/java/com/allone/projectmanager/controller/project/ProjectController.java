@@ -98,7 +98,7 @@ public class ProjectController extends ProjectCommon {
             }
             content.put("project_header", createProjectHeader(getModeEdit()));
             content.put("project_body", projectBody);
-            content.put("project_footer", (pds.size() > 10) ? createProjectFooter() : "");
+//            content.put("project_footer", (pds.size() > 10) ? createProjectFooter() : "");
         }
 
         return new Gson().toJson(content);
@@ -213,7 +213,7 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
                                                         getModeEdit(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody);
@@ -229,16 +229,17 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(String version, ProjectDetail pd, Integer offset, Integer size, String mode) {
+    String searchProject(ProjectDetail p, String date_start, String date_end, String version, String mode,
+                         Integer offset, Integer size) {
         mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, srvWCSProjectManager, version, pd, offset, size, mode);
+        return searchProject(srvProjectManager, srvWCSProjectManager, version, p, null, null, offset, size, mode);
     }
 
     @RequestMapping(value = {"/search-criteria"})
     public @ResponseBody
-    String searchCriteria() {
-        return searchCriteria(srvProjectManager);
+    String searchCriteria(String version) {
+        return searchCriteria(srvProjectManager, version);
     }
 
     @RequestMapping(value = {"/project-edit"})
@@ -313,11 +314,11 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Processed", "Start", "Start", "Start", "Start",
                                                         "Start", "Start")), getModeEdit(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -326,7 +327,8 @@ public class ProjectController extends ProjectCommon {
 
     }
 
-    @RequestMapping(value = {"/printpdf"})
+    @RequestMapping(
+            value = {"/printpdf"})
     public @ResponseBody
     String printProjectPDF(ProjectDetail pd, Integer offset, Integer size) throws IOException, FileNotFoundException,
                                                                                   PrintException {
@@ -343,11 +345,11 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Processed", "Start", "Start", "Start",
                                                         "Start")), getModeEdit(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -355,7 +357,8 @@ public class ProjectController extends ProjectCommon {
         return "";
     }
 
-    @RequestMapping(value = {"/createxls"})
+    @RequestMapping(value = {
+        "/createxls"})
     public @ResponseBody
     String createProjectXLS(ProjectDetail pd) {
         return "";
@@ -429,11 +432,11 @@ public class ProjectController extends ProjectCommon {
             String projectHeader = createProjectHeader(getModeView());
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Start")), getModeView(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -460,11 +463,11 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Start", "Start", "Start", "Start",
                                                         "Start")), getModeView(), offset, size);
-            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
+//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-            content.put("project_footer", projectFooter);
+//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }

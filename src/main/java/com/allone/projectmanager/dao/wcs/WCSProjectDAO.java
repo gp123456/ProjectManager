@@ -8,6 +8,7 @@ package com.allone.projectmanager.dao.wcs;
 import com.allone.projectmanager.entities.wcs.WCSProject;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -18,19 +19,22 @@ import org.hibernate.HibernateException;
  * @author Admin
  */
 public class WCSProjectDAO {
+
+    private static final Logger logger = Logger.getLogger(WCSProjectDAO.class.getName());
+    
     private EntityManagerFactory emf;
 
     public WCSProjectDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    
+
     public List getAll(Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSProject.findAll");
-            
+
             if (offset != null && offset.compareTo(0) >= 0 && size != null && size.compareTo(0) > 0) {
                 query.setFirstResult(offset * size).setMaxResults(size);
             }
@@ -44,19 +48,28 @@ public class WCSProjectDAO {
             return values;
         }
     }
-    
+
     public List getByCriteria(Map<String, String> criteria, Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSProject.findByCriteria+Q");
-            
-            if (offset != null && offset.compareTo(0) >= 0 && size != null && size.compareTo(0) > 0) {
-                query.setFirstResult(offset * size).setMaxResults(size);
-            }
+            if (criteria != null && !criteria.isEmpty()) {
+                String qcriteria = "SELECT p FROM com.allone.projectmanager.entities.wcs.WCSProject p WHERE ";
 
-            values = query.getResultList();
+                qcriteria = criteria.keySet().stream().map((key) -> "p." + key + "='" + criteria.get(key) + "' AND ").
+                reduce(qcriteria, String::concat);
+                qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
+                qcriteria += " ORDER BY p.code DESC";
+
+                Query query = em.createQuery(qcriteria);
+
+                if (offset != null && offset.compareTo(0) >= 0 && size != null && size.compareTo(0) > 0) {
+                    query.setFirstResult(offset * size).setMaxResults(size);
+                }
+
+                values = query.getResultList();
+            }
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -65,14 +78,42 @@ public class WCSProjectDAO {
             return values;
         }
     }
-    
+
+    public Long getCountByCriteria(Map<String, String> criteria) {
+        Long values = null;
+        EntityManager em = emf.createEntityManager();
+        String qcriteria = "";
+
+        try {
+            if (criteria != null && !criteria.isEmpty()) {
+                qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.wcs.WCSProject p WHERE ";
+
+                qcriteria = criteria.keySet().stream().map((key) -> "p." + key + "='" + criteria.get(key) + "' AND ").
+                reduce(qcriteria, String::concat);
+                qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
+            } else {
+                qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.wcs.WCSProject p";
+            }
+
+            Query query = em.createQuery(qcriteria);
+
+            values = (Long) query.getSingleResult();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+
+            return values;
+        }
+    }
+
     public WCSProject getByReference(String reference) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
             query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSProject.findByReference").
-                    setParameter("reference", reference);
+            setParameter("reference", reference);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {

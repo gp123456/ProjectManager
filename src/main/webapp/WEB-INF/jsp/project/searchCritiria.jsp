@@ -8,10 +8,10 @@
 
 <script>
     $(function () {
-        $("#start").datepicker();
-        $("#start").val("");
-        $("#end").datepicker();
-        $("#end").val("");
+        $("#date-start").datepicker();
+        $("#date-start").val("");
+        $("#date-end").datepicker();
+        $("#date-end").val("");
         $("#search-reference").val("");
     });
 </script>
@@ -35,11 +35,11 @@
     <select id="search-company"></select>
 </label>
 <label class="custom-select">Start date
-    <input name="sdate" type="text" id="start" value="${sdateVal}">
+    <input name="sdate" type="text" id="date-start" value="${sdateVal}">
 </label>
 <span class="dateico"></span>
 <label class="custom-select">End date
-    <input name="edate" type="text" id="end" value="${edateVal}">
+    <input name="edate" type="text" id="date-end" value="${edateVal}">
 </label><br>
-<input type="button" class="button" value="Search" id="search" onclick="searchContent($('#project-version').val())"/>
+<input type="button" class="button" value="Search" id="search" onclick="searchContent($('#project-version').val(), 'view', 0, 10)"/>
 <input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>

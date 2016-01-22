@@ -37,7 +37,7 @@ public class WCSProject implements Serializable {
     @Basic(optional = false)
     @Column(name = "PRCODE")
     @NotNull
-    private String code;
+    private Integer code;
 
     @Column(name = "PRREFERENCE")
     private String reference;
@@ -237,11 +237,11 @@ public class WCSProject implements Serializable {
     public WCSProject() {
     }
 
-    public String getCode() {
+    public Integer getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 

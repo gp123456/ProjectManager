@@ -6,7 +6,7 @@
 
 <script>
     $(function () {
-        fillSearchCriteriaProject();
+        fillSearchCriteriaProject("new");
     });
 </script>
 

@@ -101,7 +101,6 @@ public class ProjectDetail implements Serializable {
     private Date created;
 
     @Basic(optional = false)
-    @NotNull
     @Column(name = "expired")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expired;
@@ -113,19 +112,16 @@ public class ProjectDetail implements Serializable {
     private Long vessel;
 
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "company")
     private String company;
 
     @Basic(optional = false)
     @Column(name = "contact")
-    @NotNull
     private Long contact;
     
     @Basic(optional = false)
     @Column(name = "reference")
-    @NotNull
     private String reference;
 
     private ProjectDetail(Builder builder) {
