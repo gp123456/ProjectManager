@@ -19,7 +19,7 @@ function commitContact() {
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/ProjectManager/contact/add",
+        url: "http://192.168.178.29:8080/ProjectManager/contact/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)

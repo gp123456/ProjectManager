@@ -13,7 +13,7 @@ function commitVessel() {
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/ProjectManager/vessel/add",
+        url: "http://192.168.178.29:8080/ProjectManager/vessel/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)

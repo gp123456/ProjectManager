@@ -46,7 +46,6 @@ public class ContactNewController extends Common {
     @RequestMapping(value = "/add")
     public @ResponseBody
     String addContact(Contact cont) {
-        String response = "";
         Map<String, String> content = new HashMap<>();
         
         if (cont != null) {

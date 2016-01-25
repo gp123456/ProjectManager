@@ -37,7 +37,7 @@
 <nav>
     <div class="menu-item">
         <h3 id="project-edit-size" onclick="dlgEditProject()">Edit</h3>
-        <div id="dlg-edit-project" hidden="true" title="Statuses">
+        <div id="dlg-edit-project" hidden="true" title="Select statuses to edit">
             <form>
                 <div id="lst-edit-project" class="radio"></div>
                 <input type="hidden" id="edit-path" value=${edit_path} />
@@ -50,7 +50,7 @@
     </div>
     <div class="menu-item">
         <h3 id="project-bill-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
-                        '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material</h3>
+                        '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material or Service</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
                 <div id="lst-bill-project" class="radio"></div>

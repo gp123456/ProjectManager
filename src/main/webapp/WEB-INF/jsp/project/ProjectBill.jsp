@@ -43,8 +43,8 @@
                 <select id="bill-subproject" onchange="getProjectBillItems()"></select>
             </label>
         </p>
-        <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addSubProject()"/>
-        <div class="formLayout" id="new-subproject" hidden="true" title="New Sub Project">
+        <input type="button" class="button" value="Add New Subproject" id="project-bill-add-item" onclick="addSubProject()"/>
+        <div class="formLayout" id="new-subproject" hidden="true" title="Add New Subproject">
             <p class="validateTips">All form fields are required.</p>
             <table>
                 <tbody>
@@ -87,8 +87,8 @@
                 <select id="bill-item" onchange="insertItem(this)"></select>
             </label>
         </p>
-        <input type="button" class="button" value="Add" id="project-bill-add-item" onclick="addItem()"/>
-        <div id="add-item" hidden="true" title="Add Item">
+        <input type="button" class="button" value="Add New Item" id="project-bill-add-item" onclick="addItem()"/>
+        <div id="add-item" hidden="true" title="Add New Item">
             <form class="go-bottom">
                 <p class="validateTips" id="validate-add-item">All form fields are required.</p>
                 <div>

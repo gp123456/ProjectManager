@@ -12,7 +12,7 @@ function commitCustomer() {
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/ProjectManager/company/add",
+        url: "http://192.168.178.29:8080/ProjectManager/company/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)
