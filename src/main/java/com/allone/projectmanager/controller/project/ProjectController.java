@@ -124,7 +124,7 @@ public class ProjectController extends ProjectCommon {
         Long credit = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString());
 
         content.put("project_new_size", "New[" + create + "]");
-        content.put("project_bill_size", "Bill of Material[" + bill + "]");
+        content.put("project_bill_size", "Bill of Material or Service[" + bill + "]");
         content.put("project_quota_size", "Request for Quotation[" + quota + "]");
         content.put("project_purchase_size", "Purchase Order[" + purchase + "]");
         content.put("project_work_size", "Work Order[" + work + "]");

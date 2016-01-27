@@ -343,7 +343,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill")
     public String ProjectBill(Project p, Model model) {
-        this.setTitle("Projects - Bill of Material");
+        this.setTitle("Projects - Bill of Material or Service");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/ProjectBill.jsp");
         setHeaderInfo(model);
