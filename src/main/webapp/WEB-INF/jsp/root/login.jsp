@@ -24,7 +24,7 @@
                 <p class="lTitle">Password</p> <input type="password" class="login" name="password"><br>
                 <input type="submit" class="submit" value="Login">
             </form>
-            <div class="ver"> v.1.1.0</div>
+            <div class="ver"> v.1.0.0</div>
             <div class="loginText">
             </div>
         </div>

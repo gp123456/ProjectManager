@@ -17,35 +17,23 @@
 </script>
 
 <div class="logo"></div>
-<div class="version">Software version 3.36.0</div>
+<div class="version">Software version 1.0.0</div>
 <div class="headmenu">
-    <h2 id="project" class="headmenuclickers" onclick="OpenInNewTab('<%=path%>/project/snapshot');">
-        <label id="lbl_projects">Project</label>
-    </h2>
+    <input type="button" class="button-header" value="Project" onclick="OpenInNewTab('<%=path%>/project/snapshot');"/>
 </div>
 <div class="headmenu">
-    <h2 id="stock" class="headmenuclickers" onclick="OpenInNewTab('<%=path%>/stock/view');">
-        <label>Stock</label>
-    </h2>
+    <input type="button" class="button-header" value="Stock" onclick="OpenInNewTab('<%=path%>/stock/snapshot');"/>
 </div>
 <div class="headmenu">
-    <h2 id="company" class="headmenuclickers" onclick="OpenInNewTab('<%=path%>/company/view');">
-        <label>Company</label>
-    </h2>
+    <input type="button" class="button-header" value="Company" onclick="OpenInNewTab('<%=path%>/company/view');"/>
 </div>
 <div class="headmenu">
-    <h2 id="vessel" class="headmenuclickers" onclick="OpenInNewTab('<%=path%>/vessel/view');">
-        <label>Vessel</label>
-    </h2>
+    <input type="button" class="button-header" value="Vessel" onclick="OpenInNewTab('<%=path%>/vessel/snapshot');"/>
 </div>
 <div class="headmenu">
-    <h2 id="contact" class="headmenuclickers" onclick="OpenInNewTab('<%=path%>/contact/view');">
-        <label>Contact</label>
-    </h2>
+    <input type="button" class="button-header" value="Contact" onclick="OpenInNewTab('<%=path%>/contact/snapshot');"/>
 </div>
 <div id="userHead">
-    <!--<div class="userHead-element login"></div>-->
-
     <div class="loginInfo"> 
         <div class="status">${full_name}</div>
         <p></p><div>Last login: ${last_login}</div>
@@ -53,6 +41,6 @@
 
     <div class="logout">
         <a href="<%=path%>"><img src="images/projectmanager/common/logout.png"></a>
+        <br/><label>Exit</label>
     </div>
-</div>
 </div>
