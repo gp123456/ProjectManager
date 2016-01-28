@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSProject.findAll",
                            query = "SELECT p FROM WCSProject p ORDER BY p.code DESC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSProject.findByReference",
-                           query = "SELECT p FROM WCSProject p WHERE p.reference = :reference")})
+                           query = "SELECT p FROM WCSProject p WHERE p.reference LIKE :reference")})
 public class WCSProject implements Serializable {
 
     @Id

@@ -113,11 +113,11 @@ public class WCSProjectDAO {
 
         try {
             query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSProject.findByReference").
-            setParameter("reference", reference);
+            setParameter("reference", "%" + reference + "%");
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            WCSProject value = (query != null) ? (WCSProject) query.getSingleResult() : null;
+            WCSProject value = (query != null) ? (WCSProject) query.getResultList().get(0): null;
 
             em.close();
 
