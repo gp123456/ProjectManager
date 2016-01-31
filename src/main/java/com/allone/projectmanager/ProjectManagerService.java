@@ -54,7 +54,7 @@ public class ProjectManagerService {
     private final ItemDAO daoItem = new ItemDAO(emf);
     private final ItemTransDAO daoItemTrans = new ItemTransDAO(emf);
     private final ProjectDAO daoProject = new ProjectDAO(emf);
-    private final ProjectDetailDAO daoProjectDetail = new ProjectDetailDAO(emf);
+        private final ProjectDetailDAO daoProjectDetail = new ProjectDetailDAO(emf);
     private final RepimageDAO daoRepimage = new RepimageDAO(emf);
     private final ReportsDAO daoReport = new ReportsDAO(emf);
     private final RightsDAO daoRights = new RightsDAO(emf);

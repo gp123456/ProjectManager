@@ -338,16 +338,18 @@ public class ProjectCommon extends Common {
             for (WCSProject prj : lstPrj) {
                 response += createWCSProjectRow(srvWCSProjectManager, prj);
             }
-        } else {
-            lstPrj = srvWCSProjectManager.getDaoWCSProject().getAll(offset, size);
-            prjCount = srvWCSProjectManager.getDaoWCSProject().getCountByCriteria(null);
-
-            if (lstPrj != null && !lstPrj.isEmpty()) {
-                for (WCSProject prj : lstPrj) {
-                    response += createWCSProjectRow(srvWCSProjectManager, prj);
-                }
-            }
         }
+//        } else {
+//            lstPrj = srvWCSProjectManager.getDaoWCSProject().getAll(offset, size);
+//            prjCount = srvWCSProjectManager.getDaoWCSProject().getCountByCriteria(null);
+//
+//            if (lstPrj != null && !lstPrj.isEmpty()) {
+//                for (WCSProject prj : lstPrj) {
+//                    response += createWCSProjectRow(srvWCSProjectManager, prj);
+//                }
+//            }
+//        }
+        
         return new Object[]{prjCount, response};
     }
 
