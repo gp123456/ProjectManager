@@ -78,15 +78,6 @@ public class ProjectCommon extends Common {
             "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
             "<td><input type='button' value='Edit' class='button' id='edit-project' onclick='editRow(" + pd.getId() +
             ")'></td>\n";
-//            "<td><input type=\"button\" value=\"" + statuses.get(1) + "\" id=\"remove-project\" onclick=\"removeRow(" +
-//            pd.getId() + ")\"></td>\n" +
-//            "<td><input type=\"button\" value=\"" + statuses.get(2) + "\" id=\"create-to\" onclick=\"createTo(" +
-//            pd.getId() + ")\"></td>\n" +
-//            "<td><input type=\"button\" value=\"" + statuses.get(3) + "\" id=\"print-to\" onclick=\"printTo(" +
-//            pd.getId() + ")\"></td>\n" +
-//            "<td><input type=\"button\" value=\"" + statuses.get(6) + "\" id=\"send-email\" onclick=\"sendEnail(" +
-//            pd.getId() + ")\"></td>\n" +
-//            "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             response +=
             "<tr>" +
@@ -139,36 +130,36 @@ public class ProjectCommon extends Common {
     public String createProjectHeader(String mode) {
         if (mode.equals(this.mode.EDIT.name())) {
             return "<tr>\n" +
-                    "<th>Reference</th>\n" +
-                    "<th>Type</th>\n" +
-                    "<th>Status</th>\n" +
-                    "<th>User</th>\n" +
-                    "<th>Created</th>\n" +
-                    "<th>Expired</th>\n" +
-                    "<th>Company</th>\n" +
-                    "<th>Vessel</th>\n" +
-                    "<th>Customer</th>\n" +
-                    "<th>Contact</th>\n" +
-                    "<th>Edit</th>\n" +
-                    //                    "<th>Delete</th>\n" +
-                    //                    "<th>Print to ...</th>\n" +
-                    //                    "<th>Send eMail</th>\n" +
-                    "</tr>\n";
+                   "<th>Reference</th>\n" +
+                   "<th>Type</th>\n" +
+                   "<th>Status</th>\n" +
+                   "<th>User</th>\n" +
+                   "<th>Created</th>\n" +
+                   "<th>Expired</th>\n" +
+                   "<th>Company</th>\n" +
+                   "<th>Vessel</th>\n" +
+                   "<th>Customer</th>\n" +
+                   "<th>Contact</th>\n" +
+                   "<th>Edit</th>\n" +
+                   //                    "<th>Delete</th>\n" +
+                   //                    "<th>Print to ...</th>\n" +
+                   //                    "<th>Send eMail</th>\n" +
+                   "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             return "<tr>\n" +
-                    "<th>Reference</th>\n" +
-                    "<th>Type</th>\n" +
-                    "<th>Status</th>\n" +
-                    "<th>User</th>\n" +
-                    "<th>Created</th>\n" +
-                    "<th>Expired</th>\n" +
-                    "<th>Company</th>\n" +
-                    "<th>Vessel</th>\n" +
-                    "<th>Customer</th>\n" +
-                    "<th>Contact</th>\n" +
-                    "<th>Print to ...</th>\n" +
-                    "<th>Send eMail</th>\n" +
-                    "</tr>\n";
+                   "<th>Reference</th>\n" +
+                   "<th>Type</th>\n" +
+                   "<th>Status</th>\n" +
+                   "<th>User</th>\n" +
+                   "<th>Created</th>\n" +
+                   "<th>Expired</th>\n" +
+                   "<th>Company</th>\n" +
+                   "<th>Vessel</th>\n" +
+                   "<th>Customer</th>\n" +
+                   "<th>Contact</th>\n" +
+                   "<th>Print to ...</th>\n" +
+                   "<th>Send eMail</th>\n" +
+                   "</tr>\n";
         }
 
         return null;
@@ -176,31 +167,32 @@ public class ProjectCommon extends Common {
 
     public String createWCSProjectHeader() {
         return "<tr>\n" +
-                "<th>Reference</th>\n" +
-                "<th>Type</th>\n" +
-                "<th>Status</th>\n" +
-                "<th>User</th>\n" +
-                "<th>Created</th>\n" +
-                "<th>Company</th>\n" +
-                "<th>Vessel</th>\n" +
-                "<th>Customer</th>\n" +
-                "<th>Invoice Date</th>\n" +
-                "<th>Invoice Ref</th>\n";
+               "<th>Reference</th>\n" +
+               "<th>Type</th>\n" +
+               "<th>Status</th>\n" +
+               "<th>User</th>\n" +
+               "<th>Created</th>\n" +
+               "<th>Company</th>\n" +
+               "<th>Vessel</th>\n" +
+               "<th>Customer</th>\n" +
+               "<th>Invoice Date</th>\n" +
+               "<th>Invoice Ref</th>\n";
     }
 
     public String createProjectFooter(String version, String mode, Integer offset, Integer last, Integer size) {
         return "<tr>" +
-                "<td>" +
-                "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('" + version + "','" + mode + "'," +
-                last + "," + size + ")\"/>" +
-                "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('" + version +
-                "','" + mode + "'," + offset + "," + size + ")\"/>" +
-                "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('" + version + "','" + mode +
-                "'," + offset + "," + size + ")\"/>" +
-                "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('" + version + "','" + mode +
-                "'," + 0 + "," + size + ")\"/>" +
-                "</td>" +
-                "</tr>";
+               "<td>" +
+               "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('" + version + "','" + mode +
+               "'," +
+               last + "," + size + ")\"/>" +
+               "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('" + version +
+               "','" + mode + "'," + offset + "," + size + ")\"/>" +
+               "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('" + version + "','" + mode +
+               "'," + offset + "," + size + ")\"/>" +
+               "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('" + version + "','" + mode +
+               "'," + 0 + "," + size + ")\"/>" +
+               "</td>" +
+               "</tr>";
     }
 
     public Object[] createNewProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd,
@@ -223,41 +215,41 @@ public class ProjectCommon extends Common {
                 String status = pd.getStatus();
 
                 lstPrj = (!Strings.isNullOrEmpty(status) && !status.equals("none")) ?
-                srvProjectManager.getDaoProjectDetail().getByStatus(status, offset, size) : null;
+                         srvProjectManager.getDaoProjectDetail().getByStatus(status, offset, size) : null;
                 countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByStatus(status) : null;
             }
             if (lstPrj == null) {
                 Long projectId = pd.getProject();
 
                 lstPrj = (projectId != null && !projectId.equals(-1l)) ? srvProjectManager.getDaoProjectDetail().
-                getByProjectId(projectId) : null;
+                         getByProjectId(projectId) : null;
             }
             if (lstPrj == null) {
                 String type = pd.getType();
 
                 lstPrj = (!Strings.isNullOrEmpty(type)) ? srvProjectManager.getDaoProjectDetail().
-                getByType(type, offset, size) : null;
+                         getByType(type, offset, size) : null;
                 countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByType(type) : null;
             }
             if (lstPrj == null) {
                 Long vessel = pd.getVessel();
 
                 lstPrj = (vessel != null && !vessel.equals(-1)) ? srvProjectManager.getDaoProjectDetail().getByVessel(
-                vessel, offset, size) : null;
+                         vessel, offset, size) : null;
                 countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByVessel(vessel) : null;
             }
             if (lstPrj == null) {
                 String customer = pd.getCustomer();
 
                 lstPrj = (!Strings.isNullOrEmpty(customer)) ? srvProjectManager.getDaoProjectDetail().getByCustomer(
-                customer, offset, size) : null;
+                         customer, offset, size) : null;
                 countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCustomer(customer) : null;
             }
             if (lstPrj == null) {
                 String company = pd.getCompany();
 
                 lstPrj = (!Strings.isNullOrEmpty(company)) ? srvProjectManager.getDaoProjectDetail().getByCompany(
-                company, offset, size) : null;
+                         company, offset, size) : null;
                 countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCompany(company) : null;
             }
         }
@@ -285,7 +277,8 @@ public class ProjectCommon extends Common {
     }
 
     public Object[] createOldProjectBody(WCSProjectManagerService srvWCSProjectManager, ProjectDetail pd,
-                                         String date_start, String date_end, Integer offset, Integer size) {
+                                         String date_start, String date_end, String vesselCustom, String customerCustom,
+                                         Integer offset, Integer size) {
         Long prjCount = 0l;
         String response = "";
 
@@ -295,7 +288,7 @@ public class ProjectCommon extends Common {
 
         String reference = pd.getReference();
         WCSProject onePrj = (!Strings.isNullOrEmpty(reference)) ?
-                   srvWCSProjectManager.getDaoWCSProject().getByReference(reference) : null;
+                            srvWCSProjectManager.getDaoWCSProject().getByReference(reference) : null;
         List<WCSProject> lstPrj = null;
 
         if (onePrj == null) {
@@ -314,6 +307,12 @@ public class ProjectCommon extends Common {
             }
             if (vessel != null) {
                 criteria.put("vessel", vessel.toString());
+            }
+            if (!Strings.isNullOrEmpty(vesselCustom)) {
+                criteria.put("vesselCustom", vesselCustom);
+            }
+            if (!Strings.isNullOrEmpty(customerCustom)) {
+                criteria.put("customerCustom", customerCustom);
             }
             if (!Strings.isNullOrEmpty(customer)) {
                 criteria.put("customer", customer);
@@ -349,13 +348,13 @@ public class ProjectCommon extends Common {
 //                }
 //            }
 //        }
-        
+
         return new Object[]{prjCount, response};
     }
 
     public String searchProject(ProjectManagerService srvProjectManager, WCSProjectManagerService srvWCSProjectManager,
-                                String version, ProjectDetail pd, String date_start, String date_end, Integer offset,
-                                Integer size, String mode) {
+                                String version, ProjectDetail pd, String date_start, String date_end, String vessCustom,
+                                String customerCustom, Integer offset, Integer size, String mode) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = null;
@@ -369,7 +368,8 @@ public class ProjectCommon extends Common {
                                                        "Start", "Start", "Start")), getModeView(), offset, size);
                 } else if (version.equals("old")) {
                     projectHeader = createWCSProjectHeader();
-                    projectBody = createOldProjectBody(srvWCSProjectManager, pd, date_start, date_end, offset, size);
+                    projectBody = createOldProjectBody(srvWCSProjectManager, pd, date_start, date_end, vessCustom,
+                                                       customerCustom, offset, size);
                 }
             } else {
                 projectHeader = createProjectHeader(getModeEdit());
@@ -383,13 +383,13 @@ public class ProjectCommon extends Common {
                                                                                                               "Start")),
                                                    getModeEdit(), offset, size);
             }
-            if (projectBody != null && ((Long)projectBody[0]).compareTo(new Long(size)) > 0) {
-                logger.log(Level.INFO, "count all={0}", (Long)projectBody[0]);
-                
-                Long last = ((Long)projectBody[0] / size) - 1l;
-                
+            if (projectBody != null && ((Long) projectBody[0]).compareTo(new Long(size)) > 0) {
+                logger.log(Level.INFO, "count all={0}", (Long) projectBody[0]);
+
+                Long last = ((Long) projectBody[0] / size) - 1l;
+
                 logger.log(Level.INFO, "last ={0}", last);
-                
+
                 projectFooter = createProjectFooter(version, mode, offset, last.intValue(), size);
             } else {
                 projectFooter = "";

@@ -229,11 +229,12 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(ProjectDetail p, String date_start, String date_end, String version, String mode,
-                         Integer offset, Integer size) {
+    String searchProject(ProjectDetail p, String date_start, String date_end, String vesselCustom, String customerCustom,
+                         String version, String mode, Integer offset, Integer size) {
         mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, srvWCSProjectManager, version, p, null, null, offset, size, mode);
+        return searchProject(srvProjectManager, srvWCSProjectManager, version, p, null, null, vesselCustom,
+                             customerCustom, offset, size, mode);
     }
 
     @RequestMapping(value = {"/search-criteria"})
@@ -337,7 +338,7 @@ public class ProjectController extends ProjectCommon {
         if (p != null) {
             Map<String, String> content = new HashMap<>();
             String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) +
-                   "/" + p.getReference().replace("/", "_") + ".pdf";
+                             "/" + p.getReference().replace("/", "_") + ".pdf";
 
             Printing.printing(strPath);
 
@@ -391,15 +392,16 @@ public class ProjectController extends ProjectCommon {
             String response = "";
             Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, customer);
             List<Vessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
-                         ((!customer.equals("none")) ?
-                         srvProjectManager.getDaoVessel().getByCompany(customer) :
-                         srvProjectManager.getDaoVessel().getAll()) :
-                         null;
+                                   ((!customer.equals("none")) ?
+                                    srvProjectManager.getDaoVessel().getByCompany(customer) :
+                                    srvProjectManager.getDaoVessel().getAll()) :
+                                   null;
             List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
-                          ((!customer.equals("none")) ?
-                          srvProjectManager.getDaoContact().getByCompanyVessel(customer, vessels.get(0).getId()) :
-                          srvProjectManager.getDaoContact().getAll()) :
-                          null;
+                                     ((!customer.equals("none")) ?
+                                      srvProjectManager.getDaoContact().getByCompanyVessel(customer, vessels.get(0).
+                                                                                           getId()) :
+                                      srvProjectManager.getDaoContact().getAll()) :
+                                     null;
 
             response = "";
             if (vessels != null && vessels.isEmpty() == false) {
@@ -495,8 +497,8 @@ public class ProjectController extends ProjectCommon {
                     }
                 }
                 response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId() +
-                "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel +
-                "</label><br>";
+                            "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel +
+                            "</label><br>";
             }
         }
 
@@ -510,8 +512,8 @@ public class ProjectController extends ProjectCommon {
 
         for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
             response += "<input type='radio' id='" + status.toString() + "' name='radio-project' value='" + status.
-            toString() + "'><label for='" + status.toString() + "' class='radio-label'>" + status.toString() +
-            "</label><br>";
+                        toString() + "'><label for='" + status.toString() + "' class='radio-label'>" + status.toString() +
+                        "</label><br>";
         }
 
         return response;

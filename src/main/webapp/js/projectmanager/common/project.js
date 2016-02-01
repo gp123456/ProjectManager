@@ -9,7 +9,9 @@ function searchContent(version, mode, offset, size) {
     var type = $("#search-type option:selected").attr("value");
     var status = $("#search-status option:selected").attr("value");
     var vessel = $("#search-vessel option:selected").attr("value");
-    var customer = $("#search-customer option:selected").attr("value");
+    var vesselCustom = $("#search-vessel-custom").val();
+    var customer = $("#search-customer").val();
+    var customerCustom = $("#search-customer-custom").val();
     var company = $("#search-company option:selected").attr("value");
     var date_start = $("#date-start").val();
     var date_end = $("#date-end").val();
@@ -23,6 +25,8 @@ function searchContent(version, mode, offset, size) {
     if (company != "none") data += "&company=" + company;
     if (date_start != '') data += "&date_start=" + date_start;
     if (date_end != '') data += "&date_end=" + date_end;
+    if (vesselCustom != null) data += "&vesselCustom=" + vesselCustom;
+    if (customerCustom != null) data += "&customerCustom=" + customerCustom;
     if (version != null) data += "&version=" + version;
     if (mode != null) data += "&mode=" + mode;
     data += (offset != null) ? "&offset=" + offset : "&offset=0";

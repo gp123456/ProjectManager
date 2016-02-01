@@ -8,6 +8,8 @@ package com.allone.projectmanager.dao.wcs;
 import com.allone.projectmanager.entities.wcs.WCSProject;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -56,9 +58,23 @@ public class WCSProjectDAO {
         try {
             if (criteria != null && !criteria.isEmpty()) {
                 String qcriteria = "SELECT p FROM com.allone.projectmanager.entities.wcs.WCSProject p WHERE ";
-
-                qcriteria = criteria.keySet().stream().map((key) -> "p." + key + "='" + criteria.get(key) + "' AND ").
-                reduce(qcriteria, String::concat);
+                Set<String> keys = criteria.keySet();
+                
+                if (keys != null && !keys.isEmpty()) {
+                    for (String key : keys) {
+                        switch (key) {
+                            case "vesselCustom":
+                                qcriteria += "p.nameVessel LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            case "customerCustom":
+                                qcriteria += "p.customer LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            default:
+                                qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";
+                                break;
+                        }
+                    }
+                }
                 qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
                 qcriteria += " ORDER BY p.code DESC";
 
@@ -87,9 +103,23 @@ public class WCSProjectDAO {
         try {
             if (criteria != null && !criteria.isEmpty()) {
                 qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.wcs.WCSProject p WHERE ";
+                Set<String> keys = criteria.keySet();
 
-                qcriteria = criteria.keySet().stream().map((key) -> "p." + key + "='" + criteria.get(key) + "' AND ").
-                reduce(qcriteria, String::concat);
+                if (keys != null && !keys.isEmpty()) {
+                    for (String key : keys) {
+                        switch (key) {
+                            case "vesselCustom":
+                                qcriteria += "p.nameVessel LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            case "customerCustom":
+                                qcriteria += "p.customer LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            default:
+                                qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";
+                                break;
+                        }
+                    }
+                }
                 qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
             } else {
                 qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.wcs.WCSProject p";
