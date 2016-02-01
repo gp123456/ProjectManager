@@ -5,10 +5,12 @@
  */
 package com.allone.projectmanager;
 
+import com.allone.projectmanager.dao.wcs.WCSCompanyDAO;
 import com.allone.projectmanager.dao.wcs.WCSItemTransDAO;
 import com.allone.projectmanager.dao.wcs.WCSProjectDAO;
 import com.allone.projectmanager.dao.wcs.WCSSaleTransDAO;
 import com.allone.projectmanager.dao.wcs.WCSStockTransDAO;
+import com.allone.projectmanager.dao.wcs.WCSVesselDAO;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManagerFactory;
@@ -36,6 +38,10 @@ public class WCSProjectManagerService {
 
     private final WCSStockTransDAO daoWCSStockTrans = new WCSStockTransDAO(emf);
 
+    private final WCSCompanyDAO daoWCSCompany = new WCSCompanyDAO(emf);
+    
+    private final WCSVesselDAO daoWCSVessel = new WCSVesselDAO(emf);
+
     public static Logger getLogger() {
         return logger;
     }
@@ -58,5 +64,13 @@ public class WCSProjectManagerService {
 
     public WCSStockTransDAO getDaoWCSStockTrans() {
         return daoWCSStockTrans;
+    }
+
+    public WCSCompanyDAO getDaoWCSCompany() {
+        return daoWCSCompany;
+    }
+
+    public WCSVesselDAO getDaoWCSVessel() {
+        return daoWCSVessel;
     }
 }

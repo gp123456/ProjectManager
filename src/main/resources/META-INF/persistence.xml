@@ -34,6 +34,8 @@
     <class>com.allone.projectmanager.entities.wcs.WCSProject</class>
     <class>com.allone.projectmanager.entities.wcs.WCSSaleTrans</class>
     <class>com.allone.projectmanager.entities.wcs.WCSStockTrans</class>
+    <class>com.allone.projectmanager.entities.wcs.WCSCompany</class>
+    <class>com.allone.projectmanager.entities.wcs.WCSVessel</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.show_sql" value="true"/>

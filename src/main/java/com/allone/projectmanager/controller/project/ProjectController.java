@@ -76,8 +76,8 @@ public class ProjectController extends ProjectCommon {
 
         content.put("company", createSearchCompany());
         content.put("type", createSearchType());
-        content.put("vessel", createSearchVessel(srvProjectManager, null));
-        content.put("customer", createSearchCustomer(srvProjectManager, null));
+        content.put("vessel", createSearchVessel(srvWCSProjectManager, null));
+        content.put("customer", createSearchCustomer(srvWCSProjectManager, null));
         content.put("contact", createSearchContact(srvProjectManager, null));
 
         if (p != null && !p.getId().equals(-1)) {
@@ -240,7 +240,7 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/search-criteria"})
     public @ResponseBody
     String searchCriteria(String version) {
-        return searchCriteria(srvProjectManager, version);
+        return searchCriteria(srvProjectManager, srvWCSProjectManager, version);
     }
 
     @RequestMapping(value = {"/project-edit"})

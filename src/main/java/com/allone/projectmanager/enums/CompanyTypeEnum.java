@@ -10,9 +10,9 @@ package com.allone.projectmanager.enums;
  * @author Admin
  */
 public enum CompanyTypeEnum {
-    CUSTOMER("customer"),
-    SHIPPER("shipper"),
-    SUPPLIER("supplier");
+    CUSTOMER("CUSTOMER"),
+    SHIPPER("SHIPPER"),
+    SUPPLIER("SUPPLIER");
 
     private final String value;
 

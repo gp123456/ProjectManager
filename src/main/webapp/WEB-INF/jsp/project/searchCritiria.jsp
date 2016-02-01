@@ -31,7 +31,6 @@
 <label class="custom-select">Vessel
     <select id="search-vessel"></select>
     <input type="text" id="search-vessel-custom" value="">
-    <input type="text" id="search-vessel-imo" value="">
 </label>
 <label class="custom-select">Customer
     <select id="search-customer"></select>
@@ -39,7 +38,7 @@
 </label>
 <label class="custom-select">Company
     <select id="search-company"></select>
-</label>
+</label><br\>
 <label class="custom-select">Start date
     <input name="sdate" type="text" id="date-start" value="${sdateVal}">
 </label>

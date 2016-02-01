@@ -6,7 +6,10 @@
 package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.entities.*;
+import com.allone.projectmanager.entities.wcs.WCSCompany;
+import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
@@ -70,8 +73,8 @@ public class Common {
         return response;
     }
 
-    public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
-        List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
+    public String createSearchVessel(WCSProjectManagerService srvWCSProjectManager, String id) {
+        List<SearchInfo> info = getSearchCriteriaVessel(srvWCSProjectManager);
         String response =
                (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
                "<option value='-1' >Select</option>";
@@ -91,8 +94,8 @@ public class Common {
         return response;
     }
 
-    public String createSearchCustomer(ProjectManagerService srvProjectManager, String name) {
-        List<SearchInfo> info = getSearchCriteriaCustomer(srvProjectManager);
+    public String createSearchCustomer(WCSProjectManagerService srvWCSProjectManager, String name) {
+        List<SearchInfo> info = getSearchCriteriaCustomer(srvWCSProjectManager);
         String response = (Strings.isNullOrEmpty(name)) ?
                "<option value='none' selected='selected'>Select Customer</option>" :
                "<option value='none'>Select</option>";
@@ -322,22 +325,24 @@ public class Common {
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaVessel(ProjectManagerService srvProjectManager) {
-        List<Vessel> v = srvProjectManager.getDaoVessel().getAll();
+    public List<SearchInfo> getSearchCriteriaVessel(WCSProjectManagerService srvWCSProjectManager) {
+        List<WCSVessel> v = srvWCSProjectManager.getDaoWCSVessel().getAll();
 
         List<SearchInfo> si = new ArrayList<>();
 
         if (v != null && v.isEmpty() == false && v.get(0) != null) {
+            logger.log(Level.INFO, "Vessel size={0}", v.size());
+            
             v.stream().forEach((value) -> {
-                si.add(new SearchInfo(value.getId().toString(), value.getName()));
+                si.add(new SearchInfo(value.getId(), value.getName()));
             });
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaCustomer(ProjectManagerService srvProjectManager) {
-        List<Company> c = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.CUSTOMER.toString());
+    public List<SearchInfo> getSearchCriteriaCustomer(WCSProjectManagerService srvWCSProjectManager) {
+        List<WCSCompany> c = srvWCSProjectManager.getDaoWCSCompany().getAllByType(CompanyTypeEnum.CUSTOMER.toString());
 
         List<SearchInfo> si = new ArrayList<>();
 

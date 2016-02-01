@@ -49,7 +49,7 @@ public class VesselNewController extends Common {
         if (vess != null) {
             vess = srvProjectManager.getDaoVessel().add(vess);
             
-            content.put("vessel", createSearchVessel(srvProjectManager, vess.getId().toString()));
+//            content.put("vessel", createSearchVessel(srvProjectManager, vess.getId().toString()));
 //            content.put("customer", createSearchCustomer(srvProjectManager, vess.getCompany()));
 //            content.put("contact", createSearchContact(srvProjectManager, vess.getId()));
         }
