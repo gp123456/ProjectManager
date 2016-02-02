@@ -26,7 +26,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "VESSEL")
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findAll",
-                           query = "SELECT v FROM WCSVessel v ORDER BY v.name ASC")})
+                           query = "SELECT v FROM WCSVessel v ORDER BY v.name ASC"),
+@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findByCompany",
+                query = "SELECT v FROM WCSVessel v WHERE v.comapnyName = :company ORDER BY v.name")})
 public class WCSVessel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

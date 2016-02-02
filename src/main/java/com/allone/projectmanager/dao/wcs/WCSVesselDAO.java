@@ -41,4 +41,28 @@ public class WCSVesselDAO {
             return values;
         }
     }
+    
+    public List getByCompany(String company) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSVessel.findByCompany")
+            .setParameter("company", company);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            List value = null;
+
+            try {
+                value = (query != null) ? query.getResultList() : null;
+            } catch (HibernateException e) {
+                System.out.printf("%s", e.getMessage());
+            } finally {
+                em.close();
+
+                return value;
+            }
+        }
+    }
 }
