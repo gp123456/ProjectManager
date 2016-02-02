@@ -85,7 +85,7 @@ public class ProjectBillController extends ProjectCommon {
             response = "<option value='-1'>Select</option>";
             for (Item item : items) {
                 response += "<option value='" + item.getId() + "'>" + item.getImno() + "[" + item.getQuantity() +
-                "," + item.getPrice() + "]</option>";
+                            "," + item.getPrice() + "]</option>";
             }
         }
         content.put("items", response);
@@ -100,7 +100,7 @@ public class ProjectBillController extends ProjectCommon {
 
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "-" + pd.getCompany() +
-                "</option>";
+                            "</option>";
                 if (pbKeys == null) {
                     pushProjectBillMaterial(pd.getId());
                 }
@@ -151,20 +151,23 @@ public class ProjectBillController extends ProjectCommon {
                 Long pdid = (pd != null) ? pd.getId() : 0l;
 
                 response += "<tr>" +
-                "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>" +
-                "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
-                "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
-                "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
-                "<td id='m_currency'>" + getCurrencyById(pb.getCurrency()) + "</td>" +
-                "<td id='location" + pdid + "'>" + pb.getLocation() + "</td>" +
-                "<td id='m_subproject'>" + subproject + "</td>" +
-                "<td><input type='button' value='Replace' class='button' onclick='replaceProjectBillItems(" + pdid +
-                "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Save' class='" + pb.getClassSave() + "' onclick='saveProjectBill(" +
-                pdid + "," + pbm.getLocation() + ")'></td>\n" +
-                "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," +
-                pbm.getLocation() + ")'></td>\n" +
-                "</tr>";
+                            "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>" +
+                            "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>" +
+                            "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>" +
+                            "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>" +
+                            "<td id='m_currency'>" + getCurrencyById(pb.getCurrency()) + "</td>" +
+                            "<td id='location" + pdid + "'>" + pb.getLocation() + "</td>" +
+                            "<td id='m_subproject'>" + subproject + "</td>" +
+                            "<td><input type='button' value='Replace' class='button' onclick='replaceProjectBillItems(" +
+                            pdid +
+                            "," + pbm.getLocation() + ")'></td>\n" +
+                            "<td><input type='button' value='Save' class='" + pb.getClassSave() +
+                            "' onclick='saveProjectBill(" +
+                            pdid + "," + pbm.getLocation() + ")'></td>\n" +
+                            "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid +
+                            "," +
+                            pbm.getLocation() + ")'></td>\n" +
+                            "</tr>";
             }
         }
 
@@ -217,7 +220,7 @@ public class ProjectBillController extends ProjectCommon {
                     for (ProjectBillItem pbItem : pbItems) {
                         Item item = srvProjectManager.getDaoItem().getById(pbItem.getItem());
                         Stock stock = (item != null) ? srvProjectManager.getDaoStock().getById(item.getLocation()) :
-                              null;
+                                      null;
                         String imno = (item != null) ? item.getImno() : pbItem.getItemImno();
                         String stockName = (stock != null) ? stock.getLocation() : "";
                         Long itemId = (item != null) ? item.getId() : pbItem.getItem();
@@ -229,11 +232,11 @@ public class ProjectBillController extends ProjectCommon {
                         String discount = (pbItem.getDiscount() != null) ? pbItem.getDiscount().toString() : "";
                         String salePrice = (pbItem.getSalePrice() != null) ? pbItem.getSalePrice().toString() : "";
                         String totalSalePrice = (pbItem.getTotalSalePrice() != null) ? pbItem.getTotalSalePrice().
-                               toString() : "";
+                                                toString() : "";
                         String totalNetPrice = (pbItem.getTotalNetPrice() != null) ? pbItem.getTotalNetPrice().
-                               toString() : "";
+                                               toString() : "";
                         Integer currency = (pbItem.getCurrency() == null) ? CurrencyEnum.EUR.getId() : pbItem.
-                                getCurrency();
+                                           getCurrency();
                         Boolean firstItem = count.equals(0);
 
                         count++;
@@ -295,11 +298,11 @@ public class ProjectBillController extends ProjectCommon {
             for (ProjectBillItem item : items) {
                 totalCost = (item.getTotalCost() != null) ? totalCost.add(item.getTotalCost()) : BigDecimal.ZERO;
                 averangeDiscount = (item.getDiscount() != null) ? averangeDiscount.add(item.getDiscount()) :
-                BigDecimal.ZERO;
+                                   BigDecimal.ZERO;
                 totalSalePrice = (item.getTotalSalePrice() != null) ? totalSalePrice.add(item.getTotalSalePrice()) :
-                BigDecimal.ZERO;
+                                 BigDecimal.ZERO;
                 totalNetPrice = (item.getTotalNetPrice() != null) ? totalNetPrice.add(item.getTotalNetPrice()) :
-                BigDecimal.ZERO;
+                                BigDecimal.ZERO;
                 item.setClassSave("button");
                 currency = item.getCurrency();
             }
@@ -343,7 +346,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill")
     public String ProjectBill(Project p, Model model) {
-        this.setTitle("Projects - Bill of Material or Service");
+        this.setTitle("Projects - Bill of materials or services");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/ProjectBill.jsp");
         setHeaderInfo(model);
@@ -352,12 +355,15 @@ public class ProjectBillController extends ProjectCommon {
         if (p != null) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", p.getReference());
-            model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" +
-                    p.getReference() + "\")'>");
-            model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" +
-                    p.getReference() + "\")'>");
-            model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" +
-                    p.getId() + "\")'>");
+            model.addAttribute("button_save_pdf",
+                               "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" +
+                               p.getReference() + "\")'>");
+            model.addAttribute("button_save_excel",
+                               "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" +
+                               p.getReference() + "\")'>");
+            model.addAttribute("button_send_email",
+                               "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" +
+                               p.getId() + "\")'>");
         }
 
         return "index";
@@ -554,15 +560,28 @@ public class ProjectBillController extends ProjectCommon {
         }
         pb.setLocation(getLocationNameById(location));
         pb.setCurrency(vpb.getCurrency());
-        pb = srvProjectManager.getDaoProjectBill().add(pb);
-
-        setVirtualProjectBillItemBillId(pbm, pd.getId());
-        srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
-        clearVirtualProjectBill(pbm);
-
-//        return "index";
-        Set<ProjectBillModel> pbKeys = getProjectBillIds();
+        if (pb.getId() == null) {
+            pb = srvProjectManager.getDaoProjectBill().add(pb);
+            setVirtualProjectBillItemBillId(pbm, pb.getId());
+            srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
+        } else {
+            srvProjectManager.getDaoProjectBill().edit(pb);
+            setVirtualProjectBillItemBillId(pbm, pb.getId());
+            Collection<ProjectBillItem> pbis = getProjectBillItems(pbm);
+            
+            for (ProjectBillItem pbi : pbis) {
+                if (pbi.getId() == null) {
+                    srvProjectManager.getDaoProjectBillItem().add(pbi);
+                } else {
+                    srvProjectManager.getDaoProjectBillItem().edit(pbi);
+                }
+            }
+        }
         
+        clearVirtualProjectBill(pbm);
+        
+        Set<ProjectBillModel> pbKeys = getProjectBillIds();
+
         if (pbKeys != null && !pbKeys.isEmpty()) {
             String response = "";
 
@@ -570,7 +589,7 @@ public class ProjectBillController extends ProjectCommon {
                 vpb = getProjectBill(pbKey);
                 ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(vpb.getProject());
                 response += "<option value='" + dbpd.getId() + "'>" + dbpd.getReference() + "-" + dbpd.getCompany() +
-                "</option>";
+                            "</option>";
             }
             content.put("subproject", response);
             content.put("projectBill", createProjectBill(new ProjectBillModel(pb.getProject(), null)));
@@ -586,9 +605,9 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/savepdf")
     public String savePDF(String projectReference) throws JRException, FileNotFoundException {
 //        model.addAttribute("button_action_message", "save the pdf by named " + projectReference.replace("/", "_") + ".pdf");
-        
+
         JasperReport.createProjectBillReport(projectReference.replace("/", "_") + ".pdf");
-        
+
         return "";
     }
 
@@ -605,9 +624,9 @@ public class ProjectBillController extends ProjectCommon {
         List<Company> suppliers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.SUPPLIER.toString());
         Map<String, String> content = new HashMap<>();
         String htmlStock = "<select id='select-item-location'>\n" +
-               "<option value='-1' selected='selected'>Select Location</option>\n";
+                           "<option value='-1' selected='selected'>Select Location</option>\n";
         String htmlSupplier = "<select id='select-item-supplier'>\n" +
-               "<option value='-1' selected='selected'>Select Supplier</option>\n";
+                              "<option value='-1' selected='selected'>Select Supplier</option>\n";
 
         if (stocks != null && !stocks.isEmpty()) {
             htmlStock += stocks.stream()
@@ -619,7 +638,7 @@ public class ProjectBillController extends ProjectCommon {
         if (suppliers != null && !suppliers.isEmpty()) {
             for (Company supplier : suppliers) {
                 htmlSupplier += "<option value='" +
-                supplier.getName() + "'>" + supplier.getName() + "</option>\n";
+                                supplier.getName() + "'>" + supplier.getName() + "</option>\n";
             }
             htmlStock += "</select>";
             content.put("supplier", htmlSupplier);
@@ -635,9 +654,9 @@ public class ProjectBillController extends ProjectCommon {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
         Map<String, String> content = new HashMap<>();
         String htmlCompany = "<select id='select-new-subproject-company'>\n" +
-               "<option value='none' selected='selected'>Select</option>\n";
+                             "<option value='none' selected='selected'>Select</option>\n";
         String htmlType = "<select id='select-new-subproject-type'>\n" +
-               "<option value='none' selected='selected'>Select</option>\n";
+                          "<option value='none' selected='selected'>Select</option>\n";
 
         for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
             htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
@@ -675,7 +694,8 @@ public class ProjectBillController extends ProjectCommon {
                                       new ProjectBillItem.Builder().setAvailable(item.getQuantity()).setQuantity(0)
                                       .setPrice(item.getPrice()).setItem(item.getId()).setItemImno(item.getImno())
                                       .setItemDescription(item.getDescription()).setCurrency(item.getCurrency()
-                                      .intValue()).setClassRefresh("button alarm").setClassSave("button alarm").build());
+                                              .intValue()).setClassRefresh("button alarm").setClassSave("button alarm").
+                                      build());
         }
 
         return createProjectBillItems(new ProjectBillModel(pdId, null));
@@ -765,8 +785,8 @@ public class ProjectBillController extends ProjectCommon {
                 }
 
                 response += "<div class='slideThree'><input type='checkbox' id='" + item.getId() +
-                "' name='checkbox-project' value='" + item.getId() + "'><label for='" + item.getId() + "'>" +
-                item.getImno() + "</label></div>";
+                            "' name='checkbox-project' value='" + item.getId() + "'><label for='" + item.getId() + "'>" +
+                            item.getImno() + "</label></div>";
             }
         }
         return response;

@@ -34,7 +34,7 @@
 </script>
 
 <div id="bill-header" class="formLayout">
-    <h1>Bill of Material - REF:${project_reference}</h1>
+    <h1>Bill of materials or services - REF:${project_reference}</h1>
     <input type="hidden" id="bill-project-id" value=${p_id} />
     <div style="overflow-y: scroll">
         <h3>Select Subproject</h3>

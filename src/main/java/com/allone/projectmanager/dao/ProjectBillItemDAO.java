@@ -44,14 +44,14 @@ public class ProjectBillItemDAO {
         }
     }
 
-    public Collection<ProjectBillItem> add(Collection<ProjectBillItem> mss) {
+    public Collection<ProjectBillItem> add(Collection<ProjectBillItem> pbis) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (mss != null && !mss.isEmpty()) {
+            if (pbis != null && !pbis.isEmpty()) {
                 em.getTransaction().begin();
-                for (ProjectBillItem ms : mss) {
-                    em.persist(ms);
+                for (ProjectBillItem pbi : pbis) {
+                    em.persist(pbi);
                 }
                 em.getTransaction().commit();
             }
@@ -60,18 +60,36 @@ public class ProjectBillItemDAO {
         } finally {
             em.close();
 
-            return mss;
+            return pbis;
         }
     }
-
-    public void edit(List<ProjectBillItem> mss) {
+    
+    public ProjectBillItem add(ProjectBillItem pbi) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (mss != null && !mss.isEmpty()) {
+            if (pbi != null) {
                 em.getTransaction().begin();
-                for (ProjectBillItem ms : mss) {
-                    em.refresh(ms);
+                em.persist(pbi);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            System.out.printf("%s\n", e.getMessage());
+        } finally {
+            em.close();
+
+            return pbi;
+        }
+    }
+
+    public void edit(List<ProjectBillItem> pbis) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (pbis != null && !pbis.isEmpty()) {
+                em.getTransaction().begin();
+                for (ProjectBillItem pbi : pbis) {
+                    em.refresh(pbi);
                 }
                 em.getTransaction().commit();
             }
@@ -82,20 +100,20 @@ public class ProjectBillItemDAO {
         }
     }
 
-    public void edit(Long projectBill, List<ProjectBillItem> mss) {
+    public void edit(Long projectBill, List<ProjectBillItem> pbis) {
         EntityManager em = emf.createEntityManager();
-        List<ProjectBillItem> mi = getByProjectBill(projectBill);
+        List<ProjectBillItem> _pbis = getByProjectBill(projectBill);
 
         try {
             em.getTransaction().begin();
-            if (mi != null && !mi.isEmpty()) {
-                for (ProjectBillItem ms : mi) {
-                    em.remove(ms);
+            if (_pbis != null && !_pbis.isEmpty()) {
+                for (ProjectBillItem pbi : _pbis) {
+                    em.remove(pbi);
                 }
             }
-            if (mss != null && !mss.isEmpty()) {
-                for (ProjectBillItem ms : mss) {
-                    em.persist(ms);
+            if (pbis != null && !pbis.isEmpty()) {
+                for (ProjectBillItem pbi : pbis) {
+                    em.persist(pbi);
                 }
             }
             em.getTransaction().commit();
@@ -105,17 +123,35 @@ public class ProjectBillItemDAO {
             em.close();
         }
     }
+    
+    public ProjectBillItem edit(ProjectBillItem pbi) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            if (pbi != null) {
+                em.persist(pbi);
+            }
+            em.getTransaction().commit();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+            
+            return pbi;
+        }
+    }
 
     public void delete(Long projectBill) {
         EntityManager em = emf.createEntityManager();
-        List<ProjectBillItem> mi = getByProjectBill(projectBill);
+        List<ProjectBillItem> pbis = getByProjectBill(projectBill);
 
         try {
-            if (mi != null && !mi.isEmpty()) {
+            if (pbis != null && !pbis.isEmpty()) {
                 em.getTransaction().begin();
 
-                for (ProjectBillItem ms : mi) {
-                    em.remove(ms);
+                for (ProjectBillItem pbi : pbis) {
+                    em.remove(pbi);
                 }
                 em.getTransaction().commit();
             }

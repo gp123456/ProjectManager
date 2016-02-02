@@ -85,9 +85,7 @@ public class ProjectBillItem implements Serializable {
     @NotNull
     private BigDecimal totalSalePrice;
 
-    @Basic(optional = false)
     @Column(name = "total_net_price")
-    @NotNull
     private BigDecimal totalNetPrice;
 
     @Basic(optional = false)

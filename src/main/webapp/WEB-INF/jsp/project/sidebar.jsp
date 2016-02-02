@@ -51,7 +51,7 @@
     </div>
     <div class="menu-item">
         <h3 id="project-bill-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
-                        '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of Material or Service</h3>
+                        '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of materials or services</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
                 <div id="lst-bill-project" class="radio"></div>
