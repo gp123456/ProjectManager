@@ -6,6 +6,7 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Item;
@@ -14,6 +15,7 @@ import com.allone.projectmanager.entities.ProjectBill;
 import com.allone.projectmanager.entities.ProjectBillItem;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Stock;
+import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.BillLocationEnum;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.CurrencyEnum;
@@ -54,6 +56,9 @@ public class ProjectBillController extends ProjectCommon {
 
     @Autowired
     ProjectManagerService srvProjectManager;
+
+    @Autowired
+    WCSProjectManagerService srvWCSProjectManager;
 
     public ProjectManagerService getSrvProjectManager() {
         return srvProjectManager;
@@ -96,11 +101,11 @@ public class ProjectBillController extends ProjectCommon {
         response = "";
         if (pds != null && !pds.isEmpty()) {
             pdId = pds.get(0).getId();
+            WCSVessel vessel = srvWCSProjectManager.getDaoWCSVessel().getById(pds.get(0).getVessel().toString());
             Set<ProjectBillModel> pbKeys = getProjectBillIds();
 
             for (ProjectDetail pd : pds) {
-                response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "-" + pd.getCompany() +
-                            "</option>";
+                response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
                 if (pbKeys == null) {
                     pushProjectBillMaterial(pd.getId());
                 }
@@ -108,6 +113,11 @@ public class ProjectBillController extends ProjectCommon {
             content.put("subprojects", response);
             content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
             content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, null)));
+            content.put("projectInfoCompany", pds.get(0).getCompany());
+            content.put("projectInfoCustomer", pds.get(0).getCustomer());
+            if (vessel != null) {
+                content.put("projectInfoVessel", vessel.getName());
+            }
         } else {
             content.put("subprojects", response);
             content.put("projectBill", response);
@@ -568,7 +578,7 @@ public class ProjectBillController extends ProjectCommon {
             srvProjectManager.getDaoProjectBill().edit(pb);
             setVirtualProjectBillItemBillId(pbm, pb.getId());
             Collection<ProjectBillItem> pbis = getProjectBillItems(pbm);
-            
+
             for (ProjectBillItem pbi : pbis) {
                 if (pbi.getId() == null) {
                     srvProjectManager.getDaoProjectBillItem().add(pbi);
@@ -577,9 +587,9 @@ public class ProjectBillController extends ProjectCommon {
                 }
             }
         }
-        
+
         clearVirtualProjectBill(pbm);
-        
+
         Set<ProjectBillModel> pbKeys = getProjectBillIds();
 
         if (pbKeys != null && !pbKeys.isEmpty()) {
@@ -722,8 +732,8 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/content")
     public @ResponseBody
-    String getContent(Project pd) {
-        return createContent(pd);
+    String getContent(Project p) {
+        return createContent(p);
     }
 
     @RequestMapping(value = "/project-bill/save-subproject")
@@ -797,6 +807,16 @@ public class ProjectBillController extends ProjectCommon {
     String changeProjectBillItems(Long id) {
         Map<String, String> content = new HashMap<>();
         ProjectBillModel pbm = new ProjectBillModel(id, null);
+        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(id);
+        
+        if(pd != null) {
+            WCSVessel vessel = srvWCSProjectManager.getDaoWCSVessel().getById(pd.getVessel().toString());
+            content.put("projectInfoCompany", pd.getCompany());
+            content.put("projectInfoCustomer", pd.getCustomer());
+            if (vessel != null) {
+                content.put("projectInfoVessel", vessel.getName());
+            }
+        }
 
         content.put("projectBill", createProjectBill(pbm));
         content.put("projectBillItems", createProjectBillItems(pbm));

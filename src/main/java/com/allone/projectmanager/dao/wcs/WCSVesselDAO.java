@@ -5,6 +5,7 @@
  */
 package com.allone.projectmanager.dao.wcs;
 
+import com.allone.projectmanager.entities.wcs.WCSVessel;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -39,6 +40,24 @@ public class WCSVesselDAO {
             em.close();
 
             return values;
+        }
+    }
+    
+    public WCSVessel getById(String id) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSVessel.findById").setParameter(
+            "id", id);
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            WCSVessel value = (query != null) ? (WCSVessel) query.getSingleResult() : null;
+
+            em.close();
+
+            return value;
         }
     }
 }

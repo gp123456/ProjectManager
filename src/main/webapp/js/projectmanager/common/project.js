@@ -98,7 +98,7 @@ function removeRow(id) {
     });
 }
 
-function editRow(pdId) {
+function editRow(pId) {
     var company = $("#new-project-company option:selected").attr("value");
     var type = $("#new-project-type option:selected").attr("value");
     var expired = $("#new-project-expired").val();
@@ -107,11 +107,11 @@ function editRow(pdId) {
     var contact = $("#new-project-contact option:selected").attr("value");
     var data = "";
 
-    if (pdId == -1) {
-        alert("No edit the project detail with id:" + id);
+    if (pId == -1) {
+        alert("No edit the project detail with id:" + pId);
         return;
     } else {
-        data += "id=" + pdId;
+        data += "id=" + pId;
     }
     if (company != "none") {
         data += "&company=" + company;
@@ -251,6 +251,7 @@ function sendEnail(id) {
 }
 
 function saveProject() {
+    $("#project-save").prop('disabled', true);
     var type = $("#new-project-type option:selected").attr("value");
     var expired = $("#new-project-expired").val();
     var customer = $("#new-project-customer option:selected").attr("value");

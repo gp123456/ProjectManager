@@ -25,6 +25,9 @@
                 $("#bill-item").html(content.items);
                 $("#project-bill").html(content.projectBill);
                 $("#project-bill-items").html(content.projectBillItems);
+                $("#project-info-company").val(content.projectInfoCompany);
+                $("#project-info-customer").val(content.projectInfoCustomer);
+                $("#project-info-vessel").val(content.projectInfoVessel);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -37,6 +40,23 @@
     <h1>Bill of materials or services - REF:${project_reference}</h1>
     <input type="hidden" id="bill-project-id" value=${p_id} />
     <div style="overflow-y: scroll">
+        <h3>Project Info</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td><label>Company</label></td>
+                    <td><input type="text" id="project-info-company" readonly></td>
+                </tr>
+                <tr>
+                    <td><label>Customer</label></td>
+                    <td><input type="text" id="project-info-customer" readonly></td>
+                </tr>
+                <tr>
+                    <td><label>Vessel</label></td>
+                    <td><input type="text" id="project-info-vessel" readonly></td>
+                </tr>
+            </tbody>
+        </table>
         <h3>Select Subproject</h3>
         <p>
             <label class="custom-select">

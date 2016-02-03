@@ -200,7 +200,7 @@ function saveXLS(prjRef) {
         data: data,
         success: function (response) {
             alert(response);
-            
+
             $("#button-action-message").html(response);
         },
         error: function (e) {
@@ -473,6 +473,9 @@ function getProjectBillItems() {
 
             $("#project-bill").html(content.projectBill);
             $("#project-bill-items").html(content.projectBillItems);
+            $("#project-info-company").val(content.projectInfoCompany);
+            $("#project-info-customer").val(content.projectInfoCustomer);
+            $("#project-info-vessel").val(content.projectInfoVessel);
         },
         error: function (e) {
         }

@@ -75,9 +75,7 @@ public class ProjectCommon extends Common {
                     + "<td>" + pd.getCompany() + "</td>\n"
                     + "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n"
                     + "<td>" + pd.getCustomer() + "</td>"
-                    + "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n"
-                    + "<td><input type='button' value='Edit' class='button' id='edit-project' onclick='editRow(" + pd.getId()
-                    + ")'></td>\n";
+                    + "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             response
                     += "<tr>"
@@ -140,11 +138,7 @@ public class ProjectCommon extends Common {
                     + "<th>Vessel</th>\n"
                     + "<th>Customer</th>\n"
                     + "<th>Contact</th>\n"
-                    + "<th>Edit</th>\n"
-                    + //                    "<th>Delete</th>\n" +
-                    //                    "<th>Print to ...</th>\n" +
-                    //                    "<th>Send eMail</th>\n" +
-                    "</tr>\n";
+                    + "</tr>\n";
         } else if (mode.equals(this.mode.VIEW.name())) {
             return "<tr>\n"
                     + "<th>Reference</th>\n"

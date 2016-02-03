@@ -184,7 +184,7 @@ public class ProjectController extends ProjectCommon {
         }
         model.addAttribute("project_button_value", "Edit");
         model.addAttribute("project_button_id", "project-edit");
-        model.addAttribute("project_button_action", "editRow()");
+        model.addAttribute("project_button_action", "editRow(" + p.getId() + ")");
 
         return "index";
     }

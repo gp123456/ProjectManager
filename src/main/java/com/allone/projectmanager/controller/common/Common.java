@@ -20,7 +20,6 @@ import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,15 +61,16 @@ public class Common {
 
     public String createSearchType() {
         List<SearchInfo> info = getSearchCriteriaTypeProject();
-        String response = "<option value=\"none\" selected=\"selected\">Select Type</option>";
+        String finalResponse = "<option value=\"none\" selected=\"selected\">Select Type</option>";
+        String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream()
-            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+            response += info.stream().map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
             reduce(response, String::concat);
+            finalResponse += response;
         }
 
-        return response;
+        return finalResponse;
     }
 
     public String createSearchVessel(WCSProjectManagerService srvWCSProjectManager, String id) {
@@ -117,15 +117,17 @@ public class Common {
 
     public String createSearchCompany() {
         List<SearchInfo> info = getSearchCriteriaCompany();
-        String response = "<option value=\"none\" selected=\"selected\">Select Company</option>";
+        String finalResponse = "<option value=\"none\" selected=\"selected\">Select Company</option>";
+        String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream()
             .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
                                                                                                           String::concat);
+            finalResponse += response;
         }
 
-        return response;
+        return finalResponse;
     }
 
     public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {

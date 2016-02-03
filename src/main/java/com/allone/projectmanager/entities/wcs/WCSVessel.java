@@ -26,44 +26,47 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "VESSEL")
 @XmlRootElement
 @NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findAll",
-                           query = "SELECT v FROM WCSVessel v ORDER BY v.name ASC")})
+                           query = "SELECT v FROM WCSVessel v ORDER BY v.name ASC"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findById",
+                           query = "SELECT v FROM WCSVessel v WHERE v.id = :id"),})
 public class WCSVessel implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "VESSID")
     @NotNull
     private String id;
-    
+
     @Column(name = "VESSNAME")
     private String name;
-    
+
     @Column(name = "VESSCONAME")
     private String comapnyName;
-    
+
     @Column(name = "VESSFLAG")
     private String imo;
-    
+
     @Column(name = "VESSEMAIL1")
     private String email1;
     @Column(name = "VESSEMAIL2")
     private String email2;
-    
+
     @Column(name = "VESSEMAIL3")
     private String email3;
-    
+
     @Column(name = "VESSNOTES")
     private String note;
-    
+
     @Column(name = "VESLOGCOMM")
     private String logComm;
-    
+
     @Column(name = "VESSNEXTDD")
     private String nextDD;
-    
+
     @Column(name = "VESSCLASS")
     private Integer glass;
-    
+
     @Column(name = "VESSDOCUMENT")
     private String document;
 
@@ -164,5 +167,5 @@ public class WCSVessel implements Serializable {
 
     public void setDocument(String document) {
         this.document = document;
-    } 
+    }
 }
