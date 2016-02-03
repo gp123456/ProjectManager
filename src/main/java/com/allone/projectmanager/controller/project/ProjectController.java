@@ -15,6 +15,7 @@ import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
+import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.tools.JasperReport;
@@ -391,21 +392,22 @@ public class ProjectController extends ProjectCommon {
         if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
             Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, customer);
-            List<Vessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
+            List<WCSVessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
                                    ((!customer.equals("none")) ?
-                                    srvProjectManager.getDaoVessel().getByCompany(customer) :
-                                    srvProjectManager.getDaoVessel().getAll()) :
+                                    srvWCSProjectManager.getDaoWCSVessel().getByCompany(customer) :
+                                    srvWCSProjectManager.getDaoWCSVessel().getAll()) :
                                    null;
             List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
                                      ((!customer.equals("none")) ?
-                                      srvProjectManager.getDaoContact().getByCompanyVessel(customer, vessels.get(0).
-                                                                                           getId()) :
+                                      srvProjectManager.getDaoContact()
+                                              .getByCompanyVessel(customer,
+                                                      new Long(vessels.get(0).getId())) :
                                       srvProjectManager.getDaoContact().getAll()) :
                                      null;
 
             response = "";
             if (vessels != null && vessels.isEmpty() == false) {
-                for (Vessel vessel : vessels) {
+                for (WCSVessel vessel : vessels) {
                     response += "<option value='" + vessel.getId() + "'>" + vessel.getName() + "</option>";
                     content.put("vessel", response);
                 }

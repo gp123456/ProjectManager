@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
                            query = "SELECT v FROM WCSVessel v ORDER BY v.name ASC"),
                @NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findById",
                            query = "SELECT v FROM WCSVessel v WHERE v.id = :id"),})
+@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSVessel.findByCompany",
+                query = "SELECT v FROM WCSVessel v WHERE v.comapnyName = :company ORDER BY v.name")})
 public class WCSVessel implements Serializable {
 
     @Id
