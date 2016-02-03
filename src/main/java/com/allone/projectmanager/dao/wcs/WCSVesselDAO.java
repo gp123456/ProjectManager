@@ -18,8 +18,9 @@ import org.hibernate.HibernateException;
  * @author gpap
  */
 public class WCSVesselDAO {
+
     private static final Logger logger = Logger.getLogger(WCSVesselDAO.class.getName());
-    
+
     private EntityManagerFactory emf;
 
     public WCSVesselDAO(EntityManagerFactory emf) {
@@ -42,7 +43,7 @@ public class WCSVesselDAO {
             return values;
         }
     }
-    
+
     public WCSVessel getById(String id) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
@@ -58,6 +59,9 @@ public class WCSVesselDAO {
             em.close();
 
             return value;
+        }
+    }
+
     public List getByCompany(String company) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
