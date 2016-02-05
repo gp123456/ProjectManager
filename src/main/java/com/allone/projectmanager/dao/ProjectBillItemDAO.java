@@ -8,6 +8,8 @@ package com.allone.projectmanager.dao;
 import com.allone.projectmanager.entities.ProjectBillItem;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -19,6 +21,8 @@ import org.hibernate.HibernateException;
  */
 public class ProjectBillItemDAO {
 
+    private static final Logger logger = Logger.getLogger(ProjectBillItemDAO.class.getName());
+    
     private EntityManagerFactory emf;
 
     public ProjectBillItemDAO(EntityManagerFactory emf) {
@@ -51,6 +55,9 @@ public class ProjectBillItemDAO {
             if (pbis != null && !pbis.isEmpty()) {
                 em.getTransaction().begin();
                 for (ProjectBillItem pbi : pbis) {
+                    
+                    logger.log(Level.INFO, "{0}", pbi.getItem());
+                    
                     em.persist(pbi);
                 }
                 em.getTransaction().commit();

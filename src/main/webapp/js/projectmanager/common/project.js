@@ -488,7 +488,7 @@ function getStatuses() {
     });
 }
 
-function setProjectBill(path) {
+function setProjectByStatus(path) {
     var id = $('input[name = "radio-project"]:checked').val();
 
     window.location.href = path + "?id=" + id;
@@ -508,7 +508,7 @@ function dlgProject(version, status, dlg_id, div_id, dest_path) {
         width: 374,
         buttons: {
             "submit": function () {
-                setProjectBill(dest_path);
+                setProjectByStatus(dest_path);
             }
         },
         show: {
