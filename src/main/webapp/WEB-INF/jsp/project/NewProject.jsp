@@ -20,7 +20,7 @@
                 $("#new-project-company").html(content.company);
                 $("#new-project-type").html(content.type);
                 $("#new-project-vessel").html(content.vessel);
-                $("#new-project-customer").html(content.customer);
+                $("#company").html(content.company);
                 $("#new-project-contact").html(content.contact);
                 if (content.project_header != null && content.project_body != null) {
                     $("#project-header").html(content.project_header);
@@ -75,20 +75,20 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-customer" onchange="projectFilterCustomer()"></select>
+                            <select id="company" onchange="projectFilterCustomer()"></select>
                         </label>
                     </p>
                 </td>
-                <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCustomer()"/>
-                    <div id="add-customer" hidden="true" title="Add Customer">
+                <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCompany('CUSTOMER')"/>
+                    <div id="add-company" hidden="true" title="Add Customer">
                         <form class="go-bottom">
                             <div>
-                                <input type="text" id="customer-name" required>
-                                <label class="go-bottom-label" for="customer-name">Name</label>
+                                <input type="text" id="company-name" required>
+                                <label class="go-bottom-label" for="company-name">Name</label>
                             </div>
                             <div>
-                                <input type="text" id="customer-email" required>
-                                <label class="go-bottom-label" for="customer-email">eMail</label>
+                                <input type="text" id="company-email" required>
+                                <label class="go-bottom-label" for="company-email">eMail</label>
                             </div>
                         </form>
                     </div>

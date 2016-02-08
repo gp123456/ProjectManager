@@ -11,6 +11,7 @@ import com.allone.projectmanager.entities.*;
 import com.allone.projectmanager.entities.wcs.WCSCompany;
 import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
+import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
@@ -26,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -94,10 +96,10 @@ public class Common {
         return response;
     }
 
-    public String createSearchCustomer(WCSProjectManagerService srvWCSProjectManager, String name) {
-        List<SearchInfo> info = getSearchCriteriaCustomer(srvWCSProjectManager);
+    public String createSearchCompany(WCSProjectManagerService srvWCSProjectManager, String name, CompanyTypeEnum type) {
+        List<SearchInfo> info = getSearchCriteriaCompany(srvWCSProjectManager, type);
         String response = (Strings.isNullOrEmpty(name)) ?
-               "<option value='none' selected='selected'>Select Customer</option>" :
+               "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
                "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
@@ -343,8 +345,8 @@ public class Common {
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaCustomer(WCSProjectManagerService srvWCSProjectManager) {
-        List<WCSCompany> c = srvWCSProjectManager.getDaoWCSCompany().getAllByType(CompanyTypeEnum.CUSTOMER.toString());
+    public List<SearchInfo> getSearchCriteriaCompany(WCSProjectManagerService srvWCSProjectManager, CompanyTypeEnum type) {
+        List<WCSCompany> c = srvWCSProjectManager.getDaoWCSCompany().getAllByType(type.toString());
 
         List<SearchInfo> si = new ArrayList<>();
 
@@ -494,5 +496,17 @@ public class Common {
 
     public void setProjectType(ProjectTypeEnum projectType) {
         this.projectType = projectType;
+    }
+    
+    public String getCurrencyById(Integer id) {
+        String currency = CurrencyEnum.EUR.toString();
+
+        for (CurrencyEnum value : CurrencyEnum.values()) {
+            if (value.getId().equals(id)) {
+                currency = value.toString();
+            }
+        }
+
+        return currency;
     }
 }

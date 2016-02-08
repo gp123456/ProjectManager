@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/project")
 public class ProjectController extends ProjectCommon {
 
-    private static final Logger logger = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectController.class.getName());
 
     @Autowired ProjectManagerService srvProjectManager;
 
@@ -78,7 +78,7 @@ public class ProjectController extends ProjectCommon {
         content.put("company", createSearchCompany());
         content.put("type", createSearchType());
         content.put("vessel", createSearchVessel(srvWCSProjectManager, null));
-        content.put("customer", createSearchCustomer(srvWCSProjectManager, null));
+        content.put("company", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.CUSTOMER));
         content.put("contact", createSearchContact(srvProjectManager, null));
 
         if (p != null && !p.getId().equals(-1)) {
@@ -391,7 +391,6 @@ public class ProjectController extends ProjectCommon {
 
         if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
-            Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, customer);
             List<WCSVessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
                                    ((!customer.equals("none")) ?
                                     srvWCSProjectManager.getDaoWCSVessel().getByCompany(customer) :

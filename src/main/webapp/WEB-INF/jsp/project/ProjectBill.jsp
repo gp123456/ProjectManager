@@ -167,7 +167,7 @@
             <div id="lst-project-bill-items"></div>
         </form>
     </div>
-    <h2>Bill of Material Detial</h2>
+    <h2>Bill of Material Detail</h2>
     <div>
         <table class="table tablesorter">
             <thead>

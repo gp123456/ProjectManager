@@ -337,7 +337,7 @@ function projectFilterCustomer() {
     $.ajax({
         type: "POST",
         url: "filter-customer",
-        data: "customer=" + $("#new-project-customer option:selected").attr("value"),
+        data: "customer=" + $("#company option:selected").attr("value"),
         success: function (response) {
             var content = JSON.parse(response)
 
@@ -351,6 +351,7 @@ function projectFilterCustomer() {
 
 function plotStatusInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {
+        width:600,
         title: {
             text: title
         },
@@ -376,6 +377,7 @@ function plotStatusInfo(id, title, info) {
 
 function plotCompanyInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {
+        width:600,
         title: {
             text: title
         },

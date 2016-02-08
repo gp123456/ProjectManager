@@ -69,18 +69,6 @@ public class ProjectBillController extends ProjectCommon {
         this.srvProjectManager.loadPropertyValues();
     }
 
-    private String getCurrencyById(Integer id) {
-        String currency = CurrencyEnum.EUR.toString();
-
-        for (CurrencyEnum value : CurrencyEnum.values()) {
-            if (value.getId().equals(id)) {
-                currency = value.toString();
-            }
-        }
-
-        return currency;
-    }
-
     private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
         List<Item> items = srvProjectManager.getDaoItem().getAll();

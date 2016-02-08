@@ -4,57 +4,36 @@
  * and open the template in the editor.
  */
 
-function commitCustomer() {
-    var name = $("#customer-name").val();
-    var eMail = $("#customer-email").val();
+function commitCompany(type) {
+    var name = $("#company-name").val();
+    var eMail = $("#company-email").val();
 
-    var data = "name=" + name + "&email1=" + eMail;
+    var data = "name=" + name + "&email1=" + eMail + "&type" + type;
 
     $.ajax({
         type: "GET",
-        url: "http://192.168.178.29:8080/ProjectManager/company/add",
+        url: "http://localhost:8080/ProjectManager/company/add",
         data: data,
         success: function (response) {
             var content = JSON.parse(response)
 
-            alert(content.customer);
+            alert(content.company);
 
-            $("#new-project-customer").html(content.customer);
+            $("#company").html(content.company);
         },
         error: function (e) {
         }
     });
-    $("#add-customer").dialog("close");
+    $("#add-company").dialog("close");
 }
 
-//function commitVesselCustomer() {
-//    var name = $("#customer-name").val();
-//    var referenceNumber = $("#customer-reference-number").val();
-//
-//    var data = "name=" + name + "&reference-number=" + referenceNumber;
-//
-//    $.ajax({
-//        type: "GET",
-//        url: "http://localhost:8080/ProjectManager/company/add",
-//        data: data,
-//        success: function (response) {
-//            var content = JSON.parse(response)
-//
-//            $("#new-vessel-customer").html(content.customer);
-//        },
-//        error: function (e) {
-//        }
-//    });
-//    $("#add-customer").dialog("close");
-//}
-
-function addCustomer() {
-    $("#add-customer").dialog({
+function addCompany(type) {
+    $("#add-company").dialog({
         autoOpen: true,
         modal: true,
         width: 400,
         buttons: {
-            "submit": commitCustomer
+            "submit": commitCompany(type)
         },
         show: {
             effect: "blind",
@@ -66,22 +45,3 @@ function addCustomer() {
         }
     });
 }
-
-//function addVesselCustomer() {
-//    $("#add-customer").dialog({
-//        autoOpen: true,
-//        modal: true,
-//        width: 400,
-//        buttons: {
-//            "submit": commitVesselCustomer
-//        },
-//        show: {
-//            effect: "blind",
-//            duration: 1000
-//        },
-//        hide: {
-//            effect: "explode",
-//            duration: 1000
-//        }
-//    });
-//}

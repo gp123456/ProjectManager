@@ -50,15 +50,9 @@ public class CompanyNewController extends Common {
         if (comp != null) {
             comp.setType(CompanyTypeEnum.CUSTOMER.name());
             comp = srvProjectManager.getDaoCompany().add(comp);
-//            content.put("customer", createSearchCustomer(srvProjectManager, comp.getName()));
+//            content.put("company", createSearchCustomer(srvProjectManager, comp.getName()));
         }
 
         return new Gson().toJson(content);
     }
-    
-//    @RequestMapping(value = "/lst-customer")
-//    public @ResponseBody
-//    String lstCustomer() {
-//        return createSearchCustomer(srvProjectManager, null);
-//    }
 }

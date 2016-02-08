@@ -9,7 +9,6 @@ import com.allone.projectmanager.dao.CollabsDAO;
 import com.allone.projectmanager.dao.CompanyDAO;
 import com.allone.projectmanager.dao.ItemDAO;
 import com.allone.projectmanager.dao.ItemTransDAO;
-import com.allone.projectmanager.dao.ProjectBillCustomItemDAO;
 import com.allone.projectmanager.dao.ProjectBillDAO;
 import com.allone.projectmanager.dao.ProjectBillItemDAO;
 import com.allone.projectmanager.dao.ProjectDAO;
@@ -54,7 +53,7 @@ public class ProjectManagerService {
     private final ItemDAO daoItem = new ItemDAO(emf);
     private final ItemTransDAO daoItemTrans = new ItemTransDAO(emf);
     private final ProjectDAO daoProject = new ProjectDAO(emf);
-        private final ProjectDetailDAO daoProjectDetail = new ProjectDetailDAO(emf);
+    private final ProjectDetailDAO daoProjectDetail = new ProjectDetailDAO(emf);
     private final RepimageDAO daoRepimage = new RepimageDAO(emf);
     private final ReportsDAO daoReport = new ReportsDAO(emf);
     private final RightsDAO daoRights = new RightsDAO(emf);
@@ -64,17 +63,16 @@ public class ProjectManagerService {
     private final VesselDAO daoVessel = new VesselDAO(emf);
     private final ProjectBillDAO daoProjectBill = new ProjectBillDAO(emf);
     private final ProjectBillItemDAO daoProjectBillItem = new ProjectBillItemDAO(emf);
-    private final ProjectBillCustomItemDAO daoProjectBillCustomItem = new ProjectBillCustomItemDAO(emf);
     private final ContactDAO daoContact = new ContactDAO(emf);
 
     private String pathProjectBill;
-    
+
     private String pathProject;
 
     public ProjectDetailDAO getDaoProjectDetail() {
         return daoProjectDetail;
     }
-    
+
     public void loadPropertyValues() {
         InputStream in = getClass().getClassLoader().getResourceAsStream("project_manager.properties");
         Properties prop = new Properties();
@@ -84,14 +82,14 @@ public class ProjectManagerService {
                 prop.load(in);
                 this.pathProjectBill = prop.getProperty("project-bill-path");
                 this.pathProject = prop.getProperty("project-path");
-                
+
                 LOG.info(pathProject);
             } catch (IOException ex) {
                 Logger.getLogger(ProjectManagerService.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
+
     public String getPathProject() {
         return pathProject;
     }
@@ -102,10 +100,6 @@ public class ProjectManagerService {
 
     public String getPathProjectBill() {
         return pathProjectBill;
-    }
-    
-    public ProjectBillCustomItemDAO getDaoProjectBillCustomItem() {
-        return daoProjectBillCustomItem;
     }
 
     public CollabsDAO getDaoCollabs() {
@@ -119,7 +113,6 @@ public class ProjectManagerService {
     public ProjectBillItemDAO getDaoProjectBillItem() {
         return daoProjectBillItem;
     }
-
 
     public CollabsDAO getDaoCollab() {
         return daoCollabs;
@@ -168,7 +161,7 @@ public class ProjectManagerService {
     public VesselDAO getDaoVessel() {
         return daoVessel;
     }
-    
+
     public ContactDAO getDaoContact() {
         return daoContact;
     }
