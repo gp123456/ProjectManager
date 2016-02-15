@@ -27,9 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project_bill_item")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectBillItem.findByProjectBill",
-                           query = "SELECT p FROM ProjectBillItem p WHERE p.projectBill=:projectBill")})
-public class ProjectBillItem implements Serializable {
+@NamedQueries({
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById",
+                query = "SELECT p FROM BillMaterialServiceItem p WHERE p.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill",
+                query = "SELECT p FROM BillMaterialServiceItem p WHERE p.projectBill = :projectBill")
+})
+public class BillMaterialServiceItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -97,12 +101,12 @@ public class ProjectBillItem implements Serializable {
     @Column(name = "item")
     @NotNull
     private Long item;
-    
+
     @Basic(optional = false)
     @Column(name = "item_imno")
     @NotNull
     private String itemImno;
-    
+
     @Basic(optional = false)
     @Column(name = "item_description")
     private String itemDescription;
@@ -111,14 +115,14 @@ public class ProjectBillItem implements Serializable {
     @Column(name = "currency")
     @NotNull
     private Integer currency;
-    
+
     @Transient
     private String classRefresh;
-    
+
     @Transient
     private String classSave;
 
-    private ProjectBillItem(Builder builder) {
+    private BillMaterialServiceItem(Builder builder) {
         available = builder.available;
         price = builder.price;
         quantity = builder.quantity;
@@ -138,7 +142,7 @@ public class ProjectBillItem implements Serializable {
         itemDescription = builder.itemDescription;
     }
 
-    private ProjectBillItem(ProjectBillItem pbi) {
+    private BillMaterialServiceItem(BillMaterialServiceItem pbi) {
         available = pbi.available;
         price = pbi.price;
         quantity = pbi.quantity;
@@ -156,7 +160,7 @@ public class ProjectBillItem implements Serializable {
         itemDescription = pbi.itemDescription;
     }
 
-    public ProjectBillItem() {
+    public BillMaterialServiceItem() {
     }
 
     public Long getId() {
@@ -302,7 +306,7 @@ public class ProjectBillItem implements Serializable {
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -313,10 +317,10 @@ public class ProjectBillItem implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProjectBillItem)) {
+        if (!(object instanceof BillMaterialServiceItem)) {
             return false;
         }
-        ProjectBillItem other = (ProjectBillItem) object;
+        BillMaterialServiceItem other = (BillMaterialServiceItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -326,9 +330,9 @@ public class ProjectBillItem implements Serializable {
     @Override
     public String toString() {
         return "id=" + id + ",available=" + available + ",price=" + price + ",quantity=" + quantity + ",cost=" + cost +
-                ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" + discount + ",salePrice=" +
-                salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" +
-                projectBill + ",item=" + item + ",currency=" + currency;
+               ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" + discount + ",salePrice=" +
+               salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" +
+               projectBill + ",item=" + item + ",currency=" + currency;
     }
 
     public static class Builder {
@@ -358,11 +362,11 @@ public class ProjectBillItem implements Serializable {
         private Long item;
 
         private Integer currency;
-        
+
         private String classRefresh;
-        
+
         private String classSave;
-    
+
         private String itemImno;
 
         private String itemDescription;
@@ -441,36 +445,37 @@ public class ProjectBillItem implements Serializable {
 
         public Builder setCurrency(Integer currency) {
             this.currency = currency;
-            
+
             return this;
         }
-        
+
         public Builder setClassRefresh(String classRefresh) {
             this.classRefresh = classRefresh;
             return this;
         }
+
         public Builder setClassSave(String classSave) {
             this.classSave = classSave;
             return this;
         }
-        
+
         public Builder setItemImno(String itemImno) {
             this.itemImno = itemImno;
             return this;
         }
-        
+
         public Builder setItemDescription(String itemDescription) {
             this.itemDescription = itemDescription;
-            
+
             return this;
         }
 
-        public ProjectBillItem build() {
-            return new ProjectBillItem(this);
+        public BillMaterialServiceItem build() {
+            return new BillMaterialServiceItem(this);
         }
 
-        public ProjectBillItem build(ProjectBillItem pbi) {
-            return new ProjectBillItem(pbi);
+        public BillMaterialServiceItem build(BillMaterialServiceItem pbi) {
+            return new BillMaterialServiceItem(pbi);
         }
     }
 }

@@ -76,10 +76,11 @@
                 <th>Total</th>
                 <th>Edit</th>
                 <th>Refresh</th>
+                <th>Remove</th>
                 <th>Save</th>
             </tr>
         </thead>
-        <tbody>${projectBillItems}</tbody>
+        <tbody id="request-quotation-items">${projectBillItems}</tbody>
     </table>
 </div>
 <div><p><h2>Notes</h2><textarea id="notes" name="notes" rows="10" style="width: 100%">${projectBillNote}</textarea></div>

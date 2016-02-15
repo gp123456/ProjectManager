@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -47,9 +46,9 @@ public class Common {
 
     private static final User user = new User();
 
-    private final Map<ProjectBillModel, List<ProjectBillItem>> mapProjectBillItems = new HashMap<>();
+    private final Map<ProjectBillModel, List<BillMaterialServiceItem>> mapProjectBillItems = new HashMap<>();
 
-    private final Map<ProjectBillModel, ProjectBill> mapProjectBill = new HashMap<>();
+    private final Map<ProjectBillModel, BillMaterialService> mapProjectBill = new HashMap<>();
 
     private String side_bar;
 
@@ -173,7 +172,7 @@ public class Common {
         return 1000000l + mapProjectBillItems.size() + 1;
     }
 
-    public Collection<ProjectBillItem> getProjectBillItems(ProjectBillModel pbm) {
+    public Collection<BillMaterialServiceItem> getProjectBillItems(ProjectBillModel pbm) {
         return mapProjectBillItems.get(pbm);
     }
 
@@ -195,7 +194,7 @@ public class Common {
         return null;
     }
 
-    public ProjectBill getProjectBill(ProjectBillModel pdm) {
+    public BillMaterialService getProjectBill(ProjectBillModel pdm) {
         return mapProjectBill.get(pdm);
     }
 
@@ -217,13 +216,12 @@ public class Common {
         return null;
     }
 
-    public ProjectBillItem getProjectBillItem(ProjectBillModel pbm, Long itemId) {
+    public BillMaterialServiceItem getProjectBillItem(ProjectBillModel pbm, Long itemId) {
         if (!mapProjectBillItems.isEmpty()) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
-                Map<Long, ProjectBillItem> result = items.stream().collect(Collectors.toMap(
-                                           ProjectBillItem::getItem, (c) -> c));
+                Map<Long, BillMaterialServiceItem> result = items.stream().collect(Collectors.toMap(BillMaterialServiceItem::getItem, (c) -> c));
 
                 return result.get(itemId);
             }
@@ -232,9 +230,9 @@ public class Common {
         return null;
     }
 
-    public ProjectBillItem getFirstProjectBillItem(ProjectBillModel pbm) {
+    public BillMaterialServiceItem getFirstProjectBillItem(ProjectBillModel pbm) {
         if (!mapProjectBillItems.isEmpty() && pbm != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 return items.get(0);
@@ -244,12 +242,12 @@ public class Common {
         return null;
     }
 
-    public Boolean changeCurrencyFirstItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+    public Boolean changeCurrencyFirstItem(ProjectBillModel pbm, BillMaterialServiceItem pbi) {
         if (!mapProjectBillItems.isEmpty() && pbm != null && pbi != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
-                ProjectBillItem item = items.get(0);
+                BillMaterialServiceItem item = items.get(0);
                 Integer currency = item.getCurrency();
 
                 return item.getItem().equals(pbi.getItem()) && currency != null && !currency.equals(pbi.getCurrency());
@@ -378,7 +376,7 @@ public class Common {
         return prj_reference;
     }
 
-    public void setVirtualProjectBill(ProjectBill pb, Integer locationId) {
+    public void setVirtualProjectBill(BillMaterialService pb, Integer locationId) {
         if (pb != null) {
             mapProjectBill.put(new ProjectBillModel(pb.getProject(), locationId), pb);
         }
@@ -390,9 +388,9 @@ public class Common {
         }
     }
 
-    public void setVirtualProjectBillItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+    public void setVirtualProjectBillItem(ProjectBillModel pbm, BillMaterialServiceItem pbi) {
         if (pbm != null && pbi != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null) {
                 items.add(pbi);
@@ -402,9 +400,9 @@ public class Common {
         }
     }
 
-    public void editVirtualProjectBillItem(ProjectBillModel pbm, ProjectBillItem pbi) {
+    public void editVirtualProjectBillItem(ProjectBillModel pbm, BillMaterialServiceItem pbi) {
         if (pbm != null && pbi != null && pbi.getItem() != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 items.stream().
@@ -418,7 +416,7 @@ public class Common {
 
     public void saveVirtualProjectBillItem(ProjectBillModel pbm) {
         if (pbm != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 items.stream().forEach((item) -> {
@@ -430,7 +428,7 @@ public class Common {
 
     public void editCurrencyVirtualProjectBillItems(ProjectBillModel pdm, Integer currency) {
         if (pdm != null && currency != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pdm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pdm);
 
             if (items != null && !items.isEmpty()) {
                 items.stream().forEach((item) -> {
@@ -442,7 +440,7 @@ public class Common {
 
     public void setVirtualProjectBillItemBillId(ProjectBillModel pbm, Long billId) {
         if (pbm != null && billId != null) {
-            List<ProjectBillItem> items = mapProjectBillItems.get(pbm);
+            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
 
             if (items != null && !items.isEmpty()) {
                 items.forEach((item) -> {
@@ -453,10 +451,10 @@ public class Common {
     }
 
     public void removeVirtualProjectBillItem(Long pdId, Integer location, Long itemid) {
-        List<ProjectBillItem> items = mapProjectBillItems.get(new ProjectBillModel(pdId, location));
+        List<BillMaterialServiceItem> items = mapProjectBillItems.get(new ProjectBillModel(pdId, location));
 
         if (items != null && !items.isEmpty()) {
-            for (ProjectBillItem item : items) {
+            for (BillMaterialServiceItem item : items) {
                 if (item.getItem().equals(itemid)) {
                     items.remove(item);
                     break;

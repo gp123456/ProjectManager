@@ -27,11 +27,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project_bill")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.ProjectBill.findByProject",
-                           query = "SELECT p FROM ProjectBill p WHERE p.project=:project"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.ProjectBill.findById",
-                           query = "SELECT p FROM ProjectBill p WHERE p.id=:id")})
-public class ProjectBill implements Serializable {
+@NamedQueries(
+        {@NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findByProject",
+                     query = "SELECT p FROM BillMaterialService p WHERE p.project = :project"),
+         @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findById",
+                     query = "SELECT p FROM BillMaterialService p WHERE p.id = :id")})
+public class BillMaterialService implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -82,10 +83,14 @@ public class ProjectBill implements Serializable {
     @Column(name = "location")
     private String location;
 
+    @Basic(optional = false)
+    @Column(name = "complete")
+    private Boolean complete;
+
     @Transient
     private String classSave;
 
-    private ProjectBill(Builder builder) {
+    private BillMaterialService(Builder builder) {
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
         totalSalePrice = builder.totalSalePrice;
@@ -96,9 +101,10 @@ public class ProjectBill implements Serializable {
         currency = builder.currency;
         location = builder.location;
         classSave = builder.classSave;
+        complete = builder.complete;
     }
 
-    private ProjectBill(ProjectBill builder) {
+    private BillMaterialService(BillMaterialService builder) {
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
         totalSalePrice = builder.totalSalePrice;
@@ -109,9 +115,10 @@ public class ProjectBill implements Serializable {
         currency = builder.currency;
         location = builder.location;
         classSave = builder.classSave;
+        complete = builder.complete;
     }
 
-    public ProjectBill() {
+    public BillMaterialService() {
     }
 
     public Long getId() {
@@ -202,6 +209,14 @@ public class ProjectBill implements Serializable {
         this.classSave = classSave;
     }
 
+    public Boolean getComplete() {
+        return complete;
+    }
+
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -212,10 +227,10 @@ public class ProjectBill implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProjectBill)) {
+        if (!(object instanceof BillMaterialService)) {
             return false;
         }
-        ProjectBill other = (ProjectBill) object;
+        BillMaterialService other = (BillMaterialService) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -248,6 +263,8 @@ public class ProjectBill implements Serializable {
         private String location;
 
         private String classSave;
+
+        private Boolean complete;
 
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
@@ -309,12 +326,18 @@ public class ProjectBill implements Serializable {
             return this;
         }
 
-        public ProjectBill build() {
-            return new ProjectBill(this);
+        public Builder setComplete(Boolean complete) {
+            this.complete = complete;
+
+            return this;
         }
 
-        public ProjectBill build(ProjectBill pb) {
-            return new ProjectBill(pb);
+        public BillMaterialService build() {
+            return new BillMaterialService(this);
+        }
+
+        public BillMaterialService build(BillMaterialService pb) {
+            return new BillMaterialService(pb);
         }
     }
 }

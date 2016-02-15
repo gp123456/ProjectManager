@@ -8,8 +8,6 @@
     <class>com.allone.projectmanager.entities.Item</class>
     <class>com.allone.projectmanager.entities.ItemTrans</class>
     <class>com.allone.projectmanager.entities.Project</class>
-    <class>com.allone.projectmanager.entities.ProjectBill</class>
-    <class>com.allone.projectmanager.entities.ProjectBillItem</class>
     <class>com.allone.projectmanager.entities.ProjectDetail</class>
     <class>com.allone.projectmanager.entities.PurchaseOrder</class>
     <class>com.allone.projectmanager.entities.Repimage</class>
@@ -19,7 +17,10 @@
     <class>com.allone.projectmanager.entities.Stock</class>
     <class>com.allone.projectmanager.entities.Stocktrans</class>
     <class>com.allone.projectmanager.entities.Vessel</class>
-    <class>com.allone.projectmanager.entities.ProjectRequestQuotation</class>
+    <class>com.allone.projectmanager.entities.RequestQuotation</class>
+    <class>com.allone.projectmanager.entities.RequestQuotationItem</class>
+    <class>com.allone.projectmanager.entities.BillMaterialService</class>
+    <class>com.allone.projectmanager.entities.BillMaterialServiceItem</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.show_sql" value="true"/>

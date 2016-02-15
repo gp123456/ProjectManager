@@ -9,8 +9,8 @@ import com.allone.projectmanager.dao.CollabsDAO;
 import com.allone.projectmanager.dao.CompanyDAO;
 import com.allone.projectmanager.dao.ItemDAO;
 import com.allone.projectmanager.dao.ItemTransDAO;
-import com.allone.projectmanager.dao.ProjectBillDAO;
-import com.allone.projectmanager.dao.ProjectBillItemDAO;
+import com.allone.projectmanager.dao.BillMaterialServiceDAO;
+import com.allone.projectmanager.dao.BillMaterialServiceItemDAO;
 import com.allone.projectmanager.dao.ProjectDAO;
 import com.allone.projectmanager.dao.RepimageDAO;
 import com.allone.projectmanager.dao.ReportsDAO;
@@ -21,6 +21,8 @@ import com.allone.projectmanager.dao.StockTransDAO;
 import com.allone.projectmanager.dao.VesselDAO;
 import com.allone.projectmanager.dao.ContactDAO;
 import com.allone.projectmanager.dao.ProjectDetailDAO;
+import com.allone.projectmanager.dao.ProjectRequestQuotationDAO;
+import com.allone.projectmanager.dao.ProjectRequestQuotationItemDAO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -61,8 +63,10 @@ public class ProjectManagerService {
     private final StockDAO daoStock = new StockDAO(emf);
     private final StockTransDAO daoStockTrans = new StockTransDAO(emf);
     private final VesselDAO daoVessel = new VesselDAO(emf);
-    private final ProjectBillDAO daoProjectBill = new ProjectBillDAO(emf);
-    private final ProjectBillItemDAO daoProjectBillItem = new ProjectBillItemDAO(emf);
+    private final BillMaterialServiceDAO daoProjectBill = new BillMaterialServiceDAO(emf);
+    private final BillMaterialServiceItemDAO daoProjectBillItem = new BillMaterialServiceItemDAO(emf);
+    private final ProjectRequestQuotationDAO daoProjectRequestQuotation = new ProjectRequestQuotationDAO(emf);
+    private final ProjectRequestQuotationItemDAO daoProjectRequestQuotationItem = new ProjectRequestQuotationItemDAO(emf);
     private final ContactDAO daoContact = new ContactDAO(emf);
 
     private String pathProjectBill;
@@ -106,12 +110,20 @@ public class ProjectManagerService {
         return daoCollabs;
     }
 
-    public ProjectBillDAO getDaoProjectBill() {
+    public BillMaterialServiceDAO getDaoProjectBill() {
         return daoProjectBill;
     }
 
-    public ProjectBillItemDAO getDaoProjectBillItem() {
+    public BillMaterialServiceItemDAO getDaoProjectBillItem() {
         return daoProjectBillItem;
+    }
+
+    public ProjectRequestQuotationDAO getDaoProjectRequestQuotation() {
+        return daoProjectRequestQuotation;
+    }
+
+    public ProjectRequestQuotationItemDAO getDaoProjectRequestQuotationItem() {
+        return daoProjectRequestQuotationItem;
     }
 
     public CollabsDAO getDaoCollab() {

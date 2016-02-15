@@ -7,7 +7,6 @@ package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.WCSProjectManagerService;
-import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.ProjectDetail;

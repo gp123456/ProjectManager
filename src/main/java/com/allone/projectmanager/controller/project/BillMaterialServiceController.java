@@ -11,8 +11,8 @@ import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.Project;
-import com.allone.projectmanager.entities.ProjectBill;
-import com.allone.projectmanager.entities.ProjectBillItem;
+import com.allone.projectmanager.entities.BillMaterialService;
+import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.entities.wcs.WCSVessel;
@@ -50,9 +50,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping(value = "/project")
-public class ProjectBillController extends ProjectCommon {
+public class BillMaterialServiceController extends ProjectCommon {
 
-    private static final Logger logger = Logger.getLogger(ProjectBillController.class.getName());
+    private static final Logger logger = Logger.getLogger(BillMaterialServiceController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -116,18 +116,18 @@ public class ProjectBillController extends ProjectCommon {
     }
 
     private void pushProjectBillMaterial(Long projectDetailId) {
-        List<ProjectBill> pbs = srvProjectManager.getDaoProjectBill().getByProject(projectDetailId);
+        List<BillMaterialService> pbs = srvProjectManager.getDaoProjectBill().getByProject(projectDetailId);
 
         if (pbs != null && !pbs.isEmpty()) {
-            for (ProjectBill pb : pbs) {
+            for (BillMaterialService pb : pbs) {
                 Integer location = getLocationIdByName(pb.getLocation());
 
                 pb.setClassSave("button alarm");
                 setVirtualProjectBill(pb, location);
-                List<ProjectBillItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
+                List<BillMaterialServiceItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
 
                 if (pbis != null && !pbis.isEmpty()) {
-                    for (ProjectBillItem pbi : pbis) {
+                    for (BillMaterialServiceItem pbi : pbis) {
                         pbi.setClassRefresh("button alarm");
                         pbi.setClassSave("button alarm");
                         setVirtualProjectBillItem(new ProjectBillModel(pb.getProject(), location), pbi);
@@ -143,7 +143,7 @@ public class ProjectBillController extends ProjectCommon {
 
         if (pbIds != null && !pbIds.isEmpty()) {
             for (ProjectBillModel pbm : pbIds) {
-                ProjectBill pb = getProjectBill(pbm);
+                BillMaterialService pb = getProjectBill(pbm);
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
                 String subproject = (pd != null) ? pd.getReference() : "";
                 Long pdid = (pd != null) ? pd.getId() : 0l;
@@ -210,12 +210,12 @@ public class ProjectBillController extends ProjectCommon {
 
         if (pbms != null && !pbms.isEmpty()) {
             for (ProjectBillModel pbm : pbms) {
-                Collection<ProjectBillItem> pbItems = getProjectBillItems(pbm);
+                Collection<BillMaterialServiceItem> pbItems = getProjectBillItems(pbm);
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pbm.getId());
                 Integer count = 0;
 
                 if (pbItems != null && !pbItems.isEmpty()) {
-                    for (ProjectBillItem pbItem : pbItems) {
+                    for (BillMaterialServiceItem pbItem : pbItems) {
                         Item item = srvProjectManager.getDaoItem().getById(pbItem.getItem());
                         Stock stock = (item != null) ? srvProjectManager.getDaoStock().getById(item.getLocation()) :
                                       null;
@@ -283,8 +283,8 @@ public class ProjectBillController extends ProjectCommon {
         return response;
     }
 
-    private ProjectBill getAverangeDiscount(Long pdId, Integer location) {
-        Collection<ProjectBillItem> items = getProjectBillItems(new ProjectBillModel(pdId, location));
+    private BillMaterialService getAverangeDiscount(Long pdId, Integer location) {
+        Collection<BillMaterialServiceItem> items = getProjectBillItems(new ProjectBillModel(pdId, location));
 
         if (items != null && !items.isEmpty()) {
             BigDecimal totalCost = BigDecimal.ZERO;
@@ -293,7 +293,7 @@ public class ProjectBillController extends ProjectCommon {
             BigDecimal totalNetPrice = BigDecimal.ZERO;
             Integer currency = 0;
 
-            for (ProjectBillItem item : items) {
+            for (BillMaterialServiceItem item : items) {
                 totalCost = (item.getTotalCost() != null) ? totalCost.add(item.getTotalCost()) : BigDecimal.ZERO;
                 averangeDiscount = (item.getDiscount() != null) ? averangeDiscount.add(item.getDiscount()) :
                                    BigDecimal.ZERO;
@@ -307,7 +307,7 @@ public class ProjectBillController extends ProjectCommon {
 
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()), 2);
 
-            return new ProjectBill.Builder()
+            return new BillMaterialService.Builder()
                     .setProject(pdId)
                     .setTotalCost(totalCost)
                     .setAverangeDiscount(averangeDiscount)
@@ -369,10 +369,10 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/insert")
     public @ResponseBody
-    String itemInsert(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
+    String itemInsert(Long pdId, Integer location, BillMaterialServiceItem pbi, Model model) {
         if (!pbi.getItem().equals(0l) && getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem()) == null) {
             Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
-            ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+            BillMaterialServiceItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
             Integer currency = (temp != null) ? temp.getCurrency() : null;
 
             if (item != null) {
@@ -390,8 +390,8 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/save")
     public @ResponseBody
-    String itemSave(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
-        ProjectBillItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+    String itemSave(Long pdId, Integer location, BillMaterialServiceItem pbi, Model model) {
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
         Map<String, String> content = new HashMap<>();
 
         if (temp != null) {
@@ -412,7 +412,7 @@ public class ProjectBillController extends ProjectCommon {
         } else {
             editVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
         }
-        ProjectBill pb = getAverangeDiscount(pdId, location);
+        BillMaterialService pb = getAverangeDiscount(pdId, location);
 
         pb.setClassSave("button alarm");
         pb.setLocation(getLocationNameById(location));
@@ -426,7 +426,7 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/remove")
     public @ResponseBody
-    String itemRemove(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
+    String itemRemove(Long pdId, Integer location, BillMaterialServiceItem pbi, Model model) {
         Map<String, String> content = new HashMap<>();
 
         removeVirtualProjectBillItem(pdId, location, pbi.getItem());
@@ -439,9 +439,9 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/refresh")
     public @ResponseBody
-    String itemRefresh(Long pdId, Integer location, ProjectBillItem pbi, Model model) {
+    String itemRefresh(Long pdId, Integer location, BillMaterialServiceItem pbi, Model model) {
         Boolean findValues = Boolean.FALSE;
-        ProjectBillItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
 
         if (temp != null) {
             Integer quantity = pbi.getQuantity();
@@ -521,8 +521,8 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/item/edit")
     public @ResponseBody
-    String Save(Long pdId, Integer location, ProjectBillItem pbi) {
-        ProjectBillItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+    String Save(Long pdId, Integer location, BillMaterialServiceItem pbi) {
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
 
         if (temp != null) {
             temp.setClassRefresh(pbi.getClassRefresh());
@@ -537,10 +537,10 @@ public class ProjectBillController extends ProjectCommon {
 
     @RequestMapping(value = "/project-bill/save")
     public @ResponseBody
-    String saveProjectBill(Integer location, ProjectBill pb, Model model) {
+    String saveProjectBill(Integer location, BillMaterialService pb, Model model) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
         ProjectBillModel pbm = new ProjectBillModel(pb.getProject(), location);
-        ProjectBill vpb = getProjectBill(pbm);
+        BillMaterialService vpb = getProjectBill(pbm);
         Map<String, String> content = new HashMap<>();
 
         if (pd != null) {
@@ -565,9 +565,9 @@ public class ProjectBillController extends ProjectCommon {
         } else {
             srvProjectManager.getDaoProjectBill().edit(pb);
             setVirtualProjectBillItemBillId(pbm, pb.getId());
-            Collection<ProjectBillItem> pbis = getProjectBillItems(pbm);
+            Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
 
-            for (ProjectBillItem pbi : pbis) {
+            for (BillMaterialServiceItem pbi : pbis) {
                 if (pbi.getId() == null) {
                     srvProjectManager.getDaoProjectBillItem().add(pbi);
                 } else {
@@ -676,7 +676,7 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/item/stock")
     public @ResponseBody
     String itemStockInsert(Long pdId, Integer location, Item item) {
-        ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+        BillMaterialServiceItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
         Integer currency = (temp != null) ? temp.getCurrency() : null;
 
         item.setCurrency((currency != null) ? currency : CurrencyEnum.EUR.getId().longValue());
@@ -689,7 +689,7 @@ public class ProjectBillController extends ProjectCommon {
         item = srvProjectManager.getDaoItem().add(item);
         if (item.getId() != null) {
             setVirtualProjectBillItem(new ProjectBillModel(pdId, BillLocationEnum.GREECE.getId()),
-                                      new ProjectBillItem.Builder().setAvailable(item.getQuantity()).setQuantity(0)
+                                      new BillMaterialServiceItem.Builder().setAvailable(item.getQuantity()).setQuantity(0)
                                       .setPrice(item.getPrice()).setItem(item.getId()).setItemImno(item.getImno())
                                       .setItemDescription(item.getDescription()).setCurrency(item.getCurrency()
                                               .intValue()).setClassRefresh("button alarm").setClassSave("button alarm").
@@ -702,13 +702,13 @@ public class ProjectBillController extends ProjectCommon {
     @RequestMapping(value = "/project-bill/item/nostock")
     public @ResponseBody
     String itemNoStockInsert(Long pdId, Integer location, Item item, Model model) {
-        ProjectBillItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+        BillMaterialServiceItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
         Integer currency = (temp != null) ? temp.getCurrency() : null;
 
         item.setCurrency((currency != null) ? currency : CurrencyEnum.EUR.getId().longValue());
         item.setId(getNextNoStockItemId());
         if (item.getId() != null) {
-            setVirtualProjectBillItem(new ProjectBillModel(pdId, location), new ProjectBillItem.Builder()
+            setVirtualProjectBillItem(new ProjectBillModel(pdId, location), new BillMaterialServiceItem.Builder()
                                       .setAvailable(item.getQuantity()).setPrice(item.getPrice()).setItem(item.getId())
                                       .setItemImno(item.getImno()).setItemDescription(item.getDescription())
                                       .setCurrency(item.getCurrency().intValue()).setClassRefresh("button alarm")
@@ -772,10 +772,10 @@ public class ProjectBillController extends ProjectCommon {
     public @ResponseBody
     String replaceProjectBillItems(Long pdid, Integer location) {
         String response = getLocations();
-        Collection<ProjectBillItem> pbis = getProjectBillItems(new ProjectBillModel(pdid, location));
+        Collection<BillMaterialServiceItem> pbis = getProjectBillItems(new ProjectBillModel(pdid, location));
 
         if (pbis != null && !pbis.isEmpty()) {
-            for (ProjectBillItem pbi : pbis) {
+            for (BillMaterialServiceItem pbi : pbis) {
                 Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
 
                 if (item == null) {
@@ -819,7 +819,7 @@ public class ProjectBillController extends ProjectCommon {
             ProjectBillModel pbmGreece = new ProjectBillModel(id, BillLocationEnum.GREECE.getId());
 
             for (Long itemId : itemIds) {
-                ProjectBillItem item = new ProjectBillItem.Builder().build(getProjectBillItem(pbmGreece, itemId));
+                BillMaterialServiceItem item = new BillMaterialServiceItem.Builder().build(getProjectBillItem(pbmGreece, itemId));
 
                 if (item != null) {
                     item.setClassRefresh("button");
