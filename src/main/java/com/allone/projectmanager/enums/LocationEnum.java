@@ -9,7 +9,7 @@ package com.allone.projectmanager.enums;
  *
  * @author Admin
  */
-public enum BillLocationEnum {
+public enum LocationEnum {
     GREECE(1, "greece"),
     CHINA(2, "china"),
     SKOREA(3, "s korea"),
@@ -19,7 +19,7 @@ public enum BillLocationEnum {
     
     private String name;
 
-    private BillLocationEnum(Integer id, String name) {
+    private LocationEnum(Integer id, String name) {
         this.id = id;
         this.name = name;
     }

@@ -28,10 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "project_bill_item")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById",
-                query = "SELECT p FROM BillMaterialServiceItem p WHERE p.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill",
-                query = "SELECT p FROM BillMaterialServiceItem p WHERE p.projectBill = :projectBill")
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById", query = "SELECT p FROM BillMaterialServiceItem p WHERE p.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill", query = "SELECT p FROM BillMaterialServiceItem p WHERE p.projectBill = :projectBill")
 })
 public class BillMaterialServiceItem implements Serializable {
 
@@ -111,11 +109,6 @@ public class BillMaterialServiceItem implements Serializable {
     @Column(name = "item_description")
     private String itemDescription;
 
-    @Basic(optional = false)
-    @Column(name = "currency")
-    @NotNull
-    private Integer currency;
-
     @Transient
     private String classRefresh;
 
@@ -135,7 +128,6 @@ public class BillMaterialServiceItem implements Serializable {
         totalNetPrice = builder.totalNetPrice;
         projectBill = builder.projectBill;
         item = builder.item;
-        currency = builder.currency;
         classRefresh = builder.classRefresh;
         classSave = builder.classSave;
         itemImno = builder.itemImno;
@@ -155,7 +147,6 @@ public class BillMaterialServiceItem implements Serializable {
         totalNetPrice = pbi.totalNetPrice;
         projectBill = pbi.projectBill;
         item = pbi.item;
-        currency = pbi.currency;
         itemImno = pbi.itemImno;
         itemDescription = pbi.itemDescription;
     }
@@ -267,14 +258,6 @@ public class BillMaterialServiceItem implements Serializable {
         this.available = available;
     }
 
-    public Integer getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(Integer currency) {
-        this.currency = currency;
-    }
-
     public String getClassRefresh() {
         return classRefresh;
     }
@@ -329,10 +312,8 @@ public class BillMaterialServiceItem implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id + ",available=" + available + ",price=" + price + ",quantity=" + quantity + ",cost=" + cost +
-               ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" + discount + ",salePrice=" +
-               salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" +
-               projectBill + ",item=" + item + ",currency=" + currency;
+        return "id=" + id + ",available=" + available + ",price=" + price + ",quantity=" + quantity + ",cost=" + cost + ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" +
+               discount + ",salePrice=" + salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" + projectBill + ",item=" + item;
     }
 
     public static class Builder {
@@ -360,8 +341,6 @@ public class BillMaterialServiceItem implements Serializable {
         private Long projectBill;
 
         private Long item;
-
-        private Integer currency;
 
         private String classRefresh;
 
@@ -439,12 +418,6 @@ public class BillMaterialServiceItem implements Serializable {
 
         public Builder setItem(Long item) {
             this.item = item;
-
-            return this;
-        }
-
-        public Builder setCurrency(Integer currency) {
-            this.currency = currency;
 
             return this;
         }

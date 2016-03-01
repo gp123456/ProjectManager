@@ -90,8 +90,8 @@ function removeRow(id) {
             var content = JSON.parse(response)
 
             $("#search-reference").html(content.reference);
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
+            $("#header").html(content.project_header);
+            $("#body").html(content.project_body);
         },
         error: function (e) {
         }
@@ -99,12 +99,12 @@ function removeRow(id) {
 }
 
 function editRow(pId) {
-    var company = $("#new-project-company option:selected").attr("value");
-    var type = $("#new-project-type option:selected").attr("value");
-    var expired = $("#new-project-expired").val();
-    var vessel = $("#new-project-vessel option:selected").attr("value");
-    var customer = $("#new-project-customer option:selected").attr("value");
-    var contact = $("#new-project-contact option:selected").attr("value");
+    var company = $("#company option:selected").attr("value");
+    var type = $("#type option:selected").attr("value");
+    var expired = $("#expired").val();
+    var vessel = $("#vessel option:selected").attr("value");
+    var customer = $("#customer option:selected").attr("value");
+    var contact = $("#contact option:selected").attr("value");
     var data = "";
 
     if (pId == -1) {
@@ -139,8 +139,8 @@ function editRow(pId) {
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
+            $("#header").html(content.header);
+            $("#body").html(content.body);
         },
         error: function (e) {
         }
@@ -155,8 +155,8 @@ function createTo(id) {
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
+            $("#header").html(content.header);
+            $("#body").html(content.body);
         },
         error: function (e) {
         }
@@ -251,13 +251,13 @@ function sendEnail(id) {
 }
 
 function saveProject() {
-    $("#project-save").prop('disabled', true);
-    var type = $("#new-project-type option:selected").attr("value");
-    var expired = $("#new-project-expired").val();
-    var customer = $("#new-project-customer option:selected").attr("value");
-    var vessel = $("#new-project-vessel option:selected").attr("value");
-    var company = $("#new-project-company option:selected").attr("value");
-    var contact = $("#new-project-contact option:selected").attr("value");
+    $("#save").prop('disabled', true);
+    var type = $("#type option:selected").attr("value");
+    var expired = $("#expired").val();
+    var customer = $("#customer option:selected").attr("value");
+    var vessel = $("#vessel option:selected").attr("value");
+    var company = $("#company option:selected").attr("value");
+    var contact = $("#contact option:selected").attr("value");
 
     if (company == "none") {
         alert("you must select company");
@@ -289,10 +289,10 @@ function saveProject() {
         success: function (response) {
             var content = JSON.parse(response)
 
-            if (content.project_header)
-                $("#project-header").html(content.project_header);
-            if (content.project_body)
-                $("#project-body").html(content.project_body);
+            if (content.header)
+                $("#header").html(content.header);
+            if (content.body)
+                $("#body").html(content.body);
             $("#project-reference").text(content.project_reference);
         },
         error: function (e) {
@@ -324,9 +324,9 @@ function projectPackingList(id) {
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
-            $("#project-footer").html(content.project_footer);
+            $("#header").html(content.project_header);
+            $("#body").html(content.project_body);
+            $("#footer").html(content.project_footer);
         },
         error: function (e) {
         }
@@ -337,12 +337,12 @@ function projectFilterCustomer() {
     $.ajax({
         type: "POST",
         url: "filter-customer",
-        data: "customer=" + $("#company option:selected").attr("value"),
+        data: "customer=" + $("#customer option:selected").attr("value"),
         success: function (response) {
             var content = JSON.parse(response)
 
-            $("#new-project-vessel").html(content.vessel);
-            $("#new-project-contact").html(content.contact);
+            $("#vessel").html(content.vessel);
+            $("#contact").html(content.contact);
         },
         error: function (e) {
         }
@@ -490,10 +490,10 @@ function getStatuses() {
     });
 }
 
-function setProjectByStatus(path) {
+function setProjectByStatus(dest_path) {
     var id = $('input[name = "radio-project"]:checked').val();
-
-    window.location.href = path + "?id=" + id;
+    
+    window.location.href = dest_path + "?id=" + id;
 
     $("#dlg-edit-project").dialog("close");
 }
@@ -541,7 +541,7 @@ function dlgEditProject() {
                 if (status == 'Create') {
                     dest_path = "/ProjectManager/project/edit-form";
                 } else if (status == 'Project Bill') {
-                    dest_path = "/ProjectManager/project/project-bill";
+                    dest_path = "/ProjectManager/project/bill-material-service";
                 }
 
                 dlgProject('new', status, dlg_id, div_id, dest_path);

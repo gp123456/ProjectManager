@@ -389,9 +389,9 @@ public class ProjectCommon extends Common {
                 projectFooter = "";
             }
 
-            content.put("project_header", projectHeader);
-            content.put("project_body", (projectBody != null) ? projectBody[1].toString() : "");
-            content.put("project_footer", projectFooter);
+            content.put("header", projectHeader);
+            content.put("body", (projectBody != null) ? projectBody[1].toString() : "");
+            content.put("footer", projectFooter);
 
             return new Gson().toJson(content);
         }

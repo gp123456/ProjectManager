@@ -25,6 +25,10 @@ form > div {
     position: relative;
     overflow: hidden;
 }
+form input {
+    text-align: center;
+}
+
 form input, form textarea {
     width: 100%;
     border: 2px solid gray;

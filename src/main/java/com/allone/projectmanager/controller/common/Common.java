@@ -242,21 +242,6 @@ public class Common {
         return null;
     }
 
-    public Boolean changeCurrencyFirstItem(ProjectBillModel pbm, BillMaterialServiceItem pbi) {
-        if (!mapProjectBillItems.isEmpty() && pbm != null && pbi != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                BillMaterialServiceItem item = items.get(0);
-                Integer currency = item.getCurrency();
-
-                return item.getItem().equals(pbi.getItem()) && currency != null && !currency.equals(pbi.getCurrency());
-            }
-        }
-
-        return Boolean.FALSE;
-    }
-
     public String getHeader() {
         return header;
     }
@@ -421,18 +406,6 @@ public class Common {
             if (items != null && !items.isEmpty()) {
                 items.stream().forEach((item) -> {
                     item.setClassSave("button");
-                });
-            }
-        }
-    }
-
-    public void editCurrencyVirtualProjectBillItems(ProjectBillModel pdm, Integer currency) {
-        if (pdm != null && currency != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pdm);
-
-            if (items != null && !items.isEmpty()) {
-                items.stream().forEach((item) -> {
-                    item.setCurrency(currency);
                 });
             }
         }

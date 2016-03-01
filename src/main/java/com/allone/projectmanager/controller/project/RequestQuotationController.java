@@ -76,33 +76,21 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                                  "<td>" + ++count + "</td>\n" +
                                                  "<td>" + pbi.getItemImno() + "</td>\n" +
                                                  "<td>" + pbi.getItemDescription() + "</td>\n" +
-                                                 "<td>" + getCurrencyById(pbi.getCurrency()) + "</td>\n" +
                                                  "<td>" + pbi.getQuantity() + "</td>\n" +
                                                  "<td>" + item.getQuantity() + "</td>\n" +
-                                                 "<td id='quantity" + pbi.getProjectBill() + pbi.getId() +
-                                                 "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" +
-                                                 "</td>\n" +
+                                                 "<td id='quantity" + pbi.getProjectBill() + pbi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
                                                  "<td>" + pbi.getPrice() + "</td>\n" +
                                                  "<td>" + item.getPrice() + "</td>\n" +
-                                                 "<td id='price" + pbi.getProjectBill() + pbi.getId() +
-                                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" +
-                                                 "</td>\n" +
-                                                 "<td id='discount" + pbi.getProjectBill() + pbi.getId() +
-                                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" +
-                                                 "</td>\n" +
+                                                 "<td id='price" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                                                 "<td id='discount" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
                                                  "<td></td>\n" +
-                                                 "<td><input type='button' id='Edit' value='Edit' class='button' " +
-                                                 "onclick='editRequestQuotationValues(" + pbi.getProjectBill() + "," +
-                                                 pbi.getId() + ")' ></td>\n" +
-                                                 "<td><input type='button' id='Refresh' value='Refresh' " +
-                                                 "class='button' onclick='refreshValues(" + pbi.getProjectBill() +
-                                                 "," + pbi.getId() + ")' ></td>\n" +
-                                                 "<td><input type='button' id='Remove' value='Remove' " +
-                                                 "class='button' onclick='removeValues(" + pbi.getProjectBill() +
-                                                 "," + pbi.getId() + ")' ></td>\n" +
-                                                 "<td><input type='button' id='Save' value='Save' " +
-                                                 "class='button' onclick='saveValues(" + pbi.getProjectBill() +
-                                                 "," + pbi.getId() + ")' ></td>\n" +
+                                                 "<td><input type='button' id='Edit' value='Edit' class='button' " + "onclick='editRequestQuotationValues(" + pbi.getProjectBill() + "," + pbi.getId() +
+                                                 ")' ></td>\n" +
+                                                 "<td><input type='button' id='Refresh' value='Refresh' " + "class='button' onclick='refreshValues(" + pbi.getProjectBill() + "," + pbi.getId() +
+                                                 ")' ></td>\n" +
+                                                 "<td><input type='button' id='Remove' value='Remove' " + "class='button' onclick='removeValues(" + pbi.getProjectBill() + "," + pbi.getId() +
+                                                 ")' ></td>\n" +
+                                                 "<td><input type='button' id='Save' value='Save' " + "class='button' onclick='saveValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
                                                  "</tr>\n";
                                 }
                             }
@@ -129,15 +117,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
         model.addAttribute("projectBillNote", pbInfo[0]);
         model.addAttribute("projectBillItems", pbInfo[1]);
         model.addAttribute("supplier", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.SUPPLIER));
-        model.addAttribute("buttonSavePDF",
-                           "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" +
-                           p.getReference() + "\")'>");
-        model.addAttribute("buttonSaveExcel",
-                           "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" +
-                           p.getReference() + "\")'>");
-        model.addAttribute("buttonSendEmail",
-                           "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" +
-                           p.getId() + "\")'>");
+        model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getReference() + "\")'>");
+        model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getReference() + "\")'>");
+        model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>");
 
         return "index";
     }
@@ -179,33 +161,19 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                             "<td>" + ++count + "</td>\n" +
                                             "<td>" + pbi.getItemImno() + "</td>\n" +
                                             "<td>" + pbi.getItemDescription() + "</td>\n" +
-                                            "<td>" + getCurrencyById(pbi.getCurrency()) + "</td>\n" +
                                             "<td>" + pbi.getQuantity() + "</td>\n" +
                                             "<td>" + item.getQuantity() + "</td>\n" +
-                                            "<td id='quantity" + pbi.getProjectBill() + pbi.getId() +
-                                            "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" +
-                                            "</td>\n" +
+                                            "<td id='quantity" + pbi.getProjectBill() + pbi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
                                             "<td>" + pbi.getPrice() + "</td>\n" +
                                             "<td>" + item.getPrice() + "</td>\n" +
-                                            "<td id='price" + pbi.getProjectBill() + pbi.getId() +
-                                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" +
-                                            "</td>\n" +
-                                            "<td id='discount" + pbi.getProjectBill() + pbi.getId() +
-                                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" +
-                                            "</td>\n" +
+                                            "<td id='price" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                                            "<td id='discount" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
                                             "<td></td>\n" +
-                                            "<td><input type='button' id='Edit' value='Edit' class='button' " +
-                                            "onclick='editValues(" + pbi.getProjectBill() + "," + pbi.getId() +
-                                            ")' ></td>\n" +
-                                            "<td><input type='button' id='Refresh' value='Refresh' " +
-                                            "class='button' onclick='refreshValues(" + pbi.getProjectBill() +
-                                            "," + pbi.getId() + ")' ></td>\n" +
-                                            "<td><input type='button' id='Remove' value='Remove' " +
-                                            "class='button' onclick='removeValues(" + pbi.getProjectBill() +
-                                            "," + pbi.getId() + ")' ></td>\n" +
-                                            "<td><input type='button' id='Save' value='Save' " +
-                                            "class='button' onclick='saveValues(" + pbi.getProjectBill() +
-                                            "," + pbi.getId() + ")' ></td>\n" +
+                                            "<td><input type='button' id='Edit' value='Edit' class='button' " + "onclick='editValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
+                                            "<td><input type='button' id='Refresh' value='Refresh' " + "class='button' onclick='refreshValues(" + pbi.getProjectBill() + "," + pbi.getId() +
+                                            ")'></td>\n" +
+                                            "<td><input type='button' id='Remove' value='Remove' " + "class='button' onclick='removeValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")'></td>\n" +
+                                            "<td><input type='button' id='Save' value='Save' " + "class='button' onclick='saveValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
                                             "</tr>\n";
 
                             }

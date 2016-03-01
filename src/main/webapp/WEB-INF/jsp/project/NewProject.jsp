@@ -6,7 +6,7 @@
 
 <script>
     $(function () {
-        $("#new-project-expired").datepicker();
+        $("#expired").datepicker();
 
         var id = $('#edit-project-id').val();
 
@@ -17,14 +17,14 @@
             success: function (response) {
                 var content = JSON.parse(response);
 
-                $("#new-project-company").html(content.company);
-                $("#new-project-type").html(content.type);
-                $("#new-project-vessel").html(content.vessel);
                 $("#company").html(content.company);
-                $("#new-project-contact").html(content.contact);
-                if (content.project_header != null && content.project_body != null) {
-                    $("#project-header").html(content.project_header);
-                    $("#project-body").html(content.project_body);
+                $("#type").html(content.type);
+                $("#vessel").html(content.vessel);
+                $("#customer").html(content.customer);
+                $("#contact").html(content.contact);
+                if (content.header != null && content.body != null) {
+                    $("#header").html(content.header);
+                    $("#body").html(content.body);
                 }
             },
             error: function (xhr, status, error) {
@@ -45,7 +45,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-company"></select>
+                            <select id="company"></select>
                         </label>
                     </p>
                 </td>
@@ -57,7 +57,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-type"></select>
+                            <select id="type"></select>
                         </label>
                     </p>
                 </td>
@@ -66,7 +66,7 @@
             <!- Expire date ->
             <tr>
                 <td><label>Expired date</label></td>
-                <td><input type="text" id="new-project-expired" value="${expired}"></td>
+                <td><input type="text" id="expired" value="${expired}"></td>
                 <td></td>
             </tr>
             <!- Customer ->
@@ -75,7 +75,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="company" onchange="projectFilterCustomer()"></select>
+                            <select id="customer" onchange="projectFilterCustomer()"></select>
                         </label>
                     </p>
                 </td>
@@ -100,8 +100,7 @@
                 <td width="150px">
                     <p>
                         <label class="custom-select">
-                            <!--<select id="new-project-vessel" onchange="projectFilterVessel()"></select>-->
-                            <select id="new-project-vessel"></select>
+                            <select id="vessel"></select>
                         </label>
                     </p>
                 </td>
@@ -134,7 +133,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="new-project-contact"></select>
+                            <select id="contact"></select>
                         </label>
                     </p>
                 </td>
@@ -167,10 +166,10 @@
             </tr>
         </tbody>
     </table>
-    <input type="button" class="button" id="${project_button_id}" onclick="${project_button_action}" value=${project_button_value} />
+    <input type="button" class="button" id="${button_id}" onclick="${button_action}" value=${button_value} />
     <!- Results ->
     <table class="table tablesorter">
-        <thead id="project-header"></thead>
-        <tbody id="project-body"></tbody>
+        <thead id="header"></thead>
+        <tbody id="body"></tbody>
     </table>
 </div>

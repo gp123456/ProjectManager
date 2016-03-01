@@ -17,7 +17,7 @@
                 var content = JSON.parse(response);
 
                 $("#project-new-size").html(content.project_new_size);
-                $("#project-bill-size").html(content.project_bill_size);
+                $("#bill-material-service-size").html(content.project_bill_size);
                 $("#project-quota-size").html(content.project_quota_size);
                 $("#project-purchase-size").html(content.project_purchase_size);
                 $("#project-work-size").html(content.project_work_size);
@@ -50,8 +50,8 @@
         <ul id="project-new"></ul>
     </div>
     <div class="menu-item">
-        <h3 id="project-bill-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
-                        '#lst-bill-project', '/ProjectManager/project/project-bill')">Bill of materials or services</h3>
+        <h3 id="bill-material-service-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
+                        '#lst-bill-project', '/ProjectManager/project/bill-material-service')">Bill of materials or services</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
                 <div id="lst-bill-project" class="radio"></div>

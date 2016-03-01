@@ -5,75 +5,119 @@
  */
 
 //insert new item in Project Bill table
-function insertItem(sel) {
-    var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&item=" +
-            sel.value + "&classRefresh=button alarm&classSave=button alarm";
+function insertItem() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val() +
+            "&item=" + $("#item option:selected").val() +
+            "&classRefresh=button alarm&classSave=button alarm";
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/item/insert",
+        url: "/ProjectManager/project/bill-material-service/item/insert",
         data: data,
         success: function (response) {
-            $("#project-bill-items").html(response);
+            $("#bill-material-service-item").html(response);
         },
         error: function (e) {
         }
     });
 }
 
-function saveValues(pdid, location, id) {
-    var quantity = Number($("#quantity" + pdid + location + id).text());
-    var cost = Number($("#cost" + pdid + location + id).text());
-    var percentage = Number($("#percentage" + pdid + location + id).text());
-    var discount = Number($("#discount" + pdid + location + id).text());
-    var currency = $("#currency" + pdid + location + id + " option:selected").val();
-    var total_cost = $("#total_cost" + pdid + location + id).text();
-    var sale_price = $("#sale_price" + pdid + location + id).text();
-    var total_sale_price = $("#total_sale_price" + pdid + location + id).text();
-    var total_net_price = $("#total_net_price" + pdid + location + id).text();
-
-    var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&quantity=" +
-            quantity + "&cost=" + cost + "&totalCost=" + total_cost + "&percentage=" +
-            percentage + "&discount=" + discount + "&salePrice=" + sale_price +
-            "&totalSalePrice=" + total_sale_price + "&totalNetPrice=" + total_net_price +
-            "&currency=" + currency + "&classRefresh=button&classSave=button";
+function changeLocation() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val();
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/item/save",
+        url: "/ProjectManager/project/bill-material-service/location",
+        data: data,
+        success: function (response) {
+            $("#bill-material-service-item").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function insertCurrency() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val() +
+            "&currency=" + $("#currency option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/bill-material-service/item/currency",
+        data: data,
+        success: function (response) {
+            $("#bill-material-service").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function saveItem(pdid, id) {
+    var quantity = Number($("#quantity" + pdid + id).text());
+    var cost = Number($("#cost" + pdid + id).text());
+    var percentage = Number($("#percentage" + pdid + id).text());
+    var discount = Number($("#discount" + pdid + id).text());
+    var total_cost = $("#total_cost" + pdid + id).text();
+    var sale_price = $("#sale_price" + pdid + id).text();
+    var total_sale_price = $("#total_sale_price" + pdid + id).text();
+    var total_net_price = $("#total_net_price" + pdid + id).text();
+
+    var data = "pdId=" + pdid +
+            "&location=" + $("#location option:selected").val() +
+            "&currency=" + $("#currency option:selected").val() +
+            "&item=" + id +
+            "&quantity=" + quantity +
+            "&cost=" + cost +
+            "&totalCost=" + total_cost +
+            "&percentage=" + percentage +
+            "&discount=" + discount +
+            "&salePrice=" + sale_price +
+            "&totalSalePrice=" + total_sale_price +
+            "&totalNetPrice=" + total_net_price +
+            "&classRefresh=button&classSave=button";
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/bill-material-service/item/save",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#project-bill").html(content.projectBill);
-            $("#project-bill-items").html(content.projectBillItems);
+            $("#bill-material-service").html(content.projectBill);
+            $("#bill-material-service-item").html(content.projectBillItems);
         },
         error: function (e) {
         }
     });
 }
 
-function removeValues(pdid, location, id) {
+function removeItem(pdid, id) {
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/item/remove",
-        data: "pdId=" + pdid + "&location=" + location + "&item=" + id,
+        url: "/ProjectManager/project/bill-material-service/item/remove",
+        data: "pdId=" + pdid +
+                "&location=" + $("#location option:selected").val() +
+                "&item=" + id,
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#project-bill").html(content.projectBill);
-            $("#project-bill-items").html(content.projectBillItems);
+            $("#bill-material-service").html(content.projectBill);
+            $("#bill-material-service-item").html(content.projectBillItems);
         },
         error: function (e) {
         }
     });
 }
 
-function refreshValues(pdid, location, id, available) {
-    var quantity = Number($("#quantity" + pdid + location + id).text());
-    var cost = Number($("#cost" + pdid + location + id).text());
-    var percentage = Number($("#percentage" + pdid + location + id).text());
-    var discount = Number($("#discount" + pdid + location + id).text());
+function refreshItem(pdid, id, available) {
+    var quantity = Number($("#quantity" + pdid + id).text());
+    var cost = Number($("#cost" + pdid + id).text());
+    var percentage = Number($("#percentage" + pdid + id).text());
+    var discount = Number($("#discount" + pdid + id).text());
 
     if (isNaN(quantity) || quantity === 0) {
         alert("You must give a valid number quantity");
@@ -90,18 +134,24 @@ function refreshValues(pdid, location, id, available) {
         }
 
         if (conf === true) {
-            var data = "pdId=" + pdid + "&location=" + location + "&item=" + id + "&available=" +
-                    available + "&price=" + $("#price" + pdid + id).text() + "&quantity=" +
-                    quantity + "&cost=" + cost + "&percentage=" + percentage + "&discount=" + discount +
-                    "&currency=" + $("#currency" + pdid + location + id + " option:selected").val() +
+            var data = "pdId=" + pdid +
+                    "&location=" + $("#location option:selected").val() +
+                    "&item=" + id +
+                    "&available=" + available +
+                    "&price=" + $("#price" + pdid + id).text() +
+                    "&quantity=" + quantity +
+                    "&cost=" + cost +
+                    "&percentage=" + percentage +
+                    "&discount=" + discount +
+                    "&currency=" + $("#currency option:selected").val() +
                     "&classRefresh=button&classSave=button alarm";
 
             $.ajax({
                 type: "POST",
-                url: "/ProjectManager/project/project-bill/item/refresh",
+                url: "/ProjectManager/project/bill-material-service/item/refresh",
                 data: data,
                 success: function (response) {
-                    $("#project-bill-items").html(response);
+                    $("#bill-material-service-item").html(response);
                 },
                 error: function (e) {
                 }
@@ -110,21 +160,23 @@ function refreshValues(pdid, location, id, available) {
     }
 }
 
-function editValues(pdid, location, id) {
-    var data = "pdId=" + pdid + "&location=" + location + "&item=" + id +
+function editItem(pdid, id) {
+    var data = "pdId=" + pdid +
+            "&location=" + $("#location option:selected").val() +
+            "&item=" + id +
             "&classRefresh=button alarm&classSave=button alarm";
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/item/edit",
+        url: "/ProjectManager/project/bill-material-service/item/edit",
         data: data,
         success: function (response) {
-            $("#project-bill-items").html(response);
+            $("#bill-material-service-item").html(response);
 
-            $("#quantity" + pdid + location + id).html("<div contenteditable></div>");
-            $("#cost" + pdid + location + id).html("<div contenteditable></div>");
-            $("#percentage" + pdid + location + id).html("<div contenteditable></div>");
-            $("#discount" + pdid + location + id).html("<div contenteditable></div>");
+            $("#quantity" + pdid + id).html("<div contenteditable></div>");
+            $("#cost" + pdid + id).html("<div contenteditable></div>");
+            $("#percentage" + pdid + id).html("<div contenteditable></div>");
+            $("#discount" + pdid + id).html("<div contenteditable></div>");
         },
         error: function (e) {
         }
@@ -136,7 +188,7 @@ function viewLocation(pdid, location, id) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/item/view-location",
+        url: "/ProjectManager/project/bill-material-service/item/view-location",
         data: data,
         success: function (response) {
             $("#Edit" + pdid + location + id).tooltip({
@@ -159,15 +211,15 @@ function saveProjectBill(pdid, locationId) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/save",
+        url: "/ProjectManager/project/bill-material-service/save",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
 
             if (content.billHeader === null) {
                 $("#bill-subproject").html(content.subprojects);
-                $("#project-bill").html(content.projectBill);
-                $("#project-bill-items").html(content.projectBillItems);
+                $("#bill-material-service").html(content.projectBill);
+                $("#bill-material-service-item").html(content.projectBillItems);
             } else {
                 $("#bill-header").html(content.billHeader);
             }
@@ -182,7 +234,7 @@ function savePDF(prjRef) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/savepdf",
+        url: "/ProjectManager/project/bill-material-service/savepdf",
         data: data,
         success: function () {
         },
@@ -196,11 +248,9 @@ function saveXLS(prjRef) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/savexls",
+        url: "/ProjectManager/project/bill-material-service/savexls",
         data: data,
         success: function (response) {
-            alert(response);
-
             $("#button-action-message").html(response);
         },
         error: function (e) {
@@ -213,7 +263,7 @@ function sendEmail(prjRef) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/sendemail",
+        url: "/ProjectManager/project/bill-material-service/sendemail",
         data: data,
         success: function (response) {
             $("#button-action-message").html(response);
@@ -226,7 +276,7 @@ function sendEmail(prjRef) {
 function addItem() {
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/add-item",
+        url: "/ProjectManager/project/bill-material-service/add-item",
         success: function (response) {
             var content = JSON.parse(response);
 
@@ -241,7 +291,7 @@ function addItem() {
 
 function stockNewItem() {
     var imno = $("#item-imno").val();
-    var location = $("#item-location option:selected").val();
+    var location = $("#location option:selected").val();
     var quantity = Number($("#item-quantity").val());
     var price = Number($("#item-price").val());
     var company = $("#item-supplier option:selected").val();
@@ -263,43 +313,12 @@ function stockNewItem() {
 
         $.ajax({
             type: "POST",
-            url: "/ProjectManager/project/project-bill/item/stock",
+            url: "/ProjectManager/project/bill-material-service/item/stock",
             data: data,
             success: function (response) {
-                $("#project-bill-items").html(response);
+                $("#bill-material-service-item").html(response);
             },
             error: function (xhr, status, error) {
-            }
-        });
-
-        $("#add-item").dialog("close");
-    }
-}
-
-function nostockNewItem() {
-    var imno = $("#item-imno").val();
-    var description = Number($("#item-desc").val());
-    var quantity = Number($("#item-quantity").val());
-    var price = Number($("#item-price").val());
-
-    if (imno == 0) {
-        $("#validate-add-item").text("You must give a item reference");
-    } else if (isNaN(quantity) || quantity == 0) {
-        $("#validate-add-item").text("You must give a valid number quantity");
-    } else if (isNaN(price) || price == 0) {
-        $("#validate-add-item").text("You must give a valid number price");
-    } else {
-        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
-                imno + "&quantity=" + quantity + "&price=" + price + "&description=" +
-                description;
-        $.ajax({
-            type: "POST",
-            url: "/ProjectManager/project/project-bill/item/nostock",
-            data: data,
-            success: function (response) {
-                $("#project-bill-items").html(response);
-            },
-            error: function (e) {
             }
         });
 
@@ -334,12 +353,12 @@ function dlgNewItem() {
 function addSubProject() {
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/new-subproject",
+        url: "/ProjectManager/project/bill-material-service/new-subproject",
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#new-project-company").html(content.company);
-            $("#new-project-type").html(content.type);
+            $("#subproject-company").html(content.company);
+            $("#type").html(content.type);
             dlgNewSubProject();
         },
         error: function (e) {
@@ -369,12 +388,12 @@ function dlgNewSubProject() {
 }
 
 function saveSubProject() {
-    var type = $("#new-project-type option:selected").attr("value");
-    var expired = $("#new-project-expired").val();
+    var type = $("#type option:selected").val();
+    var expired = $("#expired").val();
     var expired_year = expired.split("-")[0];
     var expired_month = expired.split("-")[1];
     var expired_day = expired.split("-")[2];
-    var company = $("#new-project-company option:selected").attr("value");
+    var company = $("#subproject-company option:selected").val();
     var project = $("#bill-project-id").val();
 
     if (company == "none") {
@@ -391,7 +410,7 @@ function saveSubProject() {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/save-subproject",
+        url: "/ProjectManager/project/bill-material-service/save-subproject",
         data: data,
         success: function (response) {
             location.reload();
@@ -403,37 +422,39 @@ function saveSubProject() {
     $("#new-subproject").dialog("close");
 }
 
-function addProjectBillItems() {
+function addBillMaterialService(location) {
     var items = [];
     $(':checkbox:checked').each(function (i) {
         items[i] = $(this).val();
     });
-    var data = "id=" + $("#bill-subproject option:selected").attr("value") +
-            "&location=" + $("#select-new-location option:selected").attr("value") +
+    var data = "id=" +
+            $("#subproject option:selected").val() +
+            "&srcLocation=" + location +
+            "&newLocation=" + $("#location option:selected").val() +
             "&itemIds=" + items;
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/add-project-bill-items",
+        url: "/ProjectManager/project/bill-material-service/replace/add",
         data: data,
         success: function (response) {
-            $("#project-bill-items").html(response);
+            $("#bill-material-service-item").html(response);
         },
         error: function (e) {
         }
     });
 
-    $("#replace-project-bill-items").dialog("close");
+    $("#replace-bill-material-service").dialog("close");
 }
 
-function dlgReplaceProjectBillItems() {
-    $("#replace-project-bill-items").dialog({
+function dlgReplaceBillMaterialService(location) {
+    $("#replace-bill-material-service").dialog({
         autoOpen: true,
         modal: true,
-        width: 275,
+        width: 310,
         buttons: {
             "submit": function () {
-                addProjectBillItems();
+                addBillMaterialService(location);
             }
         },
         show: {
@@ -447,14 +468,24 @@ function dlgReplaceProjectBillItems() {
     });
 }
 
-function replaceProjectBillItems(pdid, location) {
+function replaceBillMaterialService(pdid, location) {
+    var newLocation = $("#location option:selected").val();
+    var data = "pdid=" + pdid +
+            "&srcLocation=" + location +
+            "&newLocation=" + newLocation;
+
+    if (location == newLocation) {
+        alert("you must select a new location")
+        return;
+    }
+
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/replace-project-bill-items",
-        data: "pdid=" + pdid + "&location=" + location,
+        url: "/ProjectManager/project/bill-material-service/replace",
+        data: data,
         success: function (response) {
-            $("#lst-project-bill-items").html(response);
-            dlgReplaceProjectBillItems();
+            $("#lst-bill-material-service-item").html(response);
+            dlgReplaceBillMaterialService(location);
         },
         error: function (e) {
         }
@@ -462,20 +493,21 @@ function replaceProjectBillItems(pdid, location) {
 }
 
 function getProjectBillItems() {
-    var data = "id=" + $("#bill-subproject option:selected").attr("value");
+    var data = "id=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val();
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/project-bill/get-project-bill-items",
+        url: "/ProjectManager/project/bill-material-service/get-bill-material-service-item",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#project-bill").html(content.projectBill);
-            $("#project-bill-items").html(content.projectBillItems);
-            $("#project-info-company").val(content.projectInfoCompany);
-            $("#project-info-customer").val(content.projectInfoCustomer);
-            $("#project-info-vessel").val(content.projectInfoVessel);
+            $("#bill-material-service").html(content.billMaterialService);
+            $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            $("#company").val(content.company);
+            $("#customer").val(content.customer);
+            $("#vessel").val(content.vessel);
         },
         error: function (e) {
         }

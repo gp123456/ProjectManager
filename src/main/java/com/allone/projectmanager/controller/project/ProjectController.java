@@ -7,7 +7,6 @@ package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.WCSProjectManagerService;
-import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Company;
@@ -78,7 +77,7 @@ public class ProjectController extends ProjectCommon {
         content.put("company", createSearchCompany());
         content.put("type", createSearchType());
         content.put("vessel", createSearchVessel(srvWCSProjectManager, null));
-        content.put("company", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.CUSTOMER));
+        content.put("customer", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.CUSTOMER));
         content.put("contact", createSearchContact(srvProjectManager, null));
 
         if (p != null && !p.getId().equals(-1)) {
@@ -97,9 +96,8 @@ public class ProjectController extends ProjectCommon {
                                                     getModeEdit());
                 }
             }
-            content.put("project_header", createProjectHeader(getModeEdit()));
-            content.put("project_body", projectBody);
-//            content.put("project_footer", (pds.size() > 10) ? createProjectFooter() : "");
+            content.put("header", createProjectHeader(getModeEdit()));
+            content.put("body", projectBody);
         }
 
         return new Gson().toJson(content);
@@ -164,9 +162,9 @@ public class ProjectController extends ProjectCommon {
         model.addAttribute("p_id", -1);
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
         model.addAttribute("expired", format.format(expired));
-        model.addAttribute("project_button_value", "Save");
-        model.addAttribute("project_button_id", "project-save");
-        model.addAttribute("project_button_action", "saveProject()");
+        model.addAttribute("button_value", "Save");
+        model.addAttribute("button_id", "save");
+        model.addAttribute("button_action", "saveProject()");
 
         return "index";
     }
@@ -183,9 +181,9 @@ public class ProjectController extends ProjectCommon {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
         }
-        model.addAttribute("project_button_value", "Edit");
-        model.addAttribute("project_button_id", "project-edit");
-        model.addAttribute("project_button_action", "editRow(" + p.getId() + ")");
+        model.addAttribute("button_value", "Edit");
+        model.addAttribute("button_id", "edit");
+        model.addAttribute("button_action", "editRow(" + p.getId() + ")");
 
         return "index";
     }
@@ -214,10 +212,9 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
                                                         "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
                                                         getModeEdit(), offset, size);
-//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
-            content.put("project_header", projectHeader);
-            content.put("project_body", projectBody);
+            content.put("header", projectHeader);
+            content.put("body", projectBody);
             content.put("project_reference", "New Project - REF:" + getUser().getProject_reference());
             content.put("project_type", getProjectType());
             content.putAll(getMenuInfo());
@@ -272,11 +269,10 @@ public class ProjectController extends ProjectCommon {
                 }
                 srvProjectManager.getDaoProjectDetail().edit(dbpd);
 
-                content.put("project_header", createProjectHeader(getModeEdit()));
-                content.put("project_body", createProjectRow(srvProjectManager, dbpd, new ArrayList<String>(Arrays.
-                                                             asList("Processed", "Start", "Start", "Start", "Start",
-                                                                    "Start", "Start")), getModeEdit()));
-//                content.put("project_footer", (size.compareTo(10) > 0) ? createProjectFooter() : "");
+                content.put("header", createProjectHeader(getModeEdit()));
+                content.put("body", createProjectRow(srvProjectManager, dbpd, new ArrayList<String>(Arrays.
+                                                     asList("Processed", "Start", "Start", "Start", "Start",
+                                                            "Start", "Start")), getModeEdit()));
 
                 return new Gson().toJson(content);
             }
@@ -392,15 +388,15 @@ public class ProjectController extends ProjectCommon {
         if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
             List<WCSVessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
-                                   ((!customer.equals("none")) ?
-                                    srvWCSProjectManager.getDaoWCSVessel().getByCompany(customer) :
-                                    srvWCSProjectManager.getDaoWCSVessel().getAll()) :
-                                   null;
+                                      ((!customer.equals("none")) ?
+                                       srvWCSProjectManager.getDaoWCSVessel().getByCompany(customer) :
+                                       srvWCSProjectManager.getDaoWCSVessel().getAll()) :
+                                      null;
             List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
                                      ((!customer.equals("none")) ?
                                       srvProjectManager.getDaoContact()
-                                              .getByCompanyVessel(customer,
-                                                      new Long(vessels.get(0).getId())) :
+                                      .getByCompanyVessel(customer,
+                                                          new Long(vessels.get(0).getId())) :
                                       srvProjectManager.getDaoContact().getAll()) :
                                      null;
 

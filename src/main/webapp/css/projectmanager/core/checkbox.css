@@ -52,12 +52,11 @@ input[type=checkbox] {
 .slideThree:after {
     content: 'OFF';
     font: 12px/26px Arial, sans-serif;
-    color: #000;
+    color: #00bf00;
     position: absolute;
     right: 10px;
-    z-index: 0;
     font-weight: bold;
-    text-shadow: 1px 1px 0px rgba(255,255,255,.15);
+    margin-top: -12px
 }
 
 .slideThree:before {
@@ -66,7 +65,6 @@ input[type=checkbox] {
     color: #00bf00;
     position: absolute;
     left: 10px;
-    z-index: 0;
     font-weight: bold;
 }
 
