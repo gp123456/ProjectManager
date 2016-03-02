@@ -32,21 +32,24 @@ function changeLocation() {
         url: "/ProjectManager/project/bill-material-service/location",
         data: data,
         success: function (response) {
-            $("#bill-material-service-item").html(response);
+            var content = JSON.parse(response);
+            
+            $("#bill-material-service").html(content.billMaterialService);
+            $("#bill-material-service-item").html(content.billMaterialServiceItems);
         },
         error: function (e) {
         }
     });
 }
 
-function insertCurrency() {
+function changeCurrency() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=" + $("#location option:selected").val() +
             "&currency=" + $("#currency option:selected").val();
-
+    
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/bill-material-service/item/currency",
+        url: "/ProjectManager/project/bill-material-service/currency",
         data: data,
         success: function (response) {
             $("#bill-material-service").html(response);
@@ -188,7 +191,7 @@ function viewLocation(pdid, location, id) {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/bill-material-service/item/view-location",
+        url: "/ProjectManager/project/bill-material-service/view-location",
         data: data,
         success: function (response) {
             $("#Edit" + pdid + location + id).tooltip({
@@ -203,11 +206,9 @@ function viewLocation(pdid, location, id) {
     });
 }
 
-function saveProjectBill(pdid, locationId) {
-    var data = "location=" + locationId + "&project=" + pdid + "&totalCost=" +
-            $("#m_total_cost").text() + "&averangeDiscount=" + $("#m_average_discount").text() +
-            "&totalSalePrice=" + $("#m_sale_price").text() + "&totalNetPrice=" +
-            $("#m_net_sale_price").text() + "&note=" + $("#notes").val();
+function saveBillMaterialService(pdid) {
+    var data = "project=" + pdid +
+            "&note=" + $("#notes").val();
 
     $.ajax({
         type: "POST",
@@ -427,8 +428,7 @@ function addBillMaterialService(location) {
     $(':checkbox:checked').each(function (i) {
         items[i] = $(this).val();
     });
-    var data = "id=" +
-            $("#subproject option:selected").val() +
+    var data = "id=" + $("#subproject option:selected").val() +
             "&srcLocation=" + location +
             "&newLocation=" + $("#location option:selected").val() +
             "&itemIds=" + items;
@@ -468,24 +468,19 @@ function dlgReplaceBillMaterialService(location) {
     });
 }
 
-function replaceBillMaterialService(pdid, location) {
-    var newLocation = $("#location option:selected").val();
-    var data = "pdid=" + pdid +
-            "&srcLocation=" + location +
-            "&newLocation=" + newLocation;
-
-    if (location == newLocation) {
-        alert("you must select a new location")
-        return;
-    }
+function replaceBillMaterialService() {
+    var data = "pdid=" + $("#bill-project-id").val() +
+            "&location=" + $("#location option:selected").val();
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/replace",
         data: data,
         success: function (response) {
-            $("#lst-bill-material-service-item").html(response);
-            dlgReplaceBillMaterialService(location);
+            var content = JSON.parse(response);
+            
+            $("#lst-bill-material-service-item").html(content.items);
+            dlgReplaceBillMaterialService(content.location);
         },
         error: function (e) {
         }

@@ -143,15 +143,24 @@
         </div>
         <input type="hidden" id="item_id" name="id"/>
         <br><h3>Select Location</h3>
-        <p>
-            <label class="custom-select">
-                <select id="location" onchange="changeLocation()"></select>
-            </label>
-        </p>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label class="custom-select">
+                            <select id="location" onchange="changeLocation()"></select>
+                        </label>
+                    </td>
+                    <td>
+                        <input type="button" class="button" value="Replace Item(s)" onclick="replaceBillMaterialService()"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <br><h3>Select Currency</h3>
         <p>
             <label class="custom-select">
-                <select id="currency" onchange="insertCurrency()"></select>
+                <select id="currency" onchange="changeCurrency()"></select>
             </label>
         </p>
     </div>
@@ -168,8 +177,6 @@
                     <th>Currency</th>
                     <th>Location</th>
                     <th>Subproject</th>
-                    <th>Replace</th>
-                    <th>Save</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -207,6 +214,6 @@
         </table>
     </div>
     <div><h2>Notes</h2><textarea id="notes" name="notes" rows="10" style="width: 100%"></textarea></div>
-    <div>${button_save_pdf}${button_save_excel}${button_send_email}</div>
+    <div>${button_save}${button_save_pdf}${button_save_excel}${button_send_email}</div>
     <div>${button_action_message}</div>
 </div>

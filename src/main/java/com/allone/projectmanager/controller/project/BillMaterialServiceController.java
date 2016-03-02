@@ -114,7 +114,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                 }
             }
             content.put("subprojects", response);
-            content.put("billMaterialService", createProjectBill(new ProjectBillModel(pdId, null)));
+            content.put("billMaterialService", createProjectBill(new ProjectBillModel(pdId, 1)));
             content.put("billMaterialServiceItems", createProjectBillItems(new ProjectBillModel(pdId, 1)));
             content.put("company", pds.get(0).getCompany());
             content.put("customer", pds.get(0).getCustomer());
@@ -173,8 +173,6 @@ public class BillMaterialServiceController extends ProjectCommon {
                             "<td id='currency" + pdid + "'>" + getCurrencyById(pb.getCurrency()) + "</td>\n" +
                             "<td id='location" + pdid + "'>" + pb.getLocation() + "</td>\n" +
                             "<td id='m_subproject'>" + subproject + "</td>\n" +
-                            "<td><input type='button' value='Replace' class='button' onclick='replaceBillMaterialService(" + pdid + "," + pbm.getLocation() + ")'></td>\n" +
-                            "<td><input type='button' value='Save' class='" + pb.getClassSave() + "' onclick='saveProjectBill(" + pdid + "," + pbm.getLocation() + ")'></td>\n" +
                             "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," + pbm.getLocation() + ")'></td>\n" +
                             "</tr>\n";
             }
@@ -256,11 +254,13 @@ public class BillMaterialServiceController extends ProjectCommon {
 
             return new BillMaterialService.Builder()
                     .setProject(pdId)
+                    .setLocation(getLocationNameById(location))
                     .setTotalCost(totalCost)
                     .setAverangeDiscount(averangeDiscount)
                     .setTotalSalePrice(totalSalePrice)
                     .setTotalNetPrice(totalNetPrice)
                     .setCurrency(currency)
+                    .setClassSave("button alarm")
                     .build();
         } else {
             removeVirtualProjectBill(new ProjectBillModel(pdId, location));
@@ -300,6 +300,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (p != null) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", p.getReference());
+            model.addAttribute("button_save", "<input type='button' value='Save' class='button' onclick='saveBillMaterialService(\"" + p.getId() + "\")'>\n");
             model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getReference() + "\")'>\n");
             model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getReference() + "\")'>\n");
             model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>\n");
@@ -353,11 +354,11 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
         BillMaterialService pb = getAverangeDiscount(pdId, location, currency);
 
-        pb.setClassSave("button alarm");
-        pb.setLocation(getLocationNameById(location));
-        setVirtualProjectBill(pb, location);
+        if (pb != null) {
+            setVirtualProjectBill(pb, location);
+        }
         saveVirtualProjectBillItem(new ProjectBillModel(pdId, location));
-        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
+        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, location)));
         content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
 
         return new Gson().toJson(content);
@@ -370,7 +371,7 @@ public class BillMaterialServiceController extends ProjectCommon {
 
         removeVirtualProjectBillItem(pdId, location, pbi.getItem());
         setVirtualProjectBill(getAverangeDiscount(pdId, location, currency), location);
-        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, null)));
+        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, location)));
         content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
 
         return new Gson().toJson(content);
@@ -468,18 +469,28 @@ public class BillMaterialServiceController extends ProjectCommon {
 
         return "";
     }
-    
+
     @RequestMapping(value = "/bill-material-service/location")
     public @ResponseBody
     String getBilMaterialService(Long pdId, Integer location) {
-        return createProjectBillItems(new ProjectBillModel(pdId, location));
+        Map<String, String> content = new HashMap<>();
+
+        if (pdId != null && location != null) {
+            content.put("billMaterialService", createProjectBill(new ProjectBillModel(pdId, location)));
+            content.put("billMaterialServiceItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
+        } else {
+            content.put("billMaterialService", "");
+            content.put("billMaterialServiceItems", "");
+        }
+
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/bill-material-service/save")
     public @ResponseBody
-    String saveProjectBill(Integer location, BillMaterialService pb, Model model) {
+    String saveProjectBill(BillMaterialService pb, Model model) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
-        ProjectBillModel pbm = new ProjectBillModel(pb.getProject(), location);
+        ProjectBillModel pbm = new ProjectBillModel(pd.getProject(), null);
         BillMaterialService vpb = getProjectBill(pbm);
         Map<String, String> content = new HashMap<>();
 
@@ -496,7 +507,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                 model.addAttribute("project_reference", p.getReference());
             }
         }
-        pb.setLocation(getLocationNameById(location));
+        pb.setLocation(getLocationNameById(1));
         pb.setCurrency(vpb.getCurrency());
         if (pb.getId() == null) {
             pb = srvProjectManager.getDaoProjectBill().add(pb);
@@ -529,8 +540,8 @@ public class BillMaterialServiceController extends ProjectCommon {
                 response += "<option value='" + dbpd.getId() + "'>" + dbpd.getReference() + "-" + dbpd.getCompany() + "</option>\n";
             }
             content.put("subproject", response);
-            content.put("projectBill", createProjectBill(new ProjectBillModel(pb.getProject(), null)));
-            content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pb.getProject(), null)));
+            content.put("projectBill", createProjectBill(new ProjectBillModel(pb.getProject(), 1)));
+            content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pb.getProject(), 1)));
         } else {
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
             content.put("billHeader", "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>\n");
@@ -634,7 +645,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                                       .build());
         }
 
-        return createProjectBillItems(new ProjectBillModel(pdId, null));
+        return createProjectBillItems(new ProjectBillModel(pdId, location));
     }
 
     @RequestMapping(value = "/bill-material-service/content")
@@ -674,9 +685,11 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/replace")
     public @ResponseBody
-    String replaceProjectBillItems(Long pdid, Integer srcLocation, Integer newLocation) {
-        String response = "<input type='text' value='" + getLocationNameById(newLocation) + "' readonly>\n";
-        Collection<BillMaterialServiceItem> pbis = getProjectBillItems(new ProjectBillModel(pdid, srcLocation));
+    String replaceProjectBillItems(Long pdid, Integer location) {
+        String response = "<input type='text' value='" + getLocationNameById(location) + "' readonly>\n";
+        ProjectBillModel pbm = getFirstLocation(pdid);
+        Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
+        Map<String, String> content = new HashMap<>();
 
         if (pbis != null && !pbis.isEmpty()) {
             response = pbis.stream()
@@ -692,8 +705,11 @@ public class BillMaterialServiceController extends ProjectCommon {
                     "<input type='checkbox' id='" + item.getId() + "' name='checkbox-project' value='" + item.getId() + "'>\n" +
                     "<label for='" + item.getId() + "'>" + item.getImno() + "</label>\n" +
                     "</div>").reduce(response, String::concat);
+            content.put("items", response);
+            content.put("location", pbm.getLocation().toString());
         }
-        return response;
+        
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/bill-material-service/get-bill-material-service-item")
@@ -723,7 +739,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     String addBillMaterialService(Long id, Integer srcLocation, Integer newLocation, Long[] itemIds) {
         if (id != null && srcLocation != null && newLocation != null && itemIds != null && itemIds.length > 0) {
             ProjectBillModel pbm = new ProjectBillModel(id, srcLocation);
-            
+
             for (Long itemId : itemIds) {
                 BillMaterialServiceItem item = new BillMaterialServiceItem.Builder().build(getProjectBillItem(pbm, itemId));
 
@@ -740,7 +756,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         return "";
     }
 
-    @RequestMapping(value = "/bill-material-service/item/view-location")
+    @RequestMapping(value = "/bill-material-service/view-location")
     public @ResponseBody
     String viewLocation(Integer location) {
         if (location != null) {
@@ -748,5 +764,24 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
 
         return "";
+    }
+
+    @RequestMapping(value = "/bill-material-service/currency")
+    public @ResponseBody
+    String viewLocation(Long pdId, Integer location, Integer currency) {
+        String response = "";
+
+        if (pdId != null && location != null && currency != null) {
+            ProjectBillModel pbm = new ProjectBillModel(pdId, location);
+            BillMaterialService vpb = getProjectBill(pbm);
+
+            if (vpb != null) {
+                vpb.setCurrency(currency);
+            }
+
+            response = createProjectBill(pbm);
+        }
+
+        return response;
     }
 }

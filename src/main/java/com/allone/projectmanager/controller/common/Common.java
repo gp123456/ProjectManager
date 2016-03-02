@@ -175,6 +175,15 @@ public class Common {
     public Collection<BillMaterialServiceItem> getProjectBillItems(ProjectBillModel pbm) {
         return mapProjectBillItems.get(pbm);
     }
+    
+    public ProjectBillModel getFirstLocation(Long pdid) {
+        ProjectBillModel location = null;
+        
+        if (mapProjectBill != null && !mapProjectBill.isEmpty()) {
+            location = mapProjectBill.keySet().iterator().next();
+        }
+        return location;
+    }
 
     public Set<ProjectBillModel> getProjectBillDetailIds() {
         return mapProjectBillItems.keySet();

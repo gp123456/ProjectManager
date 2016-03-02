@@ -40,10 +40,10 @@ public class ProjectBillModel {
     public boolean equals(Object obj) {
         ProjectBillModel pbm = (ProjectBillModel) obj;
         
-        if (pbm.location != null) {
-            return (this.id.equals(pbm.id)) ? this.location.equals(pbm.location) : false;
+        if (pbm.getLocation() != null) {
+            return (id.equals(pbm.getId())) ? location.equals(pbm.getLocation()) : false;
         } else {
-            return (this.id.equals(pbm.id));
+            return (id.equals(pbm.getId()));
         }
     }
 
