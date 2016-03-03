@@ -50,7 +50,7 @@
         <ul id="project-new"></ul>
     </div>
     <div class="menu-item">
-        <h3 id="bill-material-service-size" onclick="dlgProject('new', 'Create', '#dlg-bill-project',
+        <h3 id="bill-material-service-size" onclick="dlgProject('NEW', 'new', 'Create', '#dlg-bill-project',
                         '#lst-bill-project', '/ProjectManager/project/bill-material-service')">Bill of materials or services</h3>
         <div id="dlg-bill-project" hidden="true" title="Project Create">
             <form>
@@ -59,23 +59,34 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-quota-size" onclick="dlgProject('new', 'Project Bill', '#dlg-quota-project',
-                        '#lst-quota-project', '/ProjectManager/project/request-quotation')">Request for Quotation</h3>
-        <div id="dlg-quota-project" hidden="true" title="Project Bill">
+        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Project Bill', '#dlg-request-quotation',
+                        '#lst-request-quotation', '/ProjectManager/project/request-quotation')">Request for Quotation</h3>
+        <div id="dlg-request-quotation" hidden="true" title="Bill Material Service">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
-                    <div id="lst-quota-project"></div>
+                    <div id="lst-request-quotation"></div>
                 </fieldset>
             </form>
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-purchase-size" onclick="dlgProject('new', 'Project Bill', '#dlg-purchase-project',
-                        '#lst-purchase-project', '/ProjectManager/project/purchase-order')">Purchase Order</h3>
-        <div id="dlg-purchase-project" hidden="true" title="Project Bill">
+        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Request Quotation', '#dlg-quotation',
+                        '#lst-quotation', '/ProjectManager/project/quotation')">Quotation</h3>
+        <div id="dlg-quota-project" hidden="true" title="Request Quotation">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
-                    <div id="lst-purchase-project"></div>
+                    <div id="lst-quotation"></div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="menu-item">
+        <h3 id="project-purchase-size" onclick="dlgProject('NEW', 'new', 'Bill Material Service', '#dlg-purchase-order',
+                        '#lst-purchase-order', '/ProjectManager/project/purchase-order')">Purchase Order</h3>
+        <div id="dlg-purchase-project" hidden="true" title="Bill Material Service">
+            <form>
+                <fieldset style="padding:0; border:0; margin-top:25px;">
+                    <div id="lst-purchase-order"></div>
                 </fieldset>
             </form>
         </div>

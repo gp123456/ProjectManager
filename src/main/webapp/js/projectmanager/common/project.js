@@ -490,16 +490,16 @@ function getStatuses() {
     });
 }
 
-function setProjectByStatus(dest_path) {
+function setProjectByStatus(mode, dest_path) {
     var id = $('input[name = "radio-project"]:checked').val();
     
-    window.location.href = dest_path + "?id=" + id;
+    window.location.href = dest_path + "?id=" + id + "&mode=" + mode;
 
     $("#dlg-edit-project").dialog("close");
 }
 
-function dlgProject(version, status, dlg_id, div_id, dest_path) {
-    if (version == 'new') {
+function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
+    if (version === 'new') {
         getProjectByStatus(status, div_id);
     }
 
@@ -510,7 +510,7 @@ function dlgProject(version, status, dlg_id, div_id, dest_path) {
         width: 374,
         buttons: {
             "submit": function () {
-                setProjectByStatus(dest_path);
+                setProjectByStatus(mode, dest_path);
             }
         },
         show: {
@@ -544,7 +544,7 @@ function dlgEditProject() {
                     dest_path = "/ProjectManager/project/bill-material-service";
                 }
 
-                dlgProject('new', status, dlg_id, div_id, dest_path);
+                dlgProject('EDIT', 'new', status, dlg_id, div_id, dest_path);
             }
         },
         show: {

@@ -22,7 +22,7 @@ import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
-import com.allone.projectmanager.model.ProjectBillModel;
+import com.allone.projectmanager.model.ProjectModel;
 import com.allone.projectmanager.tools.JasperReport;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
@@ -82,21 +82,9 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
         content.put("items", response);
 
-        response = "";
-        for (LocationEnum location : LocationEnum.values()) {
-            response += (location.equals(LocationEnum.GREECE)) ?
-                        "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
-                        "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
-        }
-        content.put("locations", response);
+        content.put("locations", createLocations());
 
-        response = "";
-        for (CurrencyEnum currency : CurrencyEnum.values()) {
-            response += (currency.equals(CurrencyEnum.EUR)) ?
-                        "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
-                        "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
-        }
-        content.put("currencies", response);
+        content.put("currencies", createCurrency());
 
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
         Long pdId = null;
@@ -105,7 +93,8 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (pds != null && !pds.isEmpty()) {
             pdId = pds.get(0).getId();
             WCSVessel vessel = srvWCSProjectManager.getDaoWCSVessel().getById(pds.get(0).getVessel().toString());
-            Set<ProjectBillModel> pbKeys = getProjectBillIds();
+            Set<ProjectModel> pbKeys = getProjectBillIds();
+            BillMaterialService bms = getProjectBill(new ProjectModel(pdId, 1));
 
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
@@ -114,8 +103,9 @@ public class BillMaterialServiceController extends ProjectCommon {
                 }
             }
             content.put("subprojects", response);
-            content.put("billMaterialService", createProjectBill(new ProjectBillModel(pdId, 1)));
-            content.put("billMaterialServiceItems", createProjectBillItems(new ProjectBillModel(pdId, 1)));
+            content.put("billMaterialService", createProjectBill(new ProjectModel(pdId, 1)));
+            content.put("noteBillMaterialService", (bms != null) ? bms.getNote() : "");
+            content.put("billMaterialServiceItems", createProjectBillItems(new ProjectModel(pdId, 1)));
             content.put("company", pds.get(0).getCompany());
             content.put("customer", pds.get(0).getCustomer());
             if (vessel != null) {
@@ -147,19 +137,19 @@ public class BillMaterialServiceController extends ProjectCommon {
                         pbi.setClassSave("button alarm");
                         return pbi;
                     }).forEach((pbi) -> {
-                        setVirtualProjectBillItem(new ProjectBillModel(pb.getProject(), location), pbi);
+                        setVirtualProjectBillItem(new ProjectModel(pb.getProject(), location), pbi);
                     });
                 }
             });
         }
     }
 
-    private String createProjectBill(ProjectBillModel _pbm) {
+    private String createProjectBill(ProjectModel _pbm) {
         String response = "";
-        Set<ProjectBillModel> pbIds = (_pbm != null) ? getPBMKeysByPDId(_pbm) : getProjectBillIds();
+        Set<ProjectModel> pbIds = (_pbm != null) ? getPBMKeysByPDId(_pbm) : getProjectBillIds();
 
         if (pbIds != null && !pbIds.isEmpty()) {
-            for (ProjectBillModel pbm : pbIds) {
+            for (ProjectModel pbm : pbIds) {
                 BillMaterialService pb = getProjectBill(pbm);
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
                 String subproject = (pd != null) ? pd.getReference() : "";
@@ -181,12 +171,12 @@ public class BillMaterialServiceController extends ProjectCommon {
         return response;
     }
 
-    private String createProjectBillItems(ProjectBillModel _pbm) {
+    private String createProjectBillItems(ProjectModel _pbm) {
         String response = "";
-        Set<ProjectBillModel> pbms = (_pbm != null) ? getPBMIKeysByPDId(_pbm) : getProjectBillDetailIds();
+        Set<ProjectModel> pbms = (_pbm != null) ? getPBMIKeysByPDId(_pbm) : getProjectBillDetailIds();
 
         if (pbms != null && !pbms.isEmpty()) {
-            for (ProjectBillModel pbm : pbms) {
+            for (ProjectModel pbm : pbms) {
                 Collection<BillMaterialServiceItem> pbItems = getProjectBillItems(pbm);
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pbm.getId());
 
@@ -234,7 +224,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     private BillMaterialService getAverangeDiscount(Long pdId, Integer location, Integer currency) {
-        Collection<BillMaterialServiceItem> items = getProjectBillItems(new ProjectBillModel(pdId, location));
+        Collection<BillMaterialServiceItem> items = getProjectBillItems(new ProjectModel(pdId, location));
 
         if (items != null && !items.isEmpty()) {
             BigDecimal totalCost = BigDecimal.ZERO;
@@ -263,34 +253,14 @@ public class BillMaterialServiceController extends ProjectCommon {
                     .setClassSave("button alarm")
                     .build();
         } else {
-            removeVirtualProjectBill(new ProjectBillModel(pdId, location));
+            removeVirtualProjectBill(new ProjectModel(pdId, location));
 
             return null;
         }
     }
 
-    private String getLocationNameById(Integer id) {
-        for (LocationEnum pl : LocationEnum.values()) {
-            if (pl.getId().equals(id)) {
-                return pl.getName();
-            }
-        }
-
-        return "";
-    }
-
-    private Integer getLocationIdByName(String name) {
-        for (LocationEnum pl : LocationEnum.values()) {
-            if (pl.getName().equals(name)) {
-                return pl.getId();
-            }
-        }
-
-        return 0;
-    }
-
     @RequestMapping(value = "/bill-material-service")
-    public String ProjectBill(Project p, Model model) {
+    public String ProjectBill(Project p, String mode, Model model) {
         this.setTitle("Projects - Bill of materials or services");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/BillMaterialService.jsp");
@@ -312,7 +282,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/insert")
     public @ResponseBody
     String itemInsert(Long pdId, Integer location, BillMaterialServiceItem pbi) {
-        if (!pbi.getItem().equals(0l) && getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem()) == null) {
+        if (!pbi.getItem().equals(0l) && getProjectBillItem(new ProjectModel(pdId, location), pbi.getItem()) == null) {
             Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
 
             if (item != null) {
@@ -320,11 +290,11 @@ public class BillMaterialServiceController extends ProjectCommon {
                 pbi.setPrice(item.getPrice());
                 pbi.setItemImno(item.getImno());
                 pbi.setItemDescription(item.getDescription());
-                setVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
+                setVirtualProjectBillItem(new ProjectModel(pdId, location), pbi);
             }
         }
 
-        String response = createProjectBillItems(new ProjectBillModel(pdId, location));
+        String response = createProjectBillItems(new ProjectModel(pdId, location));
 
         return response;
     }
@@ -332,7 +302,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/save")
     public @ResponseBody
     String itemSave(Long pdId, Integer location, Integer currency, BillMaterialServiceItem pbi) {
-        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectModel(pdId, location), pbi.getItem());
         Map<String, String> content = new HashMap<>();
 
         if (temp != null) {
@@ -348,18 +318,18 @@ public class BillMaterialServiceController extends ProjectCommon {
 
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
-            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
+            editVirtualProjectBillItem(new ProjectModel(pdId, location), temp);
         } else {
-            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), pbi);
+            editVirtualProjectBillItem(new ProjectModel(pdId, location), pbi);
         }
         BillMaterialService pb = getAverangeDiscount(pdId, location, currency);
 
         if (pb != null) {
             setVirtualProjectBill(pb, location);
         }
-        saveVirtualProjectBillItem(new ProjectBillModel(pdId, location));
-        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, location)));
-        content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
+        saveVirtualProjectBillItem(new ProjectModel(pdId, location));
+        content.put("projectBill", createProjectBill(new ProjectModel(pdId, location)));
+        content.put("projectBillItems", createProjectBillItems(new ProjectModel(pdId, location)));
 
         return new Gson().toJson(content);
     }
@@ -371,8 +341,8 @@ public class BillMaterialServiceController extends ProjectCommon {
 
         removeVirtualProjectBillItem(pdId, location, pbi.getItem());
         setVirtualProjectBill(getAverangeDiscount(pdId, location, currency), location);
-        content.put("projectBill", createProjectBill(new ProjectBillModel(pdId, location)));
-        content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
+        content.put("projectBill", createProjectBill(new ProjectModel(pdId, location)));
+        content.put("projectBillItems", createProjectBillItems(new ProjectModel(pdId, location)));
 
         return new Gson().toJson(content);
     }
@@ -381,7 +351,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String itemRefresh(Long pdId, Integer location, BillMaterialServiceItem pbi) {
         Boolean findValues = Boolean.FALSE;
-        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectModel(pdId, location), pbi.getItem());
 
         if (temp != null) {
             Integer quantity = pbi.getQuantity();
@@ -390,22 +360,22 @@ public class BillMaterialServiceController extends ProjectCommon {
             BigDecimal discount = pbi.getDiscount();
             BigDecimal percent = new BigDecimal(100);
 
-            if (quantity != null && !quantity.equals(0)) {
+            if (quantity != null) {
                 temp.setQuantity(quantity);
                 findValues = Boolean.TRUE;
             } else {
                 findValues = Boolean.FALSE;
             }
-            if (cost != null && !cost.equals(BigDecimal.ZERO)) {
+            if (cost != null) {
                 temp.setCost(cost);
                 findValues = Boolean.TRUE;
             } else {
                 findValues = Boolean.FALSE;
             }
-            if (percentage != null && !percentage.equals(BigDecimal.ZERO)) {
+            if (percentage != null) {
                 temp.setPercentage(percentage);
             }
-            if (discount != null && !discount.equals(BigDecimal.ZERO)) {
+            if (discount != null) {
                 temp.setDiscount(discount);
             }
             if (findValues.equals(Boolean.TRUE)) {
@@ -446,9 +416,9 @@ public class BillMaterialServiceController extends ProjectCommon {
 
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
-            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
+            editVirtualProjectBillItem(new ProjectModel(pdId, location), temp);
 
-            return createProjectBillItems(new ProjectBillModel(pdId, location));
+            return createProjectBillItems(new ProjectModel(pdId, location));
         }
 
         return "";
@@ -457,14 +427,14 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/edit")
     public @ResponseBody
     String Save(Long pdId, Integer location, BillMaterialServiceItem pbi) {
-        BillMaterialServiceItem temp = getProjectBillItem(new ProjectBillModel(pdId, location), pbi.getItem());
+        BillMaterialServiceItem temp = getProjectBillItem(new ProjectModel(pdId, location), pbi.getItem());
 
         if (temp != null) {
             temp.setClassRefresh(pbi.getClassRefresh());
             temp.setClassSave(pbi.getClassSave());
-            editVirtualProjectBillItem(new ProjectBillModel(pdId, location), temp);
+            editVirtualProjectBillItem(new ProjectModel(pdId, location), temp);
 
-            return createProjectBillItems(new ProjectBillModel(pdId, location));
+            return createProjectBillItems(new ProjectModel(pdId, location));
         }
 
         return "";
@@ -476,8 +446,8 @@ public class BillMaterialServiceController extends ProjectCommon {
         Map<String, String> content = new HashMap<>();
 
         if (pdId != null && location != null) {
-            content.put("billMaterialService", createProjectBill(new ProjectBillModel(pdId, location)));
-            content.put("billMaterialServiceItems", createProjectBillItems(new ProjectBillModel(pdId, location)));
+            content.put("billMaterialService", createProjectBill(new ProjectModel(pdId, location)));
+            content.put("billMaterialServiceItems", createProjectBillItems(new ProjectModel(pdId, location)));
         } else {
             content.put("billMaterialService", "");
             content.put("billMaterialServiceItems", "");
@@ -488,66 +458,55 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/save")
     public @ResponseBody
-    String saveProjectBill(BillMaterialService pb, Model model) {
-        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pb.getProject());
-        ProjectBillModel pbm = new ProjectBillModel(pd.getProject(), null);
-        BillMaterialService vpb = getProjectBill(pbm);
-        Map<String, String> content = new HashMap<>();
+    String saveBillMaterialService(BillMaterialService pb) {
+        String response = "";
 
-        if (pd != null) {
-            pd.setStatus(ProjectStatusEnum.PROJECT_BILL.toString());
-            srvProjectManager.getDaoProjectDetail().edit(pd);
-            model.addAttribute("pd_id", pd.getId());
+        if (pb != null) {
+            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pb.getProject());
 
-            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+            if (pds != null && !pds.isEmpty()) {
+                Project p = srvProjectManager.getDaoProject().getById(pb.getProject());
+                if (p != null) {
+                    p.setStatus(ProjectStatusEnum.PROJECT_BILL.toString());
+                    srvProjectManager.getDaoProject().edit(p);
+                }
+                for (ProjectDetail pd : pds) {
+                    pd.setStatus(ProjectStatusEnum.PROJECT_BILL.toString());
+                    srvProjectManager.getDaoProjectDetail().edit(pd);
+                    ProjectModel pbm = new ProjectModel(pd.getId(), null);
+                    List<BillMaterialService> vpbs = getBillMaterialServices(pbm);
 
-            if (p != null) {
-                p.setStatus(pd.getStatus());
-                srvProjectManager.getDaoProject().edit(p);
-                model.addAttribute("project_reference", p.getReference());
-            }
-        }
-        pb.setLocation(getLocationNameById(1));
-        pb.setCurrency(vpb.getCurrency());
-        if (pb.getId() == null) {
-            pb = srvProjectManager.getDaoProjectBill().add(pb);
-            setVirtualProjectBillItemBillId(pbm, pb.getId());
-            srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
-        } else {
-            srvProjectManager.getDaoProjectBill().edit(pb);
-            setVirtualProjectBillItemBillId(pbm, pb.getId());
-            Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
+                    if (vpbs != null && !vpbs.isEmpty()) {
+                        for (BillMaterialService vpb : vpbs) {
+                            vpb.setNote(pb.getNote());
+                            vpb.setComplete(Boolean.FALSE);
+                            pbm.setLocation(getLocationIdByName(vpb.getLocation()));
+                            if (vpb.getId() == null) {
+                                vpb = srvProjectManager.getDaoProjectBill().add(vpb);
+                                setVirtualProjectBillItemBillId(pbm, vpb.getId());
+                                srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
+                            } else {
+                                srvProjectManager.getDaoProjectBill().edit(vpb);
+                                setVirtualProjectBillItemBillId(pbm, pb.getId());
+                                Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
 
-            for (BillMaterialServiceItem pbi : pbis) {
-                if (pbi.getId() == null) {
-                    srvProjectManager.getDaoProjectBillItem().add(pbi);
-                } else {
-                    srvProjectManager.getDaoProjectBillItem().edit(pbi);
+                                for (BillMaterialServiceItem pbi : pbis) {
+                                    if (pbi.getId() == null) {
+                                        srvProjectManager.getDaoProjectBillItem().add(pbi);
+                                    } else {
+                                        srvProjectManager.getDaoProjectBillItem().edit(pbi);
+                                    }
+                                }
+                            }
+                            clearVirtualProjectBill(pbm);
+                            response = "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>\n";
+                        }
+                    }
                 }
             }
         }
 
-        clearVirtualProjectBill(pbm);
-
-        Set<ProjectBillModel> pbKeys = getProjectBillIds();
-
-        if (pbKeys != null && !pbKeys.isEmpty()) {
-            String response = "";
-
-            for (ProjectBillModel pbKey : pbKeys) {
-                vpb = getProjectBill(pbKey);
-                ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(vpb.getProject());
-                response += "<option value='" + dbpd.getId() + "'>" + dbpd.getReference() + "-" + dbpd.getCompany() + "</option>\n";
-            }
-            content.put("subproject", response);
-            content.put("projectBill", createProjectBill(new ProjectBillModel(pb.getProject(), 1)));
-            content.put("projectBillItems", createProjectBillItems(new ProjectBillModel(pb.getProject(), 1)));
-        } else {
-            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
-            content.put("billHeader", "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>\n");
-        }
-
-        return new Gson().toJson(content);
+        return response;
     }
 
     @RequestMapping(value = "/bill-material-service/savepdf")
@@ -623,7 +582,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/stock")
     public @ResponseBody
     String itemStockInsert(Long pdId, Integer location, Item item) {
-        BillMaterialServiceItem temp = getFirstProjectBillItem(new ProjectBillModel(pdId, location));
+        BillMaterialServiceItem temp = getFirstProjectBillItem(new ProjectModel(pdId, location));
         item.setStartQuantity(item.getQuantity());
         item.setOfferQuantity(item.getQuantity());
         item.setInventoryQuantity(item.getQuantity());
@@ -632,7 +591,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         item.setInventoryEdit(Boolean.FALSE);
         item = srvProjectManager.getDaoItem().add(item);
         if (item.getId() != null) {
-            setVirtualProjectBillItem(new ProjectBillModel(pdId, LocationEnum.GREECE.getId()),
+            setVirtualProjectBillItem(new ProjectModel(pdId, LocationEnum.GREECE.getId()),
                                       new BillMaterialServiceItem.Builder()
                                       .setAvailable(item.getQuantity())
                                       .setQuantity(0)
@@ -645,7 +604,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                                       .build());
         }
 
-        return createProjectBillItems(new ProjectBillModel(pdId, location));
+        return createProjectBillItems(new ProjectModel(pdId, location));
     }
 
     @RequestMapping(value = "/bill-material-service/content")
@@ -687,7 +646,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String replaceProjectBillItems(Long pdid, Integer location) {
         String response = "<input type='text' value='" + getLocationNameById(location) + "' readonly>\n";
-        ProjectBillModel pbm = getFirstLocation(pdid);
+        ProjectModel pbm = getFirstLocation(pdid);
         Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
         Map<String, String> content = new HashMap<>();
 
@@ -708,7 +667,7 @@ public class BillMaterialServiceController extends ProjectCommon {
             content.put("items", response);
             content.put("location", pbm.getLocation().toString());
         }
-        
+
         return new Gson().toJson(content);
     }
 
@@ -716,7 +675,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String changeProjectBillItems(Long id, Integer location) {
         Map<String, String> content = new HashMap<>();
-        ProjectBillModel pbm = new ProjectBillModel(id, location);
+        ProjectModel pbm = new ProjectModel(id, location);
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(id);
 
         if (pd != null) {
@@ -738,7 +697,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String addBillMaterialService(Long id, Integer srcLocation, Integer newLocation, Long[] itemIds) {
         if (id != null && srcLocation != null && newLocation != null && itemIds != null && itemIds.length > 0) {
-            ProjectBillModel pbm = new ProjectBillModel(id, srcLocation);
+            ProjectModel pbm = new ProjectModel(id, srcLocation);
 
             for (Long itemId : itemIds) {
                 BillMaterialServiceItem item = new BillMaterialServiceItem.Builder().build(getProjectBillItem(pbm, itemId));
@@ -746,11 +705,11 @@ public class BillMaterialServiceController extends ProjectCommon {
                 if (item != null) {
                     item.setClassRefresh("button");
                     item.setClassSave("button alarm");
-                    setVirtualProjectBillItem(new ProjectBillModel(id, newLocation), item);
+                    setVirtualProjectBillItem(new ProjectModel(id, newLocation), item);
                 }
             }
 
-            return createProjectBillItems(new ProjectBillModel(id, newLocation));
+            return createProjectBillItems(new ProjectModel(id, newLocation));
         }
 
         return "";
@@ -772,7 +731,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         String response = "";
 
         if (pdId != null && location != null && currency != null) {
-            ProjectBillModel pbm = new ProjectBillModel(pdId, location);
+            ProjectModel pbm = new ProjectModel(pdId, location);
             BillMaterialService vpb = getProjectBill(pbm);
 
             if (vpb != null) {

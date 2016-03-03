@@ -23,7 +23,7 @@ function insertItem() {
     });
 }
 
-function changeLocation() {
+function changeLocationBitMaterialService() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=" + $("#location option:selected").val();
 
@@ -124,12 +124,6 @@ function refreshItem(pdid, id, available) {
 
     if (isNaN(quantity) || quantity === 0) {
         alert("You must give a valid number quantity");
-    } else if (isNaN(cost) || cost === 0) {
-        alert("You must give a valid number cost");
-    } else if (isNaN(percentage) || percentage === 0) {
-        alert("You must give a valid number percentage");
-    } else if (isNaN(discount) || discount === 0) {
-        alert("You must give a valid number discount");
     } else {
         var conf = true;
         if (available < quantity) {
@@ -206,24 +200,17 @@ function viewLocation(pdid, location, id) {
     });
 }
 
-function saveBillMaterialService(pdid) {
-    var data = "project=" + pdid +
-            "&note=" + $("#notes").val();
+function saveBillMaterialService(pId) {
+    var data = "project=" + pId +
+            "&note=" + $("#note").val();
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/save",
         data: data,
         success: function (response) {
-            var content = JSON.parse(response);
 
-            if (content.billHeader === null) {
-                $("#bill-subproject").html(content.subprojects);
-                $("#bill-material-service").html(content.projectBill);
-                $("#bill-material-service-item").html(content.projectBillItems);
-            } else {
-                $("#bill-header").html(content.billHeader);
-            }
+            $("#bill-header").html(response);
         },
         error: function (e) {
         }

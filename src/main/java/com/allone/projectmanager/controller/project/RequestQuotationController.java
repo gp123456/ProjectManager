@@ -8,23 +8,24 @@ package com.allone.projectmanager.controller.project;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.common.RequestQuotationCommon;
-import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.RequestQuotationItem;
-import com.allone.projectmanager.enums.CompanyTypeEnum;
+import com.allone.projectmanager.model.ProjectModel;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -43,64 +44,93 @@ public class RequestQuotationController extends RequestQuotationCommon {
     WCSProjectManagerService srvWCSProjectManager;
 
     private String[] getProjectBillInfo(Long pId) {
-        String[] result = {"", ""};
+        String[] result = {"", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
 
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
-                List<BillMaterialService> pbs = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
+                result[0] += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n";
+            }
+            List<BillMaterialService> bmss = srvProjectManager.getDaoProjectBill().getByProject(pds.get(0).getId());
 
-                if (pbs != null && !pbs.isEmpty()) {
-                    for (BillMaterialService pb : pbs) {
-                        if (!Strings.isNullOrEmpty(pb.getNote())) {
-                            result[0] += pb.getNote();
-                        }
+            if (bmss != null && !bmss.isEmpty()) {
+                for (BillMaterialService value : bmss) {
+                    List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(value.getId());
 
-                        List<BillMaterialServiceItem> pbis = srvProjectManager.getDaoProjectBillItem()
-                                                      .getByProjectBill(pb.getId());
-
-                        if (pbis != null && !pbis.isEmpty()) {
-                            Integer count = 0;
-
-                            for (BillMaterialServiceItem pbi : pbis) {
-                                if (pbi != null) {
-                                    Item item = srvProjectManager.getDaoItem().getById(pbi.getItem());
-                                    setVirtualRequestQuotationItem(pbi.getProjectBill(),
-                                                                   new RequestQuotationItem.Builder()
-                                                                   .setProjectBillItem(pbi.getId())
-                                                                   .setClassSave("button alarm")
-                                                                   .setClassSave("button alarm")
-                                                                   .build());
-
-                                    result[1] += "<tr>\n" +
-                                                 "<td>" + ++count + "</td>\n" +
-                                                 "<td>" + pbi.getItemImno() + "</td>\n" +
-                                                 "<td>" + pbi.getItemDescription() + "</td>\n" +
-                                                 "<td>" + pbi.getQuantity() + "</td>\n" +
-                                                 "<td>" + item.getQuantity() + "</td>\n" +
-                                                 "<td id='quantity" + pbi.getProjectBill() + pbi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                                 "<td>" + pbi.getPrice() + "</td>\n" +
-                                                 "<td>" + item.getPrice() + "</td>\n" +
-                                                 "<td id='price" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                                 "<td id='discount" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                                 "<td></td>\n" +
-                                                 "<td><input type='button' id='Edit' value='Edit' class='button' " + "onclick='editRequestQuotationValues(" + pbi.getProjectBill() + "," + pbi.getId() +
-                                                 ")' ></td>\n" +
-                                                 "<td><input type='button' id='Refresh' value='Refresh' " + "class='button' onclick='refreshValues(" + pbi.getProjectBill() + "," + pbi.getId() +
-                                                 ")' ></td>\n" +
-                                                 "<td><input type='button' id='Remove' value='Remove' " + "class='button' onclick='removeValues(" + pbi.getProjectBill() + "," + pbi.getId() +
-                                                 ")' ></td>\n" +
-                                                 "<td><input type='button' id='Save' value='Save' " + "class='button' onclick='saveValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
-                                                 "</tr>\n";
-                                }
-                            }
+                    if (bmsis != null && !bmsis.isEmpty()) {
+                        for (BillMaterialServiceItem bmsi : bmsis) {
+                            setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
+                                                           new RequestQuotationItem.Builder()
+                                                           .setItemBillMaterialService(bmsi.getId())
+                                                           .build());
                         }
                     }
+                }
+                BillMaterialService bms = bmss.get(0);
+
+                if (!Strings.isNullOrEmpty(bms.getNote())) {
+                    result[1] += getCurrencyById(bms.getCurrency());
+                    result[2] += bms.getNote();
+                }
+                result[3] = createRquestQuotationItem(new ProjectModel(bms.getProject(), getLocationIdByName(bms.getLocation())));
+            }
+        }
+
+        return result;
+    }
+
+    private String createRquestQuotationItem(ProjectModel pm) {
+        String result = "";
+        
+        logger.log(Level.INFO, "{0},{1}", new Object[]{pm.getId(), pm.getLocation()});
+
+        Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
+
+        if (rqis != null && !rqis.isEmpty()) {
+            Integer count = 0;
+
+            for (RequestQuotationItem rqi : rqis) {
+                BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getItemBillMaterialService());
+
+                if (bmsi != null) {
+                    logger.log(Level.INFO, "{0},{1}", new Object[]{count, bmsi.getItemImno()});
+                    
+                    result += "<tr>\n" +
+                              "<td>" + ++count + "</td>\n" +
+                              "<td>" + bmsi.getItemImno() + "</td>\n" +
+                              "<td>" + bmsi.getItemDescription() + "</td>\n" +
+                              "<td>" + bmsi.getQuantity() + "</td>\n" +
+                              "<td id='availability" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "<td id='>delivery-cost" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "<td id='>other-expenses" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "<td id='>unit-price" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "<td id='>discount" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "<td id='>total" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
+                              "</tr>\n";
                 }
             }
         }
 
         return result;
+    }
+
+    private String changeRequestQuotation(Long pdId, Integer location) {
+        Map<String, String> content = new HashMap<>();
+
+        List<BillMaterialService> bmss = srvProjectManager.getDaoProjectBill().getByProject(pdId);
+
+        content.put("currency", "");
+        if (bmss != null && !bmss.isEmpty()) {
+            for (BillMaterialService bms : bmss) {
+                if (bms.getLocation().equals(getLocationNameById(location))) {
+                    content.put("currency", getCurrencyById(bms.getCurrency()));
+                    break;
+                }
+            }
+        }
+        content.put("itemRequestQuotation", createRquestQuotationItem(new ProjectModel(pdId, location)));
+
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/request-quotation")
@@ -111,78 +141,25 @@ public class RequestQuotationController extends RequestQuotationCommon {
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
         String[] pbInfo = getProjectBillInfo(p.getId());
+        
+        logger.log(Level.INFO, "{0},{1},{2}", new Object[]{pbInfo[0], pbInfo[1], pbInfo[2]});
 
-        model.addAttribute("pdId", p.getId());
+        model.addAttribute("projectId", p.getId());
         model.addAttribute("projectReference", p.getReference());
-        model.addAttribute("projectBillNote", pbInfo[0]);
-        model.addAttribute("projectBillItems", pbInfo[1]);
-        model.addAttribute("supplier", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.SUPPLIER));
-        model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getReference() + "\")'>");
-        model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getReference() + "\")'>");
+        model.addAttribute("subproject", pbInfo[0]);
+        model.addAttribute("currency", pbInfo[1]);
+        model.addAttribute("location", createLocations());
+        model.addAttribute("noteBillMaterialService", pbInfo[2]);
+        model.addAttribute("itemBillMaterialService", pbInfo[3]);
+        model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getId() + "\")'>");
+        model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getId() + "\")'>");
         model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>");
 
         return "index";
     }
 
-    @RequestMapping(value = "/request-quotation/item/edit")
-    public @ResponseBody
-    String Edit(Long pbId, RequestQuotationItem item) {
-        RequestQuotationItem temp = getRequestQuotationItem(pbId, item.getProjectBillItem());
-
-        if (temp != null) {
-            temp.setClassRefresh(item.getClassRefresh());
-            temp.setClassSave(item.getClassSave());
-            editVirtualRequestQuotationItem(pbId, temp);
-
-            return createRequestQuotationItems();
-        }
-
-        return "";
-    }
-
-    private String createRequestQuotationItems() {
-        String response = "";
-        Set<Long> pbIds = getRequestQuotationIds();
-
-        if (pbIds != null && !pbIds.isEmpty()) {
-            for (Long pbId : pbIds) {
-                Collection<RequestQuotationItem> items = getRequestQuotationItems(pbId);
-
-                if (items != null && !items.isEmpty()) {
-                    Integer count = 0;
-
-                    for (RequestQuotationItem item : items) {
-                        if (item != null) {
-                            BillMaterialServiceItem pbi = srvProjectManager.getDaoProjectBillItem().getById(item.
-                                                    getProjectBillItem());
-
-                            if (pbi != null) {
-                                response += "<tr>\n" +
-                                            "<td>" + ++count + "</td>\n" +
-                                            "<td>" + pbi.getItemImno() + "</td>\n" +
-                                            "<td>" + pbi.getItemDescription() + "</td>\n" +
-                                            "<td>" + pbi.getQuantity() + "</td>\n" +
-                                            "<td>" + item.getQuantity() + "</td>\n" +
-                                            "<td id='quantity" + pbi.getProjectBill() + pbi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                            "<td>" + pbi.getPrice() + "</td>\n" +
-                                            "<td>" + item.getPrice() + "</td>\n" +
-                                            "<td id='price" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                            "<td id='discount" + pbi.getProjectBill() + pbi.getId() + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                                            "<td></td>\n" +
-                                            "<td><input type='button' id='Edit' value='Edit' class='button' " + "onclick='editValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
-                                            "<td><input type='button' id='Refresh' value='Refresh' " + "class='button' onclick='refreshValues(" + pbi.getProjectBill() + "," + pbi.getId() +
-                                            ")'></td>\n" +
-                                            "<td><input type='button' id='Remove' value='Remove' " + "class='button' onclick='removeValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")'></td>\n" +
-                                            "<td><input type='button' id='Save' value='Save' " + "class='button' onclick='saveValues(" + pbi.getProjectBill() + "," + pbi.getId() + ")' ></td>\n" +
-                                            "</tr>\n";
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return response;
+    @RequestMapping(value = "/request-quotation/change")
+    public String change(Long pdId, Integer location) {
+        return changeRequestQuotation(pdId, location);
     }
 }

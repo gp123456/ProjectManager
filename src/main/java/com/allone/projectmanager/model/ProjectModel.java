@@ -9,13 +9,13 @@ package com.allone.projectmanager.model;
  *
  * @author antonia
  */
-public class ProjectBillModel {
+public class ProjectModel {
 
     private Long id;
 
     private Integer location;
 
-    public ProjectBillModel(Long id, Integer location) {
+    public ProjectModel(Long id, Integer location) {
         this.id = id;
         this.location = location;
     }
@@ -38,7 +38,7 @@ public class ProjectBillModel {
 
     @Override
     public boolean equals(Object obj) {
-        ProjectBillModel pbm = (ProjectBillModel) obj;
+        ProjectModel pbm = (ProjectModel) obj;
         
         if (pbm.getLocation() != null) {
             return (id.equals(pbm.getId())) ? location.equals(pbm.getLocation()) : false;

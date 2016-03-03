@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 enum ProjectMode {
 
-    VIEW, EDIT;
+    VIEW, EDIT, NEW;
 
 }
 

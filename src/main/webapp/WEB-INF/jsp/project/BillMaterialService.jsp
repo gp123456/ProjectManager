@@ -4,12 +4,6 @@
     Author     : user1
 --%>
 
-<%@page import="com.allone.projectmanager.entities.Item"%>
-<%@page import="com.allone.projectmanager.entities.BillMaterialServiceItem"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.List"%>
-
 <script>
     $(function () {
         var data = "id=" + $('#bill-project-id').val();
@@ -26,6 +20,7 @@
                 $("#location").html(content.locations);
                 $("#currency").html(content.currencies);
                 $("#bill-material-service").html(content.billMaterialService);
+                $("#note").val(content.noteBillMaterialService);
                 $("#bill-material-service-item").html(content.billMaterialServiceItems);
                 $("#company").val(content.company);
                 $("#customer").val(content.customer);
@@ -148,7 +143,7 @@
                 <tr>
                     <td>
                         <label class="custom-select">
-                            <select id="location" onchange="changeLocation()"></select>
+                            <select id="location" onchange="changeLocationBitMaterialService()"></select>
                         </label>
                     </td>
                     <td>
@@ -213,7 +208,7 @@
             <tbody id="bill-material-service-item"></tbody>
         </table>
     </div>
-    <div><h2>Notes</h2><textarea id="notes" name="notes" rows="10" style="width: 100%"></textarea></div>
+    <div><h2>Note</h2><textarea id="note" name="notes" rows="10" style="width: 100%"></textarea></div>
     <div>${button_save}${button_save_pdf}${button_save_excel}${button_send_email}</div>
     <div>${button_action_message}</div>
 </div>

@@ -84,7 +84,7 @@ public class BillMaterialService implements Serializable {
     private String location;
 
     @Basic(optional = false)
-    @Column(name = "complete")
+    @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
     private Boolean complete;
 
     @Transient

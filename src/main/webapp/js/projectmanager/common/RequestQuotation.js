@@ -4,36 +4,52 @@
  * and open the template in the editor.
  */
 
-function editRequestQuotationValues(pbId, pbiId) {
-    var data = "pbId=" + pbId + "&projectBillItem=" + pbiId +
-            "&classRefresh=button alarm&classSave=button alarm";
+function changeSubproject() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val();
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/request-quotation/item/edit",
+        url: "/ProjectManager/project/request-quotation/change",
         data: data,
         success: function (response) {
-            alert(response);
-            
-            $("#request-quotation-items").html(response);
+            var content = JSON.parse(response);
 
-            $("#quantity" + pbId + pbiId).html("<div contenteditable></div>");
-            $("#price" + pbId + pbiId).html("<div contenteditable></div>");
-            $("#discount" + pbId + pbiId).html("<div contenteditable></div>");
+            $("#currency").val(content.currency);
+            $("#request-quotation-items").html(content.itemRequestQuotation);
         },
         error: function (e) {
         }
     });
 }
 
-function refreshValues(pbId, pbiId) {
+function changeLocationRequestQuotation() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/change",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#currency").val(content.currency);
+            $("#request-quotation-items").html(content.itemRequestQuotation);
+        },
+        error: function (e) {
+        }
+    }); 
+}
+
+function savePDF(pId) {
 
 }
 
-function removeValues(pbId, pbiId) {
+function saveXLS(pId) {
 
 }
 
-function saveValues(pbId, pbiId) {
+function sendEmail(pId) {
 
 }
