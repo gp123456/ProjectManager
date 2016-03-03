@@ -59,7 +59,7 @@ function changeCurrency() {
     });
 }
 
-function changeCurrency() {
+function changeSupplier() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=" + $("#location option:selected").val() +
             "&supplier=" + $("#supplier option:selected").val();

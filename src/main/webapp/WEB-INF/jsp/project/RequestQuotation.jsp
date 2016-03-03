@@ -8,7 +8,6 @@
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
     <input type="hidden" id="project-id" value=${projectId} />
     <div style="overflow-y: scroll">
-        <h3>Info</h3>
         <table>
             <tbody>
                 <tr>

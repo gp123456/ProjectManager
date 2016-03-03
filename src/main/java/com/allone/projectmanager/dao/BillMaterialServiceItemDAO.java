@@ -52,9 +52,8 @@ public class BillMaterialServiceItemDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (projectBill != null && projectBill.compareTo(0l) >= 0) ? em.createNamedQuery(
-                    "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill").setParameter(
-                            "projectBill", projectBill) : null;
+            query = (projectBill != null && projectBill.compareTo(0l) >= 0) ?
+                    em.createNamedQuery( "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill").setParameter("projectBill", projectBill) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {

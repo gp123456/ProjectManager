@@ -16,7 +16,6 @@ import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.model.ProjectModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -60,20 +59,22 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     if (bmsis != null && !bmsis.isEmpty()) {
                         for (BillMaterialServiceItem bmsi : bmsis) {
-                            if (bmsi.getCost().equals(BigDecimal.ZERO)) {
+                            logger.log(Level.INFO, "{0}", new Object[]{bmsi.getCost()});
+                            
+//                            if (bmsi.getCost().equals(0)) {
                                 setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
                                                                new RequestQuotationItem.Builder()
                                                                .setItemBillMaterialService(bmsi.getId())
                                                                .build());
-                            }
+//                            }
                         }
                     }
                 }
                 BillMaterialService bms = bmss.get(0);
 
+                result[1] += bms.getSupplier();
+                result[2] += getCurrencyById(bms.getCurrency());
                 if (!Strings.isNullOrEmpty(bms.getNote())) {
-                    result[1] += bms.getSupplier();
-                    result[2] += getCurrencyById(bms.getCurrency());
                     result[3] += bms.getNote();
                 }
                 result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), getLocationIdByName(bms.getLocation())));
@@ -86,11 +87,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
     private String createRquestQuotationItem(ProjectModel pm) {
         String result = "";
 
-        logger.log(Level.INFO, "{0},{1}", new Object[]{pm.getId(), pm.getLocation()});
-
         Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
 
         if (rqis != null && !rqis.isEmpty()) {
+            logger.log(Level.INFO, "{0}", new Object[]{rqis.size()});
+
             Integer count = 0;
 
             for (RequestQuotationItem rqi : rqis) {
@@ -145,8 +146,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
         String[] pbInfo = getProjectBillInfo(p.getId());
-
-        logger.log(Level.INFO, "{0},{1},{2}", new Object[]{pbInfo[0], pbInfo[1], pbInfo[2]});
 
         model.addAttribute("projectId", p.getId());
         model.addAttribute("projectReference", p.getReference());
