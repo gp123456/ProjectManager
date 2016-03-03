@@ -755,7 +755,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     
     @RequestMapping(value = "/bill-material-service/supplier")
     public @ResponseBody
-    String viewLocation(Long pdId, Integer location, String supplier) {
+    String viewSupplier(Long pdId, Integer location, String supplier) {
         String response = "";
 
         if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
