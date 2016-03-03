@@ -87,6 +87,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (suppliers != null && !suppliers.isEmpty()) {
             response = "<option value='none'>Select</option>";
             response = suppliers.stream(). map((supplier) -> "<option value='" + supplier.getName() + "'>" + supplier.getName() + "</option>"). reduce(response, String::concat);
+            content.put("suppliers", response);
         }
 
         content.put("locations", createLocations());
