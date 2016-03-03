@@ -12,6 +12,12 @@
         <table>
             <tbody>
                 <tr>
+                    <td><label>Supplier</label></td>
+                    <td>${supplier}</td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
                     <td><label>Currency</label></td>
                     <td>${currency}</td>
                 </tr>

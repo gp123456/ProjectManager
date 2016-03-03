@@ -15,15 +15,16 @@ import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Stock;
+import com.allone.projectmanager.entities.wcs.WCSCompany;
 import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.LocationEnum;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
-import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.ProjectModel;
 import com.allone.projectmanager.tools.JasperReport;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
@@ -35,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +81,13 @@ public class BillMaterialServiceController extends ProjectCommon {
             .reduce(response, String::concat);
         }
         content.put("items", response);
+        
+        List<WCSCompany> suppliers = srvWCSProjectManager.getDaoWCSCompany().getAllByType(CompanyTypeEnum.SUPPLIER.name());
+        
+        if (suppliers != null && !suppliers.isEmpty()) {
+            response = "<option value='none'>Select</option>";
+            response = suppliers.stream(). map((supplier) -> "<option value='" + supplier.getName() + "'>" + supplier.getName() + "</option>"). reduce(response, String::concat);
+        }
 
         content.put("locations", createLocations());
 
@@ -163,6 +170,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                             "<td id='currency" + pdid + "'>" + getCurrencyById(pb.getCurrency()) + "</td>\n" +
                             "<td id='location" + pdid + "'>" + pb.getLocation() + "</td>\n" +
                             "<td id='m_subproject'>" + subproject + "</td>\n" +
+                            "<td id='supplier'>" + pb.getSupplier() + "</td>\n" +
                             "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," + pbm.getLocation() + ")'></td>\n" +
                             "</tr>\n";
             }
@@ -736,6 +744,25 @@ public class BillMaterialServiceController extends ProjectCommon {
 
             if (vpb != null) {
                 vpb.setCurrency(currency);
+            }
+
+            response = createProjectBill(pbm);
+        }
+
+        return response;
+    }
+    
+    @RequestMapping(value = "/bill-material-service/supplier")
+    public @ResponseBody
+    String viewLocation(Long pdId, Integer location, String supplier) {
+        String response = "";
+
+        if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
+            ProjectModel pbm = new ProjectModel(pdId, location);
+            BillMaterialService vpb = getProjectBill(pbm);
+
+            if (vpb != null) {
+                vpb.setSupplier(supplier);
             }
 
             response = createProjectBill(pbm);

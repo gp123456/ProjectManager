@@ -59,6 +59,23 @@ function changeCurrency() {
     });
 }
 
+function changeCurrency() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&location=" + $("#location option:selected").val() +
+            "&supplier=" + $("#supplier option:selected").val();
+    
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/bill-material-service/supplier",
+        data: data,
+        success: function (response) {
+            $("#bill-material-service").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
 function saveItem(pdid, id) {
     var quantity = Number($("#quantity" + pdid + id).text());
     var cost = Number($("#cost" + pdid + id).text());

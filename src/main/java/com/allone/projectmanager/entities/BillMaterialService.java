@@ -82,6 +82,10 @@ public class BillMaterialService implements Serializable {
     @Basic(optional = false)
     @Column(name = "location")
     private String location;
+    
+    @Basic(optional = false)
+    @Column(name = "supplier")
+    private String supplier;
 
     @Basic(optional = false)
     @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
@@ -100,8 +104,9 @@ public class BillMaterialService implements Serializable {
         note = builder.note;
         currency = builder.currency;
         location = builder.location;
-        classSave = builder.classSave;
         complete = builder.complete;
+        supplier = builder.supplier;
+        classSave = builder.classSave;
     }
 
     private BillMaterialService(BillMaterialService builder) {
@@ -114,8 +119,9 @@ public class BillMaterialService implements Serializable {
         note = builder.note;
         currency = builder.currency;
         location = builder.location;
-        classSave = builder.classSave;
         complete = builder.complete;
+        supplier = builder.supplier;
+        classSave = builder.classSave;
     }
 
     public BillMaterialService() {
@@ -217,6 +223,14 @@ public class BillMaterialService implements Serializable {
         this.complete = complete;
     }
 
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -261,10 +275,12 @@ public class BillMaterialService implements Serializable {
         private Integer currency;
 
         private String location;
+        
+        private Boolean complete;
+     
+        private String supplier;
 
         private String classSave;
-
-        private Boolean complete;
 
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
@@ -319,15 +335,21 @@ public class BillMaterialService implements Serializable {
 
             return this;
         }
+        
+        public Builder setComplete(Boolean complete) {
+            this.complete = complete;
 
-        public Builder setClassSave(String classSave) {
-            this.classSave = classSave;
+            return this;
+        }
+        
+        public Builder setSupplier(String supplier) {
+            this.supplier = supplier;
 
             return this;
         }
 
-        public Builder setComplete(Boolean complete) {
-            this.complete = complete;
+        public Builder setClassSave(String classSave) {
+            this.classSave = classSave;
 
             return this;
         }

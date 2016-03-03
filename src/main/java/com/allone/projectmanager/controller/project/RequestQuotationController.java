@@ -16,6 +16,7 @@ import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.model.ProjectModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     WCSProjectManagerService srvWCSProjectManager;
 
     private String[] getProjectBillInfo(Long pId) {
-        String[] result = {"", "", "", ""};
+        String[] result = {"", "", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
 
         if (pds != null && !pds.isEmpty()) {
@@ -59,20 +60,23 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     if (bmsis != null && !bmsis.isEmpty()) {
                         for (BillMaterialServiceItem bmsi : bmsis) {
-                            setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
-                                                           new RequestQuotationItem.Builder()
-                                                           .setItemBillMaterialService(bmsi.getId())
-                                                           .build());
+                            if (bmsi.getCost().equals(BigDecimal.ZERO)) {
+                                setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
+                                                               new RequestQuotationItem.Builder()
+                                                               .setItemBillMaterialService(bmsi.getId())
+                                                               .build());
+                            }
                         }
                     }
                 }
                 BillMaterialService bms = bmss.get(0);
 
                 if (!Strings.isNullOrEmpty(bms.getNote())) {
-                    result[1] += getCurrencyById(bms.getCurrency());
-                    result[2] += bms.getNote();
+                    result[1] += bms.getSupplier();
+                    result[2] += getCurrencyById(bms.getCurrency());
+                    result[3] += bms.getNote();
                 }
-                result[3] = createRquestQuotationItem(new ProjectModel(bms.getProject(), getLocationIdByName(bms.getLocation())));
+                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), getLocationIdByName(bms.getLocation())));
             }
         }
 
@@ -81,7 +85,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     private String createRquestQuotationItem(ProjectModel pm) {
         String result = "";
-        
+
         logger.log(Level.INFO, "{0},{1}", new Object[]{pm.getId(), pm.getLocation()});
 
         Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
@@ -94,7 +98,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                 if (bmsi != null) {
                     logger.log(Level.INFO, "{0},{1}", new Object[]{count, bmsi.getItemImno()});
-                    
+
                     result += "<tr>\n" +
                               "<td>" + ++count + "</td>\n" +
                               "<td>" + bmsi.getItemImno() + "</td>\n" +
@@ -141,16 +145,17 @@ public class RequestQuotationController extends RequestQuotationCommon {
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
         String[] pbInfo = getProjectBillInfo(p.getId());
-        
+
         logger.log(Level.INFO, "{0},{1},{2}", new Object[]{pbInfo[0], pbInfo[1], pbInfo[2]});
 
         model.addAttribute("projectId", p.getId());
         model.addAttribute("projectReference", p.getReference());
         model.addAttribute("subproject", pbInfo[0]);
-        model.addAttribute("currency", pbInfo[1]);
+        model.addAttribute("supplier", pbInfo[1]);
+        model.addAttribute("currency", pbInfo[2]);
         model.addAttribute("location", createLocations());
-        model.addAttribute("noteBillMaterialService", pbInfo[2]);
-        model.addAttribute("itemBillMaterialService", pbInfo[3]);
+        model.addAttribute("noteBillMaterialService", pbInfo[3]);
+        model.addAttribute("itemBillMaterialService", pbInfo[4]);
         model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getId() + "\")'>");
         model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getId() + "\")'>");
         model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>");

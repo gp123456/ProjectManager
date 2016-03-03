@@ -19,6 +19,7 @@
                 $("#item").html(content.items);
                 $("#location").html(content.locations);
                 $("#currency").html(content.currencies);
+                $("#supplier").html(content.suppliers);
                 $("#bill-material-service").html(content.billMaterialService);
                 $("#note").val(content.noteBillMaterialService);
                 $("#bill-material-service-item").html(content.billMaterialServiceItems);
@@ -158,6 +159,12 @@
                 <select id="currency" onchange="changeCurrency()"></select>
             </label>
         </p>
+        <br><h3>Select Supplier</h3>
+        <p>
+            <label class="custom-select">
+                <select id="supplier" onchange="changeSupplier()"></select>
+            </label>
+        </p>
     </div>
     <h2>Bill of Material Summary</h2>
     <div>
@@ -172,6 +179,7 @@
                     <th>Currency</th>
                     <th>Location</th>
                     <th>Subproject</th>
+                    <th>Supplier</th>
                     <th>Delete</th>
                 </tr>
             </thead>
