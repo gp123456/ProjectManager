@@ -6,23 +6,18 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -31,12 +26,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "collabs")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword",
-                           query = "SELECT c FROM Collabs c WHERE c.username = :username AND c.password = :password"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findById",
-                           query = "SELECT c FROM Collabs c WHERE c.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectId",
-                           query = "UPDATE Collabs c SET c.projectId = c.projectId + 1 WHERE c.id = :id")})
+@NamedQueries({
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword", query = "SELECT c FROM Collabs c WHERE c.username = :username AND c.password = :password"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findById", query = "SELECT c FROM Collabs c WHERE c.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectId", query = "UPDATE Collabs c SET c.projectId = c.projectId + 1 WHERE c.id = :id")
+})
 public class Collabs implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,17 +47,11 @@ public class Collabs implements Serializable {
     @Column(name = "surname")
     private String surname;
 
-    @Column(name = "type")
-    private Long type;
-
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "email")
     private String email;
-
-    @Column(name = "rights")
-    private Long rights;
 
     @Column(name = "notes")
     private String notes;
@@ -87,27 +75,26 @@ public class Collabs implements Serializable {
     @Column(name = "project_expired")
     @NotNull
     private Integer projectExpired;
-    
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "creator")
-    private List<ProjectDetail> listProjectDetail;
+
+    @Column(name = "role")
+    @NotNull
+    private String role;
     
     @Transient
     private Builder builder;
 
     private Collabs(Builder builder) {
-        name = builder.getName();
-        surname = builder.getSurname();
-        type = builder.getType();
-        phone = builder.getPhone();
-        email = builder.getEmail();
-        rights = builder.getRights();
-        notes = builder.getNotes();
-        username = builder.getUsername();
-        password = builder.getPassword();
-        projectPrefix = builder.getProjectPrefix();
-        projectId = builder.getProjectId();
-        projectExpired = builder.getProjectExpired();
-        listProjectDetail = builder.getListProjectDetail();
+        name = builder.name;
+        surname = builder.surname;
+        phone = builder.phone;
+        email = builder.email;
+        notes = builder.notes;
+        username = builder.username;
+        password = builder.password;
+        projectPrefix = builder.projectPrefix;
+        projectId = builder.projectId;
+        projectExpired = builder.projectExpired;
+        role = builder.role;
     }
 
     public Collabs() {
@@ -142,14 +129,6 @@ public class Collabs implements Serializable {
         this.surname = surname;
     }
 
-    public Long getType() {
-        return type;
-    }
-
-    public void setType(Long type) {
-        this.type = type;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -164,14 +143,6 @@ public class Collabs implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getRights() {
-        return rights;
-    }
-
-    public void setRights(Long rights) {
-        this.rights = rights;
     }
 
     public String getNotes() {
@@ -221,14 +192,13 @@ public class Collabs implements Serializable {
     public void setProjectExpired(Integer projectExpired) {
         this.projectExpired = projectExpired;
     }
-
-    @XmlTransient
-    public List<ProjectDetail> getListProjectDetail() {
-        return listProjectDetail;
+    
+    public String getRole() {
+        return role;
     }
 
-    public void setListProjectDetail(List<ProjectDetail> listProjectDetail) {
-        this.listProjectDetail = listProjectDetail;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override
@@ -261,13 +231,9 @@ public class Collabs implements Serializable {
 
         private String surname;
 
-        private Long type;
-
         private String phone;
 
         private String email;
-
-        private Long rights;
 
         private String notes;
 
@@ -280,8 +246,8 @@ public class Collabs implements Serializable {
         private Long projectId;
         
         private Integer projectExpired;
-    
-        private List<ProjectDetail> listProjectDetail;
+        
+        private String role;
 
         public Builder setName(String name) {
             this.name = name;
@@ -295,12 +261,6 @@ public class Collabs implements Serializable {
             return this;
         }
 
-        public Builder setType(Long type) {
-            this.type = type;
-            
-            return this;
-        }
-
         public Builder setPhone(String phone) {
             this.phone = phone;
             
@@ -309,12 +269,6 @@ public class Collabs implements Serializable {
 
         public Builder setEmail(String email) {
             this.email = email;
-            
-            return this;
-        }
-
-        public Builder setRights(Long rights) {
-            this.rights = rights;
             
             return this;
         }
@@ -355,62 +309,10 @@ public class Collabs implements Serializable {
             return this;
         }
 
-        public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
-            this.listProjectDetail = listProjectDetail;
+        public Builder setRole(String role) {
+            this.role = role;
             
             return this;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getSurname() {
-            return surname;
-        }
-
-        public Long getType() {
-            return type;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public Long getRights() {
-            return rights;
-        }
-
-        public String getNotes() {
-            return notes;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public String getProjectPrefix() {
-            return projectPrefix;
-        }
-
-        public Long getProjectId() {
-            return projectId;
-        }
-        
-        public Integer getProjectExpired() {
-            return projectExpired;
-        }
-
-        public List<ProjectDetail> getListProjectDetail() {
-            return listProjectDetail;
         }
         
         public Collabs build() {

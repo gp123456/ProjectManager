@@ -6,6 +6,7 @@
 package com.allone.projectmanager;
 
 import com.allone.projectmanager.dao.wcs.WCSCompanyDAO;
+import com.allone.projectmanager.dao.wcs.WCSContactDAO;
 import com.allone.projectmanager.dao.wcs.WCSItemTransDAO;
 import com.allone.projectmanager.dao.wcs.WCSProjectDAO;
 import com.allone.projectmanager.dao.wcs.WCSSaleTransDAO;
@@ -39,6 +40,8 @@ public class WCSProjectManagerService {
     private final WCSStockTransDAO daoWCSStockTrans = new WCSStockTransDAO(emf);
 
     private final WCSCompanyDAO daoWCSCompany = new WCSCompanyDAO(emf);
+
+    private final WCSContactDAO daoWCSContact = new WCSContactDAO(emf);
     
     private final WCSVesselDAO daoWCSVessel = new WCSVesselDAO(emf);
 
@@ -68,6 +71,10 @@ public class WCSProjectManagerService {
 
     public WCSCompanyDAO getDaoWCSCompany() {
         return daoWCSCompany;
+    }
+    
+    public WCSContactDAO getDaoWCSContact() {
+        return daoWCSContact;
     }
 
     public WCSVesselDAO getDaoWCSVessel() {

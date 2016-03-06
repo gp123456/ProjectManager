@@ -41,4 +41,21 @@ public class WCSCompanyDAO {
             return values;
         }
     }
+    
+    public List getAll() {
+        List values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.wcs.WCSCompany.findAll");
+
+            values = query.getResultList();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+
+            return values;
+        }
+    }
 }

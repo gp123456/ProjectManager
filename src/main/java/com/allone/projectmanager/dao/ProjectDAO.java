@@ -8,6 +8,8 @@ package com.allone.projectmanager.dao;
 import com.allone.projectmanager.entities.Project;
 import com.google.common.base.Strings;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -170,6 +172,92 @@ public class ProjectDAO {
             em.close();
 
             return value;
+        }
+    }
+    
+    public List getByCriteria(Map<String, String> criteria, Integer offset, Integer size) {
+        List values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (criteria != null && !criteria.isEmpty()) {
+                String qcriteria = "SELECT p FROM com.allone.projectmanager.entities.ProjectDetail p WHERE ";
+                Set<String> keys = criteria.keySet();
+                
+                if (keys != null && !keys.isEmpty()) {
+                    for (String key : keys) {
+                        switch (key) {
+                            case "vesselCustom":
+                                qcriteria += "p.vessel=" + criteria.get(key) + " AND ";
+                                break;
+                            case "customerCustom":
+                                qcriteria += "p.company LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            default:
+                                qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";
+                                break;
+                        }
+                    }
+                }
+                qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
+                qcriteria += " ORDER BY p.created DESC";
+
+                Query query = em.createQuery(qcriteria);
+
+                if (offset != null && offset.compareTo(0) >= 0 && size != null && size.compareTo(0) > 0) {
+                    query.setFirstResult(offset * size).setMaxResults(size);
+                }
+
+                values = query.getResultList();
+            }
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+
+            return values;
+        }
+    }
+
+    public Long getCountByCriteria(Map<String, String> criteria) {
+        Long values = null;
+        EntityManager em = emf.createEntityManager();
+        String qcriteria = "";
+
+        try {
+            if (criteria != null && !criteria.isEmpty()) {
+                qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.wcs.ProjectDetail p WHERE ";
+                Set<String> keys = criteria.keySet();
+
+                if (keys != null && !keys.isEmpty()) {
+                    for (String key : keys) {
+                        switch (key) {
+                            case "vesselCustom":
+                                qcriteria += "p.vessel=" + criteria.get(key) + " AND ";
+                                break;
+                            case "customerCustom":
+                                qcriteria += "p.company LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            default:
+                                qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";
+                                break;
+                        }
+                    }
+                }
+                qcriteria = qcriteria.substring(0, qcriteria.lastIndexOf("AND"));
+            } else {
+                qcriteria = "SELECT count(p) FROM com.allone.projectmanager.entities.ProjectDetail p";
+            }
+
+            Query query = em.createQuery(qcriteria);
+
+            values = (Long) query.getSingleResult();
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+
+            return values;
         }
     }
 }

@@ -76,8 +76,8 @@ public class ProjectController extends ProjectCommon {
 
         content.put("company", createSearchCompany());
         content.put("type", createSearchType());
-        content.put("vessel", createSearchVessel(srvWCSProjectManager, null));
-        content.put("customer", createSearchCompany(srvWCSProjectManager, null, CompanyTypeEnum.CUSTOMER));
+        content.put("vessel", createSearchVessel(srvProjectManager, null));
+        content.put("customer", createSearchCompany(srvProjectManager, null, CompanyTypeEnum.CUSTOMER));
         content.put("contact", createSearchContact(srvProjectManager, null));
 
         if (p != null && !p.getId().equals(-1)) {
@@ -86,17 +86,10 @@ public class ProjectController extends ProjectCommon {
 
             if (pds != null && !pds.isEmpty()) {
                 for (ProjectDetail pd : pds) {
-                    projectBody += createProjectRow(srvProjectManager, pd, new ArrayList<>(Arrays.asList("Start",
-                                                                                                         "Start",
-                                                                                                         "Start",
-                                                                                                         "Start",
-                                                                                                         "Start",
-                                                                                                         "Start",
-                                                                                                         "Start")),
-                                                    getModeEdit());
+                    projectBody += createProjectRow(srvProjectManager, pd);
                 }
             }
-            content.put("header", createProjectHeader(getModeEdit()));
+            content.put("header", createProjectHeader());
             content.put("body", projectBody);
         }
 
@@ -208,10 +201,8 @@ public class ProjectController extends ProjectCommon {
             user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
             getUser().setProject_reference((user.getProjectId() + 1) + "/" + user.getProjectPrefix());
 
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Start", "Start", "Start", "Start", "Start")),
-                                                        getModeEdit(), offset, size);
+            String projectHeader = createProjectHeader();
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 
             content.put("header", projectHeader);
             content.put("body", projectBody);
@@ -231,8 +222,7 @@ public class ProjectController extends ProjectCommon {
                          String version, String mode, Integer offset, Integer size) {
         mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, srvWCSProjectManager, version, p, null, null, vesselCustom,
-                             customerCustom, offset, size, mode);
+        return searchProject(srvProjectManager, p, null, null, vesselCustom, customerCustom, offset, size);
     }
 
     @RequestMapping(value = {"/search-criteria"})
@@ -269,10 +259,8 @@ public class ProjectController extends ProjectCommon {
                 }
                 srvProjectManager.getDaoProjectDetail().edit(dbpd);
 
-                content.put("header", createProjectHeader(getModeEdit()));
-                content.put("body", createProjectRow(srvProjectManager, dbpd, new ArrayList<String>(Arrays.
-                                                     asList("Processed", "Start", "Start", "Start", "Start",
-                                                            "Start", "Start")), getModeEdit()));
+                content.put("header", createProjectHeader());
+                content.put("body", createProjectRow(srvProjectManager, dbpd));
 
                 return new Gson().toJson(content);
             }
@@ -308,10 +296,8 @@ public class ProjectController extends ProjectCommon {
                                              getType()), (user != null) ? user.getSurname() + ", " + user.getName() : "",
                                              (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
 
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Processed", "Start", "Start", "Start", "Start",
-                                                        "Start", "Start")), getModeEdit(), offset, size);
+            String projectHeader = createProjectHeader();
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -339,10 +325,8 @@ public class ProjectController extends ProjectCommon {
 
             Printing.printing(strPath);
 
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Processed", "Start", "Start", "Start",
-                                                        "Start")), getModeEdit(), offset, size);
+            String projectHeader = createProjectHeader();
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -428,9 +412,8 @@ public class ProjectController extends ProjectCommon {
     String getView(ProjectDetail pd, Integer offset, Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
-            String projectHeader = createProjectHeader(getModeView());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Start")), getModeView(), offset, size);
+            String projectHeader = createProjectHeader();
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -458,10 +441,8 @@ public class ProjectController extends ProjectCommon {
     String getProjectById(ProjectDetail pd, Integer offset, Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Start", "Start", "Start", "Start",
-                                                        "Start")), getModeView(), offset, size);
+            String projectHeader = createProjectHeader();
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);

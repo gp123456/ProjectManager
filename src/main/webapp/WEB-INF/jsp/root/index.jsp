@@ -47,6 +47,7 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/company.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/vessel.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/common.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/debug.js"></script>
     </head>
     <body>
         <div id="container">

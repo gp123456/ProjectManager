@@ -52,12 +52,6 @@ public class Contact implements Serializable {
     @Column(name = "company")
     private String company;
 
-//    @JoinColumn(nullable = false, insertable = true, updatable = true, name = "company", referencedColumnName = "name")
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-//    @NotNull
-//    private Company company;
-//    @Column(name = "title")
-//    private String title;
     @Column(name = "phone")
     private String phone;
 
@@ -67,18 +61,12 @@ public class Contact implements Serializable {
     @Column(name = "note")
     private String note;
 
-//    @JoinColumn(nullable = false, insertable = true, updatable = true, name = "vessel", referencedColumnName = "id")
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-//    @NotNull
-//    private Vessel vessel;
     @Column(name = "vessel")
     private Long vessel;
     
     @Column(name = "department")
     private String department;
 
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "contact")
-//    private List<ProjectDetail> listProjectDetail;
     private Contact(Builder builder) {
         name = builder.name;
         surname = builder.surname;
@@ -88,7 +76,6 @@ public class Contact implements Serializable {
         note = builder.note;
         vessel = builder.vessel;
         department = builder.department;
-//        listProjectDetail = builder.getListProjectDetail();
     }
 
     public Contact() {
@@ -142,13 +129,6 @@ public class Contact implements Serializable {
         this.note = note;
     }
 
-//    public Company getCompany() {
-//        return company;
-//    }
-//
-//    public void setCompany(Company company) {
-//        this.company = company;
-//    }
     public String getCompany() {
         return company;
     }
@@ -157,13 +137,6 @@ public class Contact implements Serializable {
         this.company = company;
     }
 
-//    public Vessel getVessel() {
-//        return vessel;
-//    }
-//
-//    public void setVessel(Vessel vessel) {
-//        this.vessel = vessel;
-//    }
     public Long getVessel() {
         return vessel;
     }
@@ -171,15 +144,6 @@ public class Contact implements Serializable {
     public void setVessel(Long vessel) {
         this.vessel = vessel;
     }
-
-//    @XmlTransient
-//    public List<ProjectDetail> getListProjectDetail() {
-//        return listProjectDetail;
-//    }
-//
-//    public void setListProjectDetail(List<ProjectDetail> listProjectDetail) {
-//        this.listProjectDetail = listProjectDetail;
-//    }
 
     public String getDepartment() {
         return department;
@@ -220,7 +184,6 @@ public class Contact implements Serializable {
 
         private String surname;
 
-//        private Company company;
         private String company;
 
         private String phone;
@@ -229,12 +192,10 @@ public class Contact implements Serializable {
 
         private String note;
 
-//        private Vessel vessel;
         private Long vessel;
         
         private String department;
 
-//       private List<ProjectDetail> listProjectDetail;
         public Builder setName(String name) {
             this.name = name;
 
@@ -246,12 +207,6 @@ public class Contact implements Serializable {
 
             return this;
         }
-
-//        public Builder setCompany(Company company) {
-//            this.company = company;
-//            
-//            return this;
-//        }
 
         public Builder setCompany(String company) {
             this.company = company;
@@ -277,12 +232,6 @@ public class Contact implements Serializable {
             return this;
         }
 
-//        public Builder setVessel(Vessel vessel) {
-//            this.vessel = vessel;
-//            
-//            return this;
-//        }
-        
         public Builder setVessel(Long vessel) {
             this.vessel = vessel;
 
@@ -295,11 +244,6 @@ public class Contact implements Serializable {
             return this;
         }
 
-//        public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
-//            this.listProjectDetail = listProjectDetail;
-//            
-//            return this;
-//        }
         public Contact build() {
             return new Contact(this);
         }

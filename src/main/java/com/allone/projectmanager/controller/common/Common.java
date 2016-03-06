@@ -6,10 +6,7 @@
 package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.entities.*;
-import com.allone.projectmanager.entities.wcs.WCSCompany;
-import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.LocationEnum;
@@ -75,8 +72,8 @@ public class Common {
         return finalResponse;
     }
 
-    public String createSearchVessel(WCSProjectManagerService srvWCSProjectManager, String id) {
-        List<SearchInfo> info = getSearchCriteriaVessel(srvWCSProjectManager);
+    public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
+        List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
         String response =
                (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
                "<option value='-1' >Select</option>";
@@ -96,8 +93,8 @@ public class Common {
         return response;
     }
 
-    public String createSearchCompany(WCSProjectManagerService srvWCSProjectManager, String name, CompanyTypeEnum type) {
-        List<SearchInfo> info = getSearchCriteriaCompany(srvWCSProjectManager, type);
+    public String createSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
+        List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager, type);
         String response = (Strings.isNullOrEmpty(name)) ?
                           "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
                           "<option value='none'>Select</option>";
@@ -341,8 +338,8 @@ public class Common {
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaVessel(WCSProjectManagerService srvWCSProjectManager) {
-        List<WCSVessel> v = srvWCSProjectManager.getDaoWCSVessel().getAll();
+    public List<SearchInfo> getSearchCriteriaVessel(ProjectManagerService srvProjectManager) {
+        List<Vessel> v = srvProjectManager.getDaoVessel().getAll();
 
         List<SearchInfo> si = new ArrayList<>();
 
@@ -350,15 +347,15 @@ public class Common {
             logger.log(Level.INFO, "Vessel size={0}", v.size());
 
             v.stream().forEach((value) -> {
-                si.add(new SearchInfo(value.getId(), value.getName()));
+                si.add(new SearchInfo(value.getId().toString(), value.getName()));
             });
         }
 
         return si;
     }
 
-    public List<SearchInfo> getSearchCriteriaCompany(WCSProjectManagerService srvWCSProjectManager, CompanyTypeEnum type) {
-        List<WCSCompany> c = srvWCSProjectManager.getDaoWCSCompany().getAllByType(type.toString());
+    public List<SearchInfo> getSearchCriteriaCompany(ProjectManagerService srvProjectManager, CompanyTypeEnum type) {
+        List<Company> c = srvProjectManager.getDaoCompany().getAll(type.name());
 
         List<SearchInfo> si = new ArrayList<>();
 

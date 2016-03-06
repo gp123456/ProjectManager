@@ -240,11 +240,10 @@ public class Vessel implements Serializable {
         return "com.allone.projectmanager.entities.Vessel[ id=" + id + " ]";
     }
 
-    public class Builder {
+    public static class Builder {
 
         private String name;
-
-//        private Company company;
+        
         private String company;
 
         private String flag;
@@ -264,10 +263,7 @@ public class Vessel implements Serializable {
         private String class1;
 
         private String document;
-
-//        private List<Contact> listContact;
-//
-//        private List<ProjectDetail> listProjectDetail;
+        
         public String getName() {
             return name;
         }
@@ -377,26 +373,7 @@ public class Vessel implements Serializable {
 
             return this;
         }
-
-//        public List<Contact> getListContact() {
-//            return listContact;
-//        }
-//
-//        public Builder setListContact(List<Contact> listContact) {
-//            this.listContact = listContact;
-//
-//            return this;
-//        }
-//
-//        public List<ProjectDetail> getListProjectDetail() {
-//            return listProjectDetail;
-//        }
-//
-//        public Builder setListProjectDetail(List<ProjectDetail> listProjectDetail) {
-//            this.listProjectDetail = listProjectDetail;
-//
-//            return this;
-//        }
+        
         public Vessel build() {
             return new Vessel(this);
         }

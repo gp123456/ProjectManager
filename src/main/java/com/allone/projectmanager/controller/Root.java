@@ -77,11 +77,12 @@ public class Root extends ProjectCommon {
             getUser().setFull_name(collab.getSurname() + " " + collab.getName());
             getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
             getUser().setProject_expired(collab.getProjectExpired());
-            setTitle("Project - View");
+            setTitle("Project Manager");
             setHeader("header.jsp");
             setContent("../project/ViewProject.jsp");
             setHeaderInfo(model);
             model.addAttribute("login", "true");
+            model.addAttribute("role", collab.getRole());
 
             return "index";
         } else {
@@ -142,15 +143,12 @@ public class Root extends ProjectCommon {
 
             Printing.printing(strPath);
 
-            String projectHeader = createProjectHeader(getModeEdit());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, dbpd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Processed", "Start", "Start", "Start",
-                                                        "Start")),
-                                                        getModeEdit(), offset, size);
+            String projectHeader = createProjectHeader();
+//            Object[] projectBody = createProjectBody(srvProjectManager, dbpd, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
+//            content.put("project_body", projectBody[1].toString());
 //            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
@@ -164,13 +162,13 @@ public class Root extends ProjectCommon {
     String searchProject(ProjectDetail pd, Integer offset, Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
-            String projectHeader = createProjectHeader(getModeView());
-            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
-                                                        "Start", "Start", "Start")), getModeView(), offset, size);
+            String projectHeader = createProjectHeader();
+//            Object[] projectBody = createNewProjectBody(srvProjectManager, pd, new ArrayList<String>(Arrays.asList(
+//                                                        "Start", "Start", "Start")), getModeView(), offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
+//            content.put("project_body", projectBody[1].toString());
 //            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);

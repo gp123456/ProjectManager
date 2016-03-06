@@ -6,7 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%String path = request.getContextPath();%>
+<%
+    String path = request.getContextPath();
+    String role = (String)request.getAttribute("role");
+%>
 
 <script>
     function OpenInNewTab(url) {
@@ -33,6 +36,11 @@
 <div class="headmenu">
     <input type="button" class="button-header" value="Contact" onclick="OpenInNewTab('<%=path%>/contact/snapshot');"/>
 </div>
+<% if (role.equals("SUPER ADMIN")) { %>
+    <div class="headmenu">
+        <input type="button" class="button-header" value="Debug" onclick="OpenInNewTab('<%=path%>/debug/snapshot');"/>
+    </div>
+<%}%>
 <div id="userHead">
     <div class="loginInfo"> 
         <div class="status">${full_name}</div>

@@ -6,7 +6,6 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Item;
@@ -15,8 +14,7 @@ import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Stock;
-import com.allone.projectmanager.entities.wcs.WCSCompany;
-import com.allone.projectmanager.entities.wcs.WCSVessel;
+import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.LocationEnum;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
@@ -57,9 +55,6 @@ public class BillMaterialServiceController extends ProjectCommon {
     @Autowired
     ProjectManagerService srvProjectManager;
 
-    @Autowired
-    WCSProjectManagerService srvWCSProjectManager;
-
     public ProjectManagerService getSrvProjectManager() {
         return srvProjectManager;
     }
@@ -82,7 +77,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
         content.put("items", response);
         
-        List<WCSCompany> suppliers = srvWCSProjectManager.getDaoWCSCompany().getAllByType(CompanyTypeEnum.SUPPLIER.name());
+        List<Company> suppliers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.SUPPLIER.name());
         
         if (suppliers != null && !suppliers.isEmpty()) {
             response = "<option value='none'>Select</option>";
@@ -100,7 +95,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         response = "";
         if (pds != null && !pds.isEmpty()) {
             pdId = pds.get(0).getId();
-            WCSVessel vessel = srvWCSProjectManager.getDaoWCSVessel().getById(pds.get(0).getVessel().toString());
+            Vessel vessel = srvProjectManager.getDaoVessel().getById(pds.get(0).getVessel());
             Set<ProjectModel> pbKeys = getProjectBillIds();
             BillMaterialService bms = getProjectBill(new ProjectModel(pdId, 1));
 
@@ -527,8 +522,8 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/search")
     public @ResponseBody
-    String openProjects(ProjectDetail pd, Integer offset, Integer size, String mode) {
-        return searchProject(srvProjectManager, null, "new", pd, null, null, null, null, offset, size, mode);
+    String openProjects(ProjectDetail pd, Integer offset, Integer size) {
+        return searchProject(srvProjectManager, pd, null, null, null, null, offset, size);
     }
 
     @RequestMapping(value = "/bill-material-service/add-item")
@@ -688,7 +683,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(id);
 
         if (pd != null) {
-            WCSVessel vessel = srvWCSProjectManager.getDaoWCSVessel().getById(pd.getVessel().toString());
+            Vessel vessel = srvProjectManager.getDaoVessel().getById(pd.getVessel());
             content.put("company", pd.getCompany());
             content.put("customer", pd.getCustomer());
             if (vessel != null) {

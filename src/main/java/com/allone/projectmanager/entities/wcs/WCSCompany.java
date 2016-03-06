@@ -25,8 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "COMPANY")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSCompany.findAllByType",
-                           query = "SELECT c FROM WCSCompany c WHERE c.typeDescription=:type ORDER BY c.name ASC")})
+@NamedQueries({
+    @NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSCompany.findAll", query = "SELECT c FROM WCSCompany c"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.wcs.WCSCompany.findAllByType", query = "SELECT c FROM WCSCompany c WHERE c.typeDescription=:type ORDER BY c.name ASC")
+})
 public class WCSCompany implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

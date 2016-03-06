@@ -325,7 +325,7 @@ public class Company implements Serializable {
         return "com.allone.projectmanager.entities.Company[ name=" + name + " ]";
     }
 
-    public class Builder {
+    public static class Builder {
         private String name;
         
         private String referenceNumber;
