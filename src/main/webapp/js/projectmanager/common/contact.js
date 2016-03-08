@@ -10,21 +10,19 @@ function commitContact() {
     var surname = $("#contact-surname").val();
     var phone = $("#contact-phone").val();
     var email = $("#contact-email").val();
-    var vessel = $("#new-project-vessel option:selected").attr("value");
-    var customer = $("#new-project-customer option:selected").attr("value");
+    var vessel = $("#vessel option:selected").attr("value");
+    var customer = $("#customer option:selected").attr("value");
 
     var data = "name=" + name + "&surname=" + surname + "&phone=" + phone +
             "&email=" + email + "&vessel=" + vessel + "&company=" + customer
             + "&department=" + department;
 
     $.ajax({
-        type: "GET",
-        url: "http://192.168.178.29:8080/ProjectManager/contact/add",
+        type: "POST",
+        url: "/ProjectManager/contact/add",
         data: data,
         success: function (response) {
-            var content = JSON.parse(response)
-
-            $("#new-project-contact").html(content.contact);
+            $("#contact").html(response);
         },
         error: function (e) {
         }
@@ -38,7 +36,9 @@ function addContact() {
         modal: true,
         width: 400,
         buttons: {
-            "submit": commitContact
+            "submit": function() {
+                commitContact();
+            }
         },
         show: {
             effect: "blind",

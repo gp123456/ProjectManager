@@ -46,14 +46,14 @@ public class ContactNewController extends Common {
     @RequestMapping(value = "/add")
     public @ResponseBody
     String addContact(Contact cont) {
-        Map<String, String> content = new HashMap<>();
+        String response = "";
         
         if (cont != null) {
             cont = srvProjectManager.getDaoContact().add(cont);
             
-            content.put("contact", createSearchContact(srvProjectManager, cont.getVessel()));
+            response = "<option value='" + cont.getId() + "' selected='selected'>" + cont.getName() + "</option>";
         }
         
-        return new Gson().toJson(content);
+        return response;
     }
 }

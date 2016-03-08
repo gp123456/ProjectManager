@@ -115,14 +115,6 @@
                                 <input type="text" id="vessel-imo" name="vessel-imo" required>
                                 <label class="go-bottom-label" for="vessel-imo">IMO</label>
                             </div>
-                            <!--                            <div>
-                                                            <p>
-                                                                <label class="custom-select">
-                                                                    <select id="new-vessel-customer"></select>
-                                                                </label>
-                                                                <input type="button" class="button" value="Add Customer" id="new-project-add-customer" onclick="addVesselCustomer()">
-                                                            </p>
-                                                        </div>-->
                         </form>
                     </div>
                 </td>

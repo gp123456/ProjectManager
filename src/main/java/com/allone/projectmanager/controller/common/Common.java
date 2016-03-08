@@ -64,7 +64,9 @@ public class Common {
         String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream().map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+            response += info.stream().map((si) -> "<option value=\"" +
+                                                    si.getId() + "\">" +
+                                                    si.getName() + "</option>").
             reduce(response, String::concat);
             finalResponse += response;
         }
@@ -74,16 +76,15 @@ public class Common {
 
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response =
-               (Strings.isNullOrEmpty(id)) ? "<option value='-1' selected='selected'>Select Vessel</option>" :
-               "<option value='-1' >Select</option>";
+        String response = (Strings.isNullOrEmpty(id)) ?
+                          "<option value='-1' selected='selected'>Select Vessel</option>" :
+                          "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(id)) {
                     if (si.getId().equals(id)) {
-                        response += "<option value='" + si.getId() + "' selected='selected'>" + si.getName() +
-                                    "</option>";
+                        response += "<option value='" + si.getId() + "' selected='selected'>" + si.getName() + "</option>";
                     }
                 }
                 response += "<option value='" + si.getId() + "'>" + si.getName() + "</option>";
@@ -138,7 +139,7 @@ public class Common {
             for (Contact c : info) {
                 if (id != null) {
                     if (c.getVessel().equals(id)) {
-                        response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
+                            response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
                     }
                 }
                 response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
@@ -180,6 +181,7 @@ public class Common {
         if (mapProjectBill != null && !mapProjectBill.isEmpty()) {
             location = mapProjectBill.keySet().iterator().next();
         }
+        
         return location;
     }
 
@@ -529,25 +531,25 @@ public class Common {
 
     public String createLocations() {
         String response = "";
-        
+
         for (LocationEnum location : LocationEnum.values()) {
             response += (location.equals(LocationEnum.GREECE)) ?
                         "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
                         "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
         }
-        
+
         return response;
     }
-    
+
     public String createCurrency() {
         String response = "";
-        
+
         for (CurrencyEnum currency : CurrencyEnum.values()) {
             response += (currency.equals(CurrencyEnum.EUR)) ?
                         "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
                         "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }
-        
+
         return response;
     }
 }

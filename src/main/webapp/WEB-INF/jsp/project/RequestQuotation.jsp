@@ -12,13 +12,13 @@
             <tbody>
                 <tr>
                     <td><label>Supplier</label></td>
-                    <td>${supplier}</td>
+                    <td id="supplier">${supplier}</td>
                 </tr>
             </tbody>
             <tbody>
                 <tr>
                     <td><label>Currency</label></td>
-                    <td>${currency}</td>
+                    <td id="currency">${currency}</td>
                 </tr>
             </tbody>
         </table>

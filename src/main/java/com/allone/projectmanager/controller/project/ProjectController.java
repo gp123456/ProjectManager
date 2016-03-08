@@ -6,7 +6,6 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Company;
@@ -14,7 +13,6 @@ import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
-import com.allone.projectmanager.entities.wcs.WCSVessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.tools.JasperReport;
@@ -24,13 +22,10 @@ import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import net.sf.jasperreports.engine.JRException;
@@ -52,8 +47,6 @@ public class ProjectController extends ProjectCommon {
 
     @Autowired ProjectManagerService srvProjectManager;
 
-    @Autowired WCSProjectManagerService srvWCSProjectManager;
-
     public void setSrvProjectManager(ProjectManagerService srvProjectManager) {
         this.srvProjectManager = srvProjectManager;
         this.srvProjectManager.loadPropertyValues();
@@ -61,14 +54,6 @@ public class ProjectController extends ProjectCommon {
 
     public ProjectManagerService getSrvProjectManager() {
         return srvProjectManager;
-    }
-
-    public WCSProjectManagerService getSrvWCSProjectManager() {
-        return srvWCSProjectManager;
-    }
-
-    public void setSrvWCSProjectManager(WCSProjectManagerService srvWCSProjectManager) {
-        this.srvWCSProjectManager = srvWCSProjectManager;
     }
 
     private String createContent(Project p) {
@@ -205,7 +190,7 @@ public class ProjectController extends ProjectCommon {
             Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
 
             content.put("header", projectHeader);
-            content.put("body", projectBody);
+            content.put("body", projectBody[1]);
             content.put("project_reference", "New Project - REF:" + getUser().getProject_reference());
             content.put("project_type", getProjectType());
             content.putAll(getMenuInfo());
@@ -228,7 +213,7 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/search-criteria"})
     public @ResponseBody
     String searchCriteria(String version) {
-        return searchCriteria(srvProjectManager, srvWCSProjectManager, version);
+        return searchCriteria(srvProjectManager, version);
     }
 
     @RequestMapping(value = {"/project-edit"})
@@ -298,11 +283,9 @@ public class ProjectController extends ProjectCommon {
 
             String projectHeader = createProjectHeader();
             Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
-//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -371,22 +354,21 @@ public class ProjectController extends ProjectCommon {
 
         if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
-            List<WCSVessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
-                                      ((!customer.equals("none")) ?
-                                       srvWCSProjectManager.getDaoWCSVessel().getByCompany(customer) :
-                                       srvWCSProjectManager.getDaoWCSVessel().getAll()) :
-                                      null;
+            List<Vessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
+                                   ((!customer.equals("none")) ?
+                                    srvProjectManager.getDaoVessel().getByCompany(customer) :
+                                    srvProjectManager.getDaoVessel().getAll()) :
+                                   null;
             List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
                                      ((!customer.equals("none")) ?
                                       srvProjectManager.getDaoContact()
-                                      .getByCompanyVessel(customer,
-                                                          new Long(vessels.get(0).getId())) :
+                                      .getByCompanyVessel(customer, new Long(vessels.get(0).getId())) :
                                       srvProjectManager.getDaoContact().getAll()) :
                                      null;
 
             response = "";
             if (vessels != null && vessels.isEmpty() == false) {
-                for (WCSVessel vessel : vessels) {
+                for (Vessel vessel : vessels) {
                     response += "<option value='" + vessel.getId() + "'>" + vessel.getName() + "</option>";
                     content.put("vessel", response);
                 }
@@ -414,11 +396,9 @@ public class ProjectController extends ProjectCommon {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
             Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
-//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }
@@ -443,11 +423,9 @@ public class ProjectController extends ProjectCommon {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
             Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
-//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
-//            content.put("project_footer", projectFooter);
 
             return new Gson().toJson(content);
         }

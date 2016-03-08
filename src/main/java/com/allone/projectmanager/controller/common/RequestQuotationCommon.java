@@ -13,12 +13,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author antonia
  */
 public class RequestQuotationCommon extends Common {
+
+    private static final Logger logger = Logger.getLogger(RequestQuotationCommon.class.getName());
 
     private final Map<ProjectModel, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
 
@@ -27,11 +31,20 @@ public class RequestQuotationCommon extends Common {
     }
 
     public void setVirtualRequestQuotationItem(ProjectModel pm, RequestQuotationItem rqi) {
-        if (rqi != null && rqi != null) {
-            List<RequestQuotationItem> items = mapRequestQuotationItems.get(pm);
+        if (pm != null && rqi != null) {
+            Collection<RequestQuotationItem> items = getRequestQuotationItems(pm);
 
-            if (items != null) {
-                items.add(rqi);
+            if (items != null && !items.isEmpty()) {
+                Map<Long, RequestQuotationItem> temp = new HashMap<>();
+
+                items.stream().
+                        forEach((item) -> {
+                            temp.put(item.getItemBillMaterialService(), item);
+                });
+
+                if (!temp.isEmpty() && temp.get(rqi.getItemBillMaterialService()) == null) {
+                    items.add(rqi);
+                }
             } else {
                 mapRequestQuotationItems.put(pm, new ArrayList<>(Arrays.asList(rqi)));
             }

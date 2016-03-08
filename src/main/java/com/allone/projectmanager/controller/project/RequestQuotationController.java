@@ -6,7 +6,6 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.controller.common.RequestQuotationCommon;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -40,36 +40,35 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @Autowired
     ProjectManagerService srvProjectManager;
 
-    @Autowired
-    WCSProjectManagerService srvWCSProjectManager;
-
     private String[] getProjectBillInfo(Long pId) {
         String[] result = {"", "", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
+        List<BillMaterialService> bmss = null;
+        Integer index = 1;
 
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
-                result[0] += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n";
-            }
-            List<BillMaterialService> bmss = srvProjectManager.getDaoProjectBill().getByProject(pds.get(0).getId());
+                bmss = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
+                result[0] += (!(index++).equals(pds.size())) ?
+                             "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
+                             "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
 
-            if (bmss != null && !bmss.isEmpty()) {
-                for (BillMaterialService value : bmss) {
-                    List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(value.getId());
+                if (bmss != null && !bmss.isEmpty()) {
+                    for (BillMaterialService value : bmss) {
+                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(value.getId());
 
-                    if (bmsis != null && !bmsis.isEmpty()) {
-                        for (BillMaterialServiceItem bmsi : bmsis) {
-                            logger.log(Level.INFO, "{0}", new Object[]{bmsi.getCost()});
-                            
-//                            if (bmsi.getCost().equals(0)) {
+                        if (bmsis != null && !bmsis.isEmpty()) {
+                            for (BillMaterialServiceItem bmsi : bmsis) {
                                 setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
                                                                new RequestQuotationItem.Builder()
                                                                .setItemBillMaterialService(bmsi.getId())
                                                                .build());
-//                            }
+                            }
                         }
                     }
                 }
+            }
+            if (bmss != null && !bmss.isEmpty()) {
                 BillMaterialService bms = bmss.get(0);
 
                 result[1] += bms.getSupplier();
@@ -90,16 +89,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
         Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
 
         if (rqis != null && !rqis.isEmpty()) {
-            logger.log(Level.INFO, "{0}", new Object[]{rqis.size()});
-
             Integer count = 0;
 
             for (RequestQuotationItem rqi : rqis) {
                 BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getItemBillMaterialService());
 
                 if (bmsi != null) {
-                    logger.log(Level.INFO, "{0},{1}", new Object[]{count, bmsi.getItemImno()});
-
                     result += "<tr>\n" +
                               "<td>" + ++count + "</td>\n" +
                               "<td>" + bmsi.getItemImno() + "</td>\n" +
@@ -128,6 +123,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
         if (bmss != null && !bmss.isEmpty()) {
             for (BillMaterialService bms : bmss) {
                 if (bms.getLocation().equals(getLocationNameById(location))) {
+                    content.put("supplier", bms.getSupplier());
                     content.put("currency", getCurrencyById(bms.getCurrency()));
                     break;
                 }
@@ -146,7 +142,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
         String[] pbInfo = getProjectBillInfo(p.getId());
-
+//        Map values = model.asMap();
+//        
+//        if (values != null && !values.isEmpty()) {
+//            values.clear();
+//        }
         model.addAttribute("projectId", p.getId());
         model.addAttribute("projectReference", p.getReference());
         model.addAttribute("subproject", pbInfo[0]);
@@ -163,6 +163,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @RequestMapping(value = "/request-quotation/change")
+    @ResponseBody
     public String change(Long pdId, Integer location) {
         return changeRequestQuotation(pdId, location);
     }

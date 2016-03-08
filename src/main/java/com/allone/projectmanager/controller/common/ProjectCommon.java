@@ -6,7 +6,6 @@
 package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.WCSProjectManagerService;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.ProjectDetail;
@@ -72,8 +71,8 @@ public class ProjectCommon extends Common {
         "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
         "<td>" + pd.getCustomer() + "</td>" +
         "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
-        "<td></td>\n" +
-        "<td><input type='button' id='send-email' onclick='sendEnail(" + pd.getId() + ")'></td>\n" +
+        "<td><input type='button' value='Print To' class='button' id='print-pdf' onclick='printTo(" + pd.getId() + ")'></td>\n" +
+        "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEnail(" + pd.getId() + ")'></td>\n" +
         "</tr>\n";
 
         return response;
@@ -338,8 +337,7 @@ public class ProjectCommon extends Common {
         return result;
     }
 
-    public String searchCriteria(ProjectManagerService srvProjectManager, WCSProjectManagerService srvWCSProjectManager,
-                                 String version) {
+    public String searchCriteria(ProjectManagerService srvProjectManager, String version) {
         Map<String, String> contentMap = new HashMap<>();
 
         contentMap.put("type", createSearchType());

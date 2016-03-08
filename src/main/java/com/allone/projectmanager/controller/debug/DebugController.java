@@ -39,6 +39,14 @@ public class DebugController extends Common {
 
     @Autowired WCSProjectManagerService srvWCSProjectManager;
 
+    public WCSProjectManagerService getSrvWCSProjectManager() {
+        return srvWCSProjectManager;
+    }
+
+    public void setSrvWCSProjectManager(WCSProjectManagerService srvWCSProjectManager) {
+        this.srvWCSProjectManager = srvWCSProjectManager;
+    }
+
     @RequestMapping(value = "/snapshot")
     public String Snapshot(Model model) {
         this.setTitle("Debug");

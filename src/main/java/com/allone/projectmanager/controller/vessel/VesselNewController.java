@@ -8,10 +8,6 @@ package com.allone.projectmanager.controller.vessel;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import com.allone.projectmanager.entities.Vessel;
-import com.google.gson.Gson;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,11 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/vessel")
 public class VesselNewController extends Common {
+
     private static final Logger logger = Logger.getLogger(VesselNewController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
-    
+
     @RequestMapping(value = "/new")
     public String New(Model model) {
         this.setTitle("Vessel-New");
@@ -40,20 +37,20 @@ public class VesselNewController extends Common {
 
         return "index";
     }
-    
+
     @RequestMapping(value = "/add")
     public @ResponseBody
     String addVessel(Vessel vess) {
-        Map<String, String> content = new HashMap<>();
+        String response = "";
 
         if (vess != null) {
             vess = srvProjectManager.getDaoVessel().add(vess);
-            
-//            content.put("vessel", createSearchVessel(srvProjectManager, vess.getId().toString()));
-//            content.put("customer", createSearchCustomer(srvProjectManager, vess.getCompany()));
-//            content.put("contact", createSearchContact(srvProjectManager, vess.getId()));
+
+            response = "<option value='" +
+                       vess.getId() + "' selected='selected'>" +
+                       vess.getName() + "</option>";
         }
 
-        return new Gson().toJson(content);
+        return response;
     }
 }
