@@ -24,15 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "contact")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Contact.findAll",
-                           query = "SELECT c FROM Contact c ORDER BY c.name"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById",
-                           query = "SELECT c FROM Contact c WHERE c.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByCompanyVessel",
-                           query =
-                           "SELECT c FROM Contact c WHERE c.company=:company AND c.vessel=:vessel ORDER BY c.name"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByVessel",
-                           query = "SELECT c FROM Contact c WHERE c.vessel=:vessel ORDER BY c.name")})
+@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Contact.findAll", query = "SELECT c FROM Contact c ORDER BY c.name"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById", query = "SELECT c FROM Contact c WHERE c.id = :id"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByCompany", query = "SELECT c FROM Contact c WHERE c.company=:company ORDER BY c.name"),
+               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByVessel", query = "SELECT c FROM Contact c WHERE c.vessel=:vessel ORDER BY c.name")})
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -78,12 +78,12 @@ public class ProjectDetail implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "created")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date created;
 
     @Basic(optional = false)
     @Column(name = "expired")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date expired;
     
     @Column(name = "customer")

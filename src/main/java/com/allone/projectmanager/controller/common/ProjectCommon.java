@@ -17,6 +17,7 @@ import com.allone.projectmanager.model.PlotInfoModel;
 import com.allone.projectmanager.model.SearchInfo;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,7 @@ public class ProjectCommon extends Common {
         Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
 
         response +=
         "<tr>" +
@@ -65,14 +67,12 @@ public class ProjectCommon extends Common {
         "<td>" + pd.getType() + "</td>\n" +
         "<td>" + pd.getStatus() + "</td>\n" +
         "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
-        "<td>" + pd.getCreated() + "</td>\n" +
-        "<td>" + pd.getExpired() + "</td>\n" +
+        "<td>" + format.format(pd.getCreated()) + "</td>\n" +
+        "<td>" + format.format(pd.getExpired()) + "</td>\n" +
         "<td>" + pd.getCompany() + "</td>" +
         "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
         "<td>" + pd.getCustomer() + "</td>" +
         "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
-        "<td><input type='button' value='Print To' class='button' id='print-pdf' onclick='printTo(" + pd.getId() + ")'></td>\n" +
-        "<td><input type='button' value='Send eMail' class='button' id='send-email' onclick='sendEnail(" + pd.getId() + ")'></td>\n" +
         "</tr>\n";
 
         return response;
@@ -98,8 +98,6 @@ public class ProjectCommon extends Common {
                "<th>Vessel</th>\n" +
                "<th>Customer</th>\n" +
                "<th>Contact</th>\n" +
-               "<th>Print to ...</th>\n" +
-               "<th>Send eMail</th>\n" +
                "</tr>\n";
     }
 

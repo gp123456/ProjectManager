@@ -114,26 +114,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return result;
     }
 
-    private String changeRequestQuotation(Long pdId, Integer location) {
-        Map<String, String> content = new HashMap<>();
-
-        List<BillMaterialService> bmss = srvProjectManager.getDaoProjectBill().getByProject(pdId);
-
-        content.put("currency", "");
-        if (bmss != null && !bmss.isEmpty()) {
-            for (BillMaterialService bms : bmss) {
-                if (bms.getLocation().equals(getLocationNameById(location))) {
-                    content.put("supplier", bms.getSupplier());
-                    content.put("currency", getCurrencyById(bms.getCurrency()));
-                    break;
-                }
-            }
-        }
-        content.put("itemRequestQuotation", createRquestQuotationItem(new ProjectModel(pdId, location)));
-
-        return new Gson().toJson(content);
-    }
-
     @RequestMapping(value = "/request-quotation")
     public String RequestQuotation(Project p, Model model) {
         this.setTitle("Projects - Request Quotation");
@@ -162,9 +142,22 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return "index";
     }
 
-    @RequestMapping(value = "/request-quotation/change")
-    @ResponseBody
-    public String change(Long pdId, Integer location) {
-        return changeRequestQuotation(pdId, location);
+    @RequestMapping(value = "/request-quotation/supplier")
+    public @ResponseBody
+    String viewSupplier(Long pdId, Integer location, String supplier) {
+        String response = "";
+
+        if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
+            ProjectModel pbm = new ProjectModel(pdId, location);
+            BillMaterialService vpb = getProjectBill(pbm);
+
+            if (vpb != null) {
+                vpb.setSupplier(supplier);
+            }
+
+//            response = createProjectBill(pbm);
+        }
+
+        return response;
     }
 }

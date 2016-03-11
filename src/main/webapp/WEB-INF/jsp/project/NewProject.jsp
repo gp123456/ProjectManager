@@ -6,7 +6,7 @@
 
 <script>
     $(function () {
-        $("#expired").datepicker();
+        $("#expired").datepicker({dateFormat:'dd/mm/yy'});
 
         var id = $('#edit-project-id').val();
 
@@ -72,7 +72,7 @@
             <!- Customer ->
             <tr>
                 <td width="150px"><label>Customer</label></td>
-                <td>
+                <td width="300px">
                     <p>
                         <label class="custom-select">
                             <select id="customer" onchange="projectFilterCustomer()"></select>

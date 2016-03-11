@@ -7,7 +7,7 @@
 //insert new item in Project Bill table
 function insertItem() {
     var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val() +
+            "&location=1" +
             "&item=" + $("#item option:selected").val() +
             "&classRefresh=button alarm&classSave=button alarm";
 
@@ -16,26 +16,11 @@ function insertItem() {
         url: "/ProjectManager/project/bill-material-service/item/insert",
         data: data,
         success: function (response) {
-            $("#bill-material-service-item").html(response);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function changeLocationBitMaterialService() {
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val();
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/location",
-        data: data,
-        success: function (response) {
             var content = JSON.parse(response);
             
-            $("#bill-material-service").html(content.billMaterialService);
-            $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            $("#availability").val(content.availability);
+            $("#price").val(content.price);
+            $("#bill-material-service-item").html(content.item);
         },
         error: function (e) {
         }
@@ -44,29 +29,12 @@ function changeLocationBitMaterialService() {
 
 function changeCurrency() {
     var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val() +
+            "&location=1" +
             "&currency=" + $("#currency option:selected").val();
     
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/currency",
-        data: data,
-        success: function (response) {
-            $("#bill-material-service").html(response);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function changeSupplier() {
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val() +
-            "&supplier=" + $("#supplier option:selected").val();
-    
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/supplier",
         data: data,
         success: function (response) {
             $("#bill-material-service").html(response);
@@ -87,7 +55,7 @@ function saveItem(pdid, id) {
     var total_net_price = $("#total_net_price" + pdid + id).text();
 
     var data = "pdId=" + pdid +
-            "&location=" + $("#location option:selected").val() +
+            "&location=1" +
             "&currency=" + $("#currency option:selected").val() +
             "&item=" + id +
             "&quantity=" + quantity +
@@ -120,7 +88,7 @@ function removeItem(pdid, id) {
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/item/remove",
         data: "pdId=" + pdid +
-                "&location=" + $("#location option:selected").val() +
+                "&location=1" +
                 "&item=" + id,
         success: function (response) {
             var content = JSON.parse(response);
@@ -149,7 +117,7 @@ function refreshItem(pdid, id, available) {
 
         if (conf === true) {
             var data = "pdId=" + pdid +
-                    "&location=" + $("#location option:selected").val() +
+                    "&location=1" +
                     "&item=" + id +
                     "&available=" + available +
                     "&price=" + $("#price" + pdid + id).text() +
@@ -176,7 +144,7 @@ function refreshItem(pdid, id, available) {
 
 function editItem(pdid, id) {
     var data = "pdId=" + pdid +
-            "&location=" + $("#location option:selected").val() +
+            "&location=1" +
             "&item=" + id +
             "&classRefresh=button alarm&classSave=button alarm";
 
@@ -285,6 +253,7 @@ function addItem() {
         success: function (response) {
             var content = JSON.parse(response);
 
+            $("#item-currency").html(content.currency);
             $("#item-location").html(content.location);
             $("#item-supplier").html(content.supplier);
             dlgNewItem();
@@ -296,10 +265,11 @@ function addItem() {
 
 function stockNewItem() {
     var imno = $("#item-imno").val();
-    var location = $("#location option:selected").val();
+    var location = $("#item-location option:selected").val();
     var quantity = Number($("#item-quantity").val());
     var price = Number($("#item-price").val());
     var company = $("#item-supplier option:selected").val();
+    var currency = $("#item-currency option:selected").val();
 
     if (imno == 0) {
         $("#validate-add-item").text("You must give a item reference");
@@ -312,9 +282,9 @@ function stockNewItem() {
     } else if (company == -1) {
         $("#validate-add-item").text("You must select a supplier");
     } else {
-        var data = "pdId=" + $("#bill-subproject option:selected").val() + "&location=1&imno=" +
+        var data = "pdId=" + $("#subproject option:selected").val() + "&location=1&imno=" +
                 imno + "&description=" + $("#item-desc").val() + "&location=" + location +
-                "&quantity=" + quantity + "&price=" + price + "&company=" + company;
+                "&quantity=" + quantity + "&price=" + price + "&company=" + company + "&currency=" + currency;
 
         $.ajax({
             type: "POST",
@@ -339,9 +309,6 @@ function dlgNewItem() {
         buttons: {
             "stock": function () {
                 stockNewItem();
-            },
-            "no stock": function () {
-                nostockNewItem();
             }
         },
         show: {
@@ -427,73 +394,9 @@ function saveSubProject() {
     $("#new-subproject").dialog("close");
 }
 
-function addBillMaterialService(location) {
-    var items = [];
-    $(':checkbox:checked').each(function (i) {
-        items[i] = $(this).val();
-    });
-    var data = "id=" + $("#subproject option:selected").val() +
-            "&srcLocation=" + location +
-            "&newLocation=" + $("#location option:selected").val() +
-            "&itemIds=" + items;
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/replace/add",
-        data: data,
-        success: function (response) {
-            $("#bill-material-service-item").html(response);
-        },
-        error: function (e) {
-        }
-    });
-
-    $("#replace-bill-material-service").dialog("close");
-}
-
-function dlgReplaceBillMaterialService(location) {
-    $("#replace-bill-material-service").dialog({
-        autoOpen: true,
-        modal: true,
-        width: 310,
-        buttons: {
-            "submit": function () {
-                addBillMaterialService(location);
-            }
-        },
-        show: {
-            effect: "blind",
-            duration: 1000
-        },
-        hide: {
-            effect: "explode",
-            duration: 1000
-        }
-    });
-}
-
-function replaceBillMaterialService() {
-    var data = "pdid=" + $("#bill-project-id").val() +
-            "&location=" + $("#location option:selected").val();
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/replace",
-        data: data,
-        success: function (response) {
-            var content = JSON.parse(response);
-            
-            $("#lst-bill-material-service-item").html(content.items);
-            dlgReplaceBillMaterialService(content.location);
-        },
-        error: function (e) {
-        }
-    });
-}
-
 function getProjectBillItems() {
     var data = "id=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val();
+            "&location=1";
 
     $.ajax({
         type: "POST",
@@ -504,6 +407,7 @@ function getProjectBillItems() {
 
             $("#bill-material-service").html(content.billMaterialService);
             $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            $("#info-type").val(content.type);
             $("#company").val(content.company);
             $("#customer").val(content.customer);
             $("#vessel").val(content.vessel);

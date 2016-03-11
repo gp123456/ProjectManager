@@ -24,24 +24,21 @@ function changeSubproject() {
     });
 }
 
-function changeLocationRequestQuotation() {
+function changeSupplier() {
     var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val();
-
+            "&location=" + $("#location option:selected").val() +
+            "&supplier=" + $("#supplier option:selected").val();
+    
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/request-quotation/change",
+        url: "/ProjectManager/project/request-quotation/supplier",
         data: data,
         success: function (response) {
-            var content = JSON.parse(response);
-
-            $("#supplier").html(content.supplier);
-            $("#currency").html(content.currency);
-            $("#request-quotation-items").html(content.itemRequestQuotation);
+            $("#bill-material-service").html(response);
         },
         error: function (e) {
         }
-    }); 
+    });
 }
 
 function savePDF(pId) {

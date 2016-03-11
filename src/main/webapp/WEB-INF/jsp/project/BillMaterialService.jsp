@@ -23,6 +23,7 @@
                 $("#bill-material-service").html(content.billMaterialService);
                 $("#note").val(content.noteBillMaterialService);
                 $("#bill-material-service-item").html(content.billMaterialServiceItems);
+                $("#info-type").val(content.type);
                 $("#company").val(content.company);
                 $("#customer").val(content.customer);
                 $("#vessel").val(content.vessel);
@@ -42,6 +43,10 @@
         <table>
             <tbody>
                 <tr>
+                    <td><label>Type</label></td>
+                    <td><input type="text" id="info-type" readonly></td>
+                </tr>
+                <tr>
                     <td><label>Company</label></td>
                     <td><input type="text" id="company" readonly></td>
                 </tr>
@@ -56,12 +61,20 @@
             </tbody>
         </table>
         <h3>Select Subproject</h3>
-        <p>
-            <label class="custom-select">
-                <select id="subproject" onchange="getProjectBillItems()"></select>
-            </label>
-        </p>
-        <input type="button" class="button" value="Add New Subproject" onclick="addSubProject()"/>
+        <table>
+            <tbody>
+                <tr>
+                    <td width="300px">
+                        <label class="custom-select">
+                            <select id="subproject" onchange="getProjectBillItems()"></select>
+                        </label>
+                    </td>
+                    <td>
+                        <input type="button" class="button" value="Add New Subproject" onclick="addSubProject()"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <div class="formLayout" hidden="true" id="new-subproject" title="Add New Subproject">
             <p class="validateTips">All form fields are required.</p>
             <table>
@@ -100,12 +113,28 @@
             </table>
         </div>
         <br><h3>Select Item</h3>
-        <p>
-            <label class="custom-select">
-                <select id="item" onchange="insertItem()"></select>
-            </label>
-        </p>
-        <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
+        <table>
+            <tbody>
+                <tr>
+                    <td><label>Availability</label></td>
+                    <td><input type="text" id="availability" readonly></td>
+                </tr>
+                <tr>
+                    <td><label>Price</label></td>
+                    <td><input type="text" id="price" readonly></td>
+                </tr>
+                <tr>
+                    <td width="300px">
+                        <label class="custom-select">
+                            <select id="item" onchange="insertItem()"></select>
+                        </label>
+                    </td>
+                    <td>
+                        <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <div id="add-item" hidden="true" title="Add New Item">
             <form class="go-bottom">
                 <p class="validateTips" id="validate-add-item">All form fields are required.</p>
@@ -127,6 +156,11 @@
                 </div>
                 <p>
                     <label class="custom-select">
+                        <select id="item-currency"></select>
+                    </label>
+                </p>
+                <p>
+                    <label class="custom-select">
                         <select id="item-location"></select>
                     </label>
                 </p>
@@ -138,31 +172,10 @@
             </form>
         </div>
         <input type="hidden" id="item_id" name="id"/>
-        <br><h3>Select Location</h3>
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <label class="custom-select">
-                            <select id="location" onchange="changeLocationBitMaterialService()"></select>
-                        </label>
-                    </td>
-                    <td>
-                        <input type="button" class="button" value="Replace Item(s)" onclick="replaceBillMaterialService()"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         <br><h3>Select Currency</h3>
         <p>
             <label class="custom-select">
                 <select id="currency" onchange="changeCurrency()"></select>
-            </label>
-        </p>
-        <br><h3>Select Supplier</h3>
-        <p>
-            <label class="custom-select">
-                <select id="supplier" onchange="changeSupplier()"></select>
             </label>
         </p>
     </div>
@@ -177,9 +190,7 @@
                     <th>Sales Price</th>
                     <th>Total Net Price</th>
                     <th>Currency</th>
-                    <th>Location</th>
                     <th>Subproject</th>
-                    <th>Supplier</th>
                     <th>Delete</th>
                 </tr>
             </thead>

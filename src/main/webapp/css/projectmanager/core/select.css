@@ -32,7 +32,7 @@ label.custom-select {
     -moz-border-radius: 6px;
     border-radius: 6px;
     cursor: pointer;
-    width: 100%;
+    width: 300px;
 }
 
 /* for Webkit's CSS-only solution */

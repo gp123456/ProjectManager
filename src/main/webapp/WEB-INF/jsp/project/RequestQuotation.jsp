@@ -28,10 +28,10 @@
                 <select id="subproject" onchange="changeSubproject()">${subproject}</select>
             </label>
         </p>
-        <br><h3>Select Location</h3>
+        <br><h3>Select Supplier</h3>
         <p>
             <label class="custom-select">
-                <select id="location" onchange="changeLocationRequestQuotation()">${location}</select>
+                <select id="supplier" onchange="changeSupplier()"></select>
             </label>
         </p>
     </div>

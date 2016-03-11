@@ -541,11 +541,11 @@ public class Common {
         return response;
     }
 
-    public String createCurrency() {
+    public String createCurrency(CurrencyEnum selected) {
         String response = "";
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
-            response += (currency.equals(CurrencyEnum.EUR)) ?
+            response += (currency.equals(selected)) ?
                         "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
                         "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }

@@ -130,7 +130,7 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/new")
     public String NewProject(Model model) {
         Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/YYYY");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
 
         this.setTitle("Project - New");
         this.setHeader(null);
@@ -155,13 +155,16 @@ public class ProjectController extends ProjectCommon {
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
         if (p != null) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
         }
         model.addAttribute("button_value", "Edit");
         model.addAttribute("button_id", "edit");
-        model.addAttribute("button_action", "editRow(" + p.getId() + ")");
+        if (pds != null && !pds.isEmpty()) {
+            model.addAttribute("button_action", "editRow(" + pds.get(0).getId() + ")");
+        }
 
         return "index";
     }
@@ -362,7 +365,7 @@ public class ProjectController extends ProjectCommon {
             List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
                                      ((!customer.equals("none")) ?
                                       srvProjectManager.getDaoContact()
-                                      .getByCompanyVessel(customer, new Long(vessels.get(0).getId())) :
+                                      .getByCompany(customer) :
                                       srvProjectManager.getDaoContact().getAll()) :
                                      null;
 
@@ -378,7 +381,7 @@ public class ProjectController extends ProjectCommon {
             response = "";
             if (contacts != null && contacts.isEmpty() == false) {
                 for (Contact contact : contacts) {
-                    response += "<option value='" + contact.getId() + "'>" + contact.getName() + "</option>";
+                    response += "<option value='" + contact.getId() + "'>" + contact.getSurname() + " " + contact.getName() + "</option>";
                     content.put("contact", response);
                 }
             } else {
