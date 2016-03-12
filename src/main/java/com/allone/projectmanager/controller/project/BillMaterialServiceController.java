@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -358,6 +359,8 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/remove")
     public @ResponseBody
     String itemRemove(Long pdId, Integer location, BillMaterialServiceItem pbi) {
+        logger.log(Level.INFO, "remove: {0},{1},{2}", new Object[]{pdId, location, pbi.getItem()});
+        
         Map<String, String> content = new HashMap<>();
 
         removeVirtualProjectBillItem(pdId, location, pbi.getItem());

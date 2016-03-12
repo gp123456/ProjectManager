@@ -451,12 +451,13 @@ public class Common {
         }
     }
 
-    public void removeVirtualProjectBillItem(Long pdId, Integer location, Long itemid) {
-        List<BillMaterialServiceItem> items = mapProjectBillItems.get(new ProjectModel(pdId, location));
+    public void removeVirtualProjectBillItem(Long pdId, Integer location, Long itemId) {
+        ProjectModel pm = new ProjectModel(pdId, location);
+        List<BillMaterialServiceItem> items = mapProjectBillItems.get(pm);
 
         if (items != null && !items.isEmpty()) {
             for (BillMaterialServiceItem item : items) {
-                if (item.getItem().equals(itemid)) {
+                if (item.getItem().equals(itemId)) {   
                     items.remove(item);
                     break;
                 }
