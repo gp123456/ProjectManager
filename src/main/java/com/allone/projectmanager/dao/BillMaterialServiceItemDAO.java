@@ -39,7 +39,7 @@ public class BillMaterialServiceItemDAO {
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
-            BillMaterialServiceItem values = (BillMaterialServiceItem)query.getSingleResult();
+            BillMaterialServiceItem values = (BillMaterialServiceItem) query.getSingleResult();
 
             em.close();
 
@@ -52,8 +52,8 @@ public class BillMaterialServiceItemDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (projectBill != null && projectBill.compareTo(0l) >= 0) ?
-                    em.createNamedQuery( "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill").setParameter("projectBill", projectBill) : null;
+            query = (projectBill != null && projectBill.compareTo(0l) >= 0)
+                    ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill").setParameter("projectBill", projectBill) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -152,11 +152,12 @@ public class BillMaterialServiceItemDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            em.getTransaction().begin();
             if (pbi != null) {
-                em.persist(pbi);
+                em.getTransaction().begin();
+                em.merge(pbi);
+                em.getTransaction().commit();
             }
-            em.getTransaction().commit();
+
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -179,6 +180,23 @@ public class BillMaterialServiceItemDAO {
                 }
                 em.getTransaction().commit();
             }
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    public void delete(BillMaterialServiceItem item) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (item != null) {
+                em.getTransaction().begin();
+                em.remove(item);
+                em.getTransaction().commit();
+            }
+            em.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {

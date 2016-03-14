@@ -89,7 +89,6 @@
                                 </label>
                             </p>
                         </td>
-                        <td></td>
                     </tr>
                     <!- Type ->
                     <tr>
@@ -97,17 +96,56 @@
                         <td>
                             <p>
                                 <label class="custom-select">
-                                    <select id="type"></select>
+                                    <select id="type" onchange="changeSubprojectType()"></select>
                                 </label>
                             </p>
                         </td>
-                        <td></td>
                     </tr>
                     <!- Expire date ->
                     <tr>
                         <td><label>Expired date</label></td>
                         <td><input type="date" id="expired" ></td>
-                        <td></td>
+                    </tr>
+                    <!- Technical ->
+                    <tr id="tr-service-collab" style="display:none">
+                        <td><label>Technical</label></td>
+                        <td>
+                            <p>
+                                <label class="custom-select">
+                                    <select id="service-collab"></select>
+                                </label>
+                            </p>
+                        </td>
+                    </tr>
+                    <!- Service Start ->
+                    <tr id="tr-service-start" style="display:none">
+                        <td><label>Service Start</label></td>
+                        <td><input type="date" id="service-start" ></td>
+                    </tr>
+                    <!- Service End ->
+                    <tr id="tr-service-end" style="display:none">
+                        <td><label>Service End</label></td>
+                        <td><input type="date" id="service-end" ></td>
+                    </tr>
+                    <!- Service Travel Duration ->
+                    <tr id="tr-service-travel-duration" style="display:none">
+                        <td><label>Service Travel Duration(hour)</label></td>
+                        <td><input type="text" id="service-travel-duration" ></td>
+                    </tr>
+                    <!- Service Travel Cost ->
+                    <tr id="tr-service-travel-cost" style="display:none">
+                        <td><label>Service Travel Cost(&#8364)</label></td>
+                        <td><input type="text" id="service-travel-cost" ></td>
+                    </tr>
+                    <!- Service Duration ->
+                    <tr id="tr-service-duration" style="display:none">
+                        <td><label>Service Duration(hour)</label></td>
+                        <td><input type="text" id="service-duration" ></td>
+                    </tr>
+                    <!- Service Cost ->
+                    <tr id="tr-service-cost" style="display:none">
+                        <td><label>Service Cost(&#8364)</label></td>
+                        <td><input type="text" id="service-cost" ></td>
                     </tr>
                 </tbody>
             </table>

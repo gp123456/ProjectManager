@@ -95,6 +95,7 @@ public class BillMaterialService implements Serializable {
     private String classSave;
 
     private BillMaterialService(Builder builder) {
+        id = builder.id;
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
         totalSalePrice = builder.totalSalePrice;
@@ -110,6 +111,7 @@ public class BillMaterialService implements Serializable {
     }
 
     private BillMaterialService(BillMaterialService builder) {
+        id = builder.id;
         totalCost = builder.totalCost;
         averangeDiscount = builder.averangeDiscount;
         totalSalePrice = builder.totalSalePrice;
@@ -258,6 +260,8 @@ public class BillMaterialService implements Serializable {
 
     public static class Builder {
 
+        private Long id;
+        
         private BigDecimal totalCost;
 
         private BigDecimal averangeDiscount;
@@ -282,6 +286,12 @@ public class BillMaterialService implements Serializable {
 
         private String classSave;
 
+        public Builder setId(Long id) {
+            this.id = id;
+
+            return this;
+        }
+        
         public Builder setTotalCost(BigDecimal totalCost) {
             this.totalCost = totalCost;
 

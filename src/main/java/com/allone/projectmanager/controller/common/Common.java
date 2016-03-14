@@ -64,10 +64,10 @@ public class Common {
         String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream().map((si) -> "<option value=\"" +
-                                                    si.getId() + "\">" +
-                                                    si.getName() + "</option>").
-            reduce(response, String::concat);
+            response += info.stream().map((si) -> "<option value=\""
+                    + si.getId() + "\">"
+                    + si.getName() + "</option>").
+                    reduce(response, String::concat);
             finalResponse += response;
         }
 
@@ -76,9 +76,9 @@ public class Common {
 
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(id)) ?
-                          "<option value='-1' selected='selected'>Select Vessel</option>" :
-                          "<option value='-1' >Select</option>";
+        String response = (Strings.isNullOrEmpty(id))
+                ? "<option value='-1' selected='selected'>Select Vessel</option>"
+                : "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
@@ -96,16 +96,16 @@ public class Common {
 
     public String createSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
         List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager, type);
-        String response = (Strings.isNullOrEmpty(name)) ?
-                          "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
-                          "<option value='none'>Select</option>";
+        String response = (Strings.isNullOrEmpty(name))
+                ? "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>"
+                : "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(name)) {
                     if (si.getId().equals(name)) {
-                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() +
-                                    "</option>";
+                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName()
+                                + "</option>";
                     }
                 }
                 response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
@@ -122,8 +122,8 @@ public class Common {
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream()
-            .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
-                                                                                                          String::concat);
+                    .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
+                            String::concat);
             finalResponse += response;
         }
 
@@ -132,14 +132,14 @@ public class Common {
 
     public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
-        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>" :
-                          "<option value='-1' >Select</option>";
+        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>"
+                : "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Contact c : info) {
                 if (id != null) {
                     if (c.getVessel().equals(id)) {
-                            response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
+                        response += "<option value='" + c.getId() + "' selected='selected'>" + c.getName() + "</option>";
                     }
                 }
                 response += "<option value=\"" + c.getId() + "\">" + c.getName() + "</option>";
@@ -181,7 +181,7 @@ public class Common {
         if (mapProjectBill != null && !mapProjectBill.isEmpty()) {
             location = mapProjectBill.keySet().iterator().next();
         }
-        
+
         return location;
     }
 
@@ -207,23 +207,8 @@ public class Common {
         return mapProjectBill.get(pdm);
     }
 
-    public List<BillMaterialService> getBillMaterialServices(ProjectModel pbm) {
-        List<BillMaterialService> result = null;
-
-        if (pbm != null && mapProjectBill != null && !mapProjectBill.isEmpty()) {
-            Set<ProjectModel> keys = mapProjectBill.keySet();
-            result = new ArrayList<>();
-
-            for (ProjectModel key : keys) {
-                if (key.equals(pbm)) {
-                    logger.log(Level.INFO, "------------found");
-
-                    result.add(mapProjectBill.get(key));
-                }
-            }
-        }
-
-        return result;
+    public BillMaterialService getBillMaterialServices(ProjectModel pdm) {
+        return mapProjectBill.get(pdm);
     }
 
     public Set<ProjectModel> getProjectBillIds() {
@@ -391,6 +376,8 @@ public class Common {
 
     public void setVirtualProjectBill(BillMaterialService pb, Integer locationId) {
         if (pb != null) {
+            logger.log(Level.INFO, "push bms {0}, {1}", new Object[]{pb.getId(), locationId});
+            
             mapProjectBill.put(new ProjectModel(pb.getProject(), locationId), pb);
         }
     }
@@ -451,17 +438,24 @@ public class Common {
         }
     }
 
-    public void removeVirtualProjectBillItem(Long pdId, Integer location, Long itemId) {
+    public void removeVirtualProjectBillItem(ProjectManagerService srvProjectManager, Long pdId, Integer location, Long itemId) {
         ProjectModel pm = new ProjectModel(pdId, location);
         List<BillMaterialServiceItem> items = mapProjectBillItems.get(pm);
 
         if (items != null && !items.isEmpty()) {
+            Map<Long, BillMaterialServiceItem> map = new HashMap<>();
+
             for (BillMaterialServiceItem item : items) {
-                if (item.getItem().equals(itemId)) {   
-                    items.remove(item);
-                    break;
-                }
+                map.put(item.getItem(), item);
             }
+
+            BillMaterialServiceItem removeItem = map.remove(itemId);
+
+            if (removeItem != null) {
+                removeItem = srvProjectManager.getDaoProjectBillItem().getById(removeItem.getId());
+                srvProjectManager.getDaoProjectBillItem().delete(removeItem);
+            }
+            mapProjectBillItems.replace(pm, new ArrayList<>(map.values()));
         }
     }
 
@@ -534,9 +528,9 @@ public class Common {
         String response = "";
 
         for (LocationEnum location : LocationEnum.values()) {
-            response += (location.equals(LocationEnum.GREECE)) ?
-                        "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
-                        "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
+            response += (location.equals(LocationEnum.GREECE))
+                    ? "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>"
+                    : "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
         }
 
         return response;
@@ -546,9 +540,9 @@ public class Common {
         String response = "";
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
-            response += (currency.equals(selected)) ?
-                        "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
-                        "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
+            response += (currency.equals(selected))
+                    ? "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>"
+                    : "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }
 
         return response;

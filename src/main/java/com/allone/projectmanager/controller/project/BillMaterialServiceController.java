@@ -73,8 +73,8 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (items != null && !items.isEmpty()) {
             response = "<option value='-1'>Select</option>";
             response = items.stream()
-            .map((item) -> "<option value='" + item.getId() + "'>" + item.getDescription() + "[" + item.getImno() + "]</option>")
-            .reduce(response, String::concat);
+                    .map((item) -> "<option value='" + item.getId() + "'>" + item.getDescription() + "[" + item.getImno() + "]</option>")
+                    .reduce(response, String::concat);
         }
         content.put("items", response);
 
@@ -98,7 +98,6 @@ public class BillMaterialServiceController extends ProjectCommon {
             pdId = pds.get(0).getId();
             Vessel vessel = srvProjectManager.getDaoVessel().getById(pds.get(0).getVessel());
             Set<ProjectModel> pbKeys = getProjectBillIds();
-            BillMaterialService bms = getProjectBill(new ProjectModel(pdId, 1));
 
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
@@ -106,6 +105,8 @@ public class BillMaterialServiceController extends ProjectCommon {
                     pushProjectBillMaterial(pd.getId());
                 }
             }
+
+            BillMaterialService bms = getProjectBill(new ProjectModel(pdId, 1));
             content.put("subprojects", response);
             content.put("billMaterialService", createProjectBill(new ProjectModel(pdId, 1)));
             content.put("noteBillMaterialService", (bms != null) ? bms.getNote() : "");
@@ -160,15 +161,15 @@ public class BillMaterialServiceController extends ProjectCommon {
                 String subproject = (pd != null) ? pd.getReference() : "";
                 Long pdid = (pd != null) ? pd.getId() : 0l;
 
-                response += "<tr>\n" +
-                            "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>\n" +
-                            "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>\n" +
-                            "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>\n" +
-                            "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>\n" +
-                            "<td id='currency" + pdid + "'>" + getCurrencyById(pb.getCurrency()) + "</td>\n" +
-                            "<td id='m_subproject'>" + subproject + "</td>\n" +
-                            "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," + pbm.getLocation() + ")'></td>\n" +
-                            "</tr>\n";
+                response += "<tr>\n"
+                        + "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>\n"
+                        + "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>\n"
+                        + "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>\n"
+                        + "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>\n"
+                        + "<td id='currency" + pdid + "'>" + getCurrencyById(pb.getCurrency()) + "</td>\n"
+                        + "<td id='m_subproject'>" + subproject + "</td>\n"
+                        + "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," + pbm.getLocation() + ")'></td>\n"
+                        + "</tr>\n";
             }
         }
 
@@ -201,24 +202,24 @@ public class BillMaterialServiceController extends ProjectCommon {
                         String totalSalePrice = (pbItem.getTotalSalePrice() != null) ? pbItem.getTotalSalePrice().toString() : "";
                         String totalNetPrice = (pbItem.getTotalNetPrice() != null) ? pbItem.getTotalNetPrice().toString() : "";
 
-                        response +=
-                        "<tr>\n" +
-                        "<td>" + imno + "</td>\n" +
-                        "<td>" + stockName + "</td>\n" +
-                        "<td id='quantity" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + quantity + "</td>\n" +
-                        "<td id='cost" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + cost + "</td>\n" +
-                        "<td id='total_cost" + pbm.getId() + itemId + "'>" + totalCost + "</td>\n" +
-                        "<td id='percentage" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + percentage + "</td>\n" +
-                        "<td id='discount" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + discount + "</td>\n" +
-                        "<td id='sale_price" + pbm.getId() + itemId + "'>" + salePrice + "</td>\n" +
-                        "<td id='total_sale_price" + pbm.getId() + itemId + "'>" + totalSalePrice + "</td>\n" +
-                        "<td id='total_net_price" + pbm.getId() + itemId + "'>" + totalNetPrice + "</td>\n" +
-                        "<td>" + pd.getReference() + "</td>\n" +
-                        "<td><input type='button' value='Edit' class='button' onclick='editItem(" + pbm.getId() + "," + itemId + ")'></td>\n" +
-                        "<td><input type='button' value='Refresh' class='" + pbItem.getClassRefresh() + "' onclick='refreshItem(" + pbm.getId() + "," + itemId + "," + itemQuantity + ")'></td>\n" +
-                        "<td><input type='button' value='Save' class='" + pbItem.getClassSave() + "' onclick='saveItem(" + pbm.getId() + "," + itemId + ")'></td>\n" +
-                        "<td><input type='button' value='Remove' class='button' onclick='removeItem(" + pbm.getId() + "," + itemId + ")'></td>\n" +
-                        "</tr>\n";
+                        response
+                                += "<tr>\n"
+                                + "<td>" + imno + "</td>\n"
+                                + "<td>" + stockName + "</td>\n"
+                                + "<td id='quantity" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + quantity + "</td>\n"
+                                + "<td id='cost" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + cost + "</td>\n"
+                                + "<td id='total_cost" + pbm.getId() + itemId + "'>" + totalCost + "</td>\n"
+                                + "<td id='percentage" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + percentage + "</td>\n"
+                                + "<td id='discount" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + discount + "</td>\n"
+                                + "<td id='sale_price" + pbm.getId() + itemId + "'>" + salePrice + "</td>\n"
+                                + "<td id='total_sale_price" + pbm.getId() + itemId + "'>" + totalSalePrice + "</td>\n"
+                                + "<td id='total_net_price" + pbm.getId() + itemId + "'>" + totalNetPrice + "</td>\n"
+                                + "<td>" + pd.getReference() + "</td>\n"
+                                + "<td><input type='button' value='Edit' class='button' onclick='editItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
+                                + "<td><input type='button' value='Refresh' class='" + pbItem.getClassRefresh() + "' onclick='refreshItem(" + pbm.getId() + "," + itemId + "," + itemQuantity + ")'></td>\n"
+                                + "<td><input type='button' value='Save' class='" + pbItem.getClassSave() + "' onclick='saveItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
+                                + "<td><input type='button' value='Remove' class='button' onclick='removeItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
+                                + "</tr>\n";
                     }
                 }
             }
@@ -246,26 +247,26 @@ public class BillMaterialServiceController extends ProjectCommon {
 
             averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()), 2);
 
-            return (currency != null) ?
-                   new BillMaterialService.Builder()
-                   .setProject(pdId)
-                   .setLocation(getLocationNameById(location))
-                   .setTotalCost(totalCost)
-                   .setAverangeDiscount(averangeDiscount)
-                   .setTotalSalePrice(totalSalePrice)
-                   .setTotalNetPrice(totalNetPrice)
-                   .setCurrency(currency)
-                   .setClassSave("button alarm")
-                   .build() :
-                   new BillMaterialService.Builder()
-                   .setProject(pdId)
-                   .setLocation(getLocationNameById(location))
-                   .setTotalCost(totalCost)
-                   .setAverangeDiscount(averangeDiscount)
-                   .setTotalSalePrice(totalSalePrice)
-                   .setTotalNetPrice(totalNetPrice)
-                   .setClassSave("button alarm")
-                   .build();
+            return (currency != null)
+                    ? new BillMaterialService.Builder()
+                    .setProject(pdId)
+                    .setLocation(getLocationNameById(location))
+                    .setTotalCost(totalCost)
+                    .setAverangeDiscount(averangeDiscount)
+                    .setTotalSalePrice(totalSalePrice)
+                    .setTotalNetPrice(totalNetPrice)
+                    .setCurrency(currency)
+                    .setClassSave("button alarm")
+                    .build()
+                    : new BillMaterialService.Builder()
+                    .setProject(pdId)
+                    .setLocation(getLocationNameById(location))
+                    .setTotalCost(totalCost)
+                    .setAverangeDiscount(averangeDiscount)
+                    .setTotalSalePrice(totalSalePrice)
+                    .setTotalNetPrice(totalNetPrice)
+                    .setClassSave("button alarm")
+                    .build();
         } else {
             removeVirtualProjectBill(new ProjectModel(pdId, location));
 
@@ -347,6 +348,8 @@ public class BillMaterialServiceController extends ProjectCommon {
         BillMaterialService pb = getAverangeDiscount(pdId, location, currency);
 
         if (pb != null) {
+            logger.log(Level.INFO, "save item {0}, {1}", new Object[]{pb.getProject(), location});
+            
             setVirtualProjectBill(pb, location);
         }
         saveVirtualProjectBillItem(new ProjectModel(pdId, location));
@@ -359,11 +362,9 @@ public class BillMaterialServiceController extends ProjectCommon {
     @RequestMapping(value = "/bill-material-service/item/remove")
     public @ResponseBody
     String itemRemove(Long pdId, Integer location, BillMaterialServiceItem pbi) {
-        logger.log(Level.INFO, "remove: {0},{1},{2}", new Object[]{pdId, location, pbi.getItem()});
-        
         Map<String, String> content = new HashMap<>();
 
-        removeVirtualProjectBillItem(pdId, location, pbi.getItem());
+        removeVirtualProjectBillItem(srvProjectManager, pdId, location, pbi.getItem());
         setVirtualProjectBill(getAverangeDiscount(pdId, location, null), location);
         content.put("projectBill", createProjectBill(new ProjectModel(pdId, location)));
         content.put("projectBillItems", createProjectBillItems(new ProjectModel(pdId, location)));
@@ -497,34 +498,34 @@ public class BillMaterialServiceController extends ProjectCommon {
                 for (ProjectDetail pd : pds) {
                     pd.setStatus(ProjectStatusEnum.PROJECT_BILL.toString());
                     srvProjectManager.getDaoProjectDetail().edit(pd);
-                    ProjectModel pbm = new ProjectModel(pd.getId(), null);
-                    List<BillMaterialService> vpbs = getBillMaterialServices(pbm);
+                    ProjectModel pdm = new ProjectModel(pd.getId(), LocationEnum.GREECE.getId());
+                    BillMaterialService bms = getBillMaterialServices(pdm);
 
-                    if (vpbs != null && !vpbs.isEmpty()) {
-                        for (BillMaterialService vpb : vpbs) {
-                            vpb.setNote(pb.getNote());
-                            vpb.setComplete(Boolean.FALSE);
-                            pbm.setLocation(getLocationIdByName(vpb.getLocation()));
-                            if (vpb.getId() == null) {
-                                vpb = srvProjectManager.getDaoProjectBill().add(vpb);
-                                setVirtualProjectBillItemBillId(pbm, vpb.getId());
-                                srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pbm));
-                            } else {
-                                srvProjectManager.getDaoProjectBill().edit(vpb);
-                                setVirtualProjectBillItemBillId(pbm, pb.getId());
-                                Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pbm);
+                    if (bms != null) {
+                        bms.setNote(pb.getNote());
+                        bms.setComplete(Boolean.FALSE);
+                        pdm.setLocation(getLocationIdByName(bms.getLocation()));
+                        if (bms.getId() == null) {
+                            logger.log(Level.INFO, "complete save {0}", bms.getId());
 
-                                for (BillMaterialServiceItem pbi : pbis) {
-                                    if (pbi.getId() == null) {
-                                        srvProjectManager.getDaoProjectBillItem().add(pbi);
-                                    } else {
-                                        srvProjectManager.getDaoProjectBillItem().edit(pbi);
-                                    }
+                            bms = srvProjectManager.getDaoProjectBill().add(bms);
+                            setVirtualProjectBillItemBillId(pdm, bms.getId());
+                            srvProjectManager.getDaoProjectBillItem().add(getProjectBillItems(pdm));
+                        } else {
+                            srvProjectManager.getDaoProjectBill().edit(bms);
+                            setVirtualProjectBillItemBillId(pdm, bms.getId());
+                            Collection<BillMaterialServiceItem> pbis = getProjectBillItems(pdm);
+
+                            for (BillMaterialServiceItem pbi : pbis) {
+                                if (pbi.getId() == null) {
+                                    srvProjectManager.getDaoProjectBillItem().add(pbi);
+                                } else {
+                                    srvProjectManager.getDaoProjectBillItem().edit(pbi);
                                 }
                             }
-                            clearVirtualProjectBill(pbm);
-                            response = "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>\n";
                         }
+                        clearVirtualProjectBill(pdm);
+                        response = "<h1>Bill of Material - REF:" + p.getReference() + " - Complete</h1>\n";
                     }
                 }
             }
@@ -552,16 +553,16 @@ public class BillMaterialServiceController extends ProjectCommon {
         List<Stock> stocks = srvProjectManager.getDaoStock().getAll(0, Integer.MAX_VALUE);
         List<Company> suppliers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.SUPPLIER.toString());
         Map<String, String> content = new HashMap<>();
-        String htmlStock = "<select id='select-item-location'>\n" +
-                           "<option value='-1' selected='selected'>Select Location</option>\n";
-        String htmlSupplier = "<select id='select-item-supplier'>\n" +
-                              "<option value='-1' selected='selected'>Select Supplier</option>\n";
+        String htmlStock = "<select id='select-item-location'>\n"
+                + "<option value='-1' selected='selected'>Select Location</option>\n";
+        String htmlSupplier = "<select id='select-item-supplier'>\n"
+                + "<option value='-1' selected='selected'>Select Supplier</option>\n";
 
         content.put("currency", createCurrency(CurrencyEnum.EUR));
         if (stocks != null && !stocks.isEmpty()) {
             htmlStock += stocks.stream()
-            .map((stock) -> "<option value='" + stock.getId() + "'>" + stock.getLocation() + "</option>\n")
-            .reduce(htmlStock, String::concat);
+                    .map((stock) -> "<option value='" + stock.getId() + "'>" + stock.getLocation() + "</option>\n")
+                    .reduce(htmlStock, String::concat);
             htmlStock += "</select>";
             content.put("location", htmlStock);
         }
@@ -582,10 +583,10 @@ public class BillMaterialServiceController extends ProjectCommon {
         Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
         Map<String, String> content = new HashMap<>();
-        String htmlCompany = "<select id='subproject-company'>\n" +
-                             "<option value='none' selected='selected'>Select</option>\n";
-        String htmlType = "<select id='type'>\n" +
-                          "<option value='none' selected='selected'>Select</option>\n";
+        String htmlCompany = "<select id='subproject-company'>\n"
+                + "<option value='none' selected='selected'>Select</option>\n";
+        String htmlType = "<select id='type'>\n"
+                + "<option value='none' selected='selected'>Select</option>\n";
 
         for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
             htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
@@ -617,16 +618,16 @@ public class BillMaterialServiceController extends ProjectCommon {
         item = srvProjectManager.getDaoItem().add(item);
         if (item.getId() != null) {
             setVirtualProjectBillItem(new ProjectModel(pdId, LocationEnum.GREECE.getId()),
-                                      new BillMaterialServiceItem.Builder()
-                                      .setAvailable(item.getQuantity())
-                                      .setQuantity(0)
-                                      .setPrice(item.getPrice())
-                                      .setItem(item.getId())
-                                      .setItemImno(item.getImno())
-                                      .setItemDescription(item.getDescription())
-                                      .setClassRefresh("button alarm")
-                                      .setClassSave("button alarm")
-                                      .build());
+                    new BillMaterialServiceItem.Builder()
+                    .setAvailable(item.getQuantity())
+                    .setQuantity(0)
+                    .setPrice(item.getPrice())
+                    .setItem(item.getId())
+                    .setItemImno(item.getImno())
+                    .setItemDescription(item.getDescription())
+                    .setClassRefresh("button alarm")
+                    .setClassSave("button alarm")
+                    .build());
         }
 
         return createProjectBillItems(new ProjectModel(pdId, location));
@@ -716,6 +717,14 @@ public class BillMaterialServiceController extends ProjectCommon {
             response = createProjectBill(pbm);
         }
 
+        return response;
+    }
+    
+    @RequestMapping(value = "/bill-material-service/change-subproject-type")
+    public @ResponseBody
+    String changeSubprojectType(Integer type) {
+        String response = "<option value='none' selected='selected'>Select</option>\n";
+        
         return response;
     }
 }

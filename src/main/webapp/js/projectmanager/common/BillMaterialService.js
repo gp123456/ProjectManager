@@ -17,7 +17,7 @@ function insertItem() {
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
-            
+
             $("#availability").val(content.availability);
             $("#price").val(content.price);
             $("#bill-material-service-item").html(content.item);
@@ -31,7 +31,7 @@ function changeCurrency() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=1" +
             "&currency=" + $("#currency option:selected").val();
-    
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/currency",
@@ -415,4 +415,41 @@ function getProjectBillItems() {
         error: function (e) {
         }
     });
+}
+
+function changeSubprojectType() {
+    var type = $("#type option:selected").val();
+
+    if (type === 'SERVICE') {
+        var data = "type=" + $("#type option:selected").val();
+        
+        $("#tr-service-collab").show("fast");
+        $("#tr-service-start").show("fast");
+        $("#tr-service-end").show("fast");
+        $("#tr-service-travel-duration").show("fast");
+        $("#tr-service-travel-cost").show("fast");
+        $("#tr-service-duration").show("fast");
+        $("#tr-service-cost").show("fast");
+        
+        $.ajax({
+            type: "POST",
+            url: "/ProjectManager/project/bill-material-service/change-subproject-type",
+            data: data,
+            success: function (response) {
+                alert(response);
+
+                $("#service-collab").html(response);
+            },
+            error: function (e) {
+            }
+        });
+    } else {
+        $("#tr-service-collab").hide("fast")
+        $("#tr-service-start").hide("fast");
+        $("#tr-service-end").hide("fast");
+        $("#tr-service-travel-duration").hide("fast");
+        $("#tr-service-travel-cost").hide("fast");
+        $("#tr-service-duration").hide("fast");
+        $("#tr-service-cost").hide("fast");
+    }
 }

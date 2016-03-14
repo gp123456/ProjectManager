@@ -85,7 +85,7 @@ public class BillMaterialServiceDAO extends BillMaterialService {
         try {
             if (ms != null) {
                 em.getTransaction().begin();
-                em.refresh(ms);
+                em.merge(ms);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
