@@ -331,6 +331,8 @@ function addSubProject() {
 
             $("#subproject-company").html(content.company);
             $("#type").html(content.type);
+            $("#expired").val(content.expired);
+            $("#service-collab").html(content.technical);
             dlgNewSubProject();
         },
         error: function (e) {
@@ -342,7 +344,8 @@ function dlgNewSubProject() {
     $("#new-subproject").dialog({
         autoOpen: true,
         modal: true,
-        width: 450,
+        width: 500,
+        height: 500,
         buttons: {
             "submit": function () {
                 saveSubProject();
@@ -361,12 +364,10 @@ function dlgNewSubProject() {
 
 function saveSubProject() {
     var type = $("#type option:selected").val();
-    var expired = $("#expired").val();
-    var expired_year = expired.split("-")[0];
-    var expired_month = expired.split("-")[1];
-    var expired_day = expired.split("-")[2];
+    var expired = $("#expired").datepicker({dateFormat:'yy-mm-dd'}).val();
     var company = $("#subproject-company option:selected").val();
     var project = $("#bill-project-id").val();
+    var service = "";
 
     if (company == "none") {
         alert("you must select company");
@@ -376,9 +377,21 @@ function saveSubProject() {
         alert("you must select type");
         return;
     }
+    
+    if (type == "SERVICE") {
+        var collab = $("#service-collab option:selected").val();
+        var start = $("#service-start").datepicker({dateFormat:'yy-mm-dd'}).val();
+        var end = $("#service-end").datepicker({dateFormat:'yy-mm-dd'}).val();
+        var travelDuration = $("#service-travel-duration").val();
+        var travelCost= $("#service-travel-cost").val();
+        var serviceDuration= $("#service-duration").val();
+        var serviceCost= $("#service-cost").val();
+        
+        service = "&collabId=" + collab + "&projectId=" + project + "&start=" + start + "&end=" + end + "&travelDuration=" + travelDuration + "&travelCost=" + travelCost + "&serviceDuration=" +
+                serviceDuration + "&serviceCostHour=" + serviceCost;
+    }
 
-    var data = "project=" + project + "&type=" + type + "&expired=" + expired_month +
-            "/" + expired_day + "/" + expired_year + "&company=" + company;
+    var data = "project=" + project + "&type=" + type + "&expired=" + expired + "&company=" + company + service;
 
     $.ajax({
         type: "POST",
@@ -421,8 +434,6 @@ function changeSubprojectType() {
     var type = $("#type option:selected").val();
 
     if (type === 'SERVICE') {
-        var data = "type=" + $("#type option:selected").val();
-        
         $("#tr-service-collab").show("fast");
         $("#tr-service-start").show("fast");
         $("#tr-service-end").show("fast");
@@ -430,19 +441,6 @@ function changeSubprojectType() {
         $("#tr-service-travel-cost").show("fast");
         $("#tr-service-duration").show("fast");
         $("#tr-service-cost").show("fast");
-        
-        $.ajax({
-            type: "POST",
-            url: "/ProjectManager/project/bill-material-service/change-subproject-type",
-            data: data,
-            success: function (response) {
-                alert(response);
-
-                $("#service-collab").html(response);
-            },
-            error: function (e) {
-            }
-        });
     } else {
         $("#tr-service-collab").hide("fast")
         $("#tr-service-start").hide("fast");

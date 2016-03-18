@@ -21,6 +21,7 @@
     <class>com.allone.projectmanager.entities.RequestQuotationItem</class>
     <class>com.allone.projectmanager.entities.BillMaterialService</class>
     <class>com.allone.projectmanager.entities.BillMaterialServiceItem</class>
+    <class>com.allone.projectmanager.entities.ServiceCollab</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.show_sql" value="true"/>

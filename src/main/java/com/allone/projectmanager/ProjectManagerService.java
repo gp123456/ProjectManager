@@ -23,6 +23,7 @@ import com.allone.projectmanager.dao.ContactDAO;
 import com.allone.projectmanager.dao.ProjectDetailDAO;
 import com.allone.projectmanager.dao.ProjectRequestQuotationDAO;
 import com.allone.projectmanager.dao.ProjectRequestQuotationItemDAO;
+import com.allone.projectmanager.dao.ServiceCollabDAO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -68,6 +69,7 @@ public class ProjectManagerService {
     private final ProjectRequestQuotationDAO daoProjectRequestQuotation = new ProjectRequestQuotationDAO(emf);
     private final ProjectRequestQuotationItemDAO daoProjectRequestQuotationItem = new ProjectRequestQuotationItemDAO(emf);
     private final ContactDAO daoContact = new ContactDAO(emf);
+    private final ServiceCollabDAO daoServiceCollab = new ServiceCollabDAO(emf);
 
     private String pathProjectBill;
 
@@ -176,5 +178,9 @@ public class ProjectManagerService {
 
     public ContactDAO getDaoContact() {
         return daoContact;
+    }
+    
+    public ServiceCollabDAO getDaoServiceCollab() {
+        return daoServiceCollab;
     }
 }

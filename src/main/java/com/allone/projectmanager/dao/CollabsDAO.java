@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import com.allone.projectmanager.entities.Collabs;
 import com.google.common.base.Strings;
+import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TransactionRequiredException;
 
@@ -31,9 +32,9 @@ public class CollabsDAO {
 
         try {
             Query query = (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) ? em.createNamedQuery(
-                  "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword").setParameter("username",
-                                                                                                          username)
-                  .setParameter("password", password) : null;
+                          "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword").setParameter("username",
+                                                                                                                  username)
+                          .setParameter("password", password) : null;
             value = (Collabs) query.getSingleResult();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
@@ -49,8 +50,9 @@ public class CollabsDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                  "com.allone.projectmanager.entities.Collabs.findById").setParameter("id", id) : null;
+            Query query = (id != null && id.compareTo(0l) >= 0) ?
+                          em.createNamedQuery("com.allone.projectmanager.entities.Collabs.findById").setParameter("id", id) :
+                          null;
             value = (Collabs) query.getSingleResult();
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
@@ -58,6 +60,25 @@ public class CollabsDAO {
             em.close();
 
             return value;
+        }
+    }
+
+    public List getByRole(String role) {
+        Query query = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            query = (!Strings.isNullOrEmpty(role)) ?
+                    em.createNamedQuery("com.allone.projectmanager.entities.Collabs.findByRole").setParameter("role", role) :
+                    null;
+        } catch (HibernateException e) {
+            System.out.printf("%s", e.getMessage());
+        } finally {
+            List values = query.getResultList();
+            
+            em.close();
+
+            return values;
         }
     }
 

@@ -6,6 +6,10 @@
 
 <script>
     $(function () {
+        $("#expired").datepicker({dateFormat:'dd/mm/yy'});
+        $("#service-start").datepicker({dateFormat:'dd/mm/yy'});
+        $("#service-end").datepicker({dateFormat:'dd/mm/yy'});
+        
         var data = "id=" + $('#bill-project-id').val();
 
         $.ajax({
@@ -104,7 +108,7 @@
                     <!- Expire date ->
                     <tr>
                         <td><label>Expired date</label></td>
-                        <td><input type="date" id="expired" ></td>
+                        <td><input type="text" id="expired" ></td>
                     </tr>
                     <!- Technical ->
                     <tr id="tr-service-collab" style="display:none">
@@ -120,12 +124,12 @@
                     <!- Service Start ->
                     <tr id="tr-service-start" style="display:none">
                         <td><label>Service Start</label></td>
-                        <td><input type="date" id="service-start" ></td>
+                        <td><input type="text" id="service-start" ></td>
                     </tr>
                     <!- Service End ->
                     <tr id="tr-service-end" style="display:none">
                         <td><label>Service End</label></td>
-                        <td><input type="date" id="service-end" ></td>
+                        <td><input type="text" id="service-end" ></td>
                     </tr>
                     <!- Service Travel Duration ->
                     <tr id="tr-service-travel-duration" style="display:none">

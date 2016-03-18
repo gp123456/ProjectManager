@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword", query = "SELECT c FROM Collabs c WHERE c.username = :username AND c.password = :password"),
     @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findById", query = "SELECT c FROM Collabs c WHERE c.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByRole", query = "SELECT c FROM Collabs c WHERE c.role = :role"),
     @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectId", query = "UPDATE Collabs c SET c.projectId = c.projectId + 1 WHERE c.id = :id")
 })
 public class Collabs implements Serializable {

@@ -12,9 +12,12 @@ import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
+import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.entities.ServiceCollab;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.entities.Vessel;
+import com.allone.projectmanager.enums.CollabRoleEnum;
 import com.allone.projectmanager.enums.LocationEnum;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.CurrencyEnum;
@@ -587,6 +590,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                 + "<option value='none' selected='selected'>Select</option>\n";
         String htmlType = "<select id='type'>\n"
                 + "<option value='none' selected='selected'>Select</option>\n";
+        List<Collabs> collabs = srvProjectManager.getDaoCollab().getByRole(CollabRoleEnum.TECHNICAL.getValue());
 
         for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
             htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
@@ -599,6 +603,17 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
         htmlType += "</select>";
         content.put("type", htmlType);
+        
+        content.put("expired", format.format(expired));
+        
+        if (collabs != null && !collabs.isEmpty()) {
+            String htmlTechical = "<option value='none' selected='selected'>Select</option>\n";
+            
+            for (Collabs collab : collabs) {
+                htmlTechical += "<option value='" + collab.getId() + "'>" + collab.getSurname() + " " + collab.getName() + "</option>\n";
+            }
+            content.put("technical", htmlTechical);
+        }
 
         String result = new Gson().toJson(content);
 
@@ -641,7 +656,7 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/save-subproject")
     public @ResponseBody
-    String saveSubproject(ProjectDetail pd) {
+    String saveSubproject(ProjectDetail pd, ServiceCollab sc) {
         if (pd != null) {
             pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(getUser().getId());
@@ -661,7 +676,9 @@ public class BillMaterialServiceController extends ProjectCommon {
                 pd.setContact(dbpd.getContact());
 
                 pd = srvProjectManager.getDaoProjectDetail().add(pd);
+                srvProjectManager.getDaoServiceCollab().add(sc);
             }
+            
             return "index";
         } else {
             return "";
@@ -717,14 +734,6 @@ public class BillMaterialServiceController extends ProjectCommon {
             response = createProjectBill(pbm);
         }
 
-        return response;
-    }
-    
-    @RequestMapping(value = "/bill-material-service/change-subproject-type")
-    public @ResponseBody
-    String changeSubprojectType(Integer type) {
-        String response = "<option value='none' selected='selected'>Select</option>\n";
-        
         return response;
     }
 }
