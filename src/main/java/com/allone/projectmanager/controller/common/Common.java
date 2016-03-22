@@ -14,22 +14,14 @@ import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.enums.WCSProjectStatusEnum;
-import com.allone.projectmanager.model.ProjectModel;
 import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.springframework.ui.Model;
 
 /**
@@ -43,10 +35,6 @@ public class Common {
     private ProjectTypeEnum projectType;
 
     private static final User user = new User();
-
-    private final Map<ProjectModel, List<BillMaterialServiceItem>> mapProjectBillItems = new HashMap<>();
-
-    private final Map<ProjectModel, BillMaterialService> mapProjectBill = new HashMap<>();
 
     private String side_bar;
 
@@ -64,10 +52,10 @@ public class Common {
         String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream().map((si) -> "<option value=\""
-                    + si.getId() + "\">"
-                    + si.getName() + "</option>").
-                    reduce(response, String::concat);
+            response += info.stream().map((si) -> "<option value=\"" +
+             si.getId() + "\">" +
+             si.getName() + "</option>").
+            reduce(response, String::concat);
             finalResponse += response;
         }
 
@@ -76,9 +64,9 @@ public class Common {
 
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(id))
-                ? "<option value='-1' selected='selected'>Select Vessel</option>"
-                : "<option value='-1' >Select</option>";
+        String response = (Strings.isNullOrEmpty(id)) ?
+                "<option value='-1' selected='selected'>Select Vessel</option>" :
+                "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
@@ -96,16 +84,16 @@ public class Common {
 
     public String createSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
         List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager, type);
-        String response = (Strings.isNullOrEmpty(name))
-                ? "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>"
-                : "<option value='none'>Select</option>";
+        String response = (Strings.isNullOrEmpty(name)) ?
+                "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
+                "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(name)) {
                     if (si.getId().equals(name)) {
-                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName()
-                                + "</option>";
+                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() +
+                         "</option>";
                     }
                 }
                 response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
@@ -122,8 +110,8 @@ public class Common {
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream()
-                    .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
-                            String::concat);
+            .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
+                                                                                                          String::concat);
             finalResponse += response;
         }
 
@@ -132,8 +120,8 @@ public class Common {
 
     public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
-        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>"
-                : "<option value='-1' >Select</option>";
+        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>" :
+                "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Contact c : info) {
@@ -165,94 +153,6 @@ public class Common {
         List<Item> items = srvProjectManager.getDaoItem().getAll();
 
         model.addAttribute("items", items);
-    }
-
-    public Long getNextNoStockItemId() {
-        return 1000000l + mapProjectBillItems.size() + 1;
-    }
-
-    public Collection<BillMaterialServiceItem> getProjectBillItems(ProjectModel pbm) {
-        return mapProjectBillItems.get(pbm);
-    }
-
-    public ProjectModel getFirstLocation(Long pdid) {
-        ProjectModel location = null;
-
-        if (mapProjectBill != null && !mapProjectBill.isEmpty()) {
-            location = mapProjectBill.keySet().iterator().next();
-        }
-
-        return location;
-    }
-
-    public Set<ProjectModel> getProjectBillDetailIds() {
-        return mapProjectBillItems.keySet();
-    }
-
-    public Set<ProjectModel> getPBMIKeysByPDId(ProjectModel pbm) {
-        if (pbm != null && !mapProjectBillItems.isEmpty()) {
-            Set<ProjectModel> keys = new HashSet<>();
-
-            getProjectBillDetailIds().stream().filter((key) -> (key.equals(pbm))).forEach((key) -> {
-                keys.add(key);
-            });
-
-            return keys;
-        }
-
-        return null;
-    }
-
-    public BillMaterialService getProjectBill(ProjectModel pdm) {
-        return mapProjectBill.get(pdm);
-    }
-
-    public BillMaterialService getBillMaterialServices(ProjectModel pdm) {
-        return mapProjectBill.get(pdm);
-    }
-
-    public Set<ProjectModel> getProjectBillIds() {
-        return (mapProjectBill != null && !mapProjectBill.isEmpty()) ? mapProjectBill.keySet() : null;
-    }
-
-    public Set<ProjectModel> getPBMKeysByPDId(ProjectModel pbm) {
-        if (pbm != null && !mapProjectBill.isEmpty()) {
-            Set<ProjectModel> keys = new HashSet<>();
-
-            getProjectBillIds().stream().filter((key) -> (key.equals(pbm))).forEach((key) -> {
-                keys.add(key);
-            });
-
-            return keys;
-        }
-
-        return null;
-    }
-
-    public BillMaterialServiceItem getProjectBillItem(ProjectModel pbm, Long itemId) {
-        if (!mapProjectBillItems.isEmpty()) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                Map<Long, BillMaterialServiceItem> result = items.stream().collect(Collectors.toMap(BillMaterialServiceItem::getItem, (c) -> c));
-
-                return result.get(itemId);
-            }
-        }
-
-        return null;
-    }
-
-    public BillMaterialServiceItem getFirstProjectBillItem(ProjectModel pbm) {
-        if (!mapProjectBillItems.isEmpty() && pbm != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                return items.get(0);
-            }
-        }
-
-        return null;
     }
 
     public String getHeader() {
@@ -374,96 +274,6 @@ public class Common {
         return prj_reference;
     }
 
-    public void setVirtualProjectBill(BillMaterialService pb, Integer locationId) {
-        if (pb != null) {
-            logger.log(Level.INFO, "push bms {0}, {1}", new Object[]{pb.getId(), locationId});
-            
-            mapProjectBill.put(new ProjectModel(pb.getProject(), locationId), pb);
-        }
-    }
-
-    public void removeVirtualProjectBill(ProjectModel pbm) {
-        if (pbm != null) {
-            mapProjectBill.remove(pbm);
-        }
-    }
-
-    public void setVirtualProjectBillItem(ProjectModel pbm, BillMaterialServiceItem pbi) {
-        if (pbm != null && pbi != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null) {
-                items.add(pbi);
-            } else {
-                mapProjectBillItems.put(pbm, new ArrayList<>(Arrays.asList(pbi)));
-            }
-        }
-    }
-
-    public void editVirtualProjectBillItem(ProjectModel pbm, BillMaterialServiceItem pbi) {
-        if (pbm != null && pbi != null && pbi.getItem() != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                items.stream().
-                        filter((item) -> (item.getItem().equals(pbi.getItem()))).
-                        forEach((item) -> {
-                            item = pbi;
-                        });
-            }
-        }
-    }
-
-    public void saveVirtualProjectBillItem(ProjectModel pbm) {
-        if (pbm != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                items.stream().forEach((item) -> {
-                    item.setClassSave("button");
-                });
-            }
-        }
-    }
-
-    public void setVirtualProjectBillItemBillId(ProjectModel pbm, Long billId) {
-        if (pbm != null && billId != null) {
-            List<BillMaterialServiceItem> items = mapProjectBillItems.get(pbm);
-
-            if (items != null && !items.isEmpty()) {
-                items.forEach((item) -> {
-                    item.setProjectBill(billId);
-                });
-            }
-        }
-    }
-
-    public void removeVirtualProjectBillItem(ProjectManagerService srvProjectManager, Long pdId, Integer location, Long itemId) {
-        ProjectModel pm = new ProjectModel(pdId, location);
-        List<BillMaterialServiceItem> items = mapProjectBillItems.get(pm);
-
-        if (items != null && !items.isEmpty()) {
-            Map<Long, BillMaterialServiceItem> map = new HashMap<>();
-
-            for (BillMaterialServiceItem item : items) {
-                map.put(item.getItem(), item);
-            }
-
-            BillMaterialServiceItem removeItem = map.remove(itemId);
-
-            if (removeItem != null) {
-                removeItem = srvProjectManager.getDaoProjectBillItem().getById(removeItem.getId());
-                srvProjectManager.getDaoProjectBillItem().delete(removeItem);
-            }
-            mapProjectBillItems.replace(pm, new ArrayList<>(map.values()));
-        }
-    }
-
-    public void clearVirtualProjectBill(ProjectModel pbm) {
-        mapProjectBillItems.remove(pbm);
-        mapProjectBill.remove(pbm);
-    }
-
     public String getProjectTypeName(String id) {
         for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
             if (type.toString().equals(id)) {
@@ -528,9 +338,9 @@ public class Common {
         String response = "";
 
         for (LocationEnum location : LocationEnum.values()) {
-            response += (location.equals(LocationEnum.GREECE))
-                    ? "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>"
-                    : "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
+            response += (location.equals(LocationEnum.GREECE)) ?
+             "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
+             "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
         }
 
         return response;
@@ -540,9 +350,9 @@ public class Common {
         String response = "";
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
-            response += (currency.equals(selected))
-                    ? "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>"
-                    : "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
+            response += (currency.equals(selected)) ?
+             "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
+             "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }
 
         return response;

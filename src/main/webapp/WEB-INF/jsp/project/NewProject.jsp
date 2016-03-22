@@ -74,7 +74,7 @@
                 <td width="150px"><label>Customer</label></td>
                 <td width="300px">
                     <p>
-                        <label class="custom-select">
+                        <label class="custom-select-large">
                             <select id="customer" onchange="projectFilterCustomer()"></select>
                         </label>
                     </p>
@@ -99,7 +99,7 @@
                 <td><label>Vessel</label></td>
                 <td width="150px">
                     <p>
-                        <label class="custom-select">
+                        <label class="custom-select-large">
                             <select id="vessel"></select>
                         </label>
                     </p>
@@ -124,7 +124,7 @@
                 <td width="150px"><label>Contact</label></td>
                 <td>
                     <p>
-                        <label class="custom-select">
+                        <label class="custom-select-large">
                             <select id="contact"></select>
                         </label>
                     </p>

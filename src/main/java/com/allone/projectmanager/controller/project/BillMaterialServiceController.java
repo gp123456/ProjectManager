@@ -13,8 +13,8 @@ import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Collabs;
+import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.ProjectDetail;
-import com.allone.projectmanager.entities.ServiceCollab;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.CollabRoleEnum;
@@ -89,10 +89,6 @@ public class BillMaterialServiceController extends ProjectCommon {
             content.put("suppliers", response);
         }
 
-        content.put("locations", createLocations());
-
-        content.put("currencies", createCurrency(CurrencyEnum.NONE));
-
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
         Long pdId = null;
 
@@ -100,7 +96,8 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (pds != null && !pds.isEmpty()) {
             pdId = pds.get(0).getId();
             Vessel vessel = srvProjectManager.getDaoVessel().getById(pds.get(0).getVessel());
-            Set<ProjectModel> pbKeys = getProjectBillIds();
+            Contact contact = srvProjectManager.getDaoContact().getById(pds.get(0).getContact());
+            Set<Long> pbKeys = getBillMaterialServiceIds();
 
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
@@ -119,6 +116,9 @@ public class BillMaterialServiceController extends ProjectCommon {
             content.put("customer", pds.get(0).getCustomer());
             if (vessel != null) {
                 content.put("vessel", vessel.getName());
+            }
+            if (contact != null) {
+                content.put("contact", contact.getSurname() + " " + contact.getName());
             }
         } else {
             content.put("subprojects", response);
@@ -140,9 +140,6 @@ public class BillMaterialServiceController extends ProjectCommon {
                 List<BillMaterialServiceItem> pbis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(pb.getId());
                 if (pbis != null && !pbis.isEmpty()) {
                     pbis.stream().map((pbi) -> {
-                        pbi.setClassRefresh("button alarm");
-                        return pbi;
-                    }).map((pbi) -> {
                         pbi.setClassSave("button alarm");
                         return pbi;
                     }).forEach((pbi) -> {
@@ -165,13 +162,9 @@ public class BillMaterialServiceController extends ProjectCommon {
                 Long pdid = (pd != null) ? pd.getId() : 0l;
 
                 response += "<tr>\n"
-                        + "<td id='m_total_cost'>" + pb.getTotalCost() + "</td>\n"
-                        + "<td id='m_average_discount'>" + pb.getAverangeDiscount() + "</td>\n"
-                        + "<td id='m_sale_price'>" + pb.getTotalSalePrice() + "</td>\n"
-                        + "<td id='m_net_sale_price'>" + pb.getTotalNetPrice() + "</td>\n"
-                        + "<td id='currency" + pdid + "'>" + getCurrencyById(pb.getCurrency()) + "</td>\n"
-                        + "<td id='m_subproject'>" + subproject + "</td>\n"
-                        + "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + "," + pbm.getLocation() + ")'></td>\n"
+                        + "<td id='bmsi_name'><div contenteditable></div>" + pb.getName()+ "</td>\n"
+                        + "<td id='bmsi_subproject'>" + subproject + "</td>\n"
+                        + "<td><input type='button' value='Delete' class='button' id='delete' onclick='delete(" + pdid + ")'></td>\n"
                         + "</tr>\n";
             }
         }
@@ -197,29 +190,14 @@ public class BillMaterialServiceController extends ProjectCommon {
                         Long itemId = (item != null) ? item.getId() : pbItem.getItem();
                         Integer itemQuantity = (item != null) ? item.getQuantity() : pbItem.getAvailable();
                         String quantity = (pbItem.getQuantity() != null) ? pbItem.getQuantity().toString() : "";
-                        String cost = (pbItem.getCost() != null) ? pbItem.getCost().toString() : "";
-                        String totalCost = (pbItem.getTotalCost() != null) ? pbItem.getTotalCost().toString() : "";
-                        String percentage = (pbItem.getPercentage() != null) ? pbItem.getPercentage().toString() : "";
-                        String discount = (pbItem.getDiscount() != null) ? pbItem.getDiscount().toString() : "";
-                        String salePrice = (pbItem.getSalePrice() != null) ? pbItem.getSalePrice().toString() : "";
-                        String totalSalePrice = (pbItem.getTotalSalePrice() != null) ? pbItem.getTotalSalePrice().toString() : "";
-                        String totalNetPrice = (pbItem.getTotalNetPrice() != null) ? pbItem.getTotalNetPrice().toString() : "";
 
                         response
                                 += "<tr>\n"
                                 + "<td>" + imno + "</td>\n"
                                 + "<td>" + stockName + "</td>\n"
                                 + "<td id='quantity" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + quantity + "</td>\n"
-                                + "<td id='cost" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + cost + "</td>\n"
-                                + "<td id='total_cost" + pbm.getId() + itemId + "'>" + totalCost + "</td>\n"
-                                + "<td id='percentage" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + percentage + "</td>\n"
-                                + "<td id='discount" + pbm.getId() + itemId + "' style='background: #333;color:#E7E5DC'>" + "<div contenteditable></div>" + discount + "</td>\n"
-                                + "<td id='sale_price" + pbm.getId() + itemId + "'>" + salePrice + "</td>\n"
-                                + "<td id='total_sale_price" + pbm.getId() + itemId + "'>" + totalSalePrice + "</td>\n"
-                                + "<td id='total_net_price" + pbm.getId() + itemId + "'>" + totalNetPrice + "</td>\n"
                                 + "<td>" + pd.getReference() + "</td>\n"
                                 + "<td><input type='button' value='Edit' class='button' onclick='editItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
-                                + "<td><input type='button' value='Refresh' class='" + pbItem.getClassRefresh() + "' onclick='refreshItem(" + pbm.getId() + "," + itemId + "," + itemQuantity + ")'></td>\n"
                                 + "<td><input type='button' value='Save' class='" + pbItem.getClassSave() + "' onclick='saveItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
                                 + "<td><input type='button' value='Remove' class='button' onclick='removeItem(" + pbm.getId() + "," + itemId + ")'></td>\n"
                                 + "</tr>\n";
@@ -229,52 +207,6 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
 
         return response;
-    }
-
-    private BillMaterialService getAverangeDiscount(Long pdId, Integer location, Integer currency) {
-        Collection<BillMaterialServiceItem> items = getProjectBillItems(new ProjectModel(pdId, location));
-
-        if (items != null && !items.isEmpty()) {
-            BigDecimal totalCost = BigDecimal.ZERO;
-            BigDecimal averangeDiscount = BigDecimal.ZERO;
-            BigDecimal totalSalePrice = BigDecimal.ZERO;
-            BigDecimal totalNetPrice = BigDecimal.ZERO;
-
-            for (BillMaterialServiceItem item : items) {
-                totalCost = (item.getTotalCost() != null) ? totalCost.add(item.getTotalCost()) : BigDecimal.ZERO;
-                averangeDiscount = (item.getDiscount() != null) ? averangeDiscount.add(item.getDiscount()) : BigDecimal.ZERO;
-                totalSalePrice = (item.getTotalSalePrice() != null) ? totalSalePrice.add(item.getTotalSalePrice()) : BigDecimal.ZERO;
-                totalNetPrice = (item.getTotalNetPrice() != null) ? totalNetPrice.add(item.getTotalNetPrice()) : BigDecimal.ZERO;
-                item.setClassSave("button");
-            }
-
-            averangeDiscount = averangeDiscount.divide(new BigDecimal(items.size()), 2);
-
-            return (currency != null)
-                    ? new BillMaterialService.Builder()
-                    .setProject(pdId)
-                    .setLocation(getLocationNameById(location))
-                    .setTotalCost(totalCost)
-                    .setAverangeDiscount(averangeDiscount)
-                    .setTotalSalePrice(totalSalePrice)
-                    .setTotalNetPrice(totalNetPrice)
-                    .setCurrency(currency)
-                    .setClassSave("button alarm")
-                    .build()
-                    : new BillMaterialService.Builder()
-                    .setProject(pdId)
-                    .setLocation(getLocationNameById(location))
-                    .setTotalCost(totalCost)
-                    .setAverangeDiscount(averangeDiscount)
-                    .setTotalSalePrice(totalSalePrice)
-                    .setTotalNetPrice(totalNetPrice)
-                    .setClassSave("button alarm")
-                    .build();
-        } else {
-            removeVirtualProjectBill(new ProjectModel(pdId, location));
-
-            return null;
-        }
     }
 
     @RequestMapping(value = "/bill-material-service")
@@ -299,7 +231,7 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/item/insert")
     public @ResponseBody
-    String itemInsert(Long pdId, Integer location, BillMaterialServiceItem pbi) {
+    String itemInsert(Long pdId, BillMaterialServiceItem pbi) {
         Map<String, String> content = new HashMap<>();
         String availability = "";
         String price = "";
@@ -656,7 +588,7 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/save-subproject")
     public @ResponseBody
-    String saveSubproject(ProjectDetail pd, ServiceCollab sc) {
+    String saveSubproject(ProjectDetail pd) {
         if (pd != null) {
             pd.setStatus(ProjectStatusEnum.CREATE.toString());
             pd.setCreator(getUser().getId());
@@ -676,7 +608,6 @@ public class BillMaterialServiceController extends ProjectCommon {
                 pd.setContact(dbpd.getContact());
 
                 pd = srvProjectManager.getDaoProjectDetail().add(pd);
-                srvProjectManager.getDaoServiceCollab().add(sc);
             }
             
             return "index";
@@ -694,11 +625,15 @@ public class BillMaterialServiceController extends ProjectCommon {
 
         if (pd != null) {
             Vessel vessel = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+            Contact contact = srvProjectManager.getDaoContact().getById(pd.getContact());
             content.put("type", pd.getType());
             content.put("company", pd.getCompany());
             content.put("customer", pd.getCustomer());
             if (vessel != null) {
                 content.put("vessel", vessel.getName());
+            }
+            if (contact != null) {
+                content.put("contact", contact.getSurname() + " " + contact.getName());
             }
         }
 

@@ -25,11 +25,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author antonia
  */
 @Entity
-@Table(name = "project_bill_item")
+@Table(name = "bill_material_service_item")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById", query = "SELECT p FROM BillMaterialServiceItem p WHERE p.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill", query = "SELECT p FROM BillMaterialServiceItem p WHERE p.projectBill = :projectBill")
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById", query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService", query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.billMaterialService = :billMaterialService")
 })
 public class BillMaterialServiceItem implements Serializable {
 
@@ -40,6 +40,16 @@ public class BillMaterialServiceItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
+    
+    @Basic(optional = false)
+    @Column(name = "project_bill")
+    @NotNull
+    private Long billMaterialService;
+    
+    @Basic(optional = false)
+    @Column(name = "item")
+    @NotNull
+    private Long item;
 
     @Basic(optional = false)
     @Column(name = "available")
@@ -51,55 +61,7 @@ public class BillMaterialServiceItem implements Serializable {
     @Column(name = "price")
     @NotNull
     private BigDecimal price;
-
-    @Basic(optional = false)
-    @Column(name = "quantity")
-    @NotNull
-    private Integer quantity;
-
-    @Basic(optional = false)
-    @Column(name = "cost")
-    @NotNull
-    private BigDecimal cost;
-
-    @Basic(optional = false)
-    @Column(name = "total_cost")
-    @NotNull
-    private BigDecimal totalCost;
-
-    @Basic(optional = false)
-    @Column(name = "percentage")
-    @NotNull
-    private BigDecimal percentage;
-
-    @Basic(optional = false)
-    @Column(name = "discount")
-    @NotNull
-    private BigDecimal discount;
-
-    @Basic(optional = false)
-    @Column(name = "sale_price")
-    @NotNull
-    private BigDecimal salePrice;
-
-    @Basic(optional = false)
-    @Column(name = "total_sale_price")
-    @NotNull
-    private BigDecimal totalSalePrice;
-
-    @Column(name = "total_net_price")
-    private BigDecimal totalNetPrice;
-
-    @Basic(optional = false)
-    @Column(name = "project_bill")
-    @NotNull
-    private Long projectBill;
-
-    @Basic(optional = false)
-    @Column(name = "item")
-    @NotNull
-    private Long item;
-
+    
     @Basic(optional = false)
     @Column(name = "item_imno")
     @NotNull
@@ -109,46 +71,33 @@ public class BillMaterialServiceItem implements Serializable {
     @Column(name = "item_description")
     private String itemDescription;
 
-    @Transient
-    private String classRefresh;
+    @Basic(optional = false)
+    @Column(name = "quantity")
+    @NotNull
+    private Integer quantity;
 
     @Transient
     private String classSave;
 
     private BillMaterialServiceItem(Builder builder) {
+        billMaterialService = builder.billMaterialService;
+        item = builder.item;
         available = builder.available;
         price = builder.price;
-        quantity = builder.quantity;
-        cost = builder.cost;
-        totalCost = builder.totalCost;
-        percentage = builder.percentage;
-        discount = builder.discount;
-        salePrice = builder.salePrice;
-        totalSalePrice = builder.totalSalePrice;
-        totalNetPrice = builder.totalNetPrice;
-        projectBill = builder.projectBill;
-        item = builder.item;
-        classRefresh = builder.classRefresh;
-        classSave = builder.classSave;
         itemImno = builder.itemImno;
         itemDescription = builder.itemDescription;
+        quantity = builder.quantity;
+        classSave = builder.classSave;
     }
 
     private BillMaterialServiceItem(BillMaterialServiceItem pbi) {
+        billMaterialService = pbi.billMaterialService;
+        item = pbi.item;
         available = pbi.available;
         price = pbi.price;
-        quantity = pbi.quantity;
-        cost = pbi.cost;
-        totalCost = pbi.totalCost;
-        percentage = pbi.percentage;
-        discount = pbi.discount;
-        salePrice = pbi.salePrice;
-        totalSalePrice = pbi.totalSalePrice;
-        totalNetPrice = pbi.totalNetPrice;
-        projectBill = pbi.projectBill;
-        item = pbi.item;
         itemImno = pbi.itemImno;
         itemDescription = pbi.itemDescription;
+        quantity = pbi.quantity;
     }
 
     public BillMaterialServiceItem() {
@@ -158,8 +107,28 @@ public class BillMaterialServiceItem implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getBillMaterialService() {
+        return billMaterialService;
+    }
+
+    public void setBillMaterialService(Long billMaterialService) {
+        this.billMaterialService = billMaterialService;
+    }
+    
+    public Long getItem() {
+        return item;
+    }
+
+    public void setItem(Long item) {
+        this.item = item;
+    }
+    
+    public Integer getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Integer available) {
+        this.available = available;
     }
 
     public BigDecimal getPrice() {
@@ -169,111 +138,7 @@ public class BillMaterialServiceItem implements Serializable {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
-    }
-
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public BigDecimal getPercentage() {
-        return percentage;
-    }
-
-    public void setPercentage(BigDecimal percentage) {
-        this.percentage = percentage;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
-    public BigDecimal getSalePrice() {
-        return salePrice;
-    }
-
-    public void setSalePrice(BigDecimal salePrice) {
-        this.salePrice = salePrice;
-    }
-
-    public BigDecimal getTotalSalePrice() {
-        return totalSalePrice;
-    }
-
-    public void setTotalSalePrice(BigDecimal totalSalePrice) {
-        this.totalSalePrice = totalSalePrice;
-    }
-
-    public BigDecimal getTotalNetPrice() {
-        return totalNetPrice;
-    }
-
-    public void setTotalNetPrice(BigDecimal totalNetPrice) {
-        this.totalNetPrice = totalNetPrice;
-    }
-
-    public Long getProjectBill() {
-        return projectBill;
-    }
-
-    public void setProjectBill(Long projectBill) {
-        this.projectBill = projectBill;
-    }
-
-    public Long getItem() {
-        return item;
-    }
-
-    public void setItem(Long item) {
-        this.item = item;
-    }
-
-    public Integer getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Integer available) {
-        this.available = available;
-    }
-
-    public String getClassRefresh() {
-        return classRefresh;
-    }
-
-    public void setClassRefresh(String classRefresh) {
-        this.classRefresh = classRefresh;
-    }
-
-    public String getClassSave() {
-        return classSave;
-    }
-
-    public void setClassSave(String classSave) {
-        this.classSave = classSave;
-    }
-
+    
     public String getItemImno() {
         return itemImno;
     }
@@ -290,10 +155,27 @@ public class BillMaterialServiceItem implements Serializable {
         this.itemDescription = itemDescription;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getClassSave() {
+        return classSave;
+    }
+
+    public void setClassSave(String classSave) {
+        this.classSave = classSave;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
+        
         return hash;
     }
 
@@ -303,52 +185,49 @@ public class BillMaterialServiceItem implements Serializable {
         if (!(object instanceof BillMaterialServiceItem)) {
             return false;
         }
+        
         BillMaterialServiceItem other = (BillMaterialServiceItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
+        
         return true;
     }
 
     @Override
     public String toString() {
-        return "id=" + id + ",available=" + available + ",price=" + price + ",quantity=" + quantity + ",cost=" + cost + ",totalCost=" + totalCost + ",percentage=" + percentage + ",discount=" +
-               discount + ",salePrice=" + salePrice + ",totalSalePrice=" + totalSalePrice + ",totalNetPrice=" + totalNetPrice + ",projectBill=" + projectBill + ",item=" + item;
+        return "com.allone.projectmanager.entities.BillMaterialServiceItem[ id=" + id + " ]";
     }
 
     public static class Builder {
 
+        private Long billMaterialService;
+        
+        private Long item;
+        
         private Integer available;
 
         private BigDecimal price;
-
-        private Integer quantity;
-
-        private BigDecimal cost;
-
-        private BigDecimal totalCost;
-
-        private BigDecimal percentage;
-
-        private BigDecimal discount;
-
-        private BigDecimal salePrice;
-
-        private BigDecimal totalSalePrice;
-
-        private BigDecimal totalNetPrice;
-
-        private Long projectBill;
-
-        private Long item;
-
-        private String classRefresh;
-
-        private String classSave;
-
+        
         private String itemImno;
 
         private String itemDescription;
+
+        private Integer quantity;
+        
+        private String classSave;
+        
+        public Builder setBillMaterialService(Long billMaterialService) {
+            this.billMaterialService = billMaterialService;
+
+            return this;
+        }
+
+        public Builder setItem(Long item) {
+            this.item = item;
+
+            return this;
+        }
 
         public Builder setAvailable(Integer available) {
             this.available = available;
@@ -361,77 +240,7 @@ public class BillMaterialServiceItem implements Serializable {
 
             return this;
         }
-
-        public Builder setQuantity(Integer quantity) {
-            this.quantity = quantity;
-
-            return this;
-        }
-
-        public Builder setCost(BigDecimal cost) {
-            this.cost = cost;
-
-            return this;
-        }
-
-        public Builder setTotalCost(BigDecimal totalCost) {
-            this.totalCost = totalCost;
-
-            return this;
-        }
-
-        public Builder setPercentage(BigDecimal percentage) {
-            this.percentage = percentage;
-
-            return this;
-        }
-
-        public Builder setDiscount(BigDecimal discount) {
-            this.discount = discount;
-
-            return this;
-        }
-
-        public Builder setSalePrice(BigDecimal salePrice) {
-            this.salePrice = salePrice;
-
-            return this;
-        }
-
-        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
-            this.totalSalePrice = totalSalePrice;
-
-            return this;
-        }
-
-        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
-            this.totalNetPrice = totalNetPrice;
-
-            return this;
-        }
-
-        public Builder setProjectBill(Long projectBill) {
-            this.projectBill = projectBill;
-
-            return this;
-        }
-
-        public Builder setItem(Long item) {
-            this.item = item;
-
-            return this;
-        }
-
-        public Builder setClassRefresh(String classRefresh) {
-            this.classRefresh = classRefresh;
-            return this;
-        }
-
-        public Builder setClassSave(String classSave) {
-            this.classSave = classSave;
-            return this;
-        }
-
+        
         public Builder setItemImno(String itemImno) {
             this.itemImno = itemImno;
             return this;
@@ -440,6 +249,17 @@ public class BillMaterialServiceItem implements Serializable {
         public Builder setItemDescription(String itemDescription) {
             this.itemDescription = itemDescription;
 
+            return this;
+        }
+
+        public Builder setQuantity(Integer quantity) {
+            this.quantity = quantity;
+
+            return this;
+        }
+
+        public Builder setClassSave(String classSave) {
+            this.classSave = classSave;
             return this;
         }
 

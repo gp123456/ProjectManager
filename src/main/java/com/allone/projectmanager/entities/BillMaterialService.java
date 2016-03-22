@@ -6,7 +6,6 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,13 +24,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author antonia
  */
 @Entity
-@Table(name = "project_bill")
+@Table(name = "bill_material_service")
 @XmlRootElement
 @NamedQueries(
-        {@NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findByProject",
-                     query = "SELECT p FROM BillMaterialService p WHERE p.project = :project"),
-         @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findById",
-                     query = "SELECT p FROM BillMaterialService p WHERE p.id = :id")})
+        {@NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findByProject", query = "SELECT p FROM BillMaterialService p WHERE p.project = :project"),
+         @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findById", query = "SELECT p FROM BillMaterialService p WHERE p.id = :id")})
 public class BillMaterialService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,49 +41,17 @@ public class BillMaterialService implements Serializable {
 
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
-    @Column(name = "total_cost")
-    @NotNull
-    private BigDecimal totalCost;
+    @Column(name = "name")
+    private String name;
 
     @Basic(optional = false)
-    @Column(name = "averange_discount")
-    @NotNull
-    private BigDecimal averangeDiscount;
-
-    @Basic(optional = false)
-    @Column(name = "total_sale_price")
-    @NotNull
-    private BigDecimal totalSalePrice;
-
-    @Basic(optional = false)
-    @Column(name = "total_net_price")
-    @NotNull
-    private BigDecimal totalNetPrice;
-
-    @Basic(optional = false)
-    @Column(name = "project")
+    @Column(name = "bill_material_service")
     @NotNull
     private Long project;
 
-    @Column(name = "express")
-    private String express;
-
     @Column(name = "note")
     private String note;
-
-    @Basic(optional = false)
-    @Column(name = "currency")
-    @NotNull
-    private Integer currency;
-
-    @Basic(optional = false)
-    @Column(name = "location")
-    private String location;
     
-    @Basic(optional = false)
-    @Column(name = "supplier")
-    private String supplier;
-
     @Basic(optional = false)
     @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
     private Boolean complete;
@@ -96,33 +61,19 @@ public class BillMaterialService implements Serializable {
 
     private BillMaterialService(Builder builder) {
         id = builder.id;
-        totalCost = builder.totalCost;
-        averangeDiscount = builder.averangeDiscount;
-        totalSalePrice = builder.totalSalePrice;
-        totalNetPrice = builder.totalNetPrice;
+        name = builder.name;
         project = builder.project;
-        express = builder.express;
         note = builder.note;
-        currency = builder.currency;
-        location = builder.location;
         complete = builder.complete;
-        supplier = builder.supplier;
         classSave = builder.classSave;
     }
 
     private BillMaterialService(BillMaterialService builder) {
         id = builder.id;
-        totalCost = builder.totalCost;
-        averangeDiscount = builder.averangeDiscount;
-        totalSalePrice = builder.totalSalePrice;
-        totalNetPrice = builder.totalNetPrice;
+        name = builder.name;
         project = builder.project;
-        express = builder.express;
         note = builder.note;
-        currency = builder.currency;
-        location = builder.location;
         complete = builder.complete;
-        supplier = builder.supplier;
         classSave = builder.classSave;
     }
 
@@ -137,60 +88,12 @@ public class BillMaterialService implements Serializable {
         this.id = id;
     }
 
-    public BigDecimal getTotalCost() {
-        return totalCost;
+    public String getName() {
+        return name;
     }
 
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public BigDecimal getAverangeDiscount() {
-        return averangeDiscount;
-    }
-
-    public void setAverangeDiscount(BigDecimal averangeDiscount) {
-        this.averangeDiscount = averangeDiscount;
-    }
-
-    public BigDecimal getTotalSalePrice() {
-        return totalSalePrice;
-    }
-
-    public void setTotalSalePrice(BigDecimal totalSalePrice) {
-        this.totalSalePrice = totalSalePrice;
-    }
-
-    public BigDecimal getTotalNetPrice() {
-        return totalNetPrice;
-    }
-
-    public void setTotalNetPrice(BigDecimal totalNetPrice) {
-        this.totalNetPrice = totalNetPrice;
-    }
-
-    public String getExpress() {
-        return express;
-    }
-
-    public void setExpress(String express) {
-        this.express = express;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Integer getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(Integer currency) {
-        this.currency = currency;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getProject() {
@@ -201,12 +104,12 @@ public class BillMaterialService implements Serializable {
         this.project = project;
     }
 
-    public String getLocation() {
-        return location;
+    public String getNote() {
+        return note;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getClassSave() {
@@ -225,18 +128,11 @@ public class BillMaterialService implements Serializable {
         this.complete = complete;
     }
 
-    public String getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
+        
         return hash;
     }
 
@@ -246,44 +142,28 @@ public class BillMaterialService implements Serializable {
         if (!(object instanceof BillMaterialService)) {
             return false;
         }
+        
         BillMaterialService other = (BillMaterialService) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "com.allone.projectmanager.entities.ProjectBill[ id=" + id + " ]";
+        return "com.allone.projectmanager.entities.BillMaterialService[ id=" + id + " ]";
     }
 
     public static class Builder {
 
         private Long id;
         
-        private BigDecimal totalCost;
-
-        private BigDecimal averangeDiscount;
-
-        private BigDecimal totalSalePrice;
-
-        private BigDecimal totalNetPrice;
+        private String name;
 
         private Long project;
 
-        private String express;
-
         private String note;
 
-        private Integer currency;
-
-        private String location;
-        
         private Boolean complete;
      
-        private String supplier;
-
         private String classSave;
 
         public Builder setId(Long id) {
@@ -292,38 +172,8 @@ public class BillMaterialService implements Serializable {
             return this;
         }
         
-        public Builder setTotalCost(BigDecimal totalCost) {
-            this.totalCost = totalCost;
-
-            return this;
-        }
-
-        public Builder setAverangeDiscount(BigDecimal averangeDiscount) {
-            this.averangeDiscount = averangeDiscount;
-
-            return this;
-        }
-
-        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
-            this.totalSalePrice = totalSalePrice;
-
-            return this;
-        }
-
-        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
-            this.totalNetPrice = totalNetPrice;
-
-            return this;
-        }
-
         public Builder setProject(Long project) {
             this.project = project;
-
-            return this;
-        }
-
-        public Builder setExpress(String express) {
-            this.express = express;
 
             return this;
         }
@@ -334,30 +184,12 @@ public class BillMaterialService implements Serializable {
             return this;
         }
 
-        public Builder setCurrency(Integer currency) {
-            this.currency = currency;
-
-            return this;
-        }
-
-        public Builder setLocation(String location) {
-            this.location = location;
-
-            return this;
-        }
-        
         public Builder setComplete(Boolean complete) {
             this.complete = complete;
 
             return this;
         }
         
-        public Builder setSupplier(String supplier) {
-            this.supplier = supplier;
-
-            return this;
-        }
-
         public Builder setClassSave(String classSave) {
             this.classSave = classSave;
 

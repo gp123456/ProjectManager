@@ -6,10 +6,8 @@
 
 <script>
     $(function () {
-        $("#expired").datepicker({dateFormat:'dd/mm/yy'});
-        $("#service-start").datepicker({dateFormat:'dd/mm/yy'});
-        $("#service-end").datepicker({dateFormat:'dd/mm/yy'});
-        
+        $("#expired").datepicker({dateFormat: 'dd/mm/yy'});
+
         var data = "id=" + $('#bill-project-id').val();
 
         $.ajax({
@@ -21,8 +19,6 @@
 
                 $("#subproject").html(content.subprojects);
                 $("#item").html(content.items);
-                $("#location").html(content.locations);
-                $("#currency").html(content.currencies);
                 $("#supplier").html(content.suppliers);
                 $("#bill-material-service").html(content.billMaterialService);
                 $("#note").val(content.noteBillMaterialService);
@@ -31,6 +27,7 @@
                 $("#company").val(content.company);
                 $("#customer").val(content.customer);
                 $("#vessel").val(content.vessel);
+                $("#contact").val(content.contact);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -56,11 +53,15 @@
                 </tr>
                 <tr>
                     <td><label>Customer</label></td>
-                    <td><input type="text" id="customer" readonly></td>
+                    <td><label class="custom-select"><input type="text" id="customer" readonly></label></td>
                 </tr>
                 <tr>
                     <td><label>Vessel</label></td>
-                    <td><input type="text" id="vessel" readonly></td>
+                    <td><label class="custom-select"><input type="text" id="vessel" readonly></label></td>
+                </tr>
+                <tr>
+                    <td><label>Contact</label></td>
+                    <td><label class="custom-select"><input type="text" id="contact" readonly></label></td>
                 </tr>
             </tbody>
         </table>
@@ -68,8 +69,8 @@
         <table>
             <tbody>
                 <tr>
-                    <td width="300px">
-                        <label class="custom-select">
+                    <td>
+                        <label class="custom-select-large">
                             <select id="subproject" onchange="getProjectBillItems()"></select>
                         </label>
                     </td>
@@ -87,11 +88,9 @@
                     <tr>
                         <td><label>Company</label></td>
                         <td>
-                            <p>
-                                <label class="custom-select">
-                                    <select id="subproject-company"></select>
-                                </label>
-                            </p>
+                            <label class="custom-select">
+                                <select id="subproject-company"></select>
+                            </label>
                         </td>
                     </tr>
                     <!- Type ->
@@ -100,7 +99,7 @@
                         <td>
                             <p>
                                 <label class="custom-select">
-                                    <select id="type" onchange="changeSubprojectType()"></select>
+                                    <select id="type"></select>
                                 </label>
                             </p>
                         </td>
@@ -110,51 +109,64 @@
                         <td><label>Expired date</label></td>
                         <td><input type="text" id="expired" ></td>
                     </tr>
-                    <!- Technical ->
-                    <tr id="tr-service-collab" style="display:none">
-                        <td><label>Technical</label></td>
-                        <td>
-                            <p>
-                                <label class="custom-select">
-                                    <select id="service-collab"></select>
-                                </label>
-                            </p>
-                        </td>
-                    </tr>
-                    <!- Service Start ->
-                    <tr id="tr-service-start" style="display:none">
-                        <td><label>Service Start</label></td>
-                        <td><input type="text" id="service-start" ></td>
-                    </tr>
-                    <!- Service End ->
-                    <tr id="tr-service-end" style="display:none">
-                        <td><label>Service End</label></td>
-                        <td><input type="text" id="service-end" ></td>
-                    </tr>
-                    <!- Service Travel Duration ->
-                    <tr id="tr-service-travel-duration" style="display:none">
-                        <td><label>Service Travel Duration(hour)</label></td>
-                        <td><input type="text" id="service-travel-duration" ></td>
-                    </tr>
-                    <!- Service Travel Cost ->
-                    <tr id="tr-service-travel-cost" style="display:none">
-                        <td><label>Service Travel Cost(&#8364)</label></td>
-                        <td><input type="text" id="service-travel-cost" ></td>
-                    </tr>
-                    <!- Service Duration ->
-                    <tr id="tr-service-duration" style="display:none">
-                        <td><label>Service Duration(hour)</label></td>
-                        <td><input type="text" id="service-duration" ></td>
-                    </tr>
-                    <!- Service Cost ->
-                    <tr id="tr-service-cost" style="display:none">
-                        <td><label>Service Cost(&#8364)</label></td>
-                        <td><input type="text" id="service-cost" ></td>
-                    </tr>
                 </tbody>
             </table>
         </div>
         <br><h3>Select Item</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label class="custom-select-large">
+                            <select id="item"></select>
+                        </label>
+                    </td>
+                    <td>
+                        <input type="button" class="button" value="Submit" onclick="insertItem()"/>
+                    </td>
+                    <td>
+                        <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
+                        <div id="add-item" hidden="true" title="Add New Item">
+                            <form class="go-bottom">
+                                <p class="validateTips" id="validate-add-item">All form fields are required.</p>
+                                <div>
+                                    <input type="text" id="item-imno" required>
+                                    <label class="go-bottom-label" for="item-imno">IMNO</label>
+                                </div>
+                                <div>
+                                    <input type="text" id="item-desc" required>
+                                    <label class="go-bottom-label" for="item-desc">Description</label>
+                                </div>
+                                <div>
+                                    <input type="text" id="item-quantity" required>
+                                    <label class="go-bottom-label" for="item-quantity">Quantity</label>
+                                </div>
+                                <div>
+                                    <input type="text" id="item-price" required>
+                                    <label class="go-bottom-label" for="item-price">Price</label>
+                                </div>
+                                <p>
+                                    <label class="custom-select">
+                                        <select id="item-currency"></select>
+                                    </label>
+                                </p>
+                                <p>
+                                    <label class="custom-select">
+                                        <select id="item-location"></select>
+                                    </label>
+                                </p>
+                                <p>
+                                    <label class="custom-select">
+                                        <select id="item-supplier"></select>
+                                    </label>
+                                </p>
+                            </form>
+                        </div>
+                        <input type="hidden" id="item_id" name="id"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <table>
             <tbody>
                 <tr>
@@ -165,61 +177,8 @@
                     <td><label>Price</label></td>
                     <td><input type="text" id="price" readonly></td>
                 </tr>
-                <tr>
-                    <td width="300px">
-                        <label class="custom-select">
-                            <select id="item" onchange="insertItem()"></select>
-                        </label>
-                    </td>
-                    <td>
-                        <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
-                    </td>
-                </tr>
             </tbody>
         </table>
-        <div id="add-item" hidden="true" title="Add New Item">
-            <form class="go-bottom">
-                <p class="validateTips" id="validate-add-item">All form fields are required.</p>
-                <div>
-                    <input type="text" id="item-imno" required>
-                    <label class="go-bottom-label" for="item-imno">IMNO</label>
-                </div>
-                <div>
-                    <input type="text" id="item-desc" required>
-                    <label class="go-bottom-label" for="item-desc">Description</label>
-                </div>
-                <div>
-                    <input type="text" id="item-quantity" required>
-                    <label class="go-bottom-label" for="item-quantity">Quantity</label>
-                </div>
-                <div>
-                    <input type="text" id="item-price" required>
-                    <label class="go-bottom-label" for="item-price">Price</label>
-                </div>
-                <p>
-                    <label class="custom-select">
-                        <select id="item-currency"></select>
-                    </label>
-                </p>
-                <p>
-                    <label class="custom-select">
-                        <select id="item-location"></select>
-                    </label>
-                </p>
-                <p>
-                    <label class="custom-select">
-                        <select id="item-supplier"></select>
-                    </label>
-                </p>
-            </form>
-        </div>
-        <input type="hidden" id="item_id" name="id"/>
-        <br><h3>Select Currency</h3>
-        <p>
-            <label class="custom-select">
-                <select id="currency" onchange="changeCurrency()"></select>
-            </label>
-        </p>
     </div>
     <h2>Bill of Material Summary</h2>
     <div>
@@ -227,11 +186,7 @@
             <thead>
                 <tr>
                     <th style="display:none">Project Id</th>
-                    <th>Total Cost</th>
-                    <th>Average Discount(%)</th>
-                    <th>Sales Price</th>
-                    <th>Total Net Price</th>
-                    <th>Currency</th>
+                    <th>Name*</th>
                     <th>Subproject</th>
                     <th>Delete</th>
                 </tr>
@@ -251,17 +206,8 @@
                 <tr>
                     <th>Code</th>
                     <th>Stock</th>
-                    <th >Quantity*</th>
-                    <th>Cost/PC*</th>
-                    <th>Total Cost</th>
-                    <th>Percentage(%)*</th>
-                    <th>Discount(%)*</th>
-                    <th>Sales Price/PC</th>
-                    <th>Sales Price</th>
-                    <th>Total Net Price</th>
-                    <th>Subproject</th>
+                    <th>Quantity*</th>
                     <th>Edit</th>
-                    <th>Refresh</th>
                     <th>Save</th>
                     <th>Remove</th>
                 </tr>

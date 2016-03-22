@@ -6,6 +6,8 @@
 package com.allone.projectmanager.controller.common;
 
 import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.entities.BillMaterialService;
+import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.ProjectDetail;
@@ -19,11 +21,16 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -40,6 +47,10 @@ public class ProjectCommon extends Common {
     private static final Logger logger = Logger.getLogger(ProjectCommon.class.getName());
 
     private ProjectMode mode;
+    
+    private final Map<Long, List<BillMaterialServiceItem>> mapBillMaterialServiceItem = new HashMap<>();
+
+    private final Map<Long, BillMaterialService> mapBillMaterialService = new HashMap<>();
 
     private String createSearchStatus(String version) {
         List<SearchInfo> info = getSearchCriteriaStatusProject(version);
@@ -346,5 +357,146 @@ public class ProjectCommon extends Common {
         contentMap.put("contact", createSearchContact(srvProjectManager, null));
 
         return new Gson().toJson(contentMap);
+    }
+    
+    public Collection<BillMaterialServiceItem> getBillMaterialServiceItems(Long pd) {
+        return mapBillMaterialServiceItem.get(pd);
+    }
+
+    public Set<Long> getProjectDetailIds() {
+        return (mapBillMaterialServiceItem != null && !mapBillMaterialServiceItem.isEmpty()) ? mapBillMaterialServiceItem.keySet() : null;
+    }
+
+    public Set<Long> getBillMaterialServiceItemsByPDId(Long pd) {
+        if (pd != null && !mapBillMaterialServiceItem.isEmpty()) {
+            Set<Long> keys = new HashSet<>();
+
+            getProjectDetailIds().stream().filter((key) -> (key.equals(pd))).forEach((key) -> {
+                keys.add(key);
+            });
+
+            return keys;
+        }
+
+        return null;
+    }
+
+    public BillMaterialService getBillMaterialService(Long pd) {
+        return mapBillMaterialService.get(pd);
+    }
+
+    public BillMaterialServiceItem getBillMaterialServiceItem(Long pd, Long itemId) {
+        if (!mapBillMaterialServiceItem.isEmpty()) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null && !items.isEmpty()) {
+                Map<Long, BillMaterialServiceItem> result = items.stream().collect(Collectors.toMap(BillMaterialServiceItem::getItem, (c) -> c));
+
+                return result.get(itemId);
+            }
+        }
+
+        return null;
+    }
+
+    public BillMaterialServiceItem getFirstBillMaterialServiceItem(Long pd) {
+        if (!mapBillMaterialServiceItem.isEmpty() && pd != null) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null && !items.isEmpty()) {
+                return items.get(0);
+            }
+        }
+
+        return null;
+    }
+    
+    public void setVirtualBillMaterialService(BillMaterialService pb) {
+        if (pb != null) {
+            mapBillMaterialService.put(pb.getProject(), pb);
+        }
+    }
+
+    public void removeVirtualBillMaterialService(Long pd) {
+        if (pd != null) {
+            mapBillMaterialService.remove(pd);
+        }
+    }
+
+    public void setVirtualBillMaterialServiceItem(Long pd, BillMaterialServiceItem bmsi) {
+        if (pd != null && bmsi != null) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null) {
+                items.add(bmsi);
+            } else {
+                mapBillMaterialServiceItem.put(pd, new ArrayList<>(Arrays.asList(bmsi)));
+            }
+        }
+    }
+
+    public void editVirtualBillMaterialServiceItem(Long pd, BillMaterialServiceItem bmsi) {
+        if (pd != null && bmsi != null && bmsi.getItem() != null) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null && !items.isEmpty()) {
+                items.stream().
+                        filter((item) -> (item.getItem().equals(bmsi.getItem()))).
+                        forEach((item) -> {
+                            item = bmsi;
+                        });
+            }
+        }
+    }
+
+    public void saveVirtualBillMaterialServiceItem(Long pd) {
+        if (pd != null) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null && !items.isEmpty()) {
+                items.stream().forEach((item) -> {
+                    item.setClassSave("button");
+                });
+            }
+        }
+    }
+
+    public void setVirtualBillMaterialServiceItemBillId(Long pd, Long bms) {
+        if (pd != null && bms != null) {
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+            if (items != null && !items.isEmpty()) {
+                items.forEach((item) -> {
+                    item.setBillMaterialService(bms);
+                });
+            }
+        }
+    }
+
+    public void removeVirtualBillMaterialServiceItem(ProjectManagerService srvProjectManager, Long pd, Long itemId) {
+        List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+
+        if (items != null && !items.isEmpty()) {
+            Map<Long, BillMaterialServiceItem> map = new HashMap<>();
+
+            for (BillMaterialServiceItem item : items) {
+                map.put(item.getItem(), item);
+            }
+
+            BillMaterialServiceItem removeItem = map.remove(itemId);
+
+            if (removeItem != null) {
+                removeItem = srvProjectManager.getDaoProjectBillItem().getById(removeItem.getId());
+                srvProjectManager.getDaoProjectBillItem().delete(removeItem);
+            }
+            mapBillMaterialServiceItem.replace(pd, new ArrayList<>(map.values()));
+        }
+    }
+
+    public void clearVirtualProjectBill(Long pd) {
+        if (pd != null) {
+            mapBillMaterialServiceItem.remove(pd);
+            mapBillMaterialService.remove(pd);
+        }
     }
 }

@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+/* global auto */
+
 //insert new item in Project Bill table
 function insertItem() {
     var data = "pdId=" + $("#subproject option:selected").val() +
@@ -332,7 +334,6 @@ function addSubProject() {
             $("#subproject-company").html(content.company);
             $("#type").html(content.type);
             $("#expired").val(content.expired);
-            $("#service-collab").html(content.technical);
             dlgNewSubProject();
         },
         error: function (e) {
@@ -344,8 +345,6 @@ function dlgNewSubProject() {
     $("#new-subproject").dialog({
         autoOpen: true,
         modal: true,
-        width: 500,
-        height: 500,
         buttons: {
             "submit": function () {
                 saveSubProject();
@@ -378,20 +377,7 @@ function saveSubProject() {
         return;
     }
     
-    if (type == "SERVICE") {
-        var collab = $("#service-collab option:selected").val();
-        var start = $("#service-start").datepicker({dateFormat:'yy-mm-dd'}).val();
-        var end = $("#service-end").datepicker({dateFormat:'yy-mm-dd'}).val();
-        var travelDuration = $("#service-travel-duration").val();
-        var travelCost= $("#service-travel-cost").val();
-        var serviceDuration= $("#service-duration").val();
-        var serviceCost= $("#service-cost").val();
-        
-        service = "&collabId=" + collab + "&projectId=" + project + "&start=" + start + "&end=" + end + "&travelDuration=" + travelDuration + "&travelCost=" + travelCost + "&serviceDuration=" +
-                serviceDuration + "&serviceCostHour=" + serviceCost;
-    }
-
-    var data = "project=" + project + "&type=" + type + "&expired=" + expired + "&company=" + company + service;
+    var data = "project=" + project + "&type=" + type + "&expired=" + expired + "&company=" + company;
 
     $.ajax({
         type: "POST",
@@ -408,8 +394,7 @@ function saveSubProject() {
 }
 
 function getProjectBillItems() {
-    var data = "id=" + $("#subproject option:selected").val() +
-            "&location=1";
+    var data = "id=" + $("#subproject option:selected").val() + "&location=1";
 
     $.ajax({
         type: "POST",
@@ -424,30 +409,9 @@ function getProjectBillItems() {
             $("#company").val(content.company);
             $("#customer").val(content.customer);
             $("#vessel").val(content.vessel);
+            $("#contact").val(content.contact);
         },
         error: function (e) {
         }
     });
-}
-
-function changeSubprojectType() {
-    var type = $("#type option:selected").val();
-
-    if (type === 'SERVICE') {
-        $("#tr-service-collab").show("fast");
-        $("#tr-service-start").show("fast");
-        $("#tr-service-end").show("fast");
-        $("#tr-service-travel-duration").show("fast");
-        $("#tr-service-travel-cost").show("fast");
-        $("#tr-service-duration").show("fast");
-        $("#tr-service-cost").show("fast");
-    } else {
-        $("#tr-service-collab").hide("fast")
-        $("#tr-service-start").hide("fast");
-        $("#tr-service-end").hide("fast");
-        $("#tr-service-travel-duration").hide("fast");
-        $("#tr-service-travel-cost").hide("fast");
-        $("#tr-service-duration").hide("fast");
-        $("#tr-service-cost").hide("fast");
-    }
 }
