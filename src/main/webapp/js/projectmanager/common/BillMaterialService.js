@@ -29,23 +29,6 @@ function insertItem() {
     });
 }
 
-function changeCurrency() {
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=1" +
-            "&currency=" + $("#currency option:selected").val();
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/currency",
-        data: data,
-        success: function (response) {
-            $("#bill-material-service").html(response);
-        },
-        error: function (e) {
-        }
-    });
-}
-
 function saveItem(pdid, id) {
     var quantity = Number($("#quantity" + pdid + id).text());
     var cost = Number($("#cost" + pdid + id).text());
@@ -93,55 +76,11 @@ function removeItem(pdid, id) {
                 "&location=1" +
                 "&item=" + id,
         success: function (response) {
-            var content = JSON.parse(response);
-
-            $("#bill-material-service").html(content.projectBill);
-            $("#bill-material-service-item").html(content.projectBillItems);
+            $("#bill-material-service-item").html(response);
         },
         error: function (e) {
         }
     });
-}
-
-function refreshItem(pdid, id, available) {
-    var quantity = Number($("#quantity" + pdid + id).text());
-    var cost = Number($("#cost" + pdid + id).text());
-    var percentage = Number($("#percentage" + pdid + id).text());
-    var discount = Number($("#discount" + pdid + id).text());
-
-    if (isNaN(quantity) || quantity === 0) {
-        alert("You must give a valid number quantity");
-    } else {
-        var conf = true;
-        if (available < quantity) {
-            conf = confirm("The quantity must is less or equal than quantity of item: " + available);
-        }
-
-        if (conf === true) {
-            var data = "pdId=" + pdid +
-                    "&location=1" +
-                    "&item=" + id +
-                    "&available=" + available +
-                    "&price=" + $("#price" + pdid + id).text() +
-                    "&quantity=" + quantity +
-                    "&cost=" + cost +
-                    "&percentage=" + percentage +
-                    "&discount=" + discount +
-                    "&currency=" + $("#currency option:selected").val() +
-                    "&classRefresh=button&classSave=button alarm";
-
-            $.ajax({
-                type: "POST",
-                url: "/ProjectManager/project/bill-material-service/item/refresh",
-                data: data,
-                success: function (response) {
-                    $("#bill-material-service-item").html(response);
-                },
-                error: function (e) {
-                }
-            });
-        }
-    }
 }
 
 function editItem(pdid, id) {
@@ -189,6 +128,7 @@ function viewLocation(pdid, location, id) {
 
 function saveBillMaterialService(pId) {
     var data = "project=" + pId +
+            "&name=" + $("#name").val() +
             "&note=" + $("#note").val();
 
     $.ajax({
@@ -393,12 +333,12 @@ function saveSubProject() {
     $("#new-subproject").dialog("close");
 }
 
-function getProjectBillItems() {
-    var data = "id=" + $("#subproject option:selected").val() + "&location=1";
+function changeSubproject() {
+    var data = "id=" + $("#subproject option:selected").val();
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/bill-material-service/get-bill-material-service-item",
+        url: "/ProjectManager/project/bill-material-service/change-dubproject",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);

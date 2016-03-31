@@ -10,16 +10,15 @@ import com.allone.projectmanager.controller.common.RequestQuotationCommon;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
+import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.RequestQuotationItem;
+import com.allone.projectmanager.enums.CurrencyEnum;
+import com.allone.projectmanager.enums.LocationEnum;
 import com.allone.projectmanager.model.ProjectModel;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -59,7 +58,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                         if (bmsis != null && !bmsis.isEmpty()) {
                             for (BillMaterialServiceItem bmsi : bmsis) {
-                                setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), getLocationIdByName(value.getLocation())),
+                                setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), LocationEnum.GREECE.getId()),
                                                                new RequestQuotationItem.Builder()
                                                                .setItemBillMaterialService(bmsi.getId())
                                                                .build());
@@ -71,12 +70,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
             if (bmss != null && !bmss.isEmpty()) {
                 BillMaterialService bms = bmss.get(0);
 
-                result[1] += bms.getSupplier();
-                result[2] += getCurrencyById(bms.getCurrency());
+                result[1] += "";
+                result[2] += CurrencyEnum.EUR.name();
                 if (!Strings.isNullOrEmpty(bms.getNote())) {
                     result[3] += bms.getNote();
                 }
-                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), getLocationIdByName(bms.getLocation())));
+                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()));
             }
         }
 
@@ -95,10 +94,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getItemBillMaterialService());
 
                 if (bmsi != null) {
+                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+                    
                     result += "<tr>\n" +
                               "<td>" + ++count + "</td>\n" +
-                              "<td>" + bmsi.getItemImno() + "</td>\n" +
-                              "<td>" + bmsi.getItemDescription() + "</td>\n" +
+                              "<td>" + ((item != null) ? item.getImno() : "") + "</td>\n" +
+                              "<td>" + ((item != null) ? item.getDescription() : "") + "</td>\n" +
                               "<td>" + bmsi.getQuantity() + "</td>\n" +
                               "<td id='availability" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
                               "<td id='>delivery-cost" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
@@ -147,16 +148,16 @@ public class RequestQuotationController extends RequestQuotationCommon {
     String viewSupplier(Long pdId, Integer location, String supplier) {
         String response = "";
 
-        if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
-            ProjectModel pbm = new ProjectModel(pdId, location);
-            BillMaterialService vpb = getProjectBill(pbm);
-
-            if (vpb != null) {
-                vpb.setSupplier(supplier);
-            }
-
-//            response = createProjectBill(pbm);
-        }
+//        if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
+//            ProjectModel pbm = new ProjectModel(pdId, location);
+//            BillMaterialService vpb = getBillMaterialService(pbm);
+//
+//            if (vpb != null) {
+//                vpb.setSupplier(supplier);
+//            }
+//
+////            response = createProjectBill(pbm);
+//        }
 
         return response;
     }

@@ -493,7 +493,7 @@ public class ProjectCommon extends Common {
         }
     }
 
-    public void clearVirtualProjectBill(Long pd) {
+    public void clearVirtualBillMaterialService(Long pd) {
         if (pd != null) {
             mapBillMaterialServiceItem.remove(pd);
             mapBillMaterialService.remove(pd);

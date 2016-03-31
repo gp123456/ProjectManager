@@ -42,7 +42,7 @@ public class BillMaterialServiceItem implements Serializable {
     private Long id;
     
     @Basic(optional = false)
-    @Column(name = "project_bill")
+    @Column(name = "bill_material_service")
     @NotNull
     private Long billMaterialService;
     
@@ -61,15 +61,6 @@ public class BillMaterialServiceItem implements Serializable {
     @Column(name = "price")
     @NotNull
     private BigDecimal price;
-    
-    @Basic(optional = false)
-    @Column(name = "item_imno")
-    @NotNull
-    private String itemImno;
-
-    @Basic(optional = false)
-    @Column(name = "item_description")
-    private String itemDescription;
 
     @Basic(optional = false)
     @Column(name = "quantity")
@@ -84,8 +75,6 @@ public class BillMaterialServiceItem implements Serializable {
         item = builder.item;
         available = builder.available;
         price = builder.price;
-        itemImno = builder.itemImno;
-        itemDescription = builder.itemDescription;
         quantity = builder.quantity;
         classSave = builder.classSave;
     }
@@ -95,8 +84,6 @@ public class BillMaterialServiceItem implements Serializable {
         item = pbi.item;
         available = pbi.available;
         price = pbi.price;
-        itemImno = pbi.itemImno;
-        itemDescription = pbi.itemDescription;
         quantity = pbi.quantity;
     }
 
@@ -137,22 +124,6 @@ public class BillMaterialServiceItem implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-    
-    public String getItemImno() {
-        return itemImno;
-    }
-
-    public void setItemImno(String itemImno) {
-        this.itemImno = itemImno;
-    }
-
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
     }
 
     public Integer getQuantity() {
@@ -208,10 +179,6 @@ public class BillMaterialServiceItem implements Serializable {
         private Integer available;
 
         private BigDecimal price;
-        
-        private String itemImno;
-
-        private String itemDescription;
 
         private Integer quantity;
         
@@ -241,17 +208,6 @@ public class BillMaterialServiceItem implements Serializable {
             return this;
         }
         
-        public Builder setItemImno(String itemImno) {
-            this.itemImno = itemImno;
-            return this;
-        }
-
-        public Builder setItemDescription(String itemDescription) {
-            this.itemDescription = itemDescription;
-
-            return this;
-        }
-
         public Builder setQuantity(Integer quantity) {
             this.quantity = quantity;
 

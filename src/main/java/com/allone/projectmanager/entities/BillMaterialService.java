@@ -60,7 +60,6 @@ public class BillMaterialService implements Serializable {
     private String classSave;
 
     private BillMaterialService(Builder builder) {
-        id = builder.id;
         name = builder.name;
         project = builder.project;
         note = builder.note;
@@ -82,10 +81,6 @@ public class BillMaterialService implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -154,8 +149,6 @@ public class BillMaterialService implements Serializable {
 
     public static class Builder {
 
-        private Long id;
-        
         private String name;
 
         private Long project;
@@ -166,8 +159,8 @@ public class BillMaterialService implements Serializable {
      
         private String classSave;
 
-        public Builder setId(Long id) {
-            this.id = id;
+        public Builder setName(String name) {
+            this.name = name;
 
             return this;
         }
