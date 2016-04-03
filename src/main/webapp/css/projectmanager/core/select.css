@@ -17,6 +17,11 @@ label.custom-select {
     display: inline-block;
 }
 
+label.custom-select-large {
+    position: relative;
+    display: inline-block;
+}
+
 .custom-select select {
     display: inline-block;
     border: 2px solid #bbb;
@@ -33,7 +38,7 @@ label.custom-select {
     cursor: pointer;
 }
 
-.custom-select-large select input {
+.custom-select-large select {
     display: inline-block;
     border: 2px solid #bbb;
     padding: 4px 3px 3px 5px;
@@ -57,8 +62,22 @@ label.custom-select {
     }
 }
 
+/* for Webkit's CSS-only solution */
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+    .custom-select-large select {
+        padding-right:30px;    
+    }
+}
+
 /* Since we removed the default focus styles, we have to add our own */
 .custom-select select:focus {
+    -webkit-box-shadow: 0 0 3px 1px #c00;
+    -moz-box-shadow: 0 0 3px 1px #c00;
+    box-shadow: 0 0 3px 1px #c00;
+}
+
+/* Since we removed the default focus styles, we have to add our own */
+.custom-select-large select:focus {
     -webkit-box-shadow: 0 0 3px 1px #c00;
     -moz-box-shadow: 0 0 3px 1px #c00;
     box-shadow: 0 0 3px 1px #c00;

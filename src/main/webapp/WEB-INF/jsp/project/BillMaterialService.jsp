@@ -118,7 +118,7 @@
                 <tr>
                     <td>
                         <label class="custom-select-large">
-                            <select id="item"></select>
+                            <select id="item" onchange="changeItem()"></select>
                         </label>
                     </td>
                     <td>

@@ -45,7 +45,7 @@ public class BillMaterialService implements Serializable {
     private String name;
 
     @Basic(optional = false)
-    @Column(name = "bill_material_service")
+    @Column(name = "project")
     @NotNull
     private Long project;
 

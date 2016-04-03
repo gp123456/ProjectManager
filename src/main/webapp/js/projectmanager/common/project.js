@@ -17,20 +17,20 @@ function searchContent(version, mode, offset, size) {
     var date_end = $("#date-end").val();
     var data = "";
     
-    if (reference != '') data = "reference=" + reference;
-    if (type != "none") data += "&type=" + type;
-    if (status != "none") data += "&status=" + status;
-    if (vessel != -1) data += "&vessel=" + vessel;
-    if (customer != "none") data += "&customer=" + customer;
-    if (company != "none") data += "&company=" + company;
-    if (date_start != '') data += "&date_start=" + date_start;
-    if (date_end != '') data += "&date_end=" + date_end;
-    if (vesselCustom != null) data += "&vesselCustom=" + vesselCustom;
-    if (customerCustom != null) data += "&customerCustom=" + customerCustom;
-    if (version != null) data += "&version=" + version;
-    if (mode != null) data += "&mode=" + mode;
-    data += (offset != null) ? "&offset=" + offset : "&offset=0";
-    data += (size != null) ? "&size=" + size : "&size=10";
+    if (reference !== '') data = "reference=" + reference;
+    if (type !== "none") data += "&type=" + type;
+    if (status !== "none") data += "&status=" + status;
+    if (vessel !== -1) data += "&vessel=" + vessel;
+    if (customer !== "none") data += "&customer=" + customer;
+    if (company !== "none") data += "&company=" + company;
+    if (date_start !== '') data += "&date_start=" + date_start;
+    if (date_end !== '') data += "&date_end=" + date_end;
+    if (vesselCustom !== null) data += "&vesselCustom=" + vesselCustom;
+    if (customerCustom !== null) data += "&customerCustom=" + customerCustom;
+    if (version !== null) data += "&version=" + version;
+    if (mode !== null) data += "&mode=" + mode;
+    data += (offset !== null) ? "&offset=" + offset : "&offset=0";
+    data += (size !== null) ? "&size=" + size : "&size=10";
 
     $.ajax({
         type: "POST",
@@ -73,10 +73,10 @@ function getProjectStatistics(year) {
         type: "POST",
         url: "statistics",
         data: "year=" + year,
-        success: function (response) {
+        success: function () {
             location.reload();
         },
-        error: function (e) {
+        error: function () {
         }
     });
 }
@@ -107,28 +107,28 @@ function editRow(pId) {
     var contact = $("#contact option:selected").attr("value");
     var data = "";
 
-    if (pId == -1) {
+    if (pId === -1) {
         alert("No edit the project detail with id:" + pId);
         return;
     } else {
         data += "id=" + pId;
     }
-    if (company != "none") {
+    if (company !== "none") {
         data += "&company=" + company;
     }
-    if (type != "none") {
+    if (type !== "none") {
         data += "&type=" + type;
     }
-    if (expired != "") {
+    if (expired !== "") {
         data += "&expired=" + expired;
     }
-    if (vessel != -1) {
+    if (vessel !== -1) {
         data += "&vessel=" + vessel;
     }
-    if (customer != "none") {
+    if (customer !== "none") {
         data += "&customer=" + customer;
     }
-    if (contact != -1) {
+    if (contact !== -1) {
         data += "&contact=" + contact;
     }
 
@@ -142,7 +142,7 @@ function editRow(pId) {
             $("#header").html(content.header);
             $("#body").html(content.body);
         },
-        error: function (e) {
+        error: function () {
         }
     });
 }
@@ -196,31 +196,30 @@ function printXLS(id) {
 }
 
 function saveProject() {
-    $("#save").prop('disabled', true);
     var type = $("#type option:selected").attr("value");
     var expired = $("#expired").datepicker({dateFormat:'yy-mm-dd'}).val();
     var customer = $("#customer option:selected").attr("value");
     var vessel = $("#vessel option:selected").attr("value");
     var company = $("#company option:selected").attr("value");
     var contact = $("#contact option:selected").attr("value");
-
-    if (company == "none") {
+    
+    if (company === "none") {
         alert("you must select company");
         return;
     }
-    if (type == "none") {
+    if (type === "none") {
         alert("you must select type");
         return;
     }
-    if (vessel == -1) {
-        alert("you must select a vessel or add one");
-        return;
-    }
-    if (customer == -1) {
+    if (customer === "none") {
         alert("you must select a customer or add one");
         return;
     }
-    if (contact == -1) {
+    if (vessel === -1 || vessel === null || isNaN(vessel)) {
+        alert("you must select a vessel or add one");
+        return;
+    }
+    if (contact === -1 || contact === null || isNaN(contact)) {
         alert("you must select a contact or add one");
         return;
     }

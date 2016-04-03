@@ -42,7 +42,7 @@ public class ProjectRequestQuotationDAO {
         }
     }
 
-    public List getByProjectBill(Long projectBill) {
+    public List getByBillMaterialService(Long projectBill) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 

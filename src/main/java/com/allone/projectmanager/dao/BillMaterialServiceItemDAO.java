@@ -47,13 +47,13 @@ public class BillMaterialServiceItemDAO {
         }
     }
 
-    public List getByProjectBill(Long projectBill) {
+    public List getByBillMaterialService(Long projectBill) {
         Query query = null;
         EntityManager em = emf.createEntityManager();
 
         try {
             query = (projectBill != null && projectBill.compareTo(0l) >= 0)
-                    ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByProjectBill").setParameter("projectBill", projectBill) : null;
+                    ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService").setParameter("billMaterialService", projectBill) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -126,7 +126,7 @@ public class BillMaterialServiceItemDAO {
 
     public void edit(Long projectBill, List<BillMaterialServiceItem> pbis) {
         EntityManager em = emf.createEntityManager();
-        List<BillMaterialServiceItem> _pbis = getByProjectBill(projectBill);
+        List<BillMaterialServiceItem> _pbis = getByBillMaterialService(projectBill);
 
         try {
             em.getTransaction().begin();
@@ -169,7 +169,7 @@ public class BillMaterialServiceItemDAO {
 
     public void delete(Long projectBill) {
         EntityManager em = emf.createEntityManager();
-        List<BillMaterialServiceItem> pbis = getByProjectBill(projectBill);
+        List<BillMaterialServiceItem> pbis = getByBillMaterialService(projectBill);
 
         try {
             if (pbis != null && !pbis.isEmpty()) {

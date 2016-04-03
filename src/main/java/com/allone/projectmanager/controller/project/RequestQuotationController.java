@@ -54,7 +54,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                 if (bmss != null && !bmss.isEmpty()) {
                     for (BillMaterialService value : bmss) {
-                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByProjectBill(value.getId());
+                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(value.getId());
 
                         if (bmsis != null && !bmsis.isEmpty()) {
                             for (BillMaterialServiceItem bmsi : bmsis) {
