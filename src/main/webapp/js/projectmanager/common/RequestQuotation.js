@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-function changeSubproject() {
+function changeSubproject1() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=" + $("#location option:selected").val();
     

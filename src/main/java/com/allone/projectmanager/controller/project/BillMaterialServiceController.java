@@ -213,7 +213,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (p != null) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", p.getReference());
-            model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='saveBillMaterialService(\"" + p.getId() + "\")'>\n");
+            model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='saveBillMaterialService()'>\n");
             model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getReference() + "\")'>\n");
             model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getReference() + "\")'>\n");
             model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>\n");
@@ -509,7 +509,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
     }
 
-    @RequestMapping(value = "/bill-material-service/get-change-dubproject")
+    @RequestMapping(value = "/bill-material-service/change-subproject")
     public @ResponseBody
     String changeSunproject(Long id) {
         Map<String, String> content = new HashMap<>();

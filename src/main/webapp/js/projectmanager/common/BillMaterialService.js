@@ -50,8 +50,6 @@ function saveItem(pdid, id) {
             "&quantity=" + ((isNaN(quantity) || quantity === null) ? 0 : quantity) +
             "&classSave=button";
 
-    alert(data);
-
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/item/save",
@@ -103,10 +101,13 @@ function editItem(pdid, id) {
     });
 }
 
-function saveBillMaterialService(pdId) {
+function saveBillMaterialService() {
+    var pdId = $("#subproject option:selected").val();
     var data = "project=" + pdId +
-            "&name=" + $("#name" + pdId).val() +
+            "&name=" + $("#name" + pdId).text() +
             "&note=" + $("#note").val();
+    
+    alert(data);
 
     $.ajax({
         type: "POST",
@@ -313,7 +314,7 @@ function changeSubproject() {
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/bill-material-service/change-dubproject",
+        url: "/ProjectManager/project/bill-material-service/change-subproject",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
