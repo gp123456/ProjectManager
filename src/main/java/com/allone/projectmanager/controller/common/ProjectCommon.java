@@ -362,6 +362,10 @@ public class ProjectCommon extends Common {
     public Collection<BillMaterialServiceItem> getBillMaterialServiceItems(Long pd) {
         return mapBillMaterialServiceItem.get(pd);
     }
+    
+    public Boolean isEmptyBillMaterialService() {
+        return mapBillMaterialService.isEmpty();
+    }
 
     public Set<Long> getProjectDetailIds() {
         return (mapBillMaterialServiceItem != null && !mapBillMaterialServiceItem.isEmpty()) ? mapBillMaterialServiceItem.keySet() : null;

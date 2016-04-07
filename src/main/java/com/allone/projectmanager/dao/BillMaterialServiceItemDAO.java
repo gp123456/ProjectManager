@@ -37,7 +37,7 @@ public class BillMaterialServiceItemDAO {
             query = (id != null) ? em.createNamedQuery(
                     "com.allone.projectmanager.entities.BillMaterialServiceItem.findById").setParameter("id", id) : null;
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             BillMaterialServiceItem values = (BillMaterialServiceItem) query.getSingleResult();
 
@@ -55,7 +55,7 @@ public class BillMaterialServiceItemDAO {
             query = (projectBill != null && projectBill.compareTo(0l) >= 0)
                     ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService").setParameter("billMaterialService", projectBill) : null;
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             List values = query.getResultList();
 
@@ -80,7 +80,7 @@ public class BillMaterialServiceItemDAO {
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            System.out.printf("%s\n", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
@@ -98,7 +98,7 @@ public class BillMaterialServiceItemDAO {
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            System.out.printf("%s\n", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
@@ -118,7 +118,7 @@ public class BillMaterialServiceItemDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -142,7 +142,7 @@ public class BillMaterialServiceItemDAO {
             }
             em.getTransaction().commit();
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -159,7 +159,7 @@ public class BillMaterialServiceItemDAO {
             }
 
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
@@ -167,21 +167,21 @@ public class BillMaterialServiceItemDAO {
         }
     }
 
-    public void delete(Long projectBill) {
+    public void delete(Long bmsId) {
         EntityManager em = emf.createEntityManager();
-        List<BillMaterialServiceItem> pbis = getByBillMaterialService(projectBill);
+        List<BillMaterialServiceItem> bmsis = getByBillMaterialService(bmsId);
 
         try {
-            if (pbis != null && !pbis.isEmpty()) {
+            if (bmsis != null && !bmsis.isEmpty()) {
                 em.getTransaction().begin();
 
-                for (BillMaterialServiceItem pbi : pbis) {
-                    em.remove(pbi);
+                for (BillMaterialServiceItem bmsi : bmsis) {
+                    em.remove(bmsi);
                 }
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -193,12 +193,11 @@ public class BillMaterialServiceItemDAO {
         try {
             if (item != null) {
                 em.getTransaction().begin();
-                em.remove(item);
+                em.remove(em.contains(item) ? item : em.merge(item));
                 em.getTransaction().commit();
             }
-            em.getTransaction().commit();
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }

@@ -112,73 +112,75 @@
                 </tbody>
             </table>
         </div>
-        <br><h3>Select Item</h3>
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <label class="custom-select-large">
-                            <select id="item" onchange="changeItem()"></select>
-                        </label>
-                    </td>
-                    <td>
-                        <input type="button" class="button" value="Submit" onclick="insertItem()"/>
-                    </td>
-                    <td>
-                        <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
-                        <div id="add-item" hidden="true" title="Add New Item">
-                            <form class="go-bottom">
-                                <p class="validateTips" id="validate-add-item">All form fields are required.</p>
-                                <div>
-                                    <input type="text" id="item-imno" required>
-                                    <label class="go-bottom-label" for="item-imno">IMNO</label>
-                                </div>
-                                <div>
-                                    <input type="text" id="item-desc" required>
-                                    <label class="go-bottom-label" for="item-desc">Description</label>
-                                </div>
-                                <div>
-                                    <input type="text" id="item-quantity" required>
-                                    <label class="go-bottom-label" for="item-quantity">Quantity</label>
-                                </div>
-                                <div>
-                                    <input type="text" id="item-price" required>
-                                    <label class="go-bottom-label" for="item-price">Price</label>
-                                </div>
-                                <p>
-                                    <label class="custom-select">
-                                        <select id="item-currency"></select>
-                                    </label>
-                                </p>
-                                <p>
-                                    <label class="custom-select">
-                                        <select id="item-location"></select>
-                                    </label>
-                                </p>
-                                <p>
-                                    <label class="custom-select">
-                                        <select id="item-supplier"></select>
-                                    </label>
-                                </p>
-                            </form>
-                        </div>
-                        <input type="hidden" id="item_id" name="id"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <table>
-            <tbody>
-                <tr>
-                    <td><label>Availability</label></td>
-                    <td><input type="text" id="availability" readonly></td>
-                </tr>
-                <tr>
-                    <td><label>Price</label></td>
-                    <td><input type="text" id="price" readonly></td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="select-item">
+            <br><h3>Select Item</h3>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label class="custom-select-large">
+                                <select id="item" onchange="changeItem()"></select>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="button" class="button" value="Submit" onclick="insertItem()"/>
+                        </td>
+                        <td>
+                            <input type="button" class="button" value="Add New Item" onclick="addItem()"/>
+                            <div id="add-item" hidden="true" title="Add New Item">
+                                <form class="go-bottom">
+                                    <p class="validateTips" id="validate-add-item">All form fields are required.</p>
+                                    <div>
+                                        <input type="text" id="item-imno" required>
+                                        <label class="go-bottom-label" for="item-imno">IMNO</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="item-desc" required>
+                                        <label class="go-bottom-label" for="item-desc">Description</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="item-quantity" required>
+                                        <label class="go-bottom-label" for="item-quantity">Quantity</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="item-price" required>
+                                        <label class="go-bottom-label" for="item-price">Price</label>
+                                    </div>
+                                    <p>
+                                        <label class="custom-select">
+                                            <select id="item-currency"></select>
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label class="custom-select">
+                                            <select id="item-location"></select>
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label class="custom-select">
+                                            <select id="item-supplier"></select>
+                                        </label>
+                                    </p>
+                                </form>
+                            </div>
+                            <input type="hidden" id="item_id" name="id"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><label>Availability</label></td>
+                        <td><input type="text" id="availability" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Price</label></td>
+                        <td><input type="text" id="price" readonly></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <h2>Bill of Material Summary</h2>
     <div>
@@ -188,7 +190,6 @@
                     <th style="display:none">Project Id</th>
                     <th>Name*</th>
                     <th>Subproject</th>
-                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody id="bill-material-service"></tbody>
@@ -199,8 +200,8 @@
             <div id="lst-bill-material-service-item"></div>
         </form>
     </div>
-    <h2>Bill of Material Detail</h2>
-    <div>
+    <div id="select-bill-material-service-item">
+        <h2>Bill of Material Detail</h2>
         <table class="table tablesorter">
             <thead>
                 <tr>
@@ -216,6 +217,6 @@
         </table>
     </div>
     <div><h2>Note</h2><textarea id="note" name="notes" rows="10" style="width: 100%"></textarea></div>
-    <div>${button_save}${button_save_pdf}${button_save_excel}${button_send_email}</div>
+    <div>${button_save}${button_remove}${button_save_pdf}${button_save_excel}${button_send_email}</div>
     <div>${button_action_message}</div>
 </div>

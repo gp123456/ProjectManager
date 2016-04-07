@@ -106,16 +106,17 @@ function saveBillMaterialService() {
     var data = "project=" + pdId +
             "&name=" + $("#name" + pdId).text() +
             "&note=" + $("#note").val();
-    
-    alert(data);
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/save",
         data: data,
         success: function (response) {
-
-            $("#bill-header").html(response);
+            if (response === "index") {
+                location.reload();
+            } else {
+                $("#bill-header").html(response);
+            }
         },
         error: function (e) {
         }
@@ -319,13 +320,49 @@ function changeSubproject() {
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#bill-material-service").html(content.billMaterialService);
-            $("#bill-material-service-item").html(content.billMaterialServiceItems);
             $("#info-type").val(content.type);
             $("#company").val(content.company);
             $("#customer").val(content.customer);
             $("#vessel").val(content.vessel);
             $("#contact").val(content.contact);
+            $("#bill-material-service").html(content.billMaterialService);
+            if (content.noItems === "false") {
+                $('#select-item').show();
+                $('#select-bill-material-service-item').show();
+                $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            } else {
+                $('#select-item').hide();
+                $('#select-bill-material-service-item').hide();
+            }
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function removeBillMaterialService() {
+    var data = "pdId=" + $("#subproject option:selected").val();
+    
+    alert(data);
+    
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/bill-material-service/remove",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+            
+            alert(response);
+            
+            $("#bill-material-service").html(content.billMaterialService);
+            if (content.noItems === "false") {
+                $('#select-item').show();
+                $('#select-bill-material-service-item').show();
+                $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            } else {
+                $('#select-item').hide();
+                $('#select-bill-material-service-item').hide();
+            }
         },
         error: function (e) {
         }

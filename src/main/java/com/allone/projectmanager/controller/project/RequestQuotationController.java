@@ -42,34 +42,30 @@ public class RequestQuotationController extends RequestQuotationCommon {
     private String[] getProjectBillInfo(Long pId) {
         String[] result = {"", "", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
-        List<BillMaterialService> bmss = null;
+        BillMaterialService bms = null;
         Integer index = 1;
 
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
-                bmss = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
+                bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
                 result[0] += (!(index++).equals(pds.size())) ?
                              "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
                              "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
 
-                if (bmss != null && !bmss.isEmpty()) {
-                    for (BillMaterialService value : bmss) {
-                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(value.getId());
+                if (bms != null) {
+                    List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
 
-                        if (bmsis != null && !bmsis.isEmpty()) {
-                            for (BillMaterialServiceItem bmsi : bmsis) {
-                                setVirtualRequestQuotationItem(new ProjectModel(value.getProject(), LocationEnum.GREECE.getId()),
-                                                               new RequestQuotationItem.Builder()
-                                                               .setItemBillMaterialService(bmsi.getId())
-                                                               .build());
-                            }
+                    if (bmsis != null && !bmsis.isEmpty()) {
+                        for (BillMaterialServiceItem bmsi : bmsis) {
+                            setVirtualRequestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()),
+                                                           new RequestQuotationItem.Builder()
+                                                           .setItemBillMaterialService(bmsi.getId())
+                                                           .build());
                         }
                     }
                 }
             }
-            if (bmss != null && !bmss.isEmpty()) {
-                BillMaterialService bms = bmss.get(0);
-
+            if (bms != null) {
                 result[1] += "";
                 result[2] += CurrencyEnum.EUR.name();
                 if (!Strings.isNullOrEmpty(bms.getNote())) {
@@ -95,7 +91,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                 if (bmsi != null) {
                     Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-                    
+
                     result += "<tr>\n" +
                               "<td>" + ++count + "</td>\n" +
                               "<td>" + ((item != null) ? item.getImno() : "") + "</td>\n" +
@@ -158,7 +154,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
 //
 ////            response = createProjectBill(pbm);
 //        }
-
         return response;
     }
 }

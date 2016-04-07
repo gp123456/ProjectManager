@@ -57,8 +57,7 @@ public class ProjectDetailDAO {
 
         try {
             checkPagingAttributes(offset, size);
-            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findAll").setFirstResult(
-            offset * size).setMaxResults(size);
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findAll").setFirstResult(offset * size).setMaxResults(size);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -76,8 +75,7 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectId").
-            setParameter("project", project);
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectId").setParameter("project", project);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -96,8 +94,7 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType").setParameter(
-            "type", type).setFirstResult(offset * size).setMaxResults(size);
+            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType").setParameter("type", type).setFirstResult(offset * size).setMaxResults(size);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
@@ -114,10 +111,7 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (!Strings.isNullOrEmpty(type)) ?
-            em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByType").setParameter("type",
-                                                                                                             type) :
-            null;
+            query = (!Strings.isNullOrEmpty(type)) ? em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByType").setParameter("type",type) : null;
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {
