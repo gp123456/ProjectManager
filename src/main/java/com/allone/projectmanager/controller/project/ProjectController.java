@@ -262,7 +262,8 @@ public class ProjectController extends ProjectCommon {
     String removeProject(Project p) {
         Map<String, String> content = new HashMap<>();
 
-        srvProjectManager.getDaoProject().delete(p.getId());
+        Project dbp = srvProjectManager.getDaoProject().getById(p.getId());
+        srvProjectManager.getDaoProject().delete(dbp);
 
         content.put("rows", "");
 

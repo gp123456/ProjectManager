@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -23,24 +24,28 @@ public class BillMaterialServiceItemDAO {
 
     private static final Logger logger = Logger.getLogger(BillMaterialServiceItemDAO.class.getName());
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     public BillMaterialServiceItemDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
     public BillMaterialServiceItem getById(Long id) {
-        Query query = null;
+        BillMaterialServiceItem values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (id != null) ? em.createNamedQuery(
-                    "com.allone.projectmanager.entities.BillMaterialServiceItem.findById").setParameter("id", id) : null;
-        } catch (HibernateException e) {
+            if (id != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findById")
+                      .setParameter("id", id);
+
+                values = (query != null) ?
+                         (BillMaterialServiceItem) query.getSingleResult() :
+                         null;
+            }
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
-            BillMaterialServiceItem values = (BillMaterialServiceItem) query.getSingleResult();
-
             em.close();
 
             return values;
@@ -48,17 +53,21 @@ public class BillMaterialServiceItemDAO {
     }
 
     public List getByBillMaterialService(Long projectBill) {
-        Query query = null;
+        List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (projectBill != null && projectBill.compareTo(0l) >= 0)
-                    ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService").setParameter("billMaterialService", projectBill) : null;
-        } catch (HibernateException e) {
+            if (projectBill != null && projectBill.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService")
+                      .setParameter("billMaterialService", projectBill);
+
+                values = (query != null) ?
+                         query.getResultList() :
+                         null;
+            }
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
-            List values = query.getResultList();
-
             em.close();
 
             return values;
@@ -72,9 +81,6 @@ public class BillMaterialServiceItemDAO {
             if (pbis != null && !pbis.isEmpty()) {
                 em.getTransaction().begin();
                 for (BillMaterialServiceItem pbi : pbis) {
-
-                    logger.log(Level.INFO, "{0}", pbi.getItem());
-
                     em.persist(pbi);
                 }
                 em.getTransaction().commit();
@@ -117,7 +123,7 @@ public class BillMaterialServiceItemDAO {
                 }
                 em.getTransaction().commit();
             }
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
@@ -141,7 +147,7 @@ public class BillMaterialServiceItemDAO {
                 }
             }
             em.getTransaction().commit();
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
@@ -158,7 +164,7 @@ public class BillMaterialServiceItemDAO {
                 em.getTransaction().commit();
             }
 
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
@@ -180,7 +186,7 @@ public class BillMaterialServiceItemDAO {
                 }
                 em.getTransaction().commit();
             }
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
@@ -196,7 +202,7 @@ public class BillMaterialServiceItemDAO {
                 em.remove(em.contains(item) ? item : em.merge(item));
                 em.getTransaction().commit();
             }
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();

@@ -5,6 +5,7 @@
  */
 package com.allone.projectmanager.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,9 +22,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author antonia
  */
 @Entity
-@Table(name = "project_request_quotation")
+@Table(name = "request_quotation")
 @XmlRootElement
-public class RequestQuotation {
+public class RequestQuotation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +33,13 @@ public class RequestQuotation {
     @NotNull
     private Long id;
 
-    @Column(name = "project_bill")
+    @Column(name = "supplier")
     @NotNull
-    private Long projectBill;
+    private String supplier;
+
+    @Column(name = "bill_material_service")
+    @NotNull
+    private Long billMaterialService;
 
     @Column(name = "delivery")
     @NotNull
@@ -76,7 +81,8 @@ public class RequestQuotation {
     }
 
     private RequestQuotation(RequestQuotation.Builder builder) {
-        this.projectBill = builder.projectBill;
+        supplier = builder.supplier;
+        this.billMaterialService = builder.billMaterialService;
         this.delivery = builder.delivery;
         this.packing = builder.packing;
         this.payment = builder.payment;
@@ -96,12 +102,20 @@ public class RequestQuotation {
         this.id = id;
     }
 
-    public Long getProjectBill() {
-        return projectBill;
+    public String getSupplier() {
+        return supplier;
     }
 
-    public void setProjectBill(Long projectBill) {
-        this.projectBill = projectBill;
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public Long getBillMaterialService() {
+        return billMaterialService;
+    }
+
+    public void setBillMaterialService(Long billMaterialService) {
+        this.billMaterialService = billMaterialService;
     }
 
     public Integer getDelivery() {
@@ -206,7 +220,9 @@ public class RequestQuotation {
 
     public class Builder {
 
-        private Long projectBill;
+        private String supplier;
+
+        private Long billMaterialService;
 
         private Integer delivery;
 
@@ -226,60 +242,66 @@ public class RequestQuotation {
 
         private Boolean complete;
 
-        public Builder setProjectBill(Long projectBill) {
-            this.projectBill = projectBill;
+        public RequestQuotation.Builder setSupplier(String supplier) {
+            this.supplier = supplier;
 
             return this;
         }
-        
+
+        public Builder setBillMaterialService(Long billMaterialService) {
+            this.billMaterialService = billMaterialService;
+
+            return this;
+        }
+
         public Builder setDelivery(Integer delivery) {
             this.delivery = delivery;
 
             return this;
         }
-        
+
         public Builder setPacking(Integer packing) {
             this.packing = packing;
 
             return this;
         }
-        
+
         public Builder setPayment(Integer payment) {
             this.payment = payment;
 
             return this;
         }
-        
+
         public Builder setValidity(Integer validity) {
             this.validity = validity;
 
             return this;
         }
-        
+
         public Builder setDiscount(BigDecimal discount) {
             this.discount = discount;
 
             return this;
         }
-        
+
         public Builder setPayable(BigDecimal payable) {
             this.payable = payable;
 
             return this;
         }
-        
+
         public Builder setCharges(Integer charges) {
             this.charges = charges;
 
             return this;
         }
-        
+
         public Builder setTotal(BigDecimal total) {
             this.total = total;
 
             return this;
         }
-        
+
         public Builder setComplete(Boolean complete) {
             this.complete = complete;
 

@@ -35,13 +35,13 @@ public class RequestQuotationItem implements Serializable {
     @NotNull
     private Long id;
 
-    @Column(name = "item_bill_material_service")
+    @Column(name = "request_quotation")
     @NotNull
-    private Long itemBillMaterialService;
-
-    @Column(name = "supplier")
+    private Long requestQuotation;
+    
+    @Column(name = "bill_material_service_item")
     @NotNull
-    private String supplier;
+    private Long billMaterialServiceItem;
 
     @Column(name = "availability")
     @NotNull
@@ -71,8 +71,8 @@ public class RequestQuotationItem implements Serializable {
     }
 
     private RequestQuotationItem(Builder builder) {
-        itemBillMaterialService = builder.itemBillMaterialService;
-        supplier = builder.supplier;
+        requestQuotation = builder.requestQuotation;
+        billMaterialServiceItem = builder.billMaterialServiceItem;
         availability = builder.availability;
         deliveryCost = builder.deliveryCost;
         otherExpenses = builder.otherExpenses;
@@ -89,20 +89,20 @@ public class RequestQuotationItem implements Serializable {
         this.id = id;
     }
 
-    public String getSupplier() {
-        return supplier;
+    public Long getRequestQuotation() {
+        return requestQuotation;
     }
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
+    public void setRequestQuotation(Long requestQuotation) {
+        this.requestQuotation = requestQuotation;
     }
 
-    public Long getItemBillMaterialService() {
-        return itemBillMaterialService;
+    public Long getBillMaterialServiceItem() {
+        return billMaterialServiceItem;
     }
 
-    public void setItemBillMaterialService(Long itemBillMaterialService) {
-        this.itemBillMaterialService = itemBillMaterialService;
+    public void setBillMaterialServiceItem(Long billMaterialServiceItem) {
+        this.billMaterialServiceItem = billMaterialServiceItem;
     }
 
     public Integer getAvailability() {
@@ -170,8 +170,8 @@ public class RequestQuotationItem implements Serializable {
         }
 
         RequestQuotationItem other = (RequestQuotationItem) object;
-        if ((this.itemBillMaterialService == null && other.itemBillMaterialService != null) ||
-            (this.itemBillMaterialService != null && !this.itemBillMaterialService.equals(other.itemBillMaterialService))) {
+        if ((this.billMaterialServiceItem == null && other.billMaterialServiceItem != null) ||
+            (this.billMaterialServiceItem != null && !this.billMaterialServiceItem.equals(other.billMaterialServiceItem))) {
             return false;
         }
 
@@ -185,9 +185,9 @@ public class RequestQuotationItem implements Serializable {
 
     public static class Builder {
 
-        private Long itemBillMaterialService;
-
-        private String supplier;
+        private Long requestQuotation;
+        
+        private Long billMaterialServiceItem;
 
         private Integer availability;
         
@@ -201,14 +201,14 @@ public class RequestQuotationItem implements Serializable {
 
         private BigDecimal total;
 
-        public Builder setItemBillMaterialService(Long itemBillMaterialService) {
-            this.itemBillMaterialService = itemBillMaterialService;
+        public Builder setRequestQuotation(Long requestQuotation) {
+            this.requestQuotation = requestQuotation;
 
             return this;
         }
-
-        public Builder setSupplier(String supplier) {
-            this.supplier = supplier;
+        
+        public Builder setBillMaterialServiceItem(Long billMaterialServiceItem) {
+            this.billMaterialServiceItem = billMaterialServiceItem;
 
             return this;
         }

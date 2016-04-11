@@ -24,6 +24,7 @@ import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.tools.JasperReport;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
@@ -92,19 +92,16 @@ public class BillMaterialServiceController extends ProjectCommon {
             Long pdId = pds.get(0).getId();
             Vessel vessel = srvProjectManager.getDaoVessel().getById(pds.get(0).getVessel());
             Contact contact = srvProjectManager.getDaoContact().getById(pds.get(0).getContact());
-            Set<Long> pdKeys = getProjectDetailIds();
 
             for (ProjectDetail pd : pds) {
                 response += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
-                if (pdKeys == null) {
-                    pushProjectBillMaterial(pd.getId());
-                }
+                pushBillMaterialService(pd.getId());
             }
 
-            BillMaterialService bms = getBillMaterialService(pdId);
+            String[] bmsInfo = createBillMaterialService(pdId);
             content.put("subprojects", response);
-            content.put("billMaterialService", createBillMaterialService(pdId));
-            content.put("noteBillMaterialService", (bms != null) ? bms.getNote() : "");
+            content.put("billMaterialService", bmsInfo[0]);
+            content.put("note", bmsInfo[1]);
             content.put("billMaterialServiceItems", createBillMaterialServiceItems(pdId));
             content.put("type", pds.get(0).getType());
             content.put("company", pds.get(0).getCompany());
@@ -124,29 +121,32 @@ public class BillMaterialServiceController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    private void pushProjectBillMaterial(Long pdId) {
+    private void pushBillMaterialService(Long pdId) {
         BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pdId);
 
         if (bms != null) {
+            clearVirtualBillMaterialService(pdId);
+
             List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
 
             bms.setClassSave("button alarm");
             setVirtualBillMaterialService(bms);
 
             if (bmsis != null && !bmsis.isEmpty()) {
-                bmsis.stream().map((bmsi) -> {
-                    bmsi.setClassSave("button alarm");
-
-                    return bmsi;
-                }).forEach((bmsi) -> {
-                    setVirtualBillMaterialServiceItem(bms.getProject(), bmsi);
-                });
+                bmsis.stream().
+                        map((bmsi) -> {
+                            bmsi.setClassSave("button alarm");
+                            return bmsi;
+                        }).
+                        forEach((bmsi) -> {
+                            setVirtualBillMaterialServiceItem(bms.getProject(), bmsi);
+                        });
             }
         }
     }
 
-    private String createBillMaterialService(Long pdId) {
-        String response = "";
+    private String[] createBillMaterialService(Long pdId) {
+        String response[] = new String[]{"", ""};
 
         if (pdId != null) {
             ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
@@ -155,11 +155,16 @@ public class BillMaterialServiceController extends ProjectCommon {
                 BillMaterialService bms = getBillMaterialService(pd.getId());
 
                 if (bms != null) {
-                    String name = (bms.getName() != null) ? bms.getName() : "";
-                    String subproject = (pd.getReference() != null) ? pd.getReference() : "";
+                    String notes = (!Strings.isNullOrEmpty(bms.getNote())) ? bms.getNote() : "";
+                    String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
+                    String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
 
-                    response += "<tr>\n" +
-                                "<td id='name" + pdId + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + name + "</td>\n" + "<td id='subproject'>" + subproject + "</td>\n";
+                    response[0] = "<tr>\n" +
+                                  "<td id='name" + pdId +
+                                  "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" +
+                                  name + "</td>\n<td id='subproject'>" +
+                                  subproject + "</td>\n";
+                    response[1] = notes;
                 }
             }
         }
@@ -284,7 +289,10 @@ public class BillMaterialServiceController extends ProjectCommon {
                     .build());
         }
         saveVirtualBillMaterialServiceItem(pdId);
-        content.put("billMaterialService", createBillMaterialService(pdId));
+
+        String[] bmsInfo = createBillMaterialService(pdId);
+        content.put("billMaterialService", bmsInfo[0]);
+        content.put("note", bmsInfo[1]);
         content.put("billMaterialServiceItems", createBillMaterialServiceItems(pdId));
 
         return new Gson().toJson(content);
@@ -302,8 +310,9 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String remove(Long pdId) {
         logger.log(Level.INFO, "remove bms={0}", pdId);
-        
+
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
@@ -313,9 +322,21 @@ public class BillMaterialServiceController extends ProjectCommon {
             if (bms != null) {
                 srvProjectManager.getDaoProjectBill().delete(bms);
                 srvProjectManager.getDaoProjectBillItem().delete(bms.getId());
+                srvProjectManager.getDaoProjectDetail().delete(pd);
+
+                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+
+                logger.log(Level.INFO, "remove project {0}", pds);
+
+                if (pds == null || pds.isEmpty()) {
+                    srvProjectManager.getDaoProject().delete(p);
+                }
                 clearVirtualBillMaterialService(pdId);
 
-                content.put("billMaterialService", createBillMaterialService(pdId));
+                String[] bmsInfo = createBillMaterialService(pdId);
+
+                content.put("billMaterialService", bmsInfo[0]);
+                content.put("note", bmsInfo[1]);
                 if (pd.getType().equals(ProjectTypeEnum.SERVICE.name())) {
                     content.put("noItems", "true");
                 } else {
@@ -560,7 +581,10 @@ public class BillMaterialServiceController extends ProjectCommon {
             if (contact != null) {
                 content.put("contact", contact.getSurname() + " " + contact.getName());
             }
-            content.put("billMaterialService", createBillMaterialService(id));
+
+            String[] bmsInfo = createBillMaterialService(id);
+            content.put("billMaterialService", bmsInfo[0]);
+            content.put("note", bmsInfo[1]);
             if (pd.getType().equals(ProjectTypeEnum.SERVICE.name())) {
                 content.put("noItems", "true");
             } else {

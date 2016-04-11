@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -18,26 +19,31 @@ import org.hibernate.HibernateException;
  * @author antonia
  */
 public class BillMaterialServiceDAO extends BillMaterialService {
-    
+
     private static final Logger logger = Logger.getLogger(BillMaterialServiceDAO.class.getName());
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     public BillMaterialServiceDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
     public BillMaterialService getById(Long id) {
-        Query query = null;
+        BillMaterialService value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findById").setParameter("id", id);
-        } catch (HibernateException e) {
+            if (id != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findById")
+                      .setParameter("id", id);
+
+                value = (query != null) ?
+                        (BillMaterialService) query.getSingleResult() :
+                        null;
+            }
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
-            BillMaterialService value = (query != null) ? (BillMaterialService) query.getSingleResult() : null;
-
             em.close();
 
             return value;
@@ -45,16 +51,21 @@ public class BillMaterialServiceDAO extends BillMaterialService {
     }
 
     public BillMaterialService getByProject(Long project) {
-        Query query = null;
+        BillMaterialService value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (project != null && project.compareTo(0l) >= 0) ? em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findByProject").setParameter("project", project) : null;
-        } catch (HibernateException e) {
+            if (project != null && project.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findByProject")
+                      .setParameter("project", project);
+
+                value = (query != null) ?
+                        (BillMaterialService) query.getSingleResult() :
+                        null;
+            }
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
-            BillMaterialService value = (query != null) ? (BillMaterialService) query.getSingleResult() : null;
-
             em.close();
 
             return value;

@@ -59,6 +59,7 @@ function saveItem(pdid, id) {
 
             $("#bill-material-service").html(content.billMaterialService);
             $("#bill-material-service-item").html(content.billMaterialServiceItems);
+            $("#note").val(content.note);
         },
         error: function (e) {
         }
@@ -334,6 +335,8 @@ function changeSubproject() {
                 $('#select-item').hide();
                 $('#select-bill-material-service-item').hide();
             }
+            
+            $("#note").val(content.note);
         },
         error: function (e) {
         }

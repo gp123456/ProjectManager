@@ -13,12 +13,15 @@ import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.RequestQuotationItem;
-import com.allone.projectmanager.enums.CurrencyEnum;
-import com.allone.projectmanager.enums.LocationEnum;
-import com.allone.projectmanager.model.ProjectModel;
+import com.allone.projectmanager.entities.Stock;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.model.RequestQuotationModel;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,46 +42,107 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @Autowired
     ProjectManagerService srvProjectManager;
 
-    private String[] getProjectBillInfo(Long pId) {
-        String[] result = {"", "", "", "", ""};
+    private String[] getProjectDetailBillMaterialServiceInfo(Long pId) {
+        String[] result = {"", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
-        BillMaterialService bms = null;
         Integer index = 1;
 
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
-                bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
-                result[0] += (!(index++).equals(pds.size())) ?
-                             "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
-                             "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
+                if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
+                    result[0] += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n";
 
-                if (bms != null) {
-                    List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
+                    if (index.equals(1)) {
+                        BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
 
-                    if (bmsis != null && !bmsis.isEmpty()) {
-                        for (BillMaterialServiceItem bmsi : bmsis) {
-                            setVirtualRequestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()),
-                                                           new RequestQuotationItem.Builder()
-                                                           .setItemBillMaterialService(bmsi.getId())
-                                                           .build());
+                        if (bms != null) {
+                            String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
+                            String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
+
+                            result[1] = "<tr>\n" +
+                                        "<td>" + name + "</td>\n" +
+                                        "<td>" + subproject + "</td>\n</tr>\n";
+                            List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
+
+                            if (bmsis != null && !bmsis.isEmpty()) {
+                                for (BillMaterialServiceItem bmsi : bmsis) {
+                                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                                    if (item != null) {
+                                        Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
+                                        String imno = item.getImno();
+                                        String stockName = (stock != null) ? stock.getLocation() : "";
+                                        String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
+
+                                        result[2] +=
+                                        "<tr>\n" +
+                                        "<td>" + imno + "</td>\n" +
+                                        "<td>" + stockName + "</td>\n" +
+                                        "<td>" + quantity + "</td>\n" +
+                                        "<td><input type='checkbox' id='" + bmsi.getBillMaterialService() + bmsi.getId() + "'></td>\n" +
+                                        "</tr>\n";
+                                    }
+                                }
+                            }
                         }
+                        index++;
                     }
                 }
-            }
-            if (bms != null) {
-                result[1] += "";
-                result[2] += CurrencyEnum.EUR.name();
-                if (!Strings.isNullOrEmpty(bms.getNote())) {
-                    result[3] += bms.getNote();
-                }
-                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()));
             }
         }
 
         return result;
     }
 
-    private String createRquestQuotationItem(ProjectModel pm) {
+    private String[] getBillMaterialServiceByProjectDetail(Long pdId) {
+        String[] result = {"", ""};
+        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+        Integer index = 1;
+
+        if (pd != null) {
+            if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
+                if (index.equals(1)) {
+                    BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
+
+                    if (bms != null) {
+                        String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
+                        String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
+
+                        result[0] = "<tr>\n" +
+                                    "<td>" + name + "</td>\n" +
+                                    "<td>" + subproject + "</td>\n</tr>\n";
+                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
+
+                        if (bmsis != null && !bmsis.isEmpty()) {
+                            for (BillMaterialServiceItem bmsi : bmsis) {
+                                Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                                if (item != null) {
+                                    Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
+                                    String imno = item.getImno();
+                                    String stockName = (stock != null) ? stock.getLocation() : "";
+                                    String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
+
+                                    result[1] +=
+                                    "<tr>\n" +
+                                    "<td>" + imno + "</td>\n" +
+                                    "<td>" + stockName + "</td>\n" +
+                                    "<td>" + quantity + "</td>\n" +
+                                    "<td><input type='checkbox' id='" + bmsi.getBillMaterialService() + bmsi.getId() + "'></td>\n" +
+                                    "</tr>\n";
+                                }
+                            }
+                        }
+                    }
+                    index++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private String createRquestQuotationItem(RequestQuotationModel pm) {
         String result = "";
 
         Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
@@ -87,7 +151,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             Integer count = 0;
 
             for (RequestQuotationItem rqi : rqis) {
-                BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getItemBillMaterialService());
+                BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getBillMaterialServiceItem());
 
                 if (bmsi != null) {
                     Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
@@ -115,26 +179,22 @@ public class RequestQuotationController extends RequestQuotationCommon {
     public String RequestQuotation(Project p, Model model) {
         this.setTitle("Projects - Request Quotation");
         this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/RequestQuotation.jsp");
+        this.setContent("../project/RequestQuotationSelectItem.jsp");
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
-        String[] pbInfo = getProjectBillInfo(p.getId());
-//        Map values = model.asMap();
-//        
-//        if (values != null && !values.isEmpty()) {
-//            values.clear();
-//        }
+        String[] pbInfo = getProjectDetailBillMaterialServiceInfo(p.getId());
+
         model.addAttribute("projectId", p.getId());
         model.addAttribute("projectReference", p.getReference());
         model.addAttribute("subproject", pbInfo[0]);
-        model.addAttribute("supplier", pbInfo[1]);
-        model.addAttribute("currency", pbInfo[2]);
-        model.addAttribute("location", createLocations());
-        model.addAttribute("noteBillMaterialService", pbInfo[3]);
-        model.addAttribute("itemBillMaterialService", pbInfo[4]);
-        model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getId() + "\")'>");
-        model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getId() + "\")'>");
-        model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>");
+        model.addAttribute("billMaterialService", pbInfo[1]);
+        model.addAttribute("billMaterialServiceItems", pbInfo[2]);
+//        model.addAttribute("location", createLocations());
+//        model.addAttribute("noteBillMaterialService", pbInfo[3]);
+//        model.addAttribute("itemBillMaterialService", pbInfo[4]);
+//        model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\"" + p.getId() + "\")'>");
+//        model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\"" + p.getId() + "\")'>");
+//        model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\"" + p.getId() + "\")'>");
 
         return "index";
     }
@@ -145,7 +205,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
         String response = "";
 
 //        if (pdId != null && location != null && !Strings.isNullOrEmpty(supplier)) {
-//            ProjectModel pbm = new ProjectModel(pdId, location);
+//            RequestQuotationModel pbm = new RequestQuotationModel(pdId, location);
 //            BillMaterialService vpb = getBillMaterialService(pbm);
 //
 //            if (vpb != null) {
@@ -155,5 +215,21 @@ public class RequestQuotationController extends RequestQuotationCommon {
 ////            response = createProjectBill(pbm);
 //        }
         return response;
+    }
+
+    @RequestMapping(value = "/request-quotation/change-subproject")
+    public @ResponseBody
+    String changeSubproject(Long pdId) {
+        if (pdId != null) {
+            Map<String, String> content = new HashMap<>();
+            String[] pbInfo = getBillMaterialServiceByProjectDetail(pdId);
+
+            content.put("billMaterialService", pbInfo[0]);
+            content.put("billMaterialServiceItems", pbInfo[1]);
+
+            return new Gson().toJson(content);
+        }
+
+        return "";
     }
 }

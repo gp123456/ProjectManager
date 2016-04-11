@@ -21,7 +21,7 @@
                 $("#item").html(content.items);
                 $("#supplier").html(content.suppliers);
                 $("#bill-material-service").html(content.billMaterialService);
-                $("#note").val(content.noteBillMaterialService);
+                $("#note").val(content.note);
                 $("#bill-material-service-item").html(content.billMaterialServiceItems);
                 $("#info-type").val(content.type);
                 $("#company").val(content.company);
