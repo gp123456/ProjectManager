@@ -23,7 +23,6 @@ import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.RequestQuotationModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +65,10 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     if (bmsis != null && !bmsis.isEmpty()) {
                         for (BillMaterialServiceItem bmsi : bmsis) {
-                            setVirtualRequestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()),
-                                                           new RequestQuotationItem.Builder()
-                                                           .setItemBillMaterialService(bmsi.getId())
-                                                           .build());
+//                            setVirtualRequestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()),
+//                                                           new RequestQuotationItem.Builder()
+//                                                           .setItemBillMaterialService(bmsi.getId())
+//                                                           .build());
                         }
                     }
                 }
@@ -80,40 +79,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 if (!Strings.isNullOrEmpty(bms.getNote())) {
                     result[3] += bms.getNote();
                 }
-                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()));
-            }
-        }
-
-        return result;
-    }
-
-    private String createRquestQuotationItem(ProjectModel pm) {
-        String result = "";
-
-        Collection<RequestQuotationItem> rqis = getRequestQuotationItems(pm);
-
-        if (rqis != null && !rqis.isEmpty()) {
-            Integer count = 0;
-
-            for (RequestQuotationItem rqi : rqis) {
-                BillMaterialServiceItem bmsi = srvProjectManager.getDaoProjectBillItem().getById(rqi.getItemBillMaterialService());
-
-                if (bmsi != null) {
-                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-
-                    result += "<tr>\n" +
-                              "<td>" + ++count + "</td>\n" +
-                              "<td>" + ((item != null) ? item.getImno() : "") + "</td>\n" +
-                              "<td>" + ((item != null) ? item.getDescription() : "") + "</td>\n" +
-                              "<td>" + bmsi.getQuantity() + "</td>\n" +
-                              "<td id='availability" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "<td id='>delivery-cost" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "<td id='>other-expenses" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "<td id='>unit-price" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "<td id='>discount" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "<td id='>total" + bmsi.getId() + "' style='background:#333;color:#E7E5DC'><div contenteditable></div>" + "</td>\n" +
-                              "</tr>\n";
-                }
+//                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()));
             }
         }
 
