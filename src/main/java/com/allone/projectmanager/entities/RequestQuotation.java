@@ -6,7 +6,6 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,40 +40,29 @@ public class RequestQuotation implements Serializable {
     @NotNull
     private Long billMaterialService;
 
-    @Column(name = "delivery")
+    @Column(name = "currency")
     @NotNull
-    private Integer delivery;
+    private Integer currency;
+    
+    @Column(name = "material_cost")
+    private Integer materialCost;
+    
+    @Column(name = "expenses_cost")
+    private Integer expensesCost;
 
-    @Column(name = "packing")
-    @NotNull
-    private Integer packing;
+    @Column(name = "grand_total")
+    private Integer grandTotal;
+    
+    @Column(name = "delivery_cost")
+    private Integer deliveryCost;
 
-    @Column(name = "payment")
-    @NotNull
-    private Integer payment;
-
-    @Column(name = "validity")
-    @NotNull
-    private Integer validity;
-
-    @Column(name = "discount")
-    @NotNull
-    private BigDecimal discount;
-
-    @Column(name = "payable")
-    @NotNull
-    private BigDecimal payable;
-
-    @Column(name = "charges")
-    @NotNull
-    private Integer charges;
-
-    @Column(name = "total")
-    @NotNull
-    private BigDecimal total;
-
-    @Column(name = "complete")
-    @NotNull
+    @Column(name = "other_expenses")
+    private Integer otherExpenses;
+    
+    @Column(name = "note")
+    private String note;
+    
+    @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
     private Boolean complete;
 
     public RequestQuotation() {
@@ -82,16 +70,14 @@ public class RequestQuotation implements Serializable {
 
     private RequestQuotation(RequestQuotation.Builder builder) {
         supplier = builder.supplier;
-        this.billMaterialService = builder.billMaterialService;
-        this.delivery = builder.delivery;
-        this.packing = builder.packing;
-        this.payment = builder.payment;
-        this.validity = builder.validity;
-        this.discount = builder.discount;
-        this.payable = builder.payable;
-        this.charges = builder.charges;
-        this.total = builder.total;
-        this.complete = builder.complete;
+        billMaterialService = builder.billMaterialService;
+        currency = builder.currency;
+        materialCost = builder.materialCost;
+        expensesCost = builder.expensesCost;
+        grandTotal = builder.grandTotal;
+        deliveryCost = builder.deliveryCost;
+        otherExpenses = builder.otherExpenses;
+        note = builder.note;
     }
 
     public Long getId() {
@@ -118,68 +104,60 @@ public class RequestQuotation implements Serializable {
         this.billMaterialService = billMaterialService;
     }
 
-    public Integer getDelivery() {
-        return delivery;
+    public Integer getCurrency() {
+        return currency;
     }
 
-    public void setDelivery(Integer delivery) {
-        this.delivery = delivery;
+    public void setCurrency(Integer currency) {
+        this.currency = currency;
     }
 
-    public Integer getPacking() {
-        return packing;
+    public Integer getMaterialCost() {
+        return materialCost;
     }
 
-    public void setPacking(Integer packing) {
-        this.packing = packing;
+    public void setMaterialCost(Integer materialCost) {
+        this.materialCost = materialCost;
     }
 
-    public Integer getPayment() {
-        return payment;
+    public Integer getExpensesCost() {
+        return expensesCost;
     }
 
-    public void setPayment(Integer payment) {
-        this.payment = payment;
+    public void setExpensesCost(Integer expensesCost) {
+        this.expensesCost = expensesCost;
     }
 
-    public Integer getValidity() {
-        return validity;
+    public Integer getGrandTotal() {
+        return grandTotal;
     }
 
-    public void setValidity(Integer validity) {
-        this.validity = validity;
+    public void setGrandTotal(Integer grandTotal) {
+        this.grandTotal = grandTotal;
     }
 
-    public BigDecimal getDiscount() {
-        return discount;
+    public Integer getDeliveryCost() {
+        return deliveryCost;
     }
 
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
+    public void setDeliveryCost(Integer deliveryCost) {
+        this.deliveryCost = deliveryCost;
     }
 
-    public BigDecimal getPayable() {
-        return payable;
+    public Integer getOtherExpenses() {
+        return otherExpenses;
     }
 
-    public void setPayable(BigDecimal payable) {
-        this.payable = payable;
+    public void setOtherExpenses(Integer otherExpenses) {
+        this.otherExpenses = otherExpenses;
     }
 
-    public Integer getCharges() {
-        return charges;
+    public String getNote() {
+        return note;
     }
 
-    public void setCharges(Integer charges) {
-        this.charges = charges;
-    }
-
-    public BigDecimal getTotal() {
-        return total;
-    }
-
-    public void setTotal(BigDecimal total) {
-        this.total = total;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public Boolean getComplete() {
@@ -218,27 +196,25 @@ public class RequestQuotation implements Serializable {
         return true;
     }
 
-    public class Builder {
+    public static class Builder {
 
         private String supplier;
 
         private Long billMaterialService;
 
-        private Integer delivery;
+        private Integer currency;
+        
+        private Integer materialCost;
+        
+        private Integer expensesCost;
+        
+        private Integer grandTotal;
+        
+        private Integer deliveryCost;
+        
+        private Integer otherExpenses;
 
-        private Integer packing;
-
-        private Integer payment;
-
-        private Integer validity;
-
-        private BigDecimal discount;
-
-        private BigDecimal payable;
-
-        private Integer charges;
-
-        private BigDecimal total;
+        private String note;
 
         private Boolean complete;
 
@@ -254,55 +230,49 @@ public class RequestQuotation implements Serializable {
             return this;
         }
 
-        public Builder setDelivery(Integer delivery) {
-            this.delivery = delivery;
+        public Builder setMaterialCost(Integer materiaCost) {
+            this.materialCost = materialCost;
+
+            return this;
+        }
+        
+        public Builder setCurrency(Integer currency) {
+            this.currency = currency;
+
+            return this;
+        }
+        
+        public Builder setExpensesCost(Integer expensesCost) {
+            this.expensesCost = expensesCost;
+
+            return this;
+        }
+        
+        public Builder setGrandTotal(Integer grandTotal) {
+            this.grandTotal = grandTotal;
+
+            return this;
+        }
+        
+        public Builder setDeliveryCost(Integer deliveryCost) {
+            this.deliveryCost = deliveryCost;
 
             return this;
         }
 
-        public Builder setPacking(Integer packing) {
-            this.packing = packing;
+        public Builder setOtherExpenses(Integer otherExpenses) {
+            this.otherExpenses = otherExpenses;
 
             return this;
         }
 
-        public Builder setPayment(Integer payment) {
-            this.payment = payment;
+        public Builder setNote(String note) {
+            this.note = note;
 
             return this;
         }
 
-        public Builder setValidity(Integer validity) {
-            this.validity = validity;
-
-            return this;
-        }
-
-        public Builder setDiscount(BigDecimal discount) {
-            this.discount = discount;
-
-            return this;
-        }
-
-        public Builder setPayable(BigDecimal payable) {
-            this.payable = payable;
-
-            return this;
-        }
-
-        public Builder setCharges(Integer charges) {
-            this.charges = charges;
-
-            return this;
-        }
-
-        public Builder setTotal(BigDecimal total) {
-            this.total = total;
-
-            return this;
-        }
-
-        public Builder setComplete(Boolean complete) {
+        public Builder setComplete(Boolean compelte) {
             this.complete = complete;
 
             return this;

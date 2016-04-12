@@ -45,8 +45,7 @@ function dlgRequestQuotation() {
         modal: true,
         width: 374,
         buttons: {
-            "submit": function () {
-                
+            "submit": function () {        
             }
         },
         show: {
@@ -72,6 +71,35 @@ function sendEmail(pId) {
 
 }
 
-function createRequetQuotation() {
+function handleClick(cb, bms, bmsi) {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&checked=" + cb.checked +
+            "&bms=" + bms +
+            "&bmsi=" + bmsi;
     
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/create",
+        data: data,
+        success: function (response) {
+            $("#bill-material-service-item").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function submitRequestQuotation() {
+    var data = "id=" + $("#project-id").val();
+    
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/submit",
+        data: data,
+        success: function (response) {
+            location.href = response;
+        },
+        error: function (e) {
+        }
+    });
 }

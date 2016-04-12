@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
 public class RequestQuotationCommon extends Common {
 
     private static final Logger logger = Logger.getLogger(RequestQuotationCommon.class.getName());
-    
+
     private final Map<RequestQuotationModel, RequestQuotation> mapRequestQuotation = new HashMap<>();
 
     private final Map<RequestQuotationModel, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
@@ -32,24 +33,59 @@ public class RequestQuotationCommon extends Common {
         return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(pm) : null;
     }
 
-    public void setVirtualRequestQuotationItem(RequestQuotationModel pm, RequestQuotationItem rqi) {
-        if (pm != null && rqi != null) {
-            Collection<RequestQuotationItem> items = getRequestQuotationItems(pm);
-
-            if (items != null && !items.isEmpty()) {
-                Map<Long, RequestQuotationItem> temp = new HashMap<>();
-
-                items.stream().
-                        forEach((item) -> {
-                            temp.put(item.getBillMaterialServiceItem(), item);
-                });
-
-                if (!temp.isEmpty() && temp.get(rqi.getBillMaterialServiceItem()) == null) {
-                    items.add(rqi);
-                }
-            } else {
-                mapRequestQuotationItems.put(pm, new ArrayList<>(Arrays.asList(rqi)));
+    public void setVirtualRequestQuotation(RequestQuotationModel rqm, RequestQuotation rq) {
+        if (rqm != null && rq != null &&
+            (mapRequestQuotation.get(rqm) == null)) {
+            mapRequestQuotation.put(rqm, rq);
+        }
+    }
+    
+    public void removeVirtualRequestQuotation(RequestQuotationModel rqm, RequestQuotation rq) {
+        if (rqm != null && rq != null &&
+            (mapRequestQuotation.get(rqm) != null)) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+            
+            if (items == null || items.isEmpty()) {
+                mapRequestQuotation.remove(rqm);
             }
         }
+    }
+
+    public void setVirtualRequestQuotationItem(RequestQuotationModel rqm, RequestQuotationItem rqi) {
+        if (rqm != null && rqi != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+
+            if (items != null && !items.isEmpty()) {
+                items.add(rqi);
+            } else {
+                mapRequestQuotationItems.put(rqm, new ArrayList<>(Arrays.asList(rqi)));
+            }
+        }
+    }
+    
+    public void removeVirtualRequestQuotationItem(RequestQuotationModel rqm, RequestQuotationItem rqi) {
+        if (rqm != null && rqi != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+
+            if (items != null && !items.isEmpty()) {
+                items.remove(rqi);
+            }
+        }
+    }
+
+    public Boolean findVirtualItem(RequestQuotationModel rqm, Long itemId) {
+        if (rqm != null && itemId != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+
+            if (items != null && !items.isEmpty()) {
+                for (RequestQuotationItem item : items) {
+                    if (item.getBillMaterialServiceItem().equals(itemId)) {
+                        return Boolean.TRUE;
+                    }
+                }
+            }
+        }
+
+        return Boolean.FALSE;
     }
 }

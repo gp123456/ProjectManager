@@ -6,6 +6,7 @@
 --%>
 <div class="formLayout">
     <h1>REQUEST FOR QUOTATION - SELECT ITEMS - REF:${projectReference}</h1>
+    <input type="hidden" id="project-id" value=${projectId} />
     <h2>Select Subproject</h2>
     <label class="custom-select">
         <select id="subproject" onchange="changeRequestQuotationSubproject()">${subproject}</select>
@@ -39,7 +40,6 @@
     </div>
     <br>
     <div>
-        <input type="button" value="Save" class="button" onclick="createRequetQuotation()">
-        <input type="button" value="Submit" class="button" onclick="getItems()">
+        <input type="button" value="Submit" class="button" onclick="submitRequestQuotation()">
     </div>
 </div>

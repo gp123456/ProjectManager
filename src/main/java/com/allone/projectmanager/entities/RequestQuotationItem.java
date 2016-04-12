@@ -42,30 +42,22 @@ public class RequestQuotationItem implements Serializable {
     @Column(name = "bill_material_service_item")
     @NotNull
     private Long billMaterialServiceItem;
-
-    @Column(name = "availability")
-    @NotNull
-    private Integer availability;
     
     @Column(name = "delivery_cost")
-    @NotNull
     private BigDecimal deliveryCost;
-    
-    @Column(name = "other_expenses")
-    @NotNull
-    private BigDecimal otherExpenses;
     
     @Column(name = "unit_price")
     @NotNull
-    private BigDecimal unitPrice;
-
+    private Integer unitPrice;
+    
     @Column(name = "discount")
-    @NotNull
     private BigDecimal discount;
-
+    
+    @Column(name = "availability")
+    private Integer availability;
+    
     @Column(name = "total")
-    @NotNull
-    private BigDecimal total;
+    private Integer total;
 
     public RequestQuotationItem() {
     }
@@ -73,11 +65,10 @@ public class RequestQuotationItem implements Serializable {
     private RequestQuotationItem(Builder builder) {
         requestQuotation = builder.requestQuotation;
         billMaterialServiceItem = builder.billMaterialServiceItem;
-        availability = builder.availability;
-        deliveryCost = builder.deliveryCost;
-        otherExpenses = builder.otherExpenses;
         unitPrice = builder.unitPrice;
+        availability = builder.availability;
         discount = builder.discount;
+        availability = builder.availability;
         total = builder.total;
     }
 
@@ -105,14 +96,6 @@ public class RequestQuotationItem implements Serializable {
         this.billMaterialServiceItem = billMaterialServiceItem;
     }
 
-    public Integer getAvailability() {
-        return availability;
-    }
-
-    public void setAvailability(Integer availability) {
-        this.availability = availability;
-    }
-
     public BigDecimal getDeliveryCost() {
         return deliveryCost;
     }
@@ -121,19 +104,11 @@ public class RequestQuotationItem implements Serializable {
         this.deliveryCost = deliveryCost;
     }
 
-    public BigDecimal getOtherExpenses() {
-        return otherExpenses;
-    }
-
-    public void setOtherExpenses(BigDecimal otherExpenses) {
-        this.otherExpenses = otherExpenses;
-    }
-
-    public BigDecimal getUnitPrice() {
+    public Integer getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
+    public void setUnitPrice(Integer unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -144,12 +119,21 @@ public class RequestQuotationItem implements Serializable {
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
-
-    public BigDecimal getTotal() {
-        return total;
+    
+    public Integer getAvailability() {
+        return availability;
     }
 
-    public void setTotal(BigDecimal total) {
+    public void setAvailability(Integer availability) {
+        this.availability = availability;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+    
+
+    public void setTotal(Integer total) {
         this.total = total;
     }
 
@@ -189,17 +173,13 @@ public class RequestQuotationItem implements Serializable {
         
         private Long billMaterialServiceItem;
 
+        private Integer unitPrice;
+        
+        private BigDecimal discount;
+        
         private Integer availability;
         
-        private BigDecimal deliveryCost;
-    
-        private BigDecimal otherExpenses;
-    
-        private BigDecimal unitPrice;
-    
-        private BigDecimal discount;
-
-        private BigDecimal total;
+        private Integer total;
 
         public Builder setRequestQuotation(Long requestQuotation) {
             this.requestQuotation = requestQuotation;
@@ -213,25 +193,7 @@ public class RequestQuotationItem implements Serializable {
             return this;
         }
         
-        public Builder setAvailability(Integer availability) {
-            this.availability = availability;
-
-            return this;
-        }
-        
-        public Builder setDeliveryCost(BigDecimal deliveryCost) {
-            this.deliveryCost = deliveryCost;
-
-            return this;
-        }
-        
-        public Builder setOtherExpenses(BigDecimal otherExpenses) {
-            this.otherExpenses = otherExpenses;
-
-            return this;
-        }
-        
-        public Builder setUnitPrice(BigDecimal unitPrice) {
+        public Builder setUnitPrice(Integer unitPrice) {
             this.unitPrice = unitPrice;
 
             return this;
@@ -242,8 +204,14 @@ public class RequestQuotationItem implements Serializable {
 
             return this;
         }
+        
+        public Builder setAvailability(Integer availability) {
+            this.availability = availability;
 
-        public Builder setTotal(BigDecimal total) {
+            return this;
+        }
+
+        public Builder setTotal(Integer total) {
             this.total = total;
 
             return this;

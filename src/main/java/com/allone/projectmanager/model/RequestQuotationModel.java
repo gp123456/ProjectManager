@@ -12,7 +12,7 @@ import com.google.common.base.Strings;
  * @author antonia
  */
 public class RequestQuotationModel {
-
+    
     private Long projectDetailId;
 
     private String supplier;
@@ -40,12 +40,12 @@ public class RequestQuotationModel {
 
     @Override
     public boolean equals(Object obj) {
-        RequestQuotationModel pbm = (RequestQuotationModel) obj;
+        RequestQuotationModel rqm = (RequestQuotationModel) obj;
         
-        if (!Strings.isNullOrEmpty(pbm.getSupplier())) {
-            return (projectDetailId.equals(pbm.getProjectDetailId())) ? supplier.equals(pbm.getSupplier()) : false;
+        if (!Strings.isNullOrEmpty(rqm.getSupplier())) {
+            return (projectDetailId.equals(rqm.getProjectDetailId())) ? supplier.equals(rqm.getSupplier()) : false;
         } else {
-            return (projectDetailId.equals(pbm.getProjectDetailId()));
+            return (projectDetailId.equals(rqm.getProjectDetailId()));
         }
     }
 
