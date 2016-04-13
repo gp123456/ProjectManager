@@ -6,8 +6,8 @@
 
 <script>
     $(function () {
-        var data = "id=" + $('#project-id').val();
-
+        var data = "pId=" + $('#project-id').val();
+        
         $.ajax({
             type: "POST",
             url: "/ProjectManager/project/request-quotation/content",
@@ -34,11 +34,11 @@
     <div style="overflow-y: scroll">
         <h2>Select Subproject</h2>
         <p>
-            <label class="custom-select">
-                <select id="subproject" onchange="changeSubproject()">${subproject}</select>
+            <label class="custom-select-large">
+                <select id="subproject" onchange="changeRQSubproject()">${subproject}</select>
             </label>
         </p>
-        <br><h3>Select Supplier</h3>
+        <br><h2>Select Supplier</h2>
         <p>
             <label class="custom-select">
                 <select id="supplier"></select>

@@ -6,14 +6,14 @@
 
 function changeRequestQuotationSubproject() {
     var data = "pdId=" + $("#subproject option:selected").val();
-    
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/change-subproject",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
-            
+
             $("#bill-material-service").html(content.billMaterialService);
             $("#bill-material-service-item").html(content.billMaterialServiceItems);
         },
@@ -22,17 +22,20 @@ function changeRequestQuotationSubproject() {
     });
 }
 
-function changeSupplier() {
+function changeRQSupplier() {
     var data = "pdId=" + $("#subproject option:selected").val() +
-            "&location=" + $("#location option:selected").val() +
             "&supplier=" + $("#supplier option:selected").val();
-    
+
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/request-quotation/supplier",
+        url: "/ProjectManager/project/request-quotation/change-subproject",
         data: data,
         success: function (response) {
-            $("#bill-material-service").html(response);
+            var content = JSON.parse(response);
+
+            $("#request-quotation").html(content.requestQuotation);
+            $("#request-quotation-items").html(content.itemRequestQuotation);
+            $("#note").val(content.note);
         },
         error: function (e) {
         }
@@ -45,7 +48,7 @@ function dlgRequestQuotation() {
         modal: true,
         width: 374,
         buttons: {
-            "submit": function () {        
+            "submit": function () {
             }
         },
         show: {
@@ -76,7 +79,7 @@ function handleClick(cb, bms, bmsi) {
             "&checked=" + cb.checked +
             "&bms=" + bms +
             "&bmsi=" + bmsi;
-    
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/create",
@@ -91,7 +94,7 @@ function handleClick(cb, bms, bmsi) {
 
 function submitRequestQuotation() {
     var data = "id=" + $("#project-id").val();
-    
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/submit",

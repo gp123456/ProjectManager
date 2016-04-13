@@ -17,12 +17,12 @@ import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
-import com.allone.projectmanager.enums.CurrencyEnum;
-import com.allone.projectmanager.enums.LocationEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.RequestQuotationModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,36 +50,69 @@ public class RequestQuotationController extends RequestQuotationCommon {
     private String[] getRequestQuotationInfo(Long pId) {
         String[] result = {"", "", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
-        BillMaterialService bms = null;
         Integer index = 1;
 
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
-                bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
-                result[0] += (!(index++).equals(pds.size())) ?
-                             "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
-                             "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
-
-                if (bms != null) {
-                    List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
-
-                    if (bmsis != null && !bmsis.isEmpty()) {
-                        for (BillMaterialServiceItem bmsi : bmsis) {
-//                            setVirtualRequestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()),
-//                                                           new RequestQuotationItem.Builder()
-//                                                           .setItemBillMaterialService(bmsi.getId())
-//                                                           .build());
-                        }
-                    }
+                if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
+                    result[0] += (!(index++).equals(pds.size())) ?
+                                 "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
+                                 "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
                 }
             }
-            if (bms != null) {
-                result[1] += "";
-                result[2] += CurrencyEnum.EUR.name();
-                if (!Strings.isNullOrEmpty(bms.getNote())) {
-                    result[3] += bms.getNote();
+
+            RequestQuotationModel rqm = new RequestQuotationModel(pds.get(0).getId(), "");
+            RequestQuotation rq = getRequestQuotation(rqm);
+
+            if (rq != null) {
+                Integer materialCost = (rq.getMaterialCost() instanceof Integer) ? rq.getMaterialCost() : 0;
+                Integer expensesCost = (rq.getExpensesCost() instanceof Integer) ? rq.getExpensesCost() : 0;
+                Integer grandTotal = (rq.getGrandTotal() instanceof Integer) ? rq.getGrandTotal() : 0;
+                Integer deliveryCost = (rq.getDeliveryCost() instanceof Integer) ? rq.getDeliveryCost() : 0;
+                Integer otherExpenses = (rq.getOtherExpenses() instanceof Integer) ? rq.getOtherExpenses() : 0;
+
+                result[1] = "<tr>\n" +
+                            "<td>" + materialCost + "</td>\n" +
+                            "<td>" + expensesCost + "</td>\n" +
+                            "<td>" + grandTotal + "</td>\n" +
+                            "<td id='delivery" + pds.get(0).getId() + rq.getSupplier() +
+                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + deliveryCost + "</td>\n" +
+                            "<td id='expenses" + pds.get(0).getId() + rq.getSupplier() +
+                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + otherExpenses + "</td>\n" +
+                            "</tr>\n";
+                result[2] = (rq != null) ? rq.getNote() : "";
+
+            }
+
+            Collection<RequestQuotationItem> rqis = getRequestQuotationItems(rqm);
+
+            index = 1;
+            if (rqis != null && !rqis.isEmpty()) {
+                for (RequestQuotationItem rqi : rqis) {
+                    BillMaterialServiceItem bmsi = (rqi.getBillMaterialServiceItem() != null) ? srvProjectManager.getDaoProjectBillItem().getById(rqi.getBillMaterialServiceItem()) : null;
+                    Item item = (bmsi != null) ? srvProjectManager.getDaoItem().getById(bmsi.getItem()) : null;
+                    String imno = (item != null) ? item.getImno() : "";
+                    String description = (item != null) ? item.getDescription() : "";
+                    Integer quantity = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
+                    Integer price = (rqi.getUnitPrice() != null) ? rqi.getUnitPrice() : 0;
+                    BigDecimal discount = (rqi.getDiscount() != null) ? rqi.getDiscount() : BigDecimal.ZERO;
+                    Integer availability = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
+                    Integer total = (rqi.getTotal() != null) ? rqi.getTotal() : 0;
+
+                    result[3] += "<tr>\n" +
+                                 "<td>" + index++ + "</td>\n" +
+                                 "<td>" + imno + "</td>\n" +
+                                 "<td>" + description + "</td>\n" +
+                                 "<td>" + quantity + "</td>\n" +
+                                 "<td id='price" + pds.get(0).getId() + rq.getSupplier() +
+                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + price + "</td>\n" +
+                                 "<td id='discount" + pds.get(0).getId() + rq.getSupplier() +
+                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + discount + "</td>\n" +
+                                 "<td id='availability" + pds.get(0).getId() + rq.getSupplier() +
+                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + availability + "</td>\n" +
+                                 "<td>" + total + "</td>\n" +
+                                 "</tr>";
                 }
-//                result[4] = createRquestQuotationItem(new ProjectModel(bms.getProject(), LocationEnum.GREECE.getId()));
             }
         }
 
@@ -242,18 +275,19 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/change-subproject")
     public @ResponseBody
-    String changeSubproject(Long pdId) {
+    String changeSubproject(Long pdId, String supplier) {
         if (pdId != null) {
             Map<String, String> content = new HashMap<>();
-            String[] pbInfo = getBillMaterialServiceByProjectDetail(new RequestQuotationModel(pdId, ""));
-
-            content.put("billMaterialService", pbInfo[0]);
-            content.put("billMaterialServiceItems", pbInfo[1]);
+            String[] rqInfo = getRequestQuotationInfo(pId);
+            
+            content.put("requestQuotation", rqInfo[1]);
+            content.put("note", rqInfo[2]);
+            content.put("itemRequestQuotation", rqInfo[3]);
 
             return new Gson().toJson(content);
+        } else {
+            return "";
         }
-
-        return "";
     }
 
     @RequestMapping(value = "/request-quotation/create")
@@ -311,13 +345,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
             content.put("subprojects", rqInfo[0]);
             if (suppliers != null && !suppliers.isEmpty()) {
                 for (Company supplier : suppliers) {
-                    response += "<option value='" + supplier.getName()+ "'>" + supplier.getName()+ "</option>\n";
+                    response += "<option value='" + supplier.getName() + "'>" + supplier.getName() + "</option>\n";
                 }
                 content.put("suppliers", response);
             }
             content.put("requestQuotation", rqInfo[1]);
-            content.put("itemRequestQuotation", rqInfo[2]);
-            content.put("note", rqInfo[3]);
+            content.put("note", rqInfo[2]);
+            content.put("itemRequestQuotation", rqInfo[3]);
 
             return new Gson().toJson(content);
         } else {

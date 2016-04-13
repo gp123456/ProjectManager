@@ -88,4 +88,8 @@ public class RequestQuotationCommon extends Common {
 
         return Boolean.FALSE;
     }
+    
+    public RequestQuotation getRequestQuotation(RequestQuotationModel rqm) {
+        return (mapRequestQuotation != null && !mapRequestQuotation.isEmpty() ) ? mapRequestQuotation.get(rqm) : null;
+    }
 }
