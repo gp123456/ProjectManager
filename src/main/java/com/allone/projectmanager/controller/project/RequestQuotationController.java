@@ -278,7 +278,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     String changeSubproject(Long pdId, String supplier) {
         if (pdId != null) {
             Map<String, String> content = new HashMap<>();
-            String[] rqInfo = getRequestQuotationInfo(pId);
+            String[] rqInfo = getRequestQuotationInfo(pdId);
             
             content.put("requestQuotation", rqInfo[1]);
             content.put("note", rqInfo[2]);

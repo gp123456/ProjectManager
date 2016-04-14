@@ -34,13 +34,13 @@
     <div style="overflow-y: scroll">
         <h2>Select Subproject</h2>
         <p>
-            <label class="custom-select-large">
+            <label class="custom-select">
                 <select id="subproject" onchange="changeRQSubproject()">${subproject}</select>
             </label>
         </p>
         <br><h2>Select Supplier</h2>
         <p>
-            <label class="custom-select">
+            <label class="custom-select-large">
                 <select id="supplier"></select>
             </label>
         </p>
