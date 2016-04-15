@@ -17,8 +17,8 @@ import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
+import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
-import com.allone.projectmanager.model.RequestQuotationModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
@@ -47,8 +47,75 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @Autowired
     ProjectManagerService srvProjectManager;
 
-    private String[] getRequestQuotationInfo(Long pId) {
-        String[] result = {"", "", "", "", ""};
+    private String[] getRequestQuotationInfo(Long bms) {
+        String[] result = {"", "", ""};
+        RequestQuotation rq = getRequestQuotation(bms);
+        Integer index = 1;
+
+        if (rq != null) {
+            Integer materialCost = (rq.getMaterialCost() instanceof Integer) ? rq.getMaterialCost() : 0;
+            Integer expensesCost = (rq.getExpensesCost() instanceof Integer) ? rq.getExpensesCost() : 0;
+            Integer grandTotal = (rq.getGrandTotal() instanceof Integer) ? rq.getGrandTotal() : 0;
+            Integer deliveryCost = (rq.getDeliveryCost() instanceof Integer) ? rq.getDeliveryCost() : 0;
+            Integer otherExpenses = (rq.getOtherExpenses() instanceof Integer) ? rq.getOtherExpenses() : 0;
+
+            result[0] = "<tr>\n" +
+                        "<td>" + materialCost + "</td>\n" +
+                        "<td>" + expensesCost + "</td>\n" +
+                        "<td>" + grandTotal + "</td>\n" +
+                        "<td id='delivery" + rq.getBillMaterialService() +
+                        "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n" +
+                        "<td id='expenses" + rq.getBillMaterialService() +
+                        "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n" +
+                        "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + ")'></td>\n" +
+                        "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + ")'></td>\n" +
+                        "</tr>\n";
+            result[1] = (rq != null) ? rq.getNote() : "";
+
+        }
+
+        Collection<RequestQuotationItem> rqis = getRequestQuotationItems(bms);
+
+        index = 1;
+        if (rqis != null && !rqis.isEmpty()) {
+            for (RequestQuotationItem rqi : rqis) {
+                BillMaterialServiceItem bmsi = (rqi.getBillMaterialServiceItem() != null) ? srvProjectManager.getDaoProjectBillItem().getById(rqi.getBillMaterialServiceItem()) : null;
+                Item item = (bmsi != null) ? srvProjectManager.getDaoItem().getById(bmsi.getItem()) : null;
+                String imno = (item != null) ? item.getImno() : "";
+                String description = (item != null) ? item.getDescription() : "";
+                Integer quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity() : 0;
+//                    Integer price = (rqi.getUnitPrice() != null) ? rqi.getUnitPrice() : 0;
+                BigDecimal discount = (rqi.getDiscount() != null) ? rqi.getDiscount() : BigDecimal.ZERO;
+                Integer availability = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
+                Integer total = (rqi.getTotal() != null) ? rqi.getTotal() : 0;
+
+                result[2] += "<tr>\n" +
+                             "<td>" + index++ + "</td>\n" +
+                             "<td>" + imno + "</td>\n" +
+                             "<td>" + description + "</td>\n" +
+                             "<td>" + quantity + "</td>\n" +
+                             //                                 "<td id='price" + pds.get(0).getId() + rq.getSupplier() +
+                             //                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + price + "</td>\n" +
+                             "<td id='discount" + rq.getBillMaterialService() +
+                             bmsi.getId() +
+                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n" +
+                             "<td id='availability" + rq.getBillMaterialService() +
+                             bmsi.getId() +
+                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!availability.equals(0)) ? availability : "") + "</td>\n" +
+                             "<td>" + total + "</td>\n" +
+                             "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + "," +
+                             bmsi.getId() + ")'></td>\n" +
+                             "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + "," +
+                             bmsi.getId() + ")'></td>\n" +
+                             "</tr>";
+            }
+        }
+
+        return result;
+    }
+
+    private String[] getRequestQuotationByProject(Long pId) {
+        String[] result = {"", "", "", "", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
         Integer index = 1;
 
@@ -61,65 +128,67 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 }
             }
 
-            RequestQuotationModel rqm = new RequestQuotationModel(pds.get(0).getId(), "");
-            RequestQuotation rq = getRequestQuotation(rqm);
+            BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pds.get(0).getId());
 
-            if (rq != null) {
-                Integer materialCost = (rq.getMaterialCost() instanceof Integer) ? rq.getMaterialCost() : 0;
-                Integer expensesCost = (rq.getExpensesCost() instanceof Integer) ? rq.getExpensesCost() : 0;
-                Integer grandTotal = (rq.getGrandTotal() instanceof Integer) ? rq.getGrandTotal() : 0;
-                Integer deliveryCost = (rq.getDeliveryCost() instanceof Integer) ? rq.getDeliveryCost() : 0;
-                Integer otherExpenses = (rq.getOtherExpenses() instanceof Integer) ? rq.getOtherExpenses() : 0;
+            if (bms != null) {
+                String[] info = getRequestQuotationInfo(bms.getId());
 
-                result[1] = "<tr>\n" +
-                            "<td>" + materialCost + "</td>\n" +
-                            "<td>" + expensesCost + "</td>\n" +
-                            "<td>" + grandTotal + "</td>\n" +
-                            "<td id='delivery" + pds.get(0).getId() + rq.getSupplier() +
-                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + deliveryCost + "</td>\n" +
-                            "<td id='expenses" + pds.get(0).getId() + rq.getSupplier() +
-                            "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + otherExpenses + "</td>\n" +
-                            "</tr>\n";
-                result[2] = (rq != null) ? rq.getNote() : "";
-
+                result[1] = info[0];
+                result[2] = info[1];
+                result[3] = info[2];
             }
 
-            Collection<RequestQuotationItem> rqis = getRequestQuotationItems(rqm);
-
-            index = 1;
-            if (rqis != null && !rqis.isEmpty()) {
-                for (RequestQuotationItem rqi : rqis) {
-                    BillMaterialServiceItem bmsi = (rqi.getBillMaterialServiceItem() != null) ? srvProjectManager.getDaoProjectBillItem().getById(rqi.getBillMaterialServiceItem()) : null;
-                    Item item = (bmsi != null) ? srvProjectManager.getDaoItem().getById(bmsi.getItem()) : null;
-                    String imno = (item != null) ? item.getImno() : "";
-                    String description = (item != null) ? item.getDescription() : "";
-                    Integer quantity = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
-                    Integer price = (rqi.getUnitPrice() != null) ? rqi.getUnitPrice() : 0;
-                    BigDecimal discount = (rqi.getDiscount() != null) ? rqi.getDiscount() : BigDecimal.ZERO;
-                    Integer availability = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
-                    Integer total = (rqi.getTotal() != null) ? rqi.getTotal() : 0;
-
-                    result[3] += "<tr>\n" +
-                                 "<td>" + index++ + "</td>\n" +
-                                 "<td>" + imno + "</td>\n" +
-                                 "<td>" + description + "</td>\n" +
-                                 "<td>" + quantity + "</td>\n" +
-                                 "<td id='price" + pds.get(0).getId() + rq.getSupplier() +
-                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + price + "</td>\n" +
-                                 "<td id='discount" + pds.get(0).getId() + rq.getSupplier() +
-                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + discount + "</td>\n" +
-                                 "<td id='availability" + pds.get(0).getId() + rq.getSupplier() +
-                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + availability + "</td>\n" +
-                                 "<td>" + total + "</td>\n" +
-                                 "</tr>";
-                }
+            for (CurrencyEnum currency : CurrencyEnum.values()) {
+                result[4] += "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>\n";
             }
         }
 
         return result;
     }
 
-    private String[] getProjectDetailBillMaterialServiceInfo(Long pId) {
+    private String[] getBillMaterialServiceInfo(Long pdId) {
+        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+        BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pdId);
+        String[] result = {"", "", ""};
+
+        if (bms != null) {
+            String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
+            String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
+
+            result[0] = "<tr>\n" +
+                        "<td>" + name + "</td>\n" +
+                        "<td>" + subproject + "</td>\n</tr>\n";
+            List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
+
+            if (bmsis != null && !bmsis.isEmpty()) {
+                for (BillMaterialServiceItem bmsi : bmsis) {
+                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                    if (item != null) {
+                        Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
+                        String imno = item.getImno();
+                        String stockName = (stock != null) ? stock.getLocation() : "";
+                        String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
+                        Boolean checked = findVirtualItem(bms.getId(), bmsi.getId());
+
+                        result[1] +=
+                        "<tr>\n" +
+                        "<td>" + imno + "</td>\n" +
+                        "<td>" + stockName + "</td>\n" +
+                        "<td>" + quantity + "</td>\n" +
+                        "<td><input type='checkbox' " + ((checked) ? "checked" : "") + " onclick='handleClick(this," +
+                        bmsi.getBillMaterialService() + "," +
+                        bmsi.getId() + ");'></td>\n" +
+                        "</tr>\n";
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    private String[] getBillMaterialServiceByProjectInfo(Long pId) {
         String[] result = {"", "", ""};
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
         Integer index = 1;
@@ -130,40 +199,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     result[0] += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n";
 
                     if (index.equals(1)) {
-                        BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
-
-                        if (bms != null) {
-                            String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
-                            String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
-
-                            result[1] = "<tr>\n" +
-                                        "<td>" + name + "</td>\n" +
-                                        "<td>" + subproject + "</td>\n</tr>\n";
-                            List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
-
-                            if (bmsis != null && !bmsis.isEmpty()) {
-                                for (BillMaterialServiceItem bmsi : bmsis) {
-                                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-
-                                    if (item != null) {
-                                        Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
-                                        String imno = item.getImno();
-                                        String stockName = (stock != null) ? stock.getLocation() : "";
-                                        String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
-                                        Boolean checked = findVirtualItem(new RequestQuotationModel(pd.getId(), ""), bmsi.getId());
-
-                                        result[2] +=
-                                        "<tr>\n" +
-                                        "<td>" + imno + "</td>\n" +
-                                        "<td>" + stockName + "</td>\n" +
-                                        "<td>" + quantity + "</td>\n" +
-                                        "<td><input type='checkbox' " + ((checked) ? "checked" : "") + " onclick='handleClick(this," + bmsi.getBillMaterialService() + "," + bmsi.getId() +
-                                        ");'></td>\n" +
-                                        "</tr>\n";
-                                    }
-                                }
-                            }
-                        }
+                        String[] info = getBillMaterialServiceInfo(pd.getId());
+                        
+                        result[1] = info[0];
+                        result[2] = info[1];
+                        
                         index++;
                     }
                 }
@@ -172,56 +212,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
         return result;
     }
-
-    private String[] getBillMaterialServiceByProjectDetail(RequestQuotationModel rqm) {
-        String[] result = {"", ""};
-        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(rqm.getProjectDetailId());
-        Integer index = 1;
-
-        if (pd != null) {
-            if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
-                if (index.equals(1)) {
-                    BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pd.getId());
-
-                    if (bms != null) {
-                        String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
-                        String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
-
-                        result[0] = "<tr>\n" +
-                                    "<td>" + name + "</td>\n" +
-                                    "<td>" + subproject + "</td>\n</tr>\n";
-                        List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
-
-                        if (bmsis != null && !bmsis.isEmpty()) {
-                            for (BillMaterialServiceItem bmsi : bmsis) {
-                                Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-
-                                if (item != null) {
-                                    Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
-                                    String imno = item.getImno();
-                                    String stockName = (stock != null) ? stock.getLocation() : "";
-                                    String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
-                                    Boolean checked = findVirtualItem(rqm, bmsi.getId());
-
-                                    result[1] +=
-                                    "<tr>\n" +
-                                    "<td>" + imno + "</td>\n" +
-                                    "<td>" + stockName + "</td>\n" +
-                                    "<td>" + quantity + "</td>\n" +
-                                    "<td><input type='checkbox' " + ((checked) ? "checked" : "") + " onclick='handleClick(this," + bmsi.getBillMaterialService() + "," + bmsi.getId() + ");'></td>\n" +
-                                    "</tr>\n";
-                                }
-                            }
-                        }
-                    }
-                    index++;
-                }
-            }
-        }
-
-        return result;
-    }
-
+    
     @RequestMapping(value = "/request-quotation")
     public String RequestQuotation(Project p, String mode, Model model) {
         if (mode.equals("RQ")) {
@@ -243,7 +234,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             this.setContent("../project/RequestQuotationSelectItem.jsp");
             setHeaderInfo(model);
             p = srvProjectManager.getDaoProject().getById(p.getId());
-            String[] pbInfo = getProjectDetailBillMaterialServiceInfo(p.getId());
+            String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
 
             model.addAttribute("projectId", p.getId());
             model.addAttribute("projectReference", p.getReference());
@@ -279,7 +270,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
         if (pdId != null) {
             Map<String, String> content = new HashMap<>();
             String[] rqInfo = getRequestQuotationInfo(pdId);
-            
+
             content.put("requestQuotation", rqInfo[1]);
             content.put("note", rqInfo[2]);
             content.put("itemRequestQuotation", rqInfo[3]);
@@ -290,36 +281,50 @@ public class RequestQuotationController extends RequestQuotationCommon {
         }
     }
 
+    @RequestMapping(value = "/request-quotation/change-subproject-bms")
+    public @ResponseBody
+    String changeVMSSubproject(Long pdId) {
+        if (pdId != null) {
+            Map<String, String> content = new HashMap<>();
+            String[] pbInfo = getBillMaterialServiceInfo(pdId);
+
+            content.put("billMaterialService", pbInfo[0]);
+            content.put("billMaterialServiceItems", pbInfo[1]);
+
+            return new Gson().toJson(content);
+        } else {
+            return "";
+        }
+    }
+
     @RequestMapping(value = "/request-quotation/create")
     public @ResponseBody
     String create(Long pdId, Boolean checked, Long bms, Long bmsi) {
-        if (pdId != null &&
-            checked != null &&
+        if (checked != null &&
             bms != null &&
             bmsi != null) {
-            RequestQuotationModel rqm = new RequestQuotationModel(pdId, "");
-
             if (checked.equals(Boolean.TRUE)) {
-                setVirtualRequestQuotation(rqm,
+                setVirtualRequestQuotation(srvProjectManager,
+                                           bms,
                                            new RequestQuotation.Builder()
                                            .setBillMaterialService(bms)
                                            .build());
-                setVirtualRequestQuotationItem(rqm,
+                setVirtualRequestQuotationItem(bms,
                                                new RequestQuotationItem.Builder()
                                                .setBillMaterialServiceItem(bmsi)
                                                .build());
             } else {
-                removeVirtualRequestQuotation(rqm,
+                removeVirtualRequestQuotation(bms,
                                               new RequestQuotation.Builder()
                                               .setBillMaterialService(bms)
                                               .build());
-                removeVirtualRequestQuotationItem(rqm,
+                removeVirtualRequestQuotationItem(bms,
                                                   new RequestQuotationItem.Builder()
                                                   .setBillMaterialServiceItem(bmsi)
                                                   .build());
             }
 
-            String[] pbInfo = getBillMaterialServiceByProjectDetail(rqm);
+            String[] pbInfo = getBillMaterialServiceInfo(pdId);
 
             return pbInfo[1];
         }
@@ -338,7 +343,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     String content(Long pId) {
         if (pId != null) {
             Map<String, String> content = new HashMap<>();
-            String[] rqInfo = getRequestQuotationInfo(pId);
+            String[] rqInfo = getRequestQuotationByProject(pId);
             List<Company> suppliers = srvProjectManager.getDaoCompany().getAll(CompanyTypeEnum.SUPPLIER.name());
             String response = "";
 
@@ -352,6 +357,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             content.put("requestQuotation", rqInfo[1]);
             content.put("note", rqInfo[2]);
             content.put("itemRequestQuotation", rqInfo[3]);
+            content.put("currency", rqInfo[4]);
 
             return new Gson().toJson(content);
         } else {

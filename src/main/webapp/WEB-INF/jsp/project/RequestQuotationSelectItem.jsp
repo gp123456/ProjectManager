@@ -9,7 +9,7 @@
     <input type="hidden" id="project-id" value=${projectId} />
     <h2>Select Subproject</h2>
     <label class="custom-select">
-        <select id="subproject" onchange="changeRequestQuotationSubproject()">${subproject}</select>
+        <select id="subproject" onchange="changeBMSSubproject()">${subproject}</select>
     </label>
     <br>
     <h2>Bill of Material Summary</h2>

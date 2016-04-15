@@ -19,6 +19,7 @@
                 $("#supplier").html(content.suppliers);
                 $("#request-quotation").html(content.requestQuotation);
                 $("#request-quotation-items").html(content.itemRequestQuotation);
+                $("#currency").html(content.currency);
                 $("#note").val(content.note);
             },
             error: function (xhr, status, error) {
@@ -35,13 +36,19 @@
         <h2>Select Subproject</h2>
         <p>
             <label class="custom-select">
-                <select id="subproject" onchange="changeRQSubproject()">${subproject}</select>
+                <select id="subproject" onchange="changeRQSubproject()">}</select>
             </label>
         </p>
         <br><h2>Select Supplier</h2>
         <p>
             <label class="custom-select-large">
                 <select id="supplier"></select>
+            </label>
+        </p>
+        <br><h2>Select Unit Price</h2>
+        <p>
+            <label class="custom-select">
+                <select id="currency"></select>
             </label>
         </p>
     </div>
@@ -56,6 +63,8 @@
                     <th>Grand Total</th>
                     <th>Delivery Cost*</th>
                     <th>Other Expenses*</th>
+                    <th>Edit</th>
+                    <th>Save</th>
                 </tr>
             </thead>
             <tbody id="request-quotation"></tbody>
@@ -70,10 +79,11 @@
                     <th>Code</th>
                     <th>Description</th>
                     <th>Quantity</th>
-                    <th>Unit Price*</th>
                     <th>Discount(%)*</th>
                     <th>Availability*</th>
                     <th>Total</th>
+                    <th>Edit</th>
+                    <th>Save</th>
                 </tr>
             </thead>
             <tbody id="request-quotation-items">${itemRequestQuotation}</tbody>

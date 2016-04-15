@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-function changeRequestQuotationSubproject() {
+function changeBMSSubproject() {
     var data = "pdId=" + $("#subproject option:selected").val();
 
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/request-quotation/change-subproject",
+        url: "/ProjectManager/project/request-quotation/change-subproject-bms",
         data: data,
-        success: function (response) {
+        success: function (response) {            
             var content = JSON.parse(response);
 
             $("#bill-material-service").html(content.billMaterialService);

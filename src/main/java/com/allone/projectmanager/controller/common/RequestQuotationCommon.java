@@ -5,9 +5,10 @@
  */
 package com.allone.projectmanager.controller.common;
 
+import com.allone.projectmanager.ProjectManagerService;
+import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
-import com.allone.projectmanager.model.RequestQuotationModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,47 +26,62 @@ public class RequestQuotationCommon extends Common {
 
     private static final Logger logger = Logger.getLogger(RequestQuotationCommon.class.getName());
 
-    private final Map<RequestQuotationModel, RequestQuotation> mapRequestQuotation = new HashMap<>();
+    private final Map<Long, RequestQuotation> mapRequestQuotation = new HashMap<>();
 
-    private final Map<RequestQuotationModel, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
+    private final Map<Long, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
 
-    public Collection<RequestQuotationItem> getRequestQuotationItems(RequestQuotationModel pm) {
-        return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(pm) : null;
+    public Collection<RequestQuotationItem> getRequestQuotationItems(Long bms) {
+        return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(bms) : null;
     }
 
-    public void setVirtualRequestQuotation(RequestQuotationModel rqm, RequestQuotation rq) {
-        if (rqm != null && rq != null &&
-            (mapRequestQuotation.get(rqm) == null)) {
-            mapRequestQuotation.put(rqm, rq);
+    public void setVirtualRequestQuotation(ProjectManagerService srvProjectManager, Long bmsId, RequestQuotation rq) {
+        logger.log(Level.INFO, "setVirtualRequestQuotation-start:{0}", bmsId);
+        
+        if (bmsId != null &&
+            rq != null &&
+            (mapRequestQuotation.get(bmsId) == null)) {
+            BillMaterialService bms = srvProjectManager.getDaoProjectBill().getById(bmsId);
+            
+            rq.setNote(bms.getNote());
+            mapRequestQuotation.put(bmsId, rq);
         }
+        
+        logger.log(Level.INFO, "setVirtualRequestQuotation-end:{0}", mapRequestQuotation.size());
     }
     
-    public void removeVirtualRequestQuotation(RequestQuotationModel rqm, RequestQuotation rq) {
-        if (rqm != null && rq != null &&
-            (mapRequestQuotation.get(rqm) != null)) {
-            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+    public void removeVirtualRequestQuotation(Long bms, RequestQuotation rq) {
+        if (bms != null &&
+            rq != null &&
+            (mapRequestQuotation.get(bms) != null)) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
             
             if (items == null || items.isEmpty()) {
-                mapRequestQuotation.remove(rqm);
+                mapRequestQuotation.remove(bms);
             }
         }
     }
 
-    public void setVirtualRequestQuotationItem(RequestQuotationModel rqm, RequestQuotationItem rqi) {
-        if (rqm != null && rqi != null) {
-            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+    public void setVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
+        logger.log(Level.INFO, "setVirtualRequestQuotationItem-start:{0}", bms);
+        
+        if (bms != null &&
+            rqi != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
                 items.add(rqi);
             } else {
-                mapRequestQuotationItems.put(rqm, new ArrayList<>(Arrays.asList(rqi)));
+                mapRequestQuotationItems.put(bms, new ArrayList<>(Arrays.asList(rqi)));
             }
         }
+        
+        logger.log(Level.INFO, "setVirtualRequestQuotationItem-end:{0}", mapRequestQuotationItems.size());
     }
     
-    public void removeVirtualRequestQuotationItem(RequestQuotationModel rqm, RequestQuotationItem rqi) {
-        if (rqm != null && rqi != null) {
-            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+    public void removeVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
+        if (bms != null &&
+            rqi != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
                 items.remove(rqi);
@@ -73,9 +89,10 @@ public class RequestQuotationCommon extends Common {
         }
     }
 
-    public Boolean findVirtualItem(RequestQuotationModel rqm, Long itemId) {
-        if (rqm != null && itemId != null) {
-            List<RequestQuotationItem> items = mapRequestQuotationItems.get(rqm);
+    public Boolean findVirtualItem(Long bms, Long itemId) {
+        if (bms != null &&
+            itemId != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
                 for (RequestQuotationItem item : items) {
@@ -89,7 +106,7 @@ public class RequestQuotationCommon extends Common {
         return Boolean.FALSE;
     }
     
-    public RequestQuotation getRequestQuotation(RequestQuotationModel rqm) {
-        return (mapRequestQuotation != null && !mapRequestQuotation.isEmpty() ) ? mapRequestQuotation.get(rqm) : null;
+    public RequestQuotation getRequestQuotation(Long bms) {
+        return (mapRequestQuotation != null && !mapRequestQuotation.isEmpty() ) ? mapRequestQuotation.get(bms) : null;
     }
 }
