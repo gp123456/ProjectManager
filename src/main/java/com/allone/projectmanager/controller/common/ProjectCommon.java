@@ -490,8 +490,8 @@ public class ProjectCommon extends Common {
             BillMaterialServiceItem removeItem = map.remove(itemId);
 
             if (removeItem != null) {
-                removeItem = srvProjectManager.getDaoProjectBillItem().getById(removeItem.getId());
-                srvProjectManager.getDaoProjectBillItem().delete(removeItem);
+                removeItem = srvProjectManager.getDaoBillMaterialServiceItem().getById(removeItem.getId());
+                srvProjectManager.getDaoBillMaterialServiceItem().delete(removeItem);
             }
             mapBillMaterialServiceItem.replace(pd, new ArrayList<>(map.values()));
         }

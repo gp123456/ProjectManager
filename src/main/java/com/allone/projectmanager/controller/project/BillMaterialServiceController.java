@@ -122,12 +122,12 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     private void pushBillMaterialService(Long pdId) {
-        BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pdId);
+        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
         if (bms != null) {
             clearVirtualBillMaterialService(pdId);
 
-            List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoProjectBillItem().getByBillMaterialService(bms.getId());
+            List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
 
             bms.setClassSave("button alarm");
             setVirtualBillMaterialService(bms);
@@ -317,11 +317,11 @@ public class BillMaterialServiceController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
 
-            BillMaterialService bms = srvProjectManager.getDaoProjectBill().getByProject(pdId);
+            BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
             if (bms != null) {
-                srvProjectManager.getDaoProjectBill().delete(bms);
-                srvProjectManager.getDaoProjectBillItem().delete(bms.getId());
+                srvProjectManager.getDaoBillMaterialService().delete(bms);
+                srvProjectManager.getDaoBillMaterialServiceItem().delete(bms.getId());
                 srvProjectManager.getDaoProjectDetail().delete(pd);
 
                 List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
@@ -388,20 +388,20 @@ public class BillMaterialServiceController extends ProjectCommon {
                     _bms.setNote(bms.getNote());
                     _bms.setComplete(Boolean.TRUE);
                     if (_bms.getId() == null) {
-                        bms = srvProjectManager.getDaoProjectBill().add(_bms);
+                        bms = srvProjectManager.getDaoBillMaterialService().add(_bms);
                         setVirtualBillMaterialServiceItemBillId(pd.getId(), bms.getId());
-                        srvProjectManager.getDaoProjectBillItem().add(getBillMaterialServiceItems(pd.getId()));
+                        srvProjectManager.getDaoBillMaterialServiceItem().add(getBillMaterialServiceItems(pd.getId()));
                     } else {
-                        srvProjectManager.getDaoProjectBill().edit(_bms);
+                        srvProjectManager.getDaoBillMaterialService().edit(_bms);
                         setVirtualBillMaterialServiceItemBillId(pd.getId(), _bms.getId());
                         Collection<BillMaterialServiceItem> bmsis = getBillMaterialServiceItems(pd.getId());
 
                         if (bmsis != null && !bmsis.isEmpty()) {
                             for (BillMaterialServiceItem bmsi : bmsis) {
                                 if (bmsi.getId() == null) {
-                                    srvProjectManager.getDaoProjectBillItem().add(bmsi);
+                                    srvProjectManager.getDaoBillMaterialServiceItem().add(bmsi);
                                 } else {
-                                    srvProjectManager.getDaoProjectBillItem().edit(bmsi);
+                                    srvProjectManager.getDaoBillMaterialServiceItem().edit(bmsi);
                                 }
                             }
                         }

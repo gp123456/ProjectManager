@@ -5,10 +5,12 @@
  */
 package com.allone.projectmanager.dao;
 
-import com.allone.projectmanager.entities.RequestQuotationItem;
-import java.util.List;
+import com.allone.projectmanager.entities.RequestQuotation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -16,55 +18,60 @@ import org.hibernate.HibernateException;
  *
  * @author antonia
  */
-public class ProjectRequestQuotationItemDAO {
+public class RequestQuotationDAO {
+
+    private static final Logger logger = Logger.getLogger(RequestQuotationDAO.class.getName());
 
     private EntityManagerFactory emf;
 
-    public ProjectRequestQuotationItemDAO(EntityManagerFactory emf) {
+    public RequestQuotationDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
-    public RequestQuotationItem getById(Long id) {
-        Query query = null;
+    public RequestQuotation getById(Long id) {
+        RequestQuotation value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectRequestQuotationItem.findById").
-            setParameter("id",
-                         id);
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            RequestQuotationItem values = (query != null) ?
-                                         (RequestQuotationItem) query.getSingleResult() : null;
+            if (id != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findById").
+                      setParameter("id", id);
 
+                value = (query != null) ?
+                         (RequestQuotation) query.getSingleResult() :
+                         null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
             em.close();
 
-            return values;
+            return value;
         }
     }
 
-    public List getByProjectRequestQuotation(Long projectRequestQuotation) {
-        Query query = null;
+    public RequestQuotation getByBillMaterialService(Long bms) {
+        RequestQuotation value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = (projectRequestQuotation != null && projectRequestQuotation.compareTo(0l) >= 0) ?
-                    em.createNamedQuery(
-                            "com.allone.projectmanager.entities.ProjectRequestQuotationItem.findByProjectRequestQuotation").
-                    setParameter("projectRequestQuotation", projectRequestQuotation) : null;
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            if (bms != null) {
+                Query query = (bms != null && bms.compareTo(0l) >= 0) ? em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService").
+                              setParameter("billMaterialService", bms) : null;
+                value = (query != null) ?
+                         (RequestQuotation) query.getSingleResult() :
+                         null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
-            List values = query.getResultList();
-
             em.close();
 
-            return values;
+            return value;
         }
     }
 
-    public RequestQuotationItem add(RequestQuotationItem ms) {
+    public RequestQuotation add(RequestQuotation ms) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -82,7 +89,7 @@ public class ProjectRequestQuotationItemDAO {
         }
     }
 
-    public void edit(RequestQuotationItem ms) {
+    public void edit(RequestQuotation ms) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -98,7 +105,7 @@ public class ProjectRequestQuotationItemDAO {
         }
     }
 
-    public void delete(RequestQuotationItem ms) {
+    public void delete(RequestQuotation ms) {
         EntityManager em = emf.createEntityManager();
 
         try {

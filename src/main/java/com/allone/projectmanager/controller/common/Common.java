@@ -18,10 +18,25 @@ import com.allone.projectmanager.model.SearchCriteria;
 import com.allone.projectmanager.model.SearchInfo;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import org.springframework.ui.Model;
 
 /**
@@ -53,8 +68,8 @@ public class Common {
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream().map((si) -> "<option value=\"" +
-             si.getId() + "\">" +
-             si.getName() + "</option>").
+                                                    si.getId() + "\">" +
+                                                    si.getName() + "</option>").
             reduce(response, String::concat);
             finalResponse += response;
         }
@@ -65,8 +80,8 @@ public class Common {
     public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
         String response = (Strings.isNullOrEmpty(id)) ?
-                "<option value='-1' selected='selected'>Select Vessel</option>" :
-                "<option value='-1' >Select</option>";
+                          "<option value='-1' selected='selected'>Select Vessel</option>" :
+                          "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
@@ -85,15 +100,15 @@ public class Common {
     public String createSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
         List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager, type);
         String response = (Strings.isNullOrEmpty(name)) ?
-                "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
-                "<option value='none'>Select</option>";
+                          "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
+                          "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(name)) {
                     if (si.getId().equals(name)) {
                         response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() +
-                         "</option>";
+                                    "</option>";
                     }
                 }
                 response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
@@ -121,7 +136,7 @@ public class Common {
     public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
         String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>" :
-                "<option value='-1' >Select</option>";
+                          "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Contact c : info) {
@@ -339,8 +354,8 @@ public class Common {
 
         for (LocationEnum location : LocationEnum.values()) {
             response += (location.equals(LocationEnum.GREECE)) ?
-             "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
-             "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
+                        "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
+                        "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
         }
 
         return response;
@@ -351,10 +366,66 @@ public class Common {
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
             response += (currency.equals(selected)) ?
-             "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
-             "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
+                        "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
+                        "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }
 
         return response;
+    }
+
+    public void sendMail(String mailServer, String from, String to, String cc, String subject, String messageBody) throws AddressException, MessagingException {
+        MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+        mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
+        mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
+        mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
+        mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+        mc.addMailcap("message/rfc822;; x-java-content-handler=com.sun.mail.handlers.message_rfc822");
+        CommandMap.setDefaultCommandMap(mc);
+
+        // Setup mail server
+        Properties props = System.getProperties();
+        props.put("mail.smtp.host", mailServer);
+        //props.put("mail.smtp.host", "smtp.gmail.com");
+        props.setProperty("mail.smtp.auth", "true");
+            //props.setProperty("mail.smtp.port", "" + 25);
+        //props.setProperty("mail.smtp.starttls.enable", "true");
+        // Get a mail session
+        //Session session = Session.getInstance(props, null);
+
+        Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("info@wcs.com.gr", "n3wp@ssword");
+            }
+        });
+
+        Message message = new MimeMessage(session);
+        // Define a new mail message
+        message.setFrom(new InternetAddress(from));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        if (!Strings.isNullOrEmpty(cc)) {
+            message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
+        }
+        message.setSubject(subject);
+        // Create a message part to represent the body text
+        logger.log(Level.INFO, "Create a message part to represent the body text");
+        BodyPart messageBodyPart = new MimeBodyPart();
+        messageBodyPart.setText(messageBody);
+        Multipart multipart = new MimeMultipart();
+        //add the message body to the mime message
+        multipart.addBodyPart(messageBodyPart);
+        // Put all message parts in the message
+        message.setContent(multipart);
+        message.saveChanges();
+        // -- Send the message --
+        logger.log(Level.INFO, "Send From:{0}", from);
+        logger.log(Level.INFO, "Send To:{0}", to);
+        logger.log(Level.INFO, "Send CC:{0}", cc);
+        // Send the message
+        Transport transport = session.getTransport("smtp");
+        //transport.connect(mailServer, "technical@marpo.gr", "ma87#37d");
+        transport.connect(mailServer, "info@wcs.com.gr", "n3wp@ssword");
+        Transport.send(message);
+        transport.close();
     }
 }

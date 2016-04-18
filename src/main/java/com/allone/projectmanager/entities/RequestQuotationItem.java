@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,6 +26,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "request_quotation_item")
 @XmlRootElement
+@NamedQueries(
+        {@NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findById", query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.id = :id"),
+         @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findByRequestQuotation", query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.requestQuotation = :requestQuotation")})
 public class RequestQuotationItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,24 +43,23 @@ public class RequestQuotationItem implements Serializable {
     @Column(name = "request_quotation")
     @NotNull
     private Long requestQuotation;
-    
+
     @Column(name = "bill_material_service_item")
     @NotNull
     private Long billMaterialServiceItem;
-    
+
     @Column(name = "delivery_cost")
     private BigDecimal deliveryCost;
-    
+
     @Column(name = "unit_price")
-    @NotNull
     private Integer unitPrice;
-    
+
     @Column(name = "discount")
     private BigDecimal discount;
-    
+
     @Column(name = "availability")
     private Integer availability;
-    
+
     @Column(name = "total")
     private Integer total;
 
@@ -119,7 +123,7 @@ public class RequestQuotationItem implements Serializable {
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
-    
+
     public Integer getAvailability() {
         return availability;
     }
@@ -131,7 +135,6 @@ public class RequestQuotationItem implements Serializable {
     public Integer getTotal() {
         return total;
     }
-    
 
     public void setTotal(Integer total) {
         this.total = total;
@@ -170,15 +173,15 @@ public class RequestQuotationItem implements Serializable {
     public static class Builder {
 
         private Long requestQuotation;
-        
+
         private Long billMaterialServiceItem;
 
         private Integer unitPrice;
-        
+
         private BigDecimal discount;
-        
+
         private Integer availability;
-        
+
         private Integer total;
 
         public Builder setRequestQuotation(Long requestQuotation) {
@@ -186,13 +189,13 @@ public class RequestQuotationItem implements Serializable {
 
             return this;
         }
-        
+
         public Builder setBillMaterialServiceItem(Long billMaterialServiceItem) {
             this.billMaterialServiceItem = billMaterialServiceItem;
 
             return this;
         }
-        
+
         public Builder setUnitPrice(Integer unitPrice) {
             this.unitPrice = unitPrice;
 
@@ -204,7 +207,7 @@ public class RequestQuotationItem implements Serializable {
 
             return this;
         }
-        
+
         public Builder setAvailability(Integer availability) {
             this.availability = availability;
 
