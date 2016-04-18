@@ -11,31 +11,11 @@ function changeBMSSubproject() {
         type: "POST",
         url: "/ProjectManager/project/request-quotation/change-subproject-bms",
         data: data,
-        success: function (response) {            
+        success: function (response) {
             var content = JSON.parse(response);
 
             $("#bill-material-service").html(content.billMaterialService);
             $("#bill-material-service-item").html(content.billMaterialServiceItems);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function changeRQSupplier() {
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&supplier=" + $("#supplier option:selected").val();
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/request-quotation/change-subproject",
-        data: data,
-        success: function (response) {
-            var content = JSON.parse(response);
-
-            $("#request-quotation").html(content.requestQuotation);
-            $("#request-quotation-items").html(content.itemRequestQuotation);
-            $("#note").val(content.note);
         },
         error: function (e) {
         }
@@ -62,16 +42,44 @@ function dlgRequestQuotation() {
     });
 }
 
-function savePDF(pId) {
+function savePDF() {
 
 }
 
-function saveXLS(pId) {
+function saveXLS() {
 
 }
 
-function sendEmail(pId) {
+function sendEmail() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&supplierName=" + $("#supplier option:selected").val() +
+            "&note=" + $("#note").val();
 
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/send-email",
+        data: data,
+        success: function () {
+            location.reload();
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function cancel() {
+    var data = "pdId=" + $("#subproject option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/cancel",
+        data: data,
+        success: function () {
+            location.reload();
+        },
+        error: function (e) {
+        }
+    });
 }
 
 function handleClick(cb, bms, bmsi) {
@@ -98,6 +106,41 @@ function submitRequestQuotation() {
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/submit",
+        data: data,
+        success: function (response) {
+            location.href = response;
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function changeSubproject() {
+    var data = "pdId=" + $("#subproject option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/change-subproject",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#request-quotation").html(content.requestQuotation);
+            $("#request-quotation-items").html(content.itemRequestQuotation);
+            $("#note").val(content.note);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function selectBMSI() {
+    var data = "pId=" + $("#project-id").val() +
+            "&pdId=" + $("#subproject option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/select-bmsi",
         data: data,
         success: function (response) {
             location.href = response;
