@@ -71,7 +71,7 @@
                 <tr>
                     <td>
                         <label class="custom-select-large">
-                            <select id="subproject" onchange="changeSubproject()"></select>
+                            <select id="subproject" onchange="changeSubproject1()"></select>
                         </label>
                     </td>
                     <td>

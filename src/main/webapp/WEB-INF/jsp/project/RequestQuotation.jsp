@@ -88,6 +88,7 @@
                     <th>Code</th>
                     <th>Description</th>
                     <th>Quantity</th>
+                    <th>Unit Price*</th>
                     <th>Discount(%)*</th>
                     <th>Availability*</th>
                     <th>Total</th>

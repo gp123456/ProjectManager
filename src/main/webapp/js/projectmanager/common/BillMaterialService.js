@@ -311,7 +311,7 @@ function saveSubProject() {
     $("#new-subproject").dialog("close");
 }
 
-function changeSubproject() {
+function changeSubproject1() {
     var data = "id=" + $("#subproject option:selected").val();
 
     $.ajax({

@@ -60,17 +60,17 @@ public class RequestQuotationController extends RequestQuotationCommon {
             Integer deliveryCost = (rq.getDeliveryCost() instanceof Integer) ? rq.getDeliveryCost() : 0;
             Integer otherExpenses = (rq.getOtherExpenses() instanceof Integer) ? rq.getOtherExpenses() : 0;
 
-            result[0] = "<tr>\n" +
-                        "<td>" + materialCost + "</td>\n" +
-                        "<td>" + expensesCost + "</td>\n" +
-                        "<td>" + grandTotal + "</td>\n" +
-                        "<td id='delivery" + rq.getBillMaterialService() +
-                        "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n" +
-                        "<td id='expenses" + rq.getBillMaterialService() +
-                        "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n" +
-                        "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + ")'></td>\n" +
-                        "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + ")'></td>\n" +
-                        "</tr>\n";
+            result[0] = "<tr>\n"
+                    + "<td>" + materialCost + "</td>\n"
+                    + "<td>" + expensesCost + "</td>\n"
+                    + "<td>" + grandTotal + "</td>\n"
+                    + "<td id='delivery" + rq.getBillMaterialService()
+                    + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n"
+                    + "<td id='expenses" + rq.getBillMaterialService()
+                    + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n"
+                    + "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + ")'></td>\n"
+                    + "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + ")'></td>\n"
+                    + "</tr>\n";
             result[1] = (rq != null) ? rq.getNote() : "";
 
         }
@@ -90,25 +90,26 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 Integer availability = (rqi.getAvailability() != null) ? rqi.getAvailability() : 0;
                 Integer total = (rqi.getTotal() != null) ? rqi.getTotal() : 0;
 
-                result[2] += "<tr>\n" +
-                             "<td>" + index++ + "</td>\n" +
-                             "<td>" + imno + "</td>\n" +
-                             "<td>" + description + "</td>\n" +
-                             "<td>" + quantity + "</td>\n" +
-                             //                                 "<td id='price" + pds.get(0).getId() + rq.getSupplier() +
-                             //                                 "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + price + "</td>\n" +
-                             "<td id='discount" + rq.getBillMaterialService() +
-                             bmsi.getId() +
-                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n" +
-                             "<td id='availability" + rq.getBillMaterialService() +
-                             bmsi.getId() +
-                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!availability.equals(0)) ? availability : "") + "</td>\n" +
-                             "<td>" + total + "</td>\n" +
-                             "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + "," +
-                             bmsi.getId() + ")'></td>\n" +
-                             "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + "," +
-                             bmsi.getId() + ")'></td>\n" +
-                             "</tr>";
+                result[2] += "<tr>\n"
+                        + "<td>" + index++ + "</td>\n"
+                        + "<td>" + imno + "</td>\n"
+                        + "<td>" + description + "</td>\n"
+                        + "<td>" + quantity + "</td>\n"
+                        + "<td id='price" + rq.getBillMaterialService()
+                        + bmsi.getId()
+                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div></td>\n"
+                        + "<td id='discount" + rq.getBillMaterialService()
+                        + bmsi.getId()
+                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n"
+                        + "<td id='availability" + rq.getBillMaterialService()
+                        + bmsi.getId()
+                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!availability.equals(0)) ? availability : "") + "</td>\n"
+                        + "<td>" + total + "</td>\n"
+                        + "<td><input type='button' value='Edit' class='button' onclick='editRQItem(" + rq.getBillMaterialService() + ","
+                        + bmsi.getId() + ")'></td>\n"
+                        + "<td><input type='button' value='Save' class='button' onclick='saveRQItem(" + rq.getBillMaterialService() + ","
+                        + bmsi.getId() + ")'></td>\n"
+                        + "</tr>";
             }
         }
 
@@ -123,9 +124,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
         if (pds != null && !pds.isEmpty()) {
             for (ProjectDetail pd : pds) {
                 if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
-                    result[0] += (!(index++).equals(pds.size())) ?
-                                 "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n" :
-                                 "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
+                    result[0] += (!(index++).equals(pds.size()))
+                            ? "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n"
+                            : "<option value='" + pd.getId() + "' selected>" + pd.getReference() + "</option>\n";
                 }
             }
 
@@ -156,9 +157,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
             String name = (!Strings.isNullOrEmpty(bms.getName())) ? bms.getName() : "";
             String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
 
-            result[0] = "<tr>\n" +
-                        "<td>" + name + "</td>\n" +
-                        "<td>" + subproject + "</td>\n</tr>\n";
+            result[0] = "<tr>\n"
+                    + "<td>" + name + "</td>\n"
+                    + "<td>" + subproject + "</td>\n</tr>\n";
             List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
 
             if (bmsis != null && !bmsis.isEmpty()) {
@@ -172,15 +173,15 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         String quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity().toString() : "";
                         Boolean checked = findVirtualItem(bms.getId(), bmsi.getId());
 
-                        result[1] +=
-                        "<tr>\n" +
-                        "<td>" + imno + "</td>\n" +
-                        "<td>" + stockName + "</td>\n" +
-                        "<td>" + quantity + "</td>\n" +
-                        "<td><input type='checkbox' " + ((checked) ? "checked" : "") + " onclick='handleClick(this," +
-                        bmsi.getBillMaterialService() + "," +
-                        bmsi.getId() + ");'></td>\n" +
-                        "</tr>\n";
+                        result[1]
+                                += "<tr>\n"
+                                + "<td>" + imno + "</td>\n"
+                                + "<td>" + stockName + "</td>\n"
+                                + "<td>" + quantity + "</td>\n"
+                                + "<td><input type='checkbox' " + ((checked) ? "checked" : "") + " onclick='handleClick(this,"
+                                + bmsi.getBillMaterialService() + ","
+                                + bmsi.getId() + ");'></td>\n"
+                                + "</tr>\n";
                     }
                 }
             }
@@ -342,25 +343,25 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @RequestMapping(value = "/request-quotation/create")
     public @ResponseBody
     String create(Long pdId, Boolean checked, Long bms, Long bmsi) {
-        if (checked != null &&
-            bms != null &&
-            bmsi != null) {
+        if (checked != null
+                && bms != null
+                && bmsi != null) {
             if (checked.equals(Boolean.TRUE)) {
                 setVirtualRequestQuotation(srvProjectManager,
-                                           bms,
-                                           new RequestQuotation.Builder()
-                                           .setBillMaterialService(bms)
-                                           .build());
+                        bms,
+                        new RequestQuotation.Builder()
+                        .setBillMaterialService(bms)
+                        .build());
                 setVirtualRequestQuotationItem(bms,
-                                               new RequestQuotationItem.Builder()
-                                               .setBillMaterialServiceItem(bmsi)
-                                               .build());
+                        new RequestQuotationItem.Builder()
+                        .setBillMaterialServiceItem(bmsi)
+                        .build());
             } else {
                 removeVirtualRequestQuotation(bms);
                 removeVirtualRequestQuotationItem(bms,
-                                                  new RequestQuotationItem.Builder()
-                                                  .setBillMaterialServiceItem(bmsi)
-                                                  .build());
+                        new RequestQuotationItem.Builder()
+                        .setBillMaterialServiceItem(bmsi)
+                        .build());
             }
 
             String[] pbInfo = getBillMaterialServiceInfo(pdId);
@@ -463,13 +464,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                             if (!Strings.isNullOrEmpty(supplier.getEmail1())) {
                                 sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail1(), null, "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-                                         "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
+                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
                             } else if (!Strings.isNullOrEmpty(supplier.getEmail2())) {
                                 sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail2(), null, "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-                                         "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
+                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
                             } else if (!Strings.isNullOrEmpty(supplier.getEmail3())) {
                                 sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail3(), null, "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-                                         "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
+                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=3&mode=RQ&supplier=" + supplierName);
                             }
                         } else {
                             logger.log(Level.SEVERE, "no found items for request quotation:{0}", rq.getId());
