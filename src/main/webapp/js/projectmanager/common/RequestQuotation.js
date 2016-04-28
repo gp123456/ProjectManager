@@ -82,6 +82,73 @@ function cancel() {
     });
 }
 
+function getVirtualRequestQuotation() {
+    var data = "pdId=" + $("#subproject option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/get-virtual-request-quotation",
+        data: data,
+        success: function (response) {
+            return response;
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function refresh() {
+    var response = getVirtualRequestQuotation();
+    var data = "";
+
+    if (response !== null) {
+        var content = JSON.parse(response);
+
+        if (content !== null) {
+            if (content.billMaterialService !== null) {
+                var bms = content.billMaterialService;
+
+                data = "bms=" + bms +
+                        "&delivery=" + $("#delivery" + bms).val() +
+                        "&expenses=" + $("#expenses" + bms).val();
+
+                if (content.billMaterialServiceItems !== null) {
+                    var items = JSON.parse(content.billMaterialServiceItems);
+
+                    if (items !== null) {
+                        data += "&prices=";
+                        items.forEach(function (item) {
+                            data += $("#price" + bms + item).val() + ",";
+                        });
+                        data += "&discounts=";
+                        items.forEach(function (item) {
+                            data += $("#discount" + bms + item).val() + ",";
+                        });
+                        data += "&availabilities=";
+                        items.forEach(function (item) {
+                            data += $("#availability" + bms + item).val() + ",";
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/refresh",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#request-quotation").html(content.requestQuotation);
+            $("#request-quotation-items").html(content.itemRequestQuotation);
+        },
+        error: function (e) {
+        }
+    });
+}
+
 function handleClick(cb, bms, bmsi) {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&checked=" + cb.checked +

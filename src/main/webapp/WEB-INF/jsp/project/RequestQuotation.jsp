@@ -66,14 +66,10 @@
         <table class="table tablesorter">
             <thead>
                 <tr>
-                    <th style="display:none">Project Id</th>
-                    <th>Material Cost</th>
-                    <th>Expenses Cost</th>
-                    <th>Grand Total</th>
                     <th>Delivery Cost*</th>
                     <th>Other Expenses*</th>
-                    <th>Edit</th>
-                    <th>Save</th>
+                    <th>Material Cost</th>
+                    <th>Grand Total</th>
                 </tr>
             </thead>
             <tbody id="request-quotation"></tbody>
@@ -91,14 +87,12 @@
                     <th>Unit Price*</th>
                     <th>Discount(%)*</th>
                     <th>Availability*</th>
-                    <th>Total</th>
-                    <th>Edit</th>
-                    <th>Save</th>
+                    <th>Net Total</th>
                 </tr>
             </thead>
             <tbody id="request-quotation-items">${itemRequestQuotation}</tbody>
         </table>
     </div>
     <div><p><h2>Note</h2><textarea id="note" name="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
-    <div>${buttonCancel}${buttonSendEmail}${buttonSavePDF}${buttonSaveExcel}</div>
+    <div>${buttonCancel}${buttonRefresh}${buttonSendEmail}${buttonSavePDF}${buttonSaveExcel}</div>
 </div>
