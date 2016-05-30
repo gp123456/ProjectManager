@@ -69,8 +69,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         "<td>" + materialCost + "</td>\n" +
                         "<td>" + grandTotal + "</td>\n" +
                         "</tr>\n";
-            result[1] = (rq != null) ? rq.getNote() : "";
-
+//            result[1] = (rq != null) ? rq.getNote() : "";
+            result[1] = "";
         }
 
         Collection<RequestQuotationItem> rqis = getRequestQuotationItems(bms);
@@ -98,7 +98,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                              "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!price.equals(0)) ? price : "") + "</td>\n" +
                              "<td id='discount" + rq.getBillMaterialService() +
                              bmsi.getId() +
-                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n" +
+                             "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!discount.equals(BigDecimal.ZERO)) ? discount : "0") + "</td>\n" +
                              "<td id='availability" + rq.getBillMaterialService() +
                              bmsi.getId() +
                              "' style='background: #333;color:#E7E5DC'><div contenteditable></div>" + ((!availability.equals(0)) ? availability : "") + "</td>\n" +
@@ -432,7 +432,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     for (RequestQuotationItem item : items) {
                         rqis.add(item.getId());
                     }
-                    content.put("billMaterialServiceItems", new Gson().toJson(rqis, Long[].class));
+                    content.put("billMaterialServiceItems",
+                                new Gson().toJson(rqis, Long[].class));
                 }
 
                 return new Gson().toJson(content);
@@ -446,17 +447,19 @@ public class RequestQuotationController extends RequestQuotationCommon {
     public @ResponseBody
     String refresh(Long bms, String delivery, String expenses, String prices, String discounts, String availabities) {
         if (bms != null) {
-            RequestQuotation rq = getRequestQuotation(bms);
+            logger.log(Level.INFO, "refresh: {0},{1},{2},{3},{4},{5}", new Object[]{bms, delivery, expenses, prices, discounts, availabities});
             
-            if (rq != null) {
-                if (!Strings.isNullOrEmpty(delivery)) {
-                    rq.setDeliveryCost(Integer.parseInt(delivery));
-                }
-                if (!Strings.isNullOrEmpty(expenses)) {
-                    rq.setExpensesCost(Integer.parseInt(expenses));
-                }
-                Collection<RequestQuotationItem> rqis = getRequestQuotationItems(bms);
-            }
+//            RequestQuotation rq = getRequestQuotation(bms);
+//            
+//            if (rq != null) {
+//                if (!Strings.isNullOrEmpty(delivery)) {
+//                    rq.setDeliveryCost(Integer.parseInt(delivery));
+//                }
+//                if (!Strings.isNullOrEmpty(expenses)) {
+//                    rq.setExpensesCost(Integer.parseInt(expenses));
+//                }
+//                Collection<RequestQuotationItem> rqis = getRequestQuotationItems(bms);
+//            }
         }
 
         return "";
