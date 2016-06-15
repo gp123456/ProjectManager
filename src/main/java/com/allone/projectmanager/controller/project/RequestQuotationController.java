@@ -484,8 +484,10 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/send-email")
     public @ResponseBody
-    String sendEmail(Long pdId, String supplierName, String note) throws MessagingException {
-        if (pdId != null && !Strings.isNullOrEmpty(supplierName)) {
+    String sendEmail(Long pdId, String supplierName, Integer currency, String note) throws MessagingException {
+        if (pdId != null && !Strings.isNullOrEmpty(supplierName) && currency != null) {
+            logger.log(Level.INFO, "pdId={0},supplier={1},currency={2}", new Object[]{pdId, supplierName, currency});
+            
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
             Company supplier = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, supplierName);
 
@@ -493,16 +495,20 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 RequestQuotation rq = getRequestQuotation(bms.getId());
 
                 if (rq != null) {
-                    rq.setCurrency(1);
+                    rq.setBillMaterialService(bms.getId());
+                    rq.setCurrency(currency);
                     rq.setSupplier(supplierName);
+                    rq.setComplete(Boolean.FALSE);
                     rq.setNote(note);
                     rq = srvProjectManager.getDaoRequestQuotation().add(rq);
 
-                    if (rq != null) {
+                    if (rq != null && rq.getId() != null) {
                         List<RequestQuotationItem> items = getRequestQoutationItems(bms.getId());
 
                         if (items != null && !items.isEmpty()) {
                             for (RequestQuotationItem item : items) {
+                                logger.log(Level.INFO, "billMaterialServiceItem={0}", item.getBillMaterialServiceItem());
+                                
                                 item.setRequestQuotation(rq.getId());
                             }
                             srvProjectManager.getDaoRequestQuotationItem().add(items);

@@ -34,7 +34,6 @@ public class RequestQuotation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    @NotNull
     private Long id;
 
     @Column(name = "supplier")

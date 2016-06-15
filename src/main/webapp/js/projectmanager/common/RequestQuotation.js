@@ -53,6 +53,7 @@ function saveXLS() {
 function sendEmail() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&supplierName=" + $("#supplier option:selected").val() +
+            "&currency=" + $("#currency option:selected").val() +
             "&note=" + $("#note").val();
 
     $.ajax({
