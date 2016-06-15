@@ -54,7 +54,7 @@
                 <select id="supplier"></select>
             </label>
         </p>
-        <br><h2>Select Unit Price</h2>
+        <br><h2>Select Currency</h2>
         <p>
             <label class="custom-select">
                 <select id="currency"></select>
@@ -84,7 +84,7 @@
                     <th>Code</th>
                     <th>Description</th>
                     <th>Quantity</th>
-                    <th>Unit Price*</th>
+                    <th>Price Unit*</th>
                     <th>Discount(%)*</th>
                     <th>Availability*</th>
                     <th>Net Total</th>

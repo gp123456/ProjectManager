@@ -55,6 +55,8 @@ public class Common {
 
     private String content;
 
+    private String classContent;
+
     private String title;
 
     private String header;
@@ -161,6 +163,7 @@ public class Common {
         model.addAttribute("project_header", header);
         model.addAttribute("side_bar", side_bar);
         model.addAttribute("content", content);
+        model.addAttribute("classContent", classContent);
         model.addAttribute("project_reference", user.getProject_reference());
     }
 
@@ -192,6 +195,14 @@ public class Common {
 
     public void setContent(String content) {
         this.content = content;
+    }
+    
+    public String getClassContent() {
+        return classContent;
+    }
+    
+    public void setClassContent(String classContent) {
+        this.classContent = classContent;
     }
 
     public String getTitle() {

@@ -66,7 +66,14 @@
                     </c:when>
                     <c:otherwise>
                         <c:if test="${content != null}" >
-                            <div class="content"><jsp:include page="${content}"/></div>
+                            <c:choose>
+                                <c:when test="${classContent != null}" >
+                                    <div class="${classContent}"><jsp:include page="${content}"/></div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="content"><jsp:include page="${content}"/></div>
+                                </c:otherwise>
+                            </c:choose>
                         </c:if>
                     </c:otherwise>
                 </c:choose>

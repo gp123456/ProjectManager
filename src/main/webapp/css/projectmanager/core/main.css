@@ -27,6 +27,13 @@ select {
     height: 500px;
 }
 
+.contentNoSideBar {
+    width: 84%;
+    /*float: right;*/
+    /*margin-top: -550px;*/
+    /*height: 500px;*/
+}
+
 .login-content {
 }
 
