@@ -31,7 +31,7 @@
                     <th>Code</th>
                     <th>Stock</th>
                     <th>Quantity</th>
-                    <th>Checked</th>
+                    <th>Include</th>
                 </tr>
             </thead>
             <tbody id="bill-material-service-item">${billMaterialServiceItems}</tbody>
