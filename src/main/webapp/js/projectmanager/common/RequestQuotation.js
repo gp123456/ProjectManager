@@ -60,6 +60,25 @@ function sendEmail() {
         type: "POST",
         url: "/ProjectManager/project/request-quotation/send-email",
         data: data,
+        success: function (response) {
+//            location.reload();
+            window.location = response;
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function sendEmailSupplier() {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&supplierName=" + $("#supplier option:selected").val() +
+            "&currency=" + $("#currency option:selected").val() +
+            "&note=" + $("#note").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/send-email-supplier",
+        data: data,
         success: function () {
             location.reload();
         },
@@ -84,22 +103,21 @@ function cancel() {
 }
 
 function getVirtualRequestQuotation() {
-    var data = "pdId=" + $("#subproject option:selected").val();
+    var data = "rqId=" + $('#request-quotation-id').val();
 
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/get-virtual-request-quotation",
         data: data,
         success: function (response) {
-            return response;
+            refresh(response);
         },
         error: function (e) {
         }
     });
 }
 
-function refresh() {
-    var response = getVirtualRequestQuotation();
+function refresh(response) {
     var data = "";
 
     if (response !== null) {
@@ -108,10 +126,8 @@ function refresh() {
         if (content !== null) {
             if (content.billMaterialService !== null) {
                 var bms = content.billMaterialService;
-
-                data = "bms=" + bms +
-                        "&delivery=" + $("#delivery" + bms).val() +
-                        "&expenses=" + $("#expenses" + bms).val();
+                
+                data = "bms=" + bms + "&delivery=" + $("#delivery" + bms).text() + "&expenses=" + $("#expenses" + bms).text();
 
                 if (content.billMaterialServiceItems !== null) {
                     var items = JSON.parse(content.billMaterialServiceItems);
@@ -119,15 +135,15 @@ function refresh() {
                     if (items !== null) {
                         data += "&prices=";
                         items.forEach(function (item) {
-                            data += $("#price" + bms + item).val() + ",";
+                            data += $("#price" + bms + item).text() + ",";
                         });
                         data += "&discounts=";
                         items.forEach(function (item) {
-                            data += $("#discount" + bms + item).val() + ",";
+                            data += $("#discount" + bms + item).text() + ",";
                         });
                         data += "&availabilities=";
                         items.forEach(function (item) {
-                            data += $("#availability" + bms + item).val() + ",";
+                            data += $("#availability" + bms + item).text() + ",";
                         });
                     }
                 }

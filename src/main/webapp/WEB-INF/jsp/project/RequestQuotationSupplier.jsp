@@ -6,20 +6,20 @@
 
 <script>
     $(function () {
-        var data = "pId=" + $('#project-id').val();
+        var data = "rqId=" + $('#request-quotation-id').val();
 
         $.ajax({
             type: "POST",
-            url: "/ProjectManager/project/request-quotation/content",
+            url: "/ProjectManager/project/request-quotation/content-supplier",
             data: data,
             success: function (response) {
                 var content = JSON.parse(response);
-
-                $("#subproject").html(content.subprojects);
-                $("#supplier").html(content.suppliers);
+                
+                $("#subproject").val(content.subproject);
+                $("#supplier").val(content.supplier);
+                $("#currency").val(content.currency);
                 $("#request-quotation").html(content.requestQuotation);
                 $("#request-quotation-items").html(content.itemRequestQuotation);
-                $("#currency").html(content.currency);
                 $("#note").val(content.note);
             },
             error: function (xhr, status, error) {
@@ -31,35 +31,25 @@
 
 <div id="bill-header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
-    <input type="hidden" id="project-id" value=${projectId} />
+    <input type="hidden" id="request-quotation-id" value=${requestQuotationId} />
     <div style="overflow-y: scroll">
-        <h2>Select Subproject</h2>
+        <h2>Subproject</h2>
         <table>
             <tbody>
                 <tr>
-                    <td>
-                        <label class="custom-select">
-                            <select id="subproject" onchange="changeSubproject()">}</select>
-                        </label>
-                    </td>
-                    <td>
-                        <input type="button" class="button" value="Bill Material Service Items" onclick="selectBMSI()"/>
-                    </td>
+                    <td><label>Subproject</label></td>
+                    <td><input type="text" id="subproject" readonly></td>
+                </tr>
+                <tr>
+                    <td><label>Supplier</label></td>
+                    <td><input type="text" id="supplier" readonly></td>
+                </tr>
+                <tr>
+                    <td><label>Currency</label></td>
+                    <td><input type="text" id="currency" readonly></td>
                 </tr>
             </tbody>
         </table>
-        <br><h2>Select Supplier</h2>
-        <p>
-            <label class="custom-select-large">
-                <select id="supplier"></select>
-            </label>
-        </p>
-        <br><h2>Select Currency</h2>
-        <p>
-            <label class="custom-select">
-                <select id="currency"></select>
-            </label>
-        </p>
     </div>
     <h2>Request of Quotation Summary</h2>
     <div>
@@ -94,5 +84,5 @@
         </table>
     </div>
     <div><p><h2>Note</h2><textarea id="note" name="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
-    <div>${buttonSendEmail}${buttonSavePDF}${buttonSaveExcel}</div>
+    <div>${buttonCancel}${buttonRefresh}${buttonSendEmail}</div>
 </div>
