@@ -31,6 +31,7 @@
 
 <div id="bill-header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
+    <h2 style="color: red">Please fill in the cells with black color only.<br> Push 'Refresh' button to verify and 'Send eMail' button to submit your offer</h2>
     <input type="hidden" id="request-quotation-id" value=${requestQuotationId} />
     <div style="overflow-y: scroll">
         <h2>Subproject</h2>
