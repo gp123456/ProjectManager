@@ -71,7 +71,7 @@
                 <tr>
                     <td>
                         <label class="custom-select-large">
-                            <select id="subproject" onchange="changeSubproject1()"></select>
+                            <select id="subproject" onchange="viewSubproject()"></select>
                         </label>
                     </td>
                     <td>
@@ -119,7 +119,7 @@
                     <tr>
                         <td>
                             <label class="custom-select-large">
-                                <select id="item" onchange="changeItem()"></select>
+                                <select id="item" onchange="viewItem()"></select>
                             </label>
                         </td>
                         <td>
@@ -208,8 +208,6 @@
                     <th>Code</th>
                     <th>Stock</th>
                     <th>Quantity*</th>
-                    <th>Edit</th>
-                    <th>Save</th>
                     <th>Remove</th>
                 </tr>
             </thead>

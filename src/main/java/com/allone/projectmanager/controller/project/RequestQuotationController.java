@@ -63,17 +63,17 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
             result[0] = (supplier.equals(Boolean.FALSE))
                     ? "<tr>\n"
-                    + "<td id='delivery" + rq.getBillMaterialService() + "' style='background: #333;color:#E7E5DC'></td>\n"
-                    + "<td id='expenses" + rq.getBillMaterialService() + "' style='background: #333;color:#E7E5DC'></td>\n"
+                    + "<td id='delivery" + rq.getBillMaterialService() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'></td>\n"
+                    + "<td id='expenses" + rq.getBillMaterialService() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'></td>\n"
                     + "<td>" + materialCost + "</td>\n"
                     + "<td>" + grandTotal + "</td>\n"
                     + "</tr>\n"
                     : "<tr>\n"
                     + "<td id='delivery" + rq.getBillMaterialService()
-                    + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>"
+                    + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n"
                     + "<td id='expenses" + rq.getBillMaterialService()
-                    + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>"
+                    + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n"
                     + "<td>" + materialCost + "</td>\n"
                     + "<td>" + grandTotal + "</td>\n"
@@ -102,11 +102,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         + "<td>" + description + "</td>\n"
                         + "<td>" + quantity + "</td>\n"
                         + "<td id='price" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'></td>\n"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'></td>\n"
                         + "<td id='discount" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'></td>\n"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'></td>\n"
                         + "<td id='availability" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'></td>\n"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'></td>\n"
                         + "<td>" + total + "</td>\n"
                         + "</tr>"
                         : "<tr>\n"
@@ -115,13 +115,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         + "<td>" + description + "</td>\n"
                         + "<td>" + quantity + "</td>\n"
                         + "<td id='price" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!price.equals(0)) ? price : "") + "</td>\n"
                         + "<td id='discount" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n"
                         + "<td id='availability" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: #333;color:#E7E5DC'><div contenteditable></div>"
+                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!availability.equals(0)) ? availability : "") + "</td>\n"
                         + "<td>" + total + "</td>\n"
                         + "</tr>";
@@ -627,8 +627,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                 item.setRequestQuotation(rq.getId());
                             }
                             srvProjectManager.getDaoRequestQuotationItem().add(items);
-//                            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
-//
+                            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+
 //                            if (!Strings.isNullOrEmpty(supplier.getEmail1())) {
 //                                sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail1(), null,
 //                                        "REQUEST FOR QUOTATION - REF:" + pd.getReference(),

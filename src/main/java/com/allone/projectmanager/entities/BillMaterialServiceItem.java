@@ -67,16 +67,12 @@ public class BillMaterialServiceItem implements Serializable {
     @NotNull
     private Integer quantity;
 
-    @Transient
-    private String classSave;
-
     private BillMaterialServiceItem(Builder builder) {
         billMaterialService = builder.billMaterialService;
         item = builder.item;
         available = builder.available;
         price = builder.price;
         quantity = builder.quantity;
-        classSave = builder.classSave;
     }
 
     private BillMaterialServiceItem(BillMaterialServiceItem pbi) {
@@ -134,14 +130,6 @@ public class BillMaterialServiceItem implements Serializable {
         this.quantity = quantity;
     }
 
-    public String getClassSave() {
-        return classSave;
-    }
-
-    public void setClassSave(String classSave) {
-        this.classSave = classSave;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -182,8 +170,6 @@ public class BillMaterialServiceItem implements Serializable {
 
         private Integer quantity;
         
-        private String classSave;
-        
         public Builder setBillMaterialService(Long billMaterialService) {
             this.billMaterialService = billMaterialService;
 
@@ -211,11 +197,6 @@ public class BillMaterialServiceItem implements Serializable {
         public Builder setQuantity(Integer quantity) {
             this.quantity = quantity;
 
-            return this;
-        }
-
-        public Builder setClassSave(String classSave) {
-            this.classSave = classSave;
             return this;
         }
 

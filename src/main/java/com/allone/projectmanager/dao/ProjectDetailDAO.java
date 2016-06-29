@@ -89,6 +89,27 @@ public class ProjectDetailDAO {
             return values;
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    public Long countByProject(Long pId) {
+        Long count = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByProject")
+                  .setParameter("project", pId);
+
+            count = (query != null) ?
+                     (Long)query.getSingleResult():
+                     null;
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+
+            return count;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public List getByProjectId(Long project) {

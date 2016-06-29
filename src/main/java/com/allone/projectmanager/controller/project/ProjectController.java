@@ -140,9 +140,7 @@ public class ProjectController extends ProjectCommon {
         model.addAttribute("p_id", -1);
         model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
         model.addAttribute("expired", format.format(expired));
-        model.addAttribute("button_value", "Save");
-        model.addAttribute("button_id", "save");
-        model.addAttribute("button_action", "saveProject()");
+        model.addAttribute("button_save", "<input type='button' class='button alarm' id='save' onclick='saveProject()' value='Save' />\n");
 
         return "index";
     }
@@ -171,7 +169,7 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/save"})
     public @ResponseBody
-    String saveProject(ProjectDetail pd, Integer offset, Integer size) {
+    String saveProject(ProjectDetail pd, Integer offset, Integer size, Model model) {
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
 
         if (user != null) {

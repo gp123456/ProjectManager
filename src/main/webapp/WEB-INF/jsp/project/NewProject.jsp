@@ -6,7 +6,7 @@
 
 <script>
     $(function () {
-        $("#expired").datepicker({dateFormat:'dd/mm/yy'});
+        $("#expired").datepicker({dateFormat: 'dd/mm/yy'});
 
         var id = $('#edit-project-id').val();
 
@@ -156,9 +156,14 @@
                     </div>
                 </td>
             </tr>
+            <tr><td></td>
+                <td><input type='button' class='button' id='new' onclick='location.reload();' value='New' /></td>
+                <td style="padding-top:10px; padding-bottom:10px">
+                    ${button_save}
+                </td>
+            </tr>
         </tbody>
     </table>
-    <input type="button" class="button" id="${button_id}" onclick="${button_action}" value=${button_value} />
     <!- Results ->
     <table class="table tablesorter">
         <thead id="header"></thead>

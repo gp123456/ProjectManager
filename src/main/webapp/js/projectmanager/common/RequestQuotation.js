@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 
+function handleAll() {
+    
+}
+
 function changeBMSSubproject() {
     var data = "pdId=" + $("#subproject option:selected").val();
 

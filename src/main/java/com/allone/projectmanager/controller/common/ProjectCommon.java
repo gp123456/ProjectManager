@@ -453,18 +453,6 @@ public class ProjectCommon extends Common {
         }
     }
 
-    public void saveVirtualBillMaterialServiceItem(Long pd) {
-        if (pd != null) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
-
-            if (items != null && !items.isEmpty()) {
-                items.stream().forEach((item) -> {
-                    item.setClassSave("button");
-                });
-            }
-        }
-    }
-
     public void setVirtualBillMaterialServiceItemBillId(Long pd, Long bms) {
         if (pd != null && bms != null) {
             List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);

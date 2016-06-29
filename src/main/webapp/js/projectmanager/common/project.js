@@ -238,6 +238,7 @@ function saveProject() {
             if (content.body)
                 $("#body").html(content.body);
             $("#project-reference").text(content.project_reference);
+            $("#save").attr('class', 'button');
         },
         error: function (e) {
         }
