@@ -31,7 +31,7 @@
                     <th>Code</th>
                     <th>Stock</th>
                     <th>Quantity</th>
-                    <th>Include<p></p><input type='checkbox' class='slideThree' onclick='handleAll();'></label></th>
+                    <th>Include<p></p><input type='checkbox' onclick='handleAll();'></label></th>
                 </tr>
             </thead>
             <tbody id="bill-material-service-item">${billMaterialServiceItems}</tbody>

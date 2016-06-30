@@ -5,7 +5,33 @@
  */
 
 function handleAll() {
-    
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/create-all",
+        success: function (response) {
+            $("#bill-material-service-item").html(response);
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function handleClick(cb, bms, bmsi) {
+    var data = "pdId=" + $("#subproject option:selected").val() +
+            "&checked=" + cb.checked +
+            "&bms=" + bms +
+            "&bmsi=" + bmsi;
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/create",
+        data: data,
+        success: function (response) {
+            $("#bill-material-service-item").html(response);
+        },
+        error: function (e) {
+        }
+    });
 }
 
 function changeBMSSubproject() {
@@ -164,24 +190,6 @@ function refresh(response) {
 
             $("#request-quotation").html(content.requestQuotation);
             $("#request-quotation-items").html(content.itemRequestQuotation);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function handleClick(cb, bms, bmsi) {
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&checked=" + cb.checked +
-            "&bms=" + bms +
-            "&bmsi=" + bmsi;
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/request-quotation/create",
-        data: data,
-        success: function (response) {
-            $("#bill-material-service-item").html(response);
         },
         error: function (e) {
         }

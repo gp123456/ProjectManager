@@ -402,6 +402,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
             return "";
         }
     }
+    
+    @RequestMapping(value = "/request-quotation/create-all")
+    public @ResponseBody
+    String createAll(Long pdId, Boolean checked, Long bms, Long bmsi) {
+        return "";
+    }
 
     @RequestMapping(value = "/request-quotation/create")
     public @ResponseBody
