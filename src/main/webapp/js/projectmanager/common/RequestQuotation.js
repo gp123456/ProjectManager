@@ -4,6 +4,14 @@
  * and open the template in the editor.
  */
 
+function clearValue(id) {
+    var value = $('#' + id).val();
+    
+    if (value !== '') {
+        $('#' + id).html("");
+    }
+}
+
 function handleAll() {
     $.ajax({
         type: "POST",
@@ -156,11 +164,14 @@ function refresh(response) {
         if (content !== null) {
             if (content.billMaterialService !== null) {
                 var bms = content.billMaterialService;
-                
+
                 data = "bms=" + bms + "&delivery=" + $("#delivery" + bms).text() + "&expenses=" + $("#expenses" + bms).text();
 
-                if (content.billMaterialServiceItems !== null) {
-                    var items = JSON.parse(content.billMaterialServiceItems);
+                if (content.billMaterialServiceItemIds !== null) {
+                    var items = JSON.parse(content.billMaterialServiceItemIds);
+                    var qties = JSON.parse(content.billMaterialServiceItemQuantities);
+                    
+                    alert(items + "," + qties);
 
                     if (items !== null) {
                         data += "&prices=";
@@ -174,6 +185,10 @@ function refresh(response) {
                         data += "&availabilities=";
                         items.forEach(function (item) {
                             data += $("#availability" + bms + item).text() + ",";
+                        });
+                        data += "&quantities=";
+                        qties.forEach(function (qty) {
+                            data += qty + ",";
                         });
                     }
                 }

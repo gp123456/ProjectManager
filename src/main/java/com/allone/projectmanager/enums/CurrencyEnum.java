@@ -11,10 +11,10 @@ package com.allone.projectmanager.enums;
  */
 public enum CurrencyEnum {
     NONE(1, "None", "None"),//None
-    JPY(2, "&#165", "¥"),//¥
-    GBP(3, "&#163", "£"),//£
-    USD(4, "&#36", "$"),//$
-    EUR(5, "&#8364", "€");//€
+    JPY(2, "JPY", "JPY"),//¥,&#165
+    GBP(3, "GBP", "GBP"),//£,&#163
+    USD(4, "USD", "USD"),//$, &#36
+    EUR(5, "EUR", "EUR");//€, &#8364
 
     private final Integer id;
     

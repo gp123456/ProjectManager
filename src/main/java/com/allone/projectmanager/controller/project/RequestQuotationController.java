@@ -70,10 +70,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     + "</tr>\n"
                     : "<tr>\n"
                     + "<td id='delivery" + rq.getBillMaterialService()
-                    + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + "' onclick='clearValue(\"delivery" + rq.getBillMaterialService()
+                    + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n"
                     + "<td id='expenses" + rq.getBillMaterialService()
-                    + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + "' onclick='clearValue(\"expenses" + rq.getBillMaterialService()
+                    + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n"
                     + "<td>" + materialCost + "</td>\n"
                     + "<td>" + grandTotal + "</td>\n"
@@ -115,13 +117,16 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         + "<td>" + description + "</td>\n"
                         + "<td>" + quantity + "</td>\n"
                         + "<td id='price" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                        + "' onclick='clearValue(\"price" + rq.getBillMaterialService() + bmsi.getId()
+                        + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!price.equals(0)) ? price : "") + "</td>\n"
                         + "<td id='discount" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                        + "' onclick='clearValue(\"discount" + rq.getBillMaterialService() + bmsi.getId()
+                        + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n"
                         + "<td id='availability" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                        + "' onclick='clearValue(\"availability" + rq.getBillMaterialService() + bmsi.getId()
+                        + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!availability.equals(0)) ? availability : "") + "</td>\n"
                         + "<td>" + total + "</td>\n"
                         + "</tr>";
@@ -542,11 +547,15 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     if (items != null && !items.isEmpty()) {
                         Set<Long> rqis = new HashSet<>();
+                        Set<Integer> qty = new HashSet<>();
 
                         for (RequestQuotationItem item : items) {
                             rqis.add(item.getBillMaterialServiceItem());
+                            BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(item.getBillMaterialServiceItem());
+                            qty.add(bmsi.getQuantity());
                         }
-                        content.put("billMaterialServiceItems", new Gson().toJson(rqis.toArray(), Long[].class));
+                        content.put("billMaterialServiceItemIds", new Gson().toJson(rqis.toArray(), Long[].class));
+                        content.put("billMaterialServiceItemQuantities", new Gson().toJson(qty.toArray(), Integer[].class));
                     }
 
                     return new Gson().toJson(content);
@@ -559,7 +568,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/refresh")
     public @ResponseBody
-    String refresh(Long bms, String delivery, String expenses, String prices, String discounts, String availabilities) {
+    String refresh(Long bms, String delivery, String expenses, String prices, String discounts, String availabilities, String quantities) {
         if (bms != null) {
             RequestQuotation rq = getRequestQuotation(bms);
 
@@ -574,11 +583,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 String[] priceValues = prices.split(",");
                 String[] discountValues = discounts.split(",");
                 String[] availabilityValues = availabilities.split(",");
+                String[] quantitiesValues = quantities.split(",");
                 Integer index = 0;
                 Integer sumPriceItems = 0;
 
                 for (RequestQuotationItem item : items) {
-                    Integer totalPrice = Integer.valueOf(priceValues[index]) * Integer.valueOf(availabilityValues[index]);
+                    Integer totalPrice = Integer.valueOf(priceValues[index]) * Integer.valueOf(quantitiesValues[index]);
 
                     item.setUnitPrice(Integer.valueOf(priceValues[index]));
                     item.setAvailability(Integer.valueOf(availabilityValues[index]));
@@ -656,7 +666,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                             return "";
                         }
 
-                        return "http://localhost:8080/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS";
+                        return "http://localhost:8081/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS";
                     } else {
                         logger.log(Level.SEVERE, "error while persist the requers quotation");
                     }

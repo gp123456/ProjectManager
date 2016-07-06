@@ -51,8 +51,8 @@ public class RequestQuotation implements Serializable {
     @Column(name = "material_cost")
     private Integer materialCost;
     
-    @Column(name = "expenses_cost")
-    private Integer expensesCost;
+//    @Column(name = "expenses_cost")
+//    private Integer expensesCost;
 
     @Column(name = "grand_total")
     private Integer grandTotal;
@@ -77,7 +77,7 @@ public class RequestQuotation implements Serializable {
         billMaterialService = builder.billMaterialService;
         currency = builder.currency;
         materialCost = builder.materialCost;
-        expensesCost = builder.expensesCost;
+//        expensesCost = builder.expensesCost;
         grandTotal = builder.grandTotal;
         deliveryCost = builder.deliveryCost;
         otherExpenses = builder.otherExpenses;
@@ -124,13 +124,13 @@ public class RequestQuotation implements Serializable {
         this.materialCost = materialCost;
     }
 
-    public Integer getExpensesCost() {
-        return expensesCost;
-    }
-
-    public void setExpensesCost(Integer expensesCost) {
-        this.expensesCost = expensesCost;
-    }
+//    public Integer getExpensesCost() {
+//        return expensesCost;
+//    }
+//
+//    public void setExpensesCost(Integer expensesCost) {
+//        this.expensesCost = expensesCost;
+//    }
 
     public Integer getGrandTotal() {
         return grandTotal;
@@ -210,7 +210,7 @@ public class RequestQuotation implements Serializable {
         
         private Integer materialCost;
         
-        private Integer expensesCost;
+//        private Integer expensesCost;
         
         private Integer grandTotal;
         
@@ -246,11 +246,11 @@ public class RequestQuotation implements Serializable {
             return this;
         }
         
-        public Builder setExpensesCost(Integer expensesCost) {
-            this.expensesCost = expensesCost;
-
-            return this;
-        }
+//        public Builder setExpensesCost(Integer expensesCost) {
+//            this.expensesCost = expensesCost;
+//
+//            return this;
+//        }
         
         public Builder setGrandTotal(Integer grandTotal) {
             this.grandTotal = grandTotal;
