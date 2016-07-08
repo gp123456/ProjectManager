@@ -37,9 +37,9 @@ public class RequestQuotationCommon extends Common {
     public void setVirtualRequestQuotation(ProjectManagerService srvProjectManager, Long bmsId, RequestQuotation rq) {
         logger.log(Level.INFO, "setVirtualRequestQuotation-start:{0}", bmsId);
 
-        if (bmsId != null &&
-            rq != null &&
-            (mapRequestQuotation.get(bmsId) == null)) {
+        if (bmsId != null
+                && rq != null
+                && (mapRequestQuotation.get(bmsId) == null)) {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
 
             rq.setNote(bms.getNote());
@@ -68,8 +68,8 @@ public class RequestQuotationCommon extends Common {
     public void setVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
         logger.log(Level.INFO, "setVirtualRequestQuotationItem-start:{0}", bms);
 
-        if (bms != null &&
-            rqi != null) {
+        if (bms != null
+                && rqi != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
@@ -78,13 +78,11 @@ public class RequestQuotationCommon extends Common {
                 mapRequestQuotationItems.put(bms, new ArrayList<>(Arrays.asList(rqi)));
             }
         }
-
-        logger.log(Level.INFO, "setVirtualRequestQuotationItem-end:{0}", mapRequestQuotationItems.size());
     }
 
     public void removeVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
-        if (bms != null &&
-            rqi != null) {
+        if (bms != null
+                && rqi != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
@@ -94,8 +92,7 @@ public class RequestQuotationCommon extends Common {
     }
 
     public Boolean findVirtualItem(Long bms, Long itemId) {
-        if (bms != null &&
-            itemId != null) {
+        if (bms != null && itemId != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
@@ -110,13 +107,29 @@ public class RequestQuotationCommon extends Common {
         return Boolean.FALSE;
     }
 
+    public RequestQuotationItem getRequestQoutationItem(Long bms, Long itemId) {
+        if (bms != null && itemId != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
+
+            if (items != null && !items.isEmpty()) {
+                for (RequestQuotationItem item : items) {
+                    if (item.getBillMaterialServiceItem().equals(itemId)) {
+                        return item;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public RequestQuotation getRequestQuotation(Long bms) {
         return (mapRequestQuotation != null && !mapRequestQuotation.isEmpty()) ? mapRequestQuotation.get(bms) : null;
     }
 
     public List<RequestQuotationItem> getRequestQoutationItems(Long bms) {
-        return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ?
-               mapRequestQuotationItems.get(bms) :
-               null;
+        return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty())
+                ? mapRequestQuotationItems.get(bms)
+                : null;
     }
 }

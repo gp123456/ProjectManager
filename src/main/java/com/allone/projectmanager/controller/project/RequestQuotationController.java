@@ -18,6 +18,7 @@ import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.CurrencyEnum;
+import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -50,9 +51,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @Autowired
     ProjectManagerService srvProjectManager;
 
+    @SuppressWarnings("null")
     private String[] getRequestQuotationInfo(Long bms, Boolean supplier) {
         String[] result = {"", ""};
         RequestQuotation rq = getRequestQuotation(bms);
+        @SuppressWarnings("UnusedAssignment")
         Integer index = 1;
 
         if (rq != null) {
@@ -70,12 +73,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     + "</tr>\n"
                     : "<tr>\n"
                     + "<td id='delivery" + rq.getBillMaterialService()
-                    + "' onclick='clearValue(\"delivery" + rq.getBillMaterialService()
-                    + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + "' onclick='clearValue(\"delivery\"," + rq.getBillMaterialService() + "," + 0
+                    + ");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!deliveryCost.equals(0)) ? deliveryCost : "") + "</td>\n"
                     + "<td id='expenses" + rq.getBillMaterialService()
-                    + "' onclick='clearValue(\"expenses" + rq.getBillMaterialService()
-                    + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + "' onclick='clearValue(\"expenses\"," + rq.getBillMaterialService() + "," + 0
+                    + ");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!otherExpenses.equals(0)) ? otherExpenses : "") + "</td>\n"
                     + "<td>" + materialCost + "</td>\n"
                     + "<td>" + grandTotal + "</td>\n"
@@ -91,6 +94,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 Item item = (bmsi != null) ? srvProjectManager.getDaoItem().getById(bmsi.getItem()) : null;
                 String imno = (item != null) ? item.getImno() : "";
                 String description = (item != null) ? item.getDescription() : "";
+                @SuppressWarnings("null")
                 Integer quantity = (bmsi.getQuantity() != null) ? bmsi.getQuantity() : 0;
                 Integer price = (rqi.getUnitPrice() != null) ? rqi.getUnitPrice() : 0;
                 BigDecimal discount = (rqi.getDiscount() != null) ? rqi.getDiscount() : BigDecimal.ZERO;
@@ -117,15 +121,15 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         + "<td>" + description + "</td>\n"
                         + "<td>" + quantity + "</td>\n"
                         + "<td id='price" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' onclick='clearValue(\"price" + rq.getBillMaterialService() + bmsi.getId()
-                        + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                        + "' onclick='clearValue(\"price\"," + rq.getBillMaterialService() + "," + bmsi.getId()
+                        + ");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!price.equals(0)) ? price : "") + "</td>\n"
                         + "<td id='discount" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' onclick='clearValue(\"discount" + rq.getBillMaterialService() + bmsi.getId()
+                        + "' onclick='clearValue(\"discount\"," + rq.getBillMaterialService() + "," + bmsi.getId()
                         + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!discount.equals(BigDecimal.ZERO)) ? discount : "") + "</td>\n"
                         + "<td id='availability" + rq.getBillMaterialService() + bmsi.getId()
-                        + "' onclick='clearValue(\"availability" + rq.getBillMaterialService() + bmsi.getId()
+                        + "' onclick='clearValue(\"availability\"," + rq.getBillMaterialService() + "," + bmsi.getId()
                         + "\");' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                         + ((!availability.equals(0)) ? availability : "") + "</td>\n"
                         + "<td>" + total + "</td>\n"
@@ -407,7 +411,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             return "";
         }
     }
-    
+
     @RequestMapping(value = "/request-quotation/create-all")
     public @ResponseBody
     String createAll(Long pdId, Boolean checked, Long bms, Long bmsi) {
@@ -619,15 +623,22 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/send-email")
     public @ResponseBody
+    @SuppressWarnings("null")
     String sendEmail(Long pdId, String supplierName, Integer currency, String note) throws MessagingException {
         if (pdId != null && !Strings.isNullOrEmpty(supplierName) && currency != null) {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
             Company supplier = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, supplierName);
+            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
             if (bms != null && supplier != null) {
                 RequestQuotation rq = getRequestQuotation(bms.getId());
 
-                if (rq != null) {
+                if (p != null && pd != null && rq != null) {
+                    p.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
+                    srvProjectManager.getDaoProject().edit(p);
+                    pd.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
+                    srvProjectManager.getDaoProjectDetail().edit(pd);
                     rq.setBillMaterialService(bms.getId());
                     rq.setCurrency(currency);
                     rq.setSupplier(supplierName);
@@ -643,7 +654,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                 item.setRequestQuotation(rq.getId());
                             }
                             srvProjectManager.getDaoRequestQuotationItem().add(items);
-                            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
 //                            if (!Strings.isNullOrEmpty(supplier.getEmail1())) {
 //                                sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail1(), null,
@@ -681,5 +691,35 @@ public class RequestQuotationController extends RequestQuotationCommon {
         }
 
         return "";
+    }
+
+    @RequestMapping(value = "/request-quotation/get-value")
+    public @ResponseBody
+    String getValue(String name, Long bms, Long bmsi) {
+        if (bmsi.equals(0)) {
+            RequestQuotation rq = getRequestQuotation(bms);
+
+            if (rq != null) {
+                if (name.equals("delivery")) {
+                    return (rq.getDeliveryCost().equals(0)) ? null : rq.getDeliveryCost().toString();
+                } else if (name.equals("expenses")) {
+                    return (rq.getOtherExpenses().equals(0)) ? null : rq.getOtherExpenses().toString();
+                }
+            }
+        } else {
+            RequestQuotationItem rqi = getRequestQoutationItem(bms, bmsi);
+
+            if (rqi != null) {
+                if (name.equals("price")) {
+                    return (rqi.getUnitPrice().equals(0)) ? null : rqi.getUnitPrice().toString();
+                } else if (name.equals("discount")) {
+                    return (rqi.getDiscount().equals(0)) ? null : rqi.getDiscount().toString();
+                } else if (name.equals("availability")) {
+                    return (rqi.getAvailability().equals(0)) ? null : rqi.getAvailability().toString();
+                }
+            }
+        }
+
+        return null;
     }
 }

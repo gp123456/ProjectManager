@@ -38,7 +38,7 @@
 <nav>
     <div class="menu-item">
         <h3 id="project-edit-size" onclick="dlgEditProject()">Edit</h3>
-        <div id="dlg-edit-project" hidden="true" title="Select statuses to edit">
+        <div id="dlg-edit-project" hidden="true" title="Select form to edit">
             <form>
                 <div id="lst-edit-project" class="radio"></div>
                 <input type="hidden" id="edit-path" value=${edit_path} />

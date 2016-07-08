@@ -31,8 +31,10 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
@@ -328,10 +330,26 @@ public class BillMaterialServiceController extends ProjectCommon {
 
         return "";
     }
+    
+    @RequestMapping(value = "/bill-material-service/get-bill-material-items")
+    public @ResponseBody
+    String getBMSItems(Long pdId) {
+        Collection<BillMaterialServiceItem> items = getBillMaterialServiceItems(pdId);
+        Set<Long> bmsi = new HashSet<>();
+        
+        if (items != null) {
+            for (BillMaterialServiceItem item: items) {
+                bmsi.add(item.getItem());
+            }
+            return new Gson().toJson(bmsi.toArray(), Long[].class);
+        }
+        
+        return null;
+    }
 
     @RequestMapping(value = "/bill-material-service/save")
     public @ResponseBody
-    String saveBillMaterialService(BillMaterialService bms) {
+    String saveBillMaterialService(BillMaterialService bms, String quantities) {
         String response = "";
 
         if (bms != null) {
@@ -360,10 +378,15 @@ public class BillMaterialServiceController extends ProjectCommon {
                         Collection<BillMaterialServiceItem> bmsis = getBillMaterialServiceItems(pd.getId());
 
                         if (bmsis != null && !bmsis.isEmpty()) {
+                            String[] values = quantities.split(",");
+                            Integer i = 0;
+                            
                             for (BillMaterialServiceItem bmsi : bmsis) {
                                 if (bmsi.getId() == null) {
+                                    bmsi.setQuantity(Integer.valueOf(values[i++]));
                                     srvProjectManager.getDaoBillMaterialServiceItem().add(bmsi);
                                 } else {
+                                    bmsi.setQuantity(Integer.valueOf(values[i++]));
                                     srvProjectManager.getDaoBillMaterialServiceItem().edit(bmsi);
                                 }
                             }

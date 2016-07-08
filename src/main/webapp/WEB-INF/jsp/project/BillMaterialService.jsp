@@ -182,7 +182,7 @@
             </table>
         </div>
     </div>
-    <h2>Bill of Material Summary</h2>
+    <h2>Bill of Materials Summary</h2>
     <div>
         <table class="table tablesorter">
             <thead>
@@ -201,7 +201,7 @@
         </form>
     </div>
     <div id="select-bill-material-service-item">
-        <h2>Bill of Material Detail</h2>
+        <h2>Bill of Materials Detail</h2>
         <table class="table tablesorter">
             <thead>
                 <tr>

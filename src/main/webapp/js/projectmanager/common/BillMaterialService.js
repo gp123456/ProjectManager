@@ -57,26 +57,52 @@ function removeItem(pdid, id) {
     });
 }
 
-function saveBillMaterialService() {
-    var pdId = $("#subproject option:selected").val();
-    var data = "project=" + pdId +
-            "&name=" + $("#name" + pdId).text() +
-            "&note=" + $("#note").val();
-
+function getBillMaterialServiceItems() {
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/bill-material-service/save",
-        data: data,
+        url: "/ProjectManager/project/bill-material-service/get-bill-material-items",
+        data: $("#subproject option:selected").val(),
         success: function (response) {
-            if (response === "index") {
-                location.reload();
-            } else {
-                $("#bill-header").html(response);
+            if (response) {
+                saveBillMaterialService(response);
             }
         },
         error: function (e) {
         }
     });
+}
+
+function saveBillMaterialService(response) {
+    alert(response);
+    
+    var items = JSON.parse(response);
+
+    if (items !== null) {
+        var pdId = $("#subproject option:selected").val();
+        var data = "project=" + pdId +
+                "&name=" + $("#name" + pdId).text() +
+                "&note=" + $("#note").val();
+        
+        items.forEach(function (item) {
+            data += "&quantities=" + $("#quantity" + pdId + item).text() + ",";
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/ProjectManager/project/bill-material-service/save",
+            data: data,
+            success: function (response) {
+                if (response === "index") {
+                    location.reload();
+                } else {
+                    $("#bill-header").html(response);
+                }
+            },
+            error: function (e) {
+                alert(e);
+            }
+        });
+    }
 }
 
 function savePDF(prjRef) {

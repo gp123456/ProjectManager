@@ -4,12 +4,23 @@
  * and open the template in the editor.
  */
 
-function clearValue(id) {
-    var value = $('#' + id).val();
+function clearValue(name, bms, bmsi) {
+    var data = "name=" + name + "&bms=" + bms + "&bmsi=" + bmsi;
     
-    if (value !== '') {
-        $('#' + id).html("");
-    }
+    alert(data);
+    
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/get-value",
+        data: data,
+        success: function (id) {
+            alert(id);
+            
+            $('#' + id).html("");
+        },
+        error: function (e) {
+        }
+    });
 }
 
 function handleAll() {
@@ -170,8 +181,6 @@ function refresh(response) {
                 if (content.billMaterialServiceItemIds !== null) {
                     var items = JSON.parse(content.billMaterialServiceItemIds);
                     var qties = JSON.parse(content.billMaterialServiceItemQuantities);
-                    
-                    alert(items + "," + qties);
 
                     if (items !== null) {
                         data += "&prices=";
