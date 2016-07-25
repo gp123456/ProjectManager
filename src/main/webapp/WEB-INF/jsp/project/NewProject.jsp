@@ -45,7 +45,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="company"></select>
+                            <select id="company" onchange="alarmEdit()"></select>
                         </label>
                     </p>
                 </td>
@@ -57,7 +57,7 @@
                 <td>
                     <p>
                         <label class="custom-select">
-                            <select id="type"></select>
+                            <select id="type" onchange="alarmEdit()"></select>
                         </label>
                     </p>
                 </td>
@@ -66,7 +66,7 @@
             <!- Expire date ->
             <tr>
                 <td><label>Expired date</label></td>
-                <td><input type="text" id="expired" value="${expired}"></td>
+                <td><input type="text" id="expired" value="${expired}" onchange="alarmEdit()"></td>
                 <td></td>
             </tr>
             <!- Customer ->
@@ -76,7 +76,7 @@
                     <p>
                         <label class="custom-select-large">
                             <select id="customer" onchange="projectFilterCustomer()"></select>
-                        </label>
+                        </label>    
                     </p>
                 </td>
                 <td><input type="button" class="button" value="Add" id="new-project-add-customer" onclick="addCompany('CUSTOMER')"/>
@@ -157,7 +157,7 @@
                 </td>
             </tr>
             <tr><td></td>
-                <td><input type='button' class='button' id='new' onclick='location.reload();' value='New' /></td>
+                <td><input type='button' class='button' id='new' onclick='location.reload();' value='Clear All' /></td>
                 <td style="padding-top:10px; padding-bottom:10px">
                     ${button_save}
                 </td>

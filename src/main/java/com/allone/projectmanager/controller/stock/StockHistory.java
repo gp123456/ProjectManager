@@ -20,14 +20,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/stock")
 public class StockHistory extends Common {
-    private static final Logger LOG = Logger.getLogger(StockHistory.class.getName());
+
+    private static final Logger logger = Logger.getLogger(StockHistory.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
-    
-    @RequestMapping(value = "/history")
+
+    @RequestMapping(value = "/snapshot")
     public String History(Model model) {
-        this.setTitle("Stock-History");
+        this.setTitle("Stock");
+        this.setHeader("header.jsp");
         this.setSide_bar("../stock/sidebar.jsp");
         this.setContent("../stock/History.jsp");
         setHeaderInfo(model);

@@ -35,18 +35,18 @@ public class DebugController extends Common {
 
     private static final Logger logger = Logger.getLogger(DebugController.class.getName());
 
-    @Autowired ProjectManagerService srvProjectManager;
+    @Autowired
+    ProjectManagerService srvProjectManager;
 
-    @Autowired WCSProjectManagerService srvWCSProjectManager;
+    WCSProjectManagerService srvWCSProjectManager;
 
     public WCSProjectManagerService getSrvWCSProjectManager() {
         return srvWCSProjectManager;
     }
 
-    public void setSrvWCSProjectManager(WCSProjectManagerService srvWCSProjectManager) {
-        this.srvWCSProjectManager = srvWCSProjectManager;
-    }
-
+//    public void setSrvWCSProjectManager(WCSProjectManagerService srvWCSProjectManager) {
+//        this.srvWCSProjectManager = srvWCSProjectManager;
+//    }
     @RequestMapping(value = "/snapshot")
     public String Snapshot(Model model) {
         this.setTitle("Debug");
@@ -74,15 +74,18 @@ public class DebugController extends Common {
     @ResponseBody
     public String transferDBFiles(String value) {
         String response = "";
-        
+
         logger.log(Level.INFO, "transfer DBFiles={0}", value);
 
         switch (value) {
-            case DBFilesEnum.COMPANY: response = tranferCompany();
+            case DBFilesEnum.COMPANY:
+                response = tranferCompany();
                 break;
-            case DBFilesEnum.VESSEL: response = tranferVessel();
+            case DBFilesEnum.VESSEL:
+                response = tranferVessel();
                 break;
-            case DBFilesEnum.CONTACT: response = tranferContact();
+            case DBFilesEnum.CONTACT:
+                response = tranferContact();
                 break;
         }
 
@@ -96,7 +99,7 @@ public class DebugController extends Common {
 
         if (companies != null && !companies.isEmpty()) {
             logger.log(Level.INFO, "transfer size={0}", companies.size());
-            
+
             for (WCSCompany company : companies) {
                 srvProjectManager.getDaoCompany()
                         .add(new Company.Builder()
@@ -134,7 +137,7 @@ public class DebugController extends Common {
 
         if (vessels != null && !vessels.isEmpty()) {
             logger.log(Level.INFO, "transfer size={0}", vessels.size());
-            
+
             for (WCSVessel vessel : vessels) {
                 srvProjectManager.getDaoVessel()
                         .add(new Vessel.Builder()
@@ -160,7 +163,7 @@ public class DebugController extends Common {
 
     private String tranferContact() {
         logger.log(Level.INFO, "tranferContact");
-        
+
         String response = "";
 
         List<WCSContact> contacts = srvWCSProjectManager.getDaoWCSContact().getAll();
@@ -168,7 +171,7 @@ public class DebugController extends Common {
 
         if (contacts != null && !contacts.isEmpty()) {
             logger.log(Level.INFO, "transfer size={0}", contacts.size());
-            
+
             for (WCSContact contact : contacts) {
                 srvProjectManager.getDaoContact()
                         .add(new Contact.Builder()

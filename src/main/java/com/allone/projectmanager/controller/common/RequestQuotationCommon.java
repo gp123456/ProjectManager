@@ -9,13 +9,13 @@ import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,26 +30,21 @@ public class RequestQuotationCommon extends Common {
 
     private final Map<Long, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
 
+    private final Map<Long, List<String>> mapSuppliers = new HashMap<>();
+
     public Collection<RequestQuotationItem> getRequestQuotationItems(Long bms) {
         return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(bms) : null;
     }
 
-    public void setVirtualRequestQuotation(ProjectManagerService srvProjectManager, Long bmsId, RequestQuotation rq) {
-        logger.log(Level.INFO, "setVirtualRequestQuotation-start:{0}", bmsId);
-
-        if (bmsId != null
-                && rq != null
-                && (mapRequestQuotation.get(bmsId) == null)) {
+    public void setRequestQuotation(ProjectManagerService srvProjectManager, Long bmsId, RequestQuotation rq) {
+        if (bmsId != null && rq != null && (mapRequestQuotation.get(bmsId) == null)) {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
 
-            rq.setNote(bms.getNote());
             mapRequestQuotation.put(bmsId, rq);
         }
-
-        logger.log(Level.INFO, "setVirtualRequestQuotation-end:{0}", mapRequestQuotation.size());
     }
 
-    public void removeVirtualRequestQuotation(Long bms) {
+    public void removeRequestQuotation(Long bms) {
         if (bms != null) {
             RequestQuotation rq = mapRequestQuotation.get(bms);
 
@@ -65,11 +60,8 @@ public class RequestQuotationCommon extends Common {
         }
     }
 
-    public void setVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
-        logger.log(Level.INFO, "setVirtualRequestQuotationItem-start:{0}", bms);
-
-        if (bms != null
-                && rqi != null) {
+    public void setRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
+        if (bms != null && rqi != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
@@ -80,9 +72,8 @@ public class RequestQuotationCommon extends Common {
         }
     }
 
-    public void removeVirtualRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
-        if (bms != null
-                && rqi != null) {
+    public void removeRequestQuotationItem(Long bms, RequestQuotationItem rqi) {
+        if (bms != null && rqi != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
 
             if (items != null && !items.isEmpty()) {
@@ -131,5 +122,35 @@ public class RequestQuotationCommon extends Common {
         return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty())
                 ? mapRequestQuotationItems.get(bms)
                 : null;
+    }
+
+    public Collection<String> addSupplier(Long bms, String supplier) {
+        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
+            List<String> suppliers = mapSuppliers.get(bms);
+
+            if (suppliers != null && !suppliers.isEmpty()) {
+                suppliers.add(supplier);
+            } else {
+                mapSuppliers.put(bms, new ArrayList<>(Arrays.asList(supplier)));
+            }
+        }
+
+        return mapSuppliers.get(bms);
+    }
+
+    public Collection<String> getSuppliers(Long bms) {
+        return mapSuppliers.get(bms);
+    }
+
+    public Collection<String> removeVirtualSupplier(Long bms, String supplier) {
+        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
+            List<String> suppliers = mapSuppliers.get(bms);
+
+            if (suppliers != null && !suppliers.isEmpty()) {
+                suppliers.remove(supplier);
+            }
+        }
+
+        return mapSuppliers.get(bms);
     }
 }

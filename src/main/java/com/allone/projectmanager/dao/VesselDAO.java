@@ -6,9 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.controller.Root;
-import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Vessel;
-import com.google.common.base.Strings;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,7 +21,7 @@ import org.hibernate.HibernateException;
  */
 public class VesselDAO {
 
-    private static final Logger LOG = Logger.getLogger(Root.class.getName());
+    private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     private EntityManagerFactory emf;
 
@@ -77,7 +75,7 @@ public class VesselDAO {
 
         try {
             query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findByCompany")
-            .setParameter("company", company);
+                    .setParameter("company", company);
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
         } finally {

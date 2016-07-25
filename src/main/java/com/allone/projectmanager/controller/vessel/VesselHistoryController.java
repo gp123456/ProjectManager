@@ -20,14 +20,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/vessel")
 public class VesselHistoryController extends Common {
-    private static final Logger LOG = Logger.getLogger(VesselHistoryController.class.getName());
+
+    private static final Logger logger = Logger.getLogger(VesselHistoryController.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
-    
-    @RequestMapping(value = "/history")
+
+    @RequestMapping(value = "/snapshot")
     public String History(Model model) {
-        this.setTitle("Vessel-History");
+        this.setTitle("Vessel");
+        this.setHeader("header.jsp");
         this.setSide_bar("../vessel/sidebar.jsp");
         this.setContent("../vessel/History.jsp");
         setHeaderInfo(model);

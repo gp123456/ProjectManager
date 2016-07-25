@@ -26,7 +26,7 @@ public class WCSProjectManagerService {
 
     private static final Logger logger = Logger.getLogger(ProjectManagerService.class.getName());
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("WCSProjectManagerPU");
+    private final EntityManagerFactory emf = null;//Persistence.createEntityManagerFactory("WCSProjectManagerPU");
 
     public WCSProjectManagerService() {
     }
@@ -42,7 +42,7 @@ public class WCSProjectManagerService {
     private final WCSCompanyDAO daoWCSCompany = new WCSCompanyDAO(emf);
 
     private final WCSContactDAO daoWCSContact = new WCSContactDAO(emf);
-    
+
     private final WCSVesselDAO daoWCSVessel = new WCSVesselDAO(emf);
 
     public static Logger getLogger() {
@@ -72,7 +72,7 @@ public class WCSProjectManagerService {
     public WCSCompanyDAO getDaoWCSCompany() {
         return daoWCSCompany;
     }
-    
+
     public WCSContactDAO getDaoWCSContact() {
         return daoWCSContact;
     }

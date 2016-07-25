@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/project")
 public class HistoryNewProjectController extends Common {
+
     @RequestMapping(value = "/history-new-project")
     public String WorkOrder(Model model) {
-        this.setTitle("History-New-Projects");
+        this.setTitle("History-Projects");
+        this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/HistoryNewProject.jsp");
-        model.addAttribute("prj_version", "new");
+//        model.addAttribute("prj_version", "new");
         setHeaderInfo(model);
-        
+
         return "index";
     }
 }

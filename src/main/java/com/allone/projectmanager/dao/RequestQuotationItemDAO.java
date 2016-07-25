@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.RequestQuotationItem;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,11 +37,9 @@ public class RequestQuotationItemDAO {
         try {
             if (id != null) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotationItem.findById").
-                      setParameter("id", id);
+                        setParameter("id", id);
 
-                value = (query != null) ?
-                        (RequestQuotationItem) query.getSingleResult() :
-                        null;
+                value = (query != null) ? (RequestQuotationItem) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
@@ -51,18 +50,16 @@ public class RequestQuotationItemDAO {
         }
     }
 
-    public List getByRequestQoutation(Long rq) {
+    public List getByRequestQuotation(Long rq) {
         List value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
             if (rq != null) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotationItem.findByRequestQuotation").
-                      setParameter("requestQoutation", rq);
+                        setParameter("requestQuotation", rq);
 
-                value = (query != null) ?
-                        query.getResultList() :
-                        null;
+                value = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
@@ -73,21 +70,23 @@ public class RequestQuotationItemDAO {
         }
     }
 
-    public RequestQuotationItem add(RequestQuotationItem ms) {
+    public Collection add(Collection<RequestQuotationItem> rqis) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rqis != null && !rqis.isEmpty()) {
                 em.getTransaction().begin();
-                em.persist(ms);
+                for (RequestQuotationItem rqi : rqis) {
+                    em.persist(rqi);
+                }
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
-            return ms;
+            return rqis;
         }
     }
 
@@ -121,7 +120,7 @@ public class RequestQuotationItemDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -137,7 +136,7 @@ public class RequestQuotationItemDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -155,7 +154,7 @@ public class RequestQuotationItemDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }

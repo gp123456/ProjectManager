@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-function searchContent(version, mode, offset, size) {
+function searchContent(offset, size) {
     var reference = $("#search-reference").val();
     var type = $("#search-type option:selected").attr("value");
     var status = $("#search-status option:selected").attr("value");
@@ -16,32 +16,34 @@ function searchContent(version, mode, offset, size) {
     var date_start = $("#date-start").val();
     var date_end = $("#date-end").val();
     var data = "";
-    
-    if (reference !== '') data = "reference=" + reference;
-    if (type !== "none") data += "&type=" + type;
-    if (status !== "none") data += "&status=" + status;
-    if (vessel !== -1) data += "&vessel=" + vessel;
-    if (customer !== "none") data += "&customer=" + customer;
-    if (company !== "none") data += "&company=" + company;
-    if (date_start !== '') data += "&date_start=" + date_start;
-    if (date_end !== '') data += "&date_end=" + date_end;
-    if (vesselCustom !== null) data += "&vesselCustom=" + vesselCustom;
-    if (customerCustom !== null) data += "&customerCustom=" + customerCustom;
-    if (version !== null) data += "&version=" + version;
-    if (mode !== null) data += "&mode=" + mode;
-    data += (offset !== null) ? "&offset=" + offset : "&offset=0";
-    data += (size !== null) ? "&size=" + size : "&size=10";
+
+    data = "reference=" + reference;
+    data += "&type=" + type;
+    data += "&status=" + status;
+    data += "&vessel=" + vessel;
+    data += "&customer=" + customer;
+    data += "&company=" + company;
+    data += "&date_start=" + date_start;
+    data += "&date_end=" + date_end;
+    data += "&vesselCustom=" + vesselCustom;
+    data += "&customerCustom=" + customerCustom;
+    data += "&offset=" + offset;
+    data += "&size=" + size;
+
+    console.log(data);
 
     $.ajax({
         type: "POST",
         url: "search",
         data: data,
         success: function (response) {
+            console.log(response);
+
             var content = JSON.parse(response)
 
-            $("#project-header").html(content.project_header);
-            $("#project-footer").html(content.project_footer);
-            $("#project-body").html(content.project_body);
+            $("#header").html(content.header);
+            $("#body").html(content.body);
+            $("#footer").html(content.footer);
         },
         error: function (e) {
         }
@@ -101,7 +103,7 @@ function removeRow(id) {
 function editRow(pId) {
     var company = $("#company option:selected").attr("value");
     var type = $("#type option:selected").attr("value");
-    var expired = $("#expired").datepicker({dateFormat:'yy-mm-dd'}).val();
+    var expired = $("#expired").datepicker({dateFormat: 'yy-mm-dd'}).val();
     var vessel = $("#vessel option:selected").attr("value");
     var customer = $("#customer option:selected").attr("value");
     var contact = $("#contact option:selected").attr("value");
@@ -141,6 +143,7 @@ function editRow(pId) {
 
             $("#header").html(content.header);
             $("#body").html(content.body);
+            $("#edit").attr('class', 'button');
         },
         error: function () {
         }
@@ -197,12 +200,12 @@ function printXLS(id) {
 
 function saveProject() {
     var type = $("#type option:selected").attr("value");
-    var expired = $("#expired").datepicker({dateFormat:'yy-mm-dd'}).val();
+    var expired = $("#expired").datepicker({dateFormat: 'yy-mm-dd'}).val();
     var customer = $("#customer option:selected").attr("value");
     var vessel = $("#vessel option:selected").attr("value");
     var company = $("#company option:selected").attr("value");
     var contact = $("#contact option:selected").attr("value");
-    
+
     if (company === "none") {
         alert("you must select company");
         return;
@@ -233,12 +236,15 @@ function saveProject() {
         success: function (response) {
             var content = JSON.parse(response)
 
-            if (content.header)
+            if (content.header) {
                 $("#header").html(content.header);
-            if (content.body)
+            }
+            if (content.body) {
                 $("#body").html(content.body);
+            }
             $("#project-reference").text(content.project_reference);
             $("#save").attr('class', 'button');
+            $("#save").attr('disabled','disabled');
         },
         error: function (e) {
         }
@@ -288,6 +294,7 @@ function projectFilterCustomer() {
 
             $("#vessel").html(content.vessel);
             $("#contact").html(content.contact);
+            $("#edit").attr('class', 'button alarm');
         },
         error: function (e) {
         }
@@ -296,7 +303,7 @@ function projectFilterCustomer() {
 
 function plotStatusInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {
-        width:600,
+        width: 600,
         title: {
             text: title
         },
@@ -322,7 +329,7 @@ function plotStatusInfo(id, title, info) {
 
 function plotCompanyInfo(id, title, info) {
     var chart = new CanvasJS.Chart(id, {
-        width:600,
+        width: 600,
         title: {
             text: title
         },
@@ -437,7 +444,7 @@ function getStatuses() {
 
 function setProjectByStatus(mode, dest_path) {
     var id = $('input[name = "radio-project"]:checked').val();
-    
+
     window.location.href = dest_path + "?id=" + id + "&mode=" + mode;
 
     $("#dlg-edit-project").dialog("close");
@@ -470,7 +477,7 @@ function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
 }
 
 function dlgEditProject() {
-    getStatuses()
+    getStatuses();
 
     $("#dlg-edit-project").dialog({
         autoOpen: true,
@@ -483,13 +490,20 @@ function dlgEditProject() {
                 var div_id = "#lst-edit-project";
                 var dest_path = null;
 
-                if (status == 'Create') {
+                if (status === 'Create') {
                     dest_path = "/ProjectManager/project/edit-form";
-                } else if (status == 'Project Bill') {
+                } else if (status === 'Bill of Material or Service') {
                     dest_path = "/ProjectManager/project/bill-material-service";
+                } else if (status === 'Request Quotation') {
+                    dest_path = "/ProjectManager/project/request-quotation";
+                } else {
+                    alert("No found path");
+                    dest_path = "/ProjectManager/project/snapshot";
                 }
 
-                dlgProject('EDIT', 'new', status, dlg_id, div_id, dest_path);
+                console.log(status + "," + dest_path);
+
+                dlgProject('RQ', 'new', status, dlg_id, div_id, dest_path);
             }
         },
         show: {
@@ -517,9 +531,13 @@ function fillSearchCriteriaProject(version) {
             $("#search-customer").html(content.customer);
             $("#search-company").html(content.company);
 
-            response;
+            searchContent(0, 10);
         },
         error: function (e) {
         }
     });
+}
+
+function alarmEdit() {
+    $("#edit").attr('class', 'button alarm');
 }

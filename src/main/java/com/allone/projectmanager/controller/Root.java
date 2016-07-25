@@ -75,7 +75,7 @@ public class Root extends ProjectCommon {
             getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
             getUser().setProject_expired(collab.getProjectExpired());
             setTitle("Project Manager");
-            setHeader("header.jsp");
+            setHeader("main_header.jsp");
             setContent("../project/ViewProject.jsp");
             setHeaderInfo(model);
             model.addAttribute("login", "true");
@@ -97,13 +97,13 @@ public class Root extends ProjectCommon {
     String getView() {
         Map<String, List<PlotInfoModel>> content = new HashMap<>();
         content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.
-                                                                        toString()));
+                toString()));
         content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.
-                                                                           toString()));
+                toString()));
         content.put("OpenProjectSaleCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SALE.
-                                                                          toString()));
+                toString()));
         content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.
-                                                                             toString()));
+                toString()));
 
         return new Gson().toJson(content);
     }
@@ -129,14 +129,14 @@ public class Root extends ProjectCommon {
     @RequestMapping(value = "/printpdf")
     public @ResponseBody
     String printProjectPDF(ProjectDetail pd, Integer offset, Integer size) throws IOException, FileNotFoundException,
-                                                                                  PrintException {
+            PrintException {
         ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
         Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
         if (dbpd != null && p != null) {
             Map<String, String> content = new HashMap<>();
-            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) +
-                   "/" + p.getReference().replace("/", "_") + ".pdf";
+            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+                    + "/" + p.getReference().replace("/", "_") + ".pdf";
 
             Printing.printing(strPath);
 

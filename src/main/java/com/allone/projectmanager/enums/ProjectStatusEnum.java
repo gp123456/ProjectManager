@@ -11,7 +11,7 @@ package com.allone.projectmanager.enums;
  */
 public enum ProjectStatusEnum {
     CREATE("Create"),
-    PROJECT_BILL("Project Bill"),
+    BILL_MATERIAL_SERVICE("Bill of Material or Service"),
     REQUEST_QUOTATION("Request Quotation"),
     PURCHASE_ORDER("Purchase Order"),
     WORK_ORDER("Work Order"),
@@ -22,13 +22,13 @@ public enum ProjectStatusEnum {
     INVOICE("Invoice"),
     BOX_MARKING("Box Marking"),
     CREDIT_NOTE("Credit Note");
-    
+
     private final String value;
-    
+
     ProjectStatusEnum(final String value) {
         this.value = value;
     }
-    
+
     @Override
     public final String toString() {
         return this.value;

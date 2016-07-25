@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
 import net.sf.jasperreports.engine.JRException;
@@ -45,7 +46,8 @@ public class ProjectController extends ProjectCommon {
 
     private static final Logger logger = Logger.getLogger(ProjectController.class.getName());
 
-    @Autowired ProjectManagerService srvProjectManager;
+    @Autowired
+    ProjectManagerService srvProjectManager;
 
     public void setSrvProjectManager(ProjectManagerService srvProjectManager) {
         this.srvProjectManager = srvProjectManager;
@@ -59,11 +61,11 @@ public class ProjectController extends ProjectCommon {
     private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
 
-        content.put("company", createSearchCompany());
-        content.put("type", createSearchType());
-        content.put("vessel", createSearchVessel(srvProjectManager, null));
-        content.put("customer", createSearchCompany(srvProjectManager, null, CompanyTypeEnum.CUSTOMER));
-        content.put("contact", createSearchContact(srvProjectManager, null));
+        content.put("company", fillSearchOwnCompany());
+        content.put("type", fillSearchType());
+        content.put("vessel", fillSearchVessel(srvProjectManager, null));
+        content.put("customer", fillSearchCompany(srvProjectManager, null, CompanyTypeEnum.CUSTOMER));
+        content.put("contact", fillSearchContact(srvProjectManager, null));
 
         if (p != null && !p.getId().equals(-1)) {
             List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
@@ -84,18 +86,18 @@ public class ProjectController extends ProjectCommon {
     private Map<String, Object> getMenuInfo() {
         Map<String, Object> content = new HashMap<>();
         Long create = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.CREATE.toString());
-        Long bill = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.PROJECT_BILL.toString());
+        Long bill = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
         Long quota = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.
-             toString());
+                toString());
         Long purchase = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.PURCHASE_ORDER.
-             toString());
+                toString());
         Long work = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.WORK_ORDER.toString());
         Long ack = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.ACK_ORDER.toString());
         Long packing = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.PACKING_LIST.toString());
         Long delivery = srvProjectManager.getDaoProjectDetail().
-             countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString());
+                countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString());
         Long shipping = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.
-             toString());
+                toString());
         Long invoice = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.INVOICE.toString());
         Long box = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.BOX_MARKING.toString());
         Long credit = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString());
@@ -119,9 +121,9 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/snapshot")
     public String Snapshot(Model model) {
         this.setTitle("Project");
-        this.setHeader(null);
+        this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
-        this.setContent(null);
+        this.setContent("../project/HistoryNewProject.jsp");
         setHeaderInfo(model);
 
         return "index";
@@ -133,7 +135,7 @@ public class ProjectController extends ProjectCommon {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
 
         this.setTitle("Project - New");
-        this.setHeader(null);
+        this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
@@ -148,20 +150,17 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/edit-form")
     public String EditProject(Project p, Model model) {
         this.setTitle("Projects - Edit");
-        this.setHeader(null);
+        this.setHeader("header.jsp");
         this.setSide_bar("../project/sidebar.jsp");
         this.setContent("../project/NewProject.jsp");
         setHeaderInfo(model);
         p = srvProjectManager.getDaoProject().getById(p.getId());
         List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
-        if (p != null) {
+        if (p != null && pds != null && !pds.isEmpty()) {
             model.addAttribute("p_id", p.getId());
             model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-        }
-        model.addAttribute("button_value", "Edit");
-        model.addAttribute("button_id", "edit");
-        if (pds != null && !pds.isEmpty()) {
-            model.addAttribute("button_action", "editRow(" + pds.get(0).getId() + ")");
+            model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='editRow(" + pds.get(0).getId()
+                    + ")' value='Edit' />\n");
         }
 
         return "index";
@@ -171,6 +170,7 @@ public class ProjectController extends ProjectCommon {
     public @ResponseBody
     String saveProject(ProjectDetail pd, Integer offset, Integer size, Model model) {
         Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
+        Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
 
         if (user != null) {
             Map<String, Object> content = new HashMap<>();
@@ -182,6 +182,7 @@ public class ProjectController extends ProjectCommon {
             pd.setCreator(user.getId());
             pd.setCreated(new Date());
             pd.setReference(p.getReference() + "/1");
+            pd.setVesselName((v != null) ? v.getName() : "");
             pd = srvProjectManager.getDaoProjectDetail().add(pd);
 
             user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
@@ -204,9 +205,8 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(ProjectDetail p, String date_start, String date_end, String vesselCustom, String customerCustom,
-                         String version, String mode, Integer offset, Integer size) {
-        mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
+    String searchProject(ProjectDetail p, String date_start, String date_end, String vesselCustom, String customerCustom, Integer offset, Integer size) {
+//        mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
         return searchProject(srvProjectManager, p, null, null, vesselCustom, customerCustom, offset, size);
     }
@@ -277,11 +277,11 @@ public class ProjectController extends ProjectCommon {
             Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
             Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, pd.
-                                                                           getCustomer());
+                    getCustomer());
 
             JasperReport.createProjectReport(p, pd, getProjectStatusName(pd.getStatus()), getProjectTypeName(pd.
-                                             getType()), (user != null) ? user.getSurname() + ", " + user.getName() : "",
-                                             (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
+                    getType()), (user != null) ? user.getSurname() + ", " + user.getName() : "",
+                    (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
 
             String projectHeader = createProjectHeader();
             Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
@@ -300,13 +300,13 @@ public class ProjectController extends ProjectCommon {
             value = {"/printpdf"})
     public @ResponseBody
     String printProjectPDF(ProjectDetail pd, Integer offset, Integer size) throws IOException, FileNotFoundException,
-                                                                                  PrintException {
+            PrintException {
         Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
         if (p != null) {
             Map<String, String> content = new HashMap<>();
-            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) +
-                             "/" + p.getReference().replace("/", "_") + ".pdf";
+            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+                    + "/" + p.getReference().replace("/", "_") + ".pdf";
 
             Printing.printing(strPath);
 
@@ -356,26 +356,25 @@ public class ProjectController extends ProjectCommon {
 
         if (!Strings.isNullOrEmpty(customer)) {
             String response = "";
-            List<Vessel> vessels = (!Strings.isNullOrEmpty(customer)) ?
-                                   ((!customer.equals("none")) ?
-                                    srvProjectManager.getDaoVessel().getByCompany(customer) :
-                                    srvProjectManager.getDaoVessel().getAll()) :
-                                   null;
-            List<Contact> contacts = (vessels != null && !vessels.isEmpty()) ?
-                                     ((!customer.equals("none")) ?
-                                      srvProjectManager.getDaoContact()
-                                      .getByCompany(customer) :
-                                      srvProjectManager.getDaoContact().getAll()) :
-                                     null;
+            List<Vessel> vessels = (!Strings.isNullOrEmpty(customer))
+                    ? ((!customer.equals("none"))
+                    ? srvProjectManager.getDaoVessel().getByCompany(customer)
+                    : null)
+                    : null;
+            List<Contact> contacts = (vessels != null && !vessels.isEmpty())
+                    ? ((!customer.equals("none"))
+                    ? srvProjectManager.getDaoContact()
+                    .getByCompany(customer)
+                    : null)
+                    : null;
 
-            response = "";
             if (vessels != null && vessels.isEmpty() == false) {
                 for (Vessel vessel : vessels) {
                     response += "<option value='" + vessel.getId() + "'>" + vessel.getName() + "</option>";
                     content.put("vessel", response);
                 }
             } else {
-                content.put("vessel", response);
+                content.put("vessel", "<option value='-1'>Select Vessel</option>");
             }
             response = "";
             if (contacts != null && contacts.isEmpty() == false) {
@@ -384,7 +383,7 @@ public class ProjectController extends ProjectCommon {
                     content.put("contact", response);
                 }
             } else {
-                content.put("contact", response);
+                content.put("contact", "<option value='-1'>Select Contact</option>");
             }
         }
 
@@ -454,9 +453,9 @@ public class ProjectController extends ProjectCommon {
                         vessel = v.getName();
                     }
                 }
-                response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId() +
-                            "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel +
-                            "</label><br>";
+                response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId()
+                        + "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel
+                        + "</label><br>";
             }
         }
 
@@ -470,8 +469,8 @@ public class ProjectController extends ProjectCommon {
 
         for (ProjectStatusEnum status : ProjectStatusEnum.values()) {
             response += "<input type='radio' id='" + status.toString() + "' name='radio-project' value='" + status.
-                        toString() + "'><label for='" + status.toString() + "' class='radio-label'>" + status.toString() +
-                        "</label><br>";
+                    toString() + "'><label for='" + status.toString() + "' class='radio-label'>" + status.toString()
+                    + "</label><br>";
         }
 
         return response;

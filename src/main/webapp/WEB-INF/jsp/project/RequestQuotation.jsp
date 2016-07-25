@@ -29,7 +29,7 @@
     });
 </script>
 
-<div id="bill-header" class="formLayout">
+<div id="header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
     <input type="hidden" id="project-id" value=${projectId} />
     <div style="overflow-y: scroll">
@@ -39,7 +39,7 @@
                 <tr>
                     <td>
                         <label class="custom-select">
-                            <select id="subproject" onchange="changeSubproject()">}</select>
+                            <select id="subproject" onchange="changeSubproject()"></select>
                         </label>
                     </td>
                     <td>
@@ -51,9 +51,12 @@
         <br><h2>Select Supplier</h2>
         <p>
             <label class="custom-select-large">
-                <select id="supplier"></select>
+                <select id="supplier" onchange="changeRequestQuotationSupplier()"></select>
             </label>
         </p>
+        <table class="table tablesorter">
+            <tbody id="request-quotation-supplier"></tbody>
+        </table>
         <br><h2>Select Currency</h2>
         <p>
             <label class="custom-select">
@@ -61,7 +64,7 @@
             </label>
         </p>
     </div>
-    <h2>Request of Quotation Summary</h2>
+    <h2>Request for Quotation Summary</h2>
     <div>
         <table class="table tablesorter">
             <thead>
@@ -76,7 +79,7 @@
         </table>
     </div>
     <div>
-        <h2>Request of Quotation Detail</h2>
+        <h2>Request for Quotation Details</h2>
         <table class="table tablesorter">
             <thead>
                 <tr>
@@ -93,6 +96,6 @@
             <tbody id="request-quotation-items">${itemRequestQuotation}</tbody>
         </table>
     </div>
-    <div><p><h2>Note</h2><textarea id="note" name="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
+    <div><p><h2>Notes</h2><textarea id="note" name="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
     <div>${buttonSendEmail}${buttonSavePDF}${buttonSaveExcel}</div>
 </div>

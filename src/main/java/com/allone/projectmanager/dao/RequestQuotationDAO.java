@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.RequestQuotation;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -35,11 +36,11 @@ public class RequestQuotationDAO {
         try {
             if (id != null) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findById").
-                      setParameter("id", id);
+                        setParameter("id", id);
 
-                value = (query != null) ?
-                         (RequestQuotation) query.getSingleResult() :
-                         null;
+                value = (query != null)
+                        ? (RequestQuotation) query.getSingleResult()
+                        : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
@@ -56,11 +57,12 @@ public class RequestQuotationDAO {
 
         try {
             if (bms != null) {
-                Query query = (bms != null && bms.compareTo(0l) >= 0) ? em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService").
-                              setParameter("billMaterialService", bms) : null;
-                value = (query != null) ?
-                         (RequestQuotation) query.getSingleResult() :
-                         null;
+                Query query = (bms != null && bms.compareTo(0l) >= 0)
+                        ? em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService").
+                        setParameter("billMaterialService", bms) : null;
+                value = (query != null)
+                        ? (RequestQuotation) query.getSingleResult()
+                        : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
@@ -71,21 +73,21 @@ public class RequestQuotationDAO {
         }
     }
 
-    public RequestQuotation add(RequestQuotation ms) {
+    public RequestQuotation add(RequestQuotation rq) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rq != null) {
                 em.getTransaction().begin();
-                em.persist(ms);
+                em.persist(rq);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
-            return ms;
+            return rq;
         }
     }
 
@@ -99,7 +101,7 @@ public class RequestQuotationDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }
@@ -115,7 +117,7 @@ public class RequestQuotationDAO {
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
         }

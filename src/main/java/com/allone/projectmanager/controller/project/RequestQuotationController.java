@@ -22,7 +22,9 @@ import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -300,76 +302,115 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return result;
     }
 
-    @RequestMapping(value = "/request-quotation")
-    public String RequestQuotation(Project p, String mode, Model model) {
-        if (mode.equals("RQ")) {
-            this.setTitle("Request Quotation");
-            this.setSide_bar("../project/sidebar.jsp");
-            this.setContent("../project/RequestQuotation.jsp");
-            this.setClassContent("content");
-            p = srvProjectManager.getDaoProject().getById(p.getId());
-            setHeaderInfo(model);
+    @SuppressWarnings("null")
+    private void existRequestQuotation(Long pId) {
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(pId);
+        if (pds != null && !pds.isEmpty()) {
+            List<BillMaterialService> bmss = new ArrayList<>();
 
-            model.addAttribute("projectId", p.getId());
-            model.addAttribute("projectReference", p.getReference());
-            model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail()'>");
-            model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF()'>");
-            model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS()'>");
-        } else if (mode.equals("RQS")) {
-            this.setTitle("Request Quotation Supplier");
-            this.setSide_bar(null);
-            this.setContent("../project/RequestQuotationSupplier.jsp");
-            this.setClassContent("contentNoSideBar");
-            setHeaderInfo(model);
+            pds.stream().forEach((pd) -> {
+                bmss.add(srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId()));
+            });
+            if (bmss != null && !bmss.isEmpty()) {
+                for (BillMaterialService bms : bmss) {
+                    if (getRequestQuotation(bms.getId()) == null) {
+                        RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
 
-            model.addAttribute("requestQuotationId", p.getId());
-            model.addAttribute("buttonCancel", "<input type='button' value='Cancel' class='button' onclick='cancel()'>");
-            model.addAttribute("buttonRefresh", "<input type='button' value='Refresh' class='button' onclick='getVirtualRequestQuotation()'>");
-            model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmailSupplier()'>");
+                        if (rq != null) {
+                            setRequestQuotation(srvProjectManager, bms.getId(), rq);
 
-            RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(p.getId());
+                            List<RequestQuotationItem> rqis = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
 
-            if (rq != null) {
-                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(rq.getBillMaterialService());
-
-                if (bms != null) {
-                    ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
-
-                    if (pd != null) {
-                        p = srvProjectManager.getDaoProject().getById(pd.getProject());
-
-                        model.addAttribute("projectReference", p.getReference());
+                            if (rqis != null && !rqis.isEmpty()) {
+                                rqis.stream().forEach((rqi) -> {
+                                    setRequestQuotationItem(bms.getId(), rqi);
+                                });
+                            }
+                        }
+                    } else {
+                        return;
                     }
                 }
             }
-        } else if (mode.equals("BMSI")) {
-            this.setTitle("Preparation Request Quotation");
-            this.setSide_bar("../project/sidebar.jsp");
-            this.setContent("../project/RequestQuotationSelectItem.jsp");
-            this.setClassContent("content");
-            setHeaderInfo(model);
-            String[] pbInfo = getBillMaterialServiceByProjectDetailInfo(p.getProjectDetail());
-            p = srvProjectManager.getDaoProject().getById(p.getId());
+        }
+    }
 
-            model.addAttribute("projectId", p.getId());
-            model.addAttribute("projectReference", p.getReference());
-            model.addAttribute("subproject", pbInfo[0]);
-            model.addAttribute("billMaterialService", pbInfo[1]);
-            model.addAttribute("billMaterialServiceItems", pbInfo[2]);
-        } else {
-            this.setTitle("Request Quotation");
-            this.setSide_bar("../project/sidebar.jsp");
-            this.setContent("../project/RequestQuotationSelectItem.jsp");
-            this.setClassContent("content");
-            setHeaderInfo(model);
-            p = srvProjectManager.getDaoProject().getById(p.getId());
-            String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
+    @RequestMapping(value = "/request-quotation")
+    public String RequestQuotation(Project p, String mode, Model model) {
+        switch (mode) {
+            case "RQ":
+                this.setTitle("Request Quotation");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/RequestQuotation.jsp");
+                this.setClassContent("content");
+                p = srvProjectManager.getDaoProject().getById(p.getId());
+                existRequestQuotation(p.getId());
+                setHeaderInfo(model);
+                model.addAttribute("projectId", p.getId());
+                model.addAttribute("projectReference", p.getReference());
+                model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmail()'>");
+                model.addAttribute("buttonSavePDF", "<input type='button' value='Save PDF' class='button' onclick='savePDF()'>");
+                model.addAttribute("buttonSaveExcel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS()'>");
+                break;
+            case "RQS":
+                this.setTitle("Request Quotation Supplier");
+                this.setHeader("supplier_header.jsp");
+                this.setSide_bar(null);
+                this.setContent("../project/RequestQuotationSupplier.jsp");
+                this.setClassContent("contentNoSideBar");
+                setHeaderInfo(model);
+                model.addAttribute("requestQuotationId", p.getId());
+                model.addAttribute("buttonCancel", "<input type='button' value='Clear All' class='button' onclick='cancel()'>");
+                model.addAttribute("buttonRefresh", "<input type='button' value='Calculate' class='button' onclick='getVirtualRequestQuotation()'>");
+                model.addAttribute("buttonSendEmail", "<input type='button' value='Submit' class='button' onclick='sendEmailSupplier()'>");
+                RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(p.getId());
+                if (rq != null) {
+                    BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(rq.getBillMaterialService());
 
-            model.addAttribute("projectId", p.getId());
-            model.addAttribute("projectReference", p.getReference());
-            model.addAttribute("subproject", pbInfo[0]);
-            model.addAttribute("billMaterialService", pbInfo[1]);
-            model.addAttribute("billMaterialServiceItems", pbInfo[2]);
+                    if (bms != null) {
+                        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+
+                        if (pd != null) {
+                            p = srvProjectManager.getDaoProject().getById(pd.getProject());
+
+                            model.addAttribute("projectReference", p.getReference());
+                        }
+                    }
+                }
+                break;
+            case "BMSI": {
+                this.setTitle("Preparation Request Quotation");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/RequestQuotationSelectItem.jsp");
+                this.setClassContent("content");
+                setHeaderInfo(model);
+                String[] pbInfo = getBillMaterialServiceByProjectDetailInfo(p.getProjectDetail());
+                p = srvProjectManager.getDaoProject().getById(p.getId());
+                model.addAttribute("projectId", p.getId());
+                model.addAttribute("projectReference", p.getReference());
+                model.addAttribute("subproject", pbInfo[0]);
+                model.addAttribute("billMaterialService", pbInfo[1]);
+                model.addAttribute("billMaterialServiceItems", pbInfo[2]);
+                break;
+            }
+            default: {
+                this.setTitle("Request Quotation");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/RequestQuotationSelectItem.jsp");
+                this.setClassContent("content");
+                setHeaderInfo(model);
+                p = srvProjectManager.getDaoProject().getById(p.getId());
+                String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
+                model.addAttribute("projectId", p.getId());
+                model.addAttribute("projectReference", p.getReference());
+                model.addAttribute("subproject", pbInfo[0]);
+                model.addAttribute("billMaterialService", pbInfo[1]);
+                model.addAttribute("billMaterialServiceItems", pbInfo[2]);
+                break;
+            }
         }
 
         return "index";
@@ -414,32 +455,40 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/create-all")
     public @ResponseBody
-    String createAll(Long pdId, Boolean checked, Long bms, Long bmsi) {
-        return "";
+    String createAll(Long pdId, Boolean checked) {
+        if (pdId != null && checked != null) {
+            BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
+            Collection<BillMaterialServiceItem> items = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
+
+            if (checked.equals(Boolean.TRUE)) {
+                setRequestQuotation(srvProjectManager, bms.getId(), new RequestQuotation.Builder().setBillMaterialService(bms.getId()).build());
+                for (BillMaterialServiceItem item : items) {
+                    setRequestQuotationItem(bms.getId(), new RequestQuotationItem.Builder().setBillMaterialServiceItem(item.getId()).build());
+                }
+            } else {
+                removeRequestQuotation(bms.getId());
+                for (BillMaterialServiceItem item : items) {
+                    removeRequestQuotationItem(bms.getId(), new RequestQuotationItem.Builder().setBillMaterialServiceItem(item.getId()).build());
+                }
+            }
+
+            String[] pbInfo = getBillMaterialServiceInfo(pdId);
+
+            return pbInfo[1];
+        }
+        return "#";
     }
 
     @RequestMapping(value = "/request-quotation/create")
     public @ResponseBody
     String create(Long pdId, Boolean checked, Long bms, Long bmsi) {
-        if (checked != null
-                && bms != null
-                && bmsi != null) {
+        if (pdId != null && checked != null && bms != null && bmsi != null) {
             if (checked.equals(Boolean.TRUE)) {
-                setVirtualRequestQuotation(srvProjectManager,
-                        bms,
-                        new RequestQuotation.Builder()
-                        .setBillMaterialService(bms)
-                        .build());
-                setVirtualRequestQuotationItem(bms,
-                        new RequestQuotationItem.Builder()
-                        .setBillMaterialServiceItem(bmsi)
-                        .build());
+                setRequestQuotation(srvProjectManager, bms, new RequestQuotation.Builder().setBillMaterialService(bms).build());
+                setRequestQuotationItem(bms, new RequestQuotationItem.Builder().setBillMaterialServiceItem(bmsi).build());
             } else {
-                removeVirtualRequestQuotation(bms);
-                removeVirtualRequestQuotationItem(bms,
-                        new RequestQuotationItem.Builder()
-                        .setBillMaterialServiceItem(bmsi)
-                        .build());
+                removeRequestQuotation(bms);
+                removeRequestQuotationItem(bms, new RequestQuotationItem.Builder().setBillMaterialServiceItem(bmsi).build());
             }
 
             String[] pbInfo = getBillMaterialServiceInfo(pdId);
@@ -515,13 +564,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
             if (bms != null) {
-                removeVirtualRequestQuotation(bms.getId());
+                removeRequestQuotation(bms.getId());
                 RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
 
                 if (rq != null) {
                     srvProjectManager.getDaoRequestQuotation().delete(rq);
 
-                    List<RequestQuotationItem> items = srvProjectManager.getDaoRequestQuotationItem().getByRequestQoutation(rq.getId());
+                    List<RequestQuotationItem> items = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
 
                     if (items != null && !items.isEmpty()) {
                         srvProjectManager.getDaoRequestQuotationItem().delete(items);
@@ -624,73 +673,72 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @RequestMapping(value = "/request-quotation/send-email")
     public @ResponseBody
     @SuppressWarnings("null")
-    String sendEmail(Long pdId, String supplierName, Integer currency, String note) throws MessagingException {
-        if (pdId != null && !Strings.isNullOrEmpty(supplierName) && currency != null) {
-            BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
-            Company supplier = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, supplierName);
-            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+    String sendEmail(Long pdId, String supplier, Integer currency, String note) throws MessagingException {
+        String response = "";
+
+        if (pdId != null && currency != null) {
+            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+            BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
-            if (bms != null && supplier != null) {
+            if (p != null && pd != null && bms != null) {
                 RequestQuotation rq = getRequestQuotation(bms.getId());
+                Collection<RequestQuotationItem> rqis = getRequestQoutationItems(bms.getId());
+                p.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
+                srvProjectManager.getDaoProject().edit(p);
+                pd.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
+                srvProjectManager.getDaoProjectDetail().edit(pd);
+                rq.setCurrency(currency);
+                rq.setComplete(Boolean.FALSE);
+                rq.setNote(note);
 
-                if (p != null && pd != null && rq != null) {
-                    p.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
-                    srvProjectManager.getDaoProject().edit(p);
-                    pd.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
-                    srvProjectManager.getDaoProjectDetail().edit(pd);
-                    rq.setBillMaterialService(bms.getId());
-                    rq.setCurrency(currency);
-                    rq.setSupplier(supplierName);
-                    rq.setComplete(Boolean.FALSE);
-                    rq.setNote(note);
-                    rq = srvProjectManager.getDaoRequestQuotation().add(rq);
+                rq.setSupplier(supplier);
+                rq = srvProjectManager.getDaoRequestQuotation().add(rq);
 
-                    if (rq != null && rq.getId() != null) {
-                        List<RequestQuotationItem> items = getRequestQoutationItems(bms.getId());
-
-                        if (items != null && !items.isEmpty()) {
-                            for (RequestQuotationItem item : items) {
-                                item.setRequestQuotation(rq.getId());
-                            }
-                            srvProjectManager.getDaoRequestQuotationItem().add(items);
-
-//                            if (!Strings.isNullOrEmpty(supplier.getEmail1())) {
-//                                sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail1(), null,
-//                                        "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-//                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS");
-//                            }
-//                            if (!Strings.isNullOrEmpty(supplier.getEmail2())) {
-//                                sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail2(), null,
-//                                        "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-//                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS");
-//                            }
-//                            if (!Strings.isNullOrEmpty(supplier.getEmail3())) {
-//                                sendMail("mail.forthnet.gr", "info@wcs.com.gr", supplier.getEmail3(), null,
-//                                        "REQUEST FOR QUOTATION - REF:" + pd.getReference(),
-//                                        "http://localhost:8080/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS");
-//                            }
-                        } else {
-                            logger.log(Level.SEVERE, "no found items for request quotation:{0}", rq.getId());
-
-                            return "";
-                        }
-
-                        return "http://localhost:8081/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS";
-                    } else {
-                        logger.log(Level.SEVERE, "error while persist the requers quotation");
+                if (rq != null && rqis != null && !rqis.isEmpty()) {
+                    for (RequestQuotationItem rqi : rqis) {
+                        rqi.setRequestQuotation(rq.getId());
                     }
-                } else {
-                    logger.log(Level.SEVERE, "no found requers quotation for the bill material service id: {0}", bms.getId());
+                    rqis = srvProjectManager.getDaoRequestQuotationItem().add(rqis);
+
+                    if (rqis != null && !rqis.isEmpty()) {
+                        Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, rq.getSupplier());
+
+                        if (company != null && !Strings.isNullOrEmpty(company.getEmail1())) {
+                            sendMail("smtp.dmail.hol.gr", "gpatitakis@hol.gr", company.getEmail1(), null,
+                                    "MARPO GROUP RFQ - REF:" + pd.getReference(),
+                                    "http://localhost:8081/ProjectManager/project/request-quotation?id=" + rq.getId() + "&mode=RQS");
+
+                            response = "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n";
+                        }
+                    }
                 }
             } else {
-                logger.log(Level.SEVERE, "no found bill material service for the project detail id: {0} or supplier with name: {1}", new Object[]{pdId, supplierName});
+                if (p == null) {
+                    logger.log(Level.SEVERE, "no found project:{0}", pdId);
+                    response = "no found project";
+                }
+                if (pd == null) {
+                    logger.log(Level.SEVERE, "no found project detail:{0}", pdId);
+                    response = "no found project detail";
+                }
+                if (bms == null) {
+                    logger.log(Level.SEVERE, "no found bill of material or services:{0}", pdId);
+                    response = "no found bill of material or services";
+                }
             }
         } else {
-            logger.log(Level.SEVERE, "error one or more from info: {0},{1}", new Object[]{pdId, supplierName});
+            if (pdId == null) {
+                logger.log(Level.SEVERE, "you must to give a project detail id");
+                response = "you must to give a project detail id";
+            }
+            if (currency == null) {
+                logger.log(Level.SEVERE, "you must to give a currency");
+                response = "you must to give a currency";
+            }
         }
 
-        return "";
+        return response;
     }
 
     @RequestMapping(value = "/request-quotation/get-value")
@@ -721,5 +769,49 @@ public class RequestQuotationController extends RequestQuotationCommon {
         }
 
         return null;
+    }
+
+    @RequestMapping(value = "/request-quotation/change-supplier")
+    public @ResponseBody
+    String changeSupplier(Long pdId, String supplier) {
+        String response = "";
+        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
+
+        if (bms != null) {
+            Collection<String> suppliers = addSupplier(bms.getId(), supplier);
+
+            if (suppliers != null) {
+                for (String supp : suppliers) {
+                    response += "<tr>"
+                            + "<td>" + supp + "</td>\n"
+                            + "<td><input type='button' value='Remove' class='button' onclick='removeRequestQuotationSupplier(\"" + supp + "\")'></td>\n"
+                            + "</tr>\n";
+                }
+            }
+        }
+
+        return response;
+    }
+
+    @RequestMapping(value = "/request-quotation/remove-supplier")
+    public @ResponseBody
+    String removeSupplier(Long pdId, String supplier) {
+        String response = "";
+        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
+
+        if (bms != null) {
+            Collection<String> suppliers = removeVirtualSupplier(bms.getId(), supplier);
+
+            if (suppliers != null) {
+                for (String supp : suppliers) {
+                    response += "<tr>"
+                            + "<td>" + supp + "</td>\n"
+                            + "<td><input type='button' value='Remove' class='button' onclick='removeRequestQuotationSupplier(\"" + supp + "\")'></td>\n"
+                            + "</tr>\n";
+                }
+            }
+        }
+
+        return response;
     }
 }

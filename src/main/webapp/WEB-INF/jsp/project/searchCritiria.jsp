@@ -46,5 +46,5 @@
 <label class="custom-select">End date
     <input name="edate" type="text" id="date-end" value="${edateVal}">
 </label><br>
-<input type="button" class="button" value="Search" id="search" onclick="searchContent($('#project-version').val(), 'view', 0, 10)"/>
+<input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
 <input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>

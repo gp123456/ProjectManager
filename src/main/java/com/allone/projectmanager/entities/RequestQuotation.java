@@ -66,6 +66,9 @@ public class RequestQuotation implements Serializable {
     @Column(name = "note")
     private String note;
     
+    @Column(name = "supplier_note")
+    private String supplierNote;
+    
     @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
     private Boolean complete;
 
@@ -82,6 +85,7 @@ public class RequestQuotation implements Serializable {
         deliveryCost = builder.deliveryCost;
         otherExpenses = builder.otherExpenses;
         note = builder.note;
+        supplierNote = builder.supplierNote;
     }
 
     public Long getId() {
@@ -163,6 +167,14 @@ public class RequestQuotation implements Serializable {
     public void setNote(String note) {
         this.note = note;
     }
+    
+    public String getSupplierNote() {
+        return supplierNote;
+    }
+
+    public void setSupplierNote(String supplierNote) {
+        this.supplierNote = supplierNote;
+    }
 
     public Boolean getComplete() {
         return complete;
@@ -193,11 +205,7 @@ public class RequestQuotation implements Serializable {
         }
 
         RequestQuotation other = (RequestQuotation) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     public static class Builder {
@@ -219,6 +227,8 @@ public class RequestQuotation implements Serializable {
         private Integer otherExpenses;
 
         private String note;
+        
+        private String supplierNote;
 
         private Boolean complete;
 
@@ -234,7 +244,7 @@ public class RequestQuotation implements Serializable {
             return this;
         }
 
-        public Builder setMaterialCost(Integer materiaCost) {
+        public Builder setMaterialCost(Integer materialCost) {
             this.materialCost = materialCost;
 
             return this;
@@ -275,8 +285,14 @@ public class RequestQuotation implements Serializable {
 
             return this;
         }
+        
+        public Builder setSupplierNote(String supplierNote) {
+            this.supplierNote = supplierNote;
 
-        public Builder setComplete(Boolean compelte) {
+            return this;
+        }
+
+        public Builder setComplete(Boolean complete) {
             this.complete = complete;
 
             return this;

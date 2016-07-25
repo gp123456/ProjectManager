@@ -13,6 +13,13 @@
     height: 100%;
 }
 
+.top-bar .brochure {
+    float: left;
+    width: 65%;
+    background: url('../../../images/brochure.png') no-repeat left;
+    height: 100%;
+}
+
 .top-bar .version {
     float: left;
     width: 10%;
@@ -95,7 +102,7 @@
 
 #userHead .logout {
     position: absolute;
-    right: 0px;
+    right: 20px;
     top: 10px;
 }
 

@@ -30,26 +30,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "project_detail")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreator", query = "SELECT p FROM ProjectDetail p WHERE p.creator = :creator AND p.status = :status" + " ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findAll", query = "SELECT p FROM ProjectDetail p ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByProject", query = "SELECT count(p) FROM ProjectDetail p WHERE p.project = :project"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByProjectId", query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreator",
+            query = "SELECT p FROM ProjectDetail p WHERE p.creator = :creator AND p.status = :status" + " ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findAll",
+            query = "SELECT p FROM ProjectDetail p ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByProject",
+            query = "SELECT count(p) FROM ProjectDetail p WHERE p.project = :project"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByProjectId",
+            query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.created DESC"),
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findById", query = "SELECT p FROM ProjectDetail p WHERE p.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findLastByProject", query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.id DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByStatus", query = "SELECT p FROM ProjectDetail p WHERE p.status = :status ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByType", query = "SELECT p FROM ProjectDetail p WHERE p.type = :type ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByType", query = "SELECT count(p.id) FROM ProjectDetail p WHERE p.type = :type"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreated", query = "SELECT p FROM ProjectDetail p WHERE p.created = :created ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByExpired", query = "SELECT p FROM ProjectDetail p WHERE p.expired = :expired ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCompany", query = "SELECT p FROM ProjectDetail p WHERE p.company = :company ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByVessel", query = "SELECT p FROM ProjectDetail p WHERE p.vessel = :vessel ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCustomer", query = "SELECT p FROM ProjectDetail p WHERE p.customer = :customer ORDER BY p.created DESC"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByContact", query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findLastByProject",
+            query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.id DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByStatus",
+            query = "SELECT p FROM ProjectDetail p WHERE p.status = :status ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByType",
+            query = "SELECT p FROM ProjectDetail p WHERE p.type = :type ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByType",
+            query = "SELECT count(p.id) FROM ProjectDetail p WHERE p.type = :type"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCreated",
+            query = "SELECT p FROM ProjectDetail p WHERE p.created = :created ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByExpired",
+            query = "SELECT p FROM ProjectDetail p WHERE p.expired = :expired ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCompany",
+            query = "SELECT p FROM ProjectDetail p WHERE p.company = :company ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByVessel",
+            query = "SELECT p FROM ProjectDetail p WHERE p.vessel = :vessel ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByCustomer",
+            query = "SELECT p FROM ProjectDetail p WHERE p.customer = :customer ORDER BY p.created DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByContact",
+            query = "SELECT p FROM ProjectDetail p WHERE p.contact = :contact ORDER BY p.created DESC"),
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countAll", query = "SELECT count(p) FROM ProjectDetail p"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByStatus", query = "SELECT count(p) FROM ProjectDetail p WHERE p.status = :status"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countOpenByType", query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus", query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status = :status"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany", query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company")})
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByStatus",
+            query = "SELECT count(p) FROM ProjectDetail p WHERE p.status = :status"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countOpenByType",
+            query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus",
+            query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status = :status"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findCreatedByProjectExceptId",
+            query = "SELECT p FROM ProjectDetail p WHERE p.project = :pId AND p.id != :pdId AND p.status = :status"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
+            query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company")})
 public class ProjectDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -79,14 +99,14 @@ public class ProjectDetail implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "created")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
     @Basic(optional = false)
     @Column(name = "expired")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date expired;
-    
+
     @Column(name = "customer")
     private String customer;
 
@@ -101,10 +121,14 @@ public class ProjectDetail implements Serializable {
     @Basic(optional = false)
     @Column(name = "contact")
     private Long contact;
-    
+
     @Basic(optional = false)
     @Column(name = "reference")
     private String reference;
+
+    @Basic(optional = false)
+    @Column(name = "vesselName")
+    private String vesselName;
 
     private ProjectDetail(Builder builder) {
         project = builder.project;
@@ -118,6 +142,7 @@ public class ProjectDetail implements Serializable {
         company = builder.company;
         contact = builder.contact;
         reference = builder.reference;
+        vesselName = builder.vesselName;
     }
 
     public ProjectDetail() {
@@ -207,6 +232,14 @@ public class ProjectDetail implements Serializable {
         this.vessel = vessel;
     }
 
+    public String getVesselName() {
+        return vesselName;
+    }
+
+    public void setVesselName(String vesselName) {
+        this.vesselName = vesselName;
+    }
+
     public Long getContact() {
         return contact;
     }
@@ -214,7 +247,7 @@ public class ProjectDetail implements Serializable {
     public void setContact(Long contact) {
         this.contact = contact;
     }
-    
+
     public String getReference() {
         return reference;
     }
@@ -310,10 +343,12 @@ public class ProjectDetail implements Serializable {
 
         private Long vessel;
 
+        private String vesselName;
+
         private String company;
 
         private Long contact;
-        
+
         private String reference;
 
         public Builder setProject(Long project) {
@@ -364,6 +399,12 @@ public class ProjectDetail implements Serializable {
             return this;
         }
 
+        public Builder setVesselName(String vesselName) {
+            this.vesselName = vesselName;
+
+            return this;
+        }
+
         public Builder setCompany(String company) {
             this.company = company;
 
@@ -375,7 +416,7 @@ public class ProjectDetail implements Serializable {
 
             return this;
         }
-        
+
         public Builder setReference(String reference) {
             this.reference = reference;
 

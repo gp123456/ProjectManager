@@ -1,4 +1,4 @@
- /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -16,7 +16,6 @@ import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.model.PlotInfoModel;
-import com.allone.projectmanager.model.SearchInfo;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.text.SimpleDateFormat;
@@ -44,47 +43,38 @@ enum ProjectMode {
 
 public class ProjectCommon extends Common {
 
-    private static final Logger logger = Logger.getLogger(ProjectCommon.class.getName());
+    private static final Logger logger = Logger
+            .getLogger(ProjectCommon.class.getName());
 
     private ProjectMode mode;
-    
+
     private final Map<Long, List<BillMaterialServiceItem>> mapBillMaterialServiceItem = new HashMap<>();
 
     private final Map<Long, BillMaterialService> mapBillMaterialService = new HashMap<>();
 
-    private String createSearchStatus(String version) {
-        List<SearchInfo> info = getSearchCriteriaStatusProject(version);
-        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
-
-        if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream()
-            .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
-            reduce(response, String::concat);
-        }
-
-        return response;
-    }
-
-    public String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd) {
+    public String createProjectRow(ProjectManagerService srvProjectManager,
+            ProjectDetail pd) {
         String response = "";
-        Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
+        Collabs user = srvProjectManager.getDaoCollab()
+                .getById(pd.getCreator());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
-        Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+        Contact cont = srvProjectManager.getDaoContact()
+                .getById(pd.getContact());
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
 
-        response +=
-        "<tr>" +
-        "<td>" + pd.getReference() + "</td>\n" +
-        "<td>" + pd.getType() + "</td>\n" +
-        "<td>" + pd.getStatus() + "</td>\n" +
-        "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n" +
-        "<td>" + format.format(pd.getCreated()) + "</td>\n" +
-        "<td>" + format.format(pd.getExpired()) + "</td>\n" +
-        "<td>" + pd.getCompany() + "</td>" +
-        "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n" +
-        "<td>" + pd.getCustomer() + "</td>" +
-        "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n" +
-        "</tr>\n";
+        response += "<tr>" + "<td>" + pd.getReference() + "</td>\n" + "<td>"
+                + pd.getType() + "</td>\n" + "<td>" + pd.getStatus() + "</td>\n"
+                + "<td>"
+                + ((user != null) ? user.getName() + " " + user.getSurname()
+                        : "")
+                + "</td>\n" + "<td>" + format.format(pd.getCreated())
+                + "</td>\n" + "<td>" + format.format(pd.getExpired())
+                + "</td>\n" + "<td>" + pd.getCompany() + "</td>" + "<td>"
+                + ((vess != null) ? vess.getName() : "") + "</td>\n" + "<td>"
+                + pd.getCustomer() + "</td>"
+                + "<td>" + ((cont != null)
+                        ? cont.getName() + " " + cont.getSurname() : "")
+                + "</td>\n" + "</tr>\n";
 
         return response;
     }
@@ -98,111 +88,30 @@ public class ProjectCommon extends Common {
     }
 
     public String createProjectHeader() {
-        return "<tr>\n" +
-               "<th>Reference</th>\n" +
-               "<th>Type</th>\n" +
-               "<th>Status</th>\n" +
-               "<th>User</th>\n" +
-               "<th>Created</th>\n" +
-               "<th>Expired</th>\n" +
-               "<th>Company</th>\n" +
-               "<th>Vessel</th>\n" +
-               "<th>Customer</th>\n" +
-               "<th>Contact</th>\n" +
-               "</tr>\n";
+        return "<tr>\n" + "<th>Reference</th>\n" + "<th>Type</th>\n"
+                + "<th>Status</th>\n" + "<th>User</th>\n" + "<th>Created</th>\n"
+                + "<th>Expired</th>\n" + "<th>Company</th>\n"
+                + "<th>Vessel</th>\n" + "<th>Customer</th>\n"
+                + "<th>Contact</th>\n" + "</tr>\n";
     }
 
-    public String createProjectFooter(Integer offset, Integer last, Integer size) {
-        return "<tr>" +
-               "<td>" +
-               "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('" + last + "," + size + ")\"/>" +
-               "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('" + offset + "," + size + ")\"/>" +
-               "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('" + offset + "," + size + ")\"/>" +
-               "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('" + 0 + "," + size + ")\"/>" +
-               "</td>" +
-               "</tr>";
+    public String createProjectFooter(Integer offset, Integer last,
+            Integer size) {
+        return "<tr>" + "<td>"
+                + "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('"
+                + last + "," + size + ")\"/>"
+                + "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('"
+                + offset + "," + size + ")\"/>"
+                + "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('"
+                + offset + "," + size + ")\"/>"
+                + "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('"
+                + 0 + "," + size + ")\"/>" + "</td>" + "</tr>";
     }
 
-//    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, List<String> statuses, String mode, Integer offset, Integer size) {
-//        Boolean navTable = Boolean.FALSE;
-//        String response = "";
-//
-//        if (pd == null) {
-//            return new Object[]{navTable, response};
-//        }
-//
-//        List<ProjectDetail> lstPrj = null;
-//        Long countPrj = 0l;
-//        Long id = pd.getId();
-//        ProjectDetail onePrj = (id != null) ? srvProjectManager.getDaoProjectDetail().getById(id) : null;
-//
-//        if (onePrj == null) {
-//            if (lstPrj == null) {
-//                String status = pd.getStatus();
-//
-//                lstPrj = (!Strings.isNullOrEmpty(status) && !status.equals("none")) ?
-//                         srvProjectManager.getDaoProjectDetail().getByStatus(status, offset, size) : null;
-//                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByStatus(status) : null;
-//            }
-//            if (lstPrj == null) {
-//                Long projectId = pd.getProject();
-//
-//                lstPrj = (projectId != null && !projectId.equals(-1l)) ? srvProjectManager.getDaoProjectDetail().
-//                         getByProjectId(projectId) : null;
-//            }
-//            if (lstPrj == null) {
-//                String type = pd.getType();
-//
-//                lstPrj = (!Strings.isNullOrEmpty(type)) ? srvProjectManager.getDaoProjectDetail().
-//                         getByType(type, offset, size) : null;
-//                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByType(type) : null;
-//            }
-//            if (lstPrj == null) {
-//                Long vessel = pd.getVessel();
-//
-//                lstPrj = (vessel != null && !vessel.equals(-1)) ? srvProjectManager.getDaoProjectDetail().getByVessel(
-//                         vessel, offset, size) : null;
-//                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByVessel(vessel) : null;
-//            }
-//            if (lstPrj == null) {
-//                String customer = pd.getCustomer();
-//
-//                lstPrj = (!Strings.isNullOrEmpty(customer)) ? srvProjectManager.getDaoProjectDetail().getByCustomer(
-//                         customer, offset, size) : null;
-//                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCustomer(customer) : null;
-//            }
-//            if (lstPrj == null) {
-//                String company = pd.getCompany();
-//
-//                lstPrj = (!Strings.isNullOrEmpty(company)) ? srvProjectManager.getDaoProjectDetail().getByCompany(
-//                         company, offset, size) : null;
-//                countPrj = (lstPrj != null) ? srvProjectManager.getDaoProjectDetail().countByCompany(company) : null;
-//            }
-//        }
-//
-//        if (onePrj != null) {
-//            response = createProjectRow(srvProjectManager, onePrj, statuses, mode);
-//        } else if (lstPrj != null && !lstPrj.isEmpty() && countPrj != null) {
-//            navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-//            for (ProjectDetail prj : lstPrj) {
-//                response += createProjectRow(srvProjectManager, prj, statuses, mode);
-//            }
-//        } else {
-//            lstPrj = srvProjectManager.getDaoProjectDetail().getAll(offset, size);
-//            countPrj = srvProjectManager.getDaoProjectDetail().countAll();
-//
-//            if (lstPrj != null && !lstPrj.isEmpty()) {
-//                navTable = (countPrj.compareTo(new Long(size)) <= 0) ? Boolean.FALSE : Boolean.TRUE;
-//                for (ProjectDetail prj : lstPrj) {
-//                    response += createProjectRow(srvProjectManager, prj, statuses, mode);
-//                }
-//            }
-//        }
-//
-//        return new Object[]{navTable, response};
-//    }
-    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, String vesselCustom, String customerCustom, Integer offset,
-                                      Integer size) {
+    public Object[] createProjectBody(ProjectManagerService srvProjectManager,
+            ProjectDetail pd, String date_start, String date_end,
+            String vesselCustom, String customerCustom, Integer offset,
+            Integer size) {
         Long prjCount = 0l;
         String response = "";
 
@@ -211,7 +120,8 @@ public class ProjectCommon extends Common {
         }
 
         Long id = pd.getId();
-        ProjectDetail onePrj = (id != null) ? srvProjectManager.getDaoProjectDetail().getById(id) : null;
+        ProjectDetail onePrj = (id != null)
+                ? srvProjectManager.getDaoProjectDetail().getById(id) : null;
         List<ProjectDetail> lstPrj = null;
 
         if (onePrj == null) {
@@ -222,13 +132,13 @@ public class ProjectCommon extends Common {
             String customer = pd.getCustomer();
             String company = pd.getCompany();
 
-            if (!Strings.isNullOrEmpty(type)) {
-                criteria.put("desciptionType", type);
+            if (!Strings.isNullOrEmpty(type) && !type.equals("none")) {
+                criteria.put("type", type);
             }
-            if (!Strings.isNullOrEmpty(status)) {
-                criteria.put("descriptionStatus", status);
+            if (!Strings.isNullOrEmpty(status) && !status.equals("none")) {
+                criteria.put("status", status);
             }
-            if (vessel != null) {
+            if (vessel != null && !vessel.equals(-1l)) {
                 criteria.put("vessel", vessel.toString());
             }
             if (!Strings.isNullOrEmpty(vesselCustom)) {
@@ -237,21 +147,23 @@ public class ProjectCommon extends Common {
             if (!Strings.isNullOrEmpty(customerCustom)) {
                 criteria.put("customerCustom", customerCustom);
             }
-            if (!Strings.isNullOrEmpty(customer)) {
+            if (!Strings.isNullOrEmpty(customer) && !customer.equals("none")) {
                 criteria.put("customer", customer);
             }
-            if (!Strings.isNullOrEmpty(company)) {
+            if (!Strings.isNullOrEmpty(company) && !company.equals("none")) {
                 criteria.put("company", company);
             }
             if (!Strings.isNullOrEmpty(date_start)) {
-                criteria.put("date_start", date_start);
+                criteria.put("start", date_start);
             }
             if (!Strings.isNullOrEmpty(date_end)) {
-                criteria.put("date_end", date_end);
+                criteria.put("end", date_end);
             }
 
-            lstPrj = srvProjectManager.getDaoProject().getByCriteria(criteria, offset, size);
-            prjCount = srvProjectManager.getDaoProject().getCountByCriteria(criteria);
+            lstPrj = srvProjectManager.getDaoProject().getByCriteria(criteria,
+                    offset, size);
+            prjCount = srvProjectManager.getDaoProject()
+                    .getCountByCriteria(criteria);
         }
 
         if (onePrj != null) {
@@ -265,31 +177,33 @@ public class ProjectCommon extends Common {
         return new Object[]{prjCount, response};
     }
 
-    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, String vessCustom, String customerCustom, Integer offset, Integer size) {
+    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end,
+            String vessCustom, String customerCustom, Integer offset, Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
-            String projectHeader = null;
-            Object[] projectBody = null;
-            String projectFooter;
+            String header = null;
+            Object[] body = null;
+            String footer = null;
+            Long count = null;
 
-            projectHeader = createProjectHeader();
-            projectBody = createProjectBody(srvProjectManager, pd, date_start, date_end, vessCustom, customerCustom, offset, size);
+            header = createProjectHeader();
+            body = createProjectBody(srvProjectManager, pd, date_start, date_end, vessCustom, customerCustom, offset, size);
 
-            if (projectBody != null && ((Long) projectBody[0]).compareTo(new Long(size)) > 0) {
-                logger.log(Level.INFO, "count all={0}", (Long) projectBody[0]);
+            if (body != null && ((Long) body[0]).compareTo(new Long(size)) > 0) {
+                count = (Long) body[0];
 
-                Long last = ((Long) projectBody[0] / size) - 1l;
+                logger.log(Level.INFO, "count all={0}", count);
+
+                Long last = ((Long) body[0] / size) - 1l;
 
                 logger.log(Level.INFO, "last ={0}", last);
 
-                projectFooter = createProjectFooter(offset, last.intValue(), size);
-            } else {
-                projectFooter = "";
+                footer = createProjectFooter(offset, last.intValue(), size);
             }
 
-            content.put("header", projectHeader);
-            content.put("body", (projectBody != null) ? projectBody[1].toString() : "");
-            content.put("footer", projectFooter);
+            content.put("header", (!Strings.isNullOrEmpty(header)) ? header : "");
+            content.put("body", (body != null) ? body[1].toString() : "");
+            content.put("footer", (!Strings.isNullOrEmpty(footer)) ? footer : "");
 
             return new Gson().toJson(content);
         }
@@ -297,17 +211,37 @@ public class ProjectCommon extends Common {
         return "";
     }
 
-    public List<PlotInfoModel> getOpenProjectStatusByType(ProjectManagerService srvProjectManager, String type) {
-        Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
-        Long allCreate = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREATE.toString());
-        Long allBill = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PROJECT_BILL.toString());
-        Long allQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.REQUEST_QUOTATION.toString());
-        Long allPurchase = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PURCHASE_ORDER.toString());
-        Long allWork = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.WORK_ORDER.toString());
-        Long allAck = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.ACK_ORDER.toString());
-        Long allPacking = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PACKING_LIST.toString());
-        Long allDelivery = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.DELIVERY_NOTE.toString());
-        Long allShipping = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.SHIPPING_INVOICE.toString());
+    public List<PlotInfoModel> getOpenProjectStatusByType(
+            ProjectManagerService srvProjectManager, String type) {
+        Long allOpen = srvProjectManager.getDaoProjectDetail()
+                .getTotalOpenByType(type);
+        Long allCreate = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.CREATE.toString());
+        Long allBill = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
+        Long allQuota = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.REQUEST_QUOTATION.toString());
+        Long allPurchase = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.PURCHASE_ORDER.toString());
+        Long allWork = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.WORK_ORDER.toString());
+        Long allAck = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.ACK_ORDER.toString());
+        Long allPacking = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.PACKING_LIST.toString());
+        Long allDelivery = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.DELIVERY_NOTE.toString());
+        Long allShipping = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeStatus(type,
+                        ProjectStatusEnum.SHIPPING_INVOICE.toString());
         List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
@@ -315,30 +249,42 @@ public class ProjectCommon extends Common {
             result.add(new PlotInfoModel("Create", allCreate.toString()));
             result.add(new PlotInfoModel("Bill Material", allBill.toString()));
             result.add(new PlotInfoModel("Request Quota", allQuota.toString()));
-            result.add(new PlotInfoModel("Purchase Order", allPurchase.toString()));
+            result.add(new PlotInfoModel("Purchase Order",
+                    allPurchase.toString()));
             result.add(new PlotInfoModel("Work Order", allWork.toString()));
             result.add(new PlotInfoModel("Ack Order", allAck.toString()));
-            result.add(new PlotInfoModel("Packing List", allPacking.toString()));
-            result.add(new PlotInfoModel("Delivery Note", allDelivery.toString()));
-            result.add(new PlotInfoModel("Ship Invoice", allShipping.toString()));
+            result.add(
+                    new PlotInfoModel("Packing List", allPacking.toString()));
+            result.add(
+                    new PlotInfoModel("Delivery Note", allDelivery.toString()));
+            result.add(
+                    new PlotInfoModel("Ship Invoice", allShipping.toString()));
         }
 
         return result;
     }
 
-    public List<PlotInfoModel> getOpenProjectCompanyByType(ProjectManagerService srvProjectManager, String type) {
-        Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
-        Long allMARPO = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MARPO.toString());
-        Long allWCSLTD = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS_LTD.toString());
-        Long allWCSHellas = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.WCS_HELLAS.toString());
-        Long allMTS = srvProjectManager.getDaoProjectDetail().getCountByTypeCompany(type, OwnCompanyEnum.MTS.toString());
+    public List<PlotInfoModel> getOpenProjectCompanyByType(
+            ProjectManagerService srvProjectManager, String type) {
+        Long allOpen = srvProjectManager.getDaoProjectDetail()
+                .getTotalOpenByType(type);
+        Long allMARPO = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeCompany(type, OwnCompanyEnum.MARPO.toString());
+        Long allWCSLTD = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeCompany(type, OwnCompanyEnum.WCS_LTD.toString());
+        Long allWCSHellas = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeCompany(type,
+                        OwnCompanyEnum.WCS_HELLAS.toString());
+        Long allMTS = srvProjectManager.getDaoProjectDetail()
+                .getCountByTypeCompany(type, OwnCompanyEnum.MTS.toString());
 
         List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
             result.add(new PlotInfoModel("ALL", allOpen.toString()));
             result.add(new PlotInfoModel("MARPO", allMARPO.toString()));
-            result.add(new PlotInfoModel("WCS HELLAS", allWCSHellas.toString()));
+            result.add(
+                    new PlotInfoModel("WCS HELLAS", allWCSHellas.toString()));
             result.add(new PlotInfoModel("WCS LTD", allWCSLTD.toString()));
             result.add(new PlotInfoModel("MTS", allMTS.toString()));
         }
@@ -346,38 +292,40 @@ public class ProjectCommon extends Common {
         return result;
     }
 
-    public String searchCriteria(ProjectManagerService srvProjectManager, String version) {
+    public String searchCriteria(ProjectManagerService srvProjectManager,
+            String version) {
         Map<String, String> contentMap = new HashMap<>();
 
-        contentMap.put("type", createSearchType());
-        contentMap.put("status", createSearchStatus(version));
-        contentMap.put("vessel", createSearchVessel(srvProjectManager, null));
-        contentMap.put("customer", createSearchCompany(srvProjectManager, null, CompanyTypeEnum.CUSTOMER));
-        contentMap.put("company", createSearchCompany());
-        contentMap.put("contact", createSearchContact(srvProjectManager, null));
+        contentMap.put("type", fillSearchType());
+        contentMap.put("status", fillSearchStatus(version));
+        contentMap.put("vessel", fillSearchVessel(srvProjectManager, null));
+        contentMap.put("customer", fillSearchCompany(srvProjectManager, null,
+                CompanyTypeEnum.CUSTOMER));
+        contentMap.put("company", fillSearchOwnCompany());
+        contentMap.put("contact", fillSearchContact(srvProjectManager, null));
 
         return new Gson().toJson(contentMap);
     }
-    
-    public Collection<BillMaterialServiceItem> getBillMaterialServiceItems(Long pd) {
+
+    public Collection<BillMaterialServiceItem> getBillMaterialServiceItems(
+            Long pd) {
         return mapBillMaterialServiceItem.get(pd);
-    }
-    
-    public Boolean isEmptyBillMaterialService() {
-        return mapBillMaterialService.isEmpty();
     }
 
     public Set<Long> getProjectDetailIds() {
-        return (mapBillMaterialServiceItem != null && !mapBillMaterialServiceItem.isEmpty()) ? mapBillMaterialServiceItem.keySet() : null;
+        return (mapBillMaterialServiceItem != null
+                && !mapBillMaterialServiceItem.isEmpty())
+                        ? mapBillMaterialServiceItem.keySet() : null;
     }
 
     public Set<Long> getBillMaterialServiceItemsByPDId(Long pd) {
         if (pd != null && !mapBillMaterialServiceItem.isEmpty()) {
             Set<Long> keys = new HashSet<>();
 
-            getProjectDetailIds().stream().filter((key) -> (key.equals(pd))).forEach((key) -> {
-                keys.add(key);
-            });
+            getProjectDetailIds().stream().filter((key) -> (key.equals(pd)))
+                    .forEach((key) -> {
+                        keys.add(key);
+                    });
 
             return keys;
         }
@@ -389,12 +337,16 @@ public class ProjectCommon extends Common {
         return mapBillMaterialService.get(pd);
     }
 
-    public BillMaterialServiceItem getBillMaterialServiceItem(Long pd, Long itemId) {
+    public BillMaterialServiceItem getBillMaterialServiceItem(Long pd,
+            Long itemId) {
         if (!mapBillMaterialServiceItem.isEmpty()) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                    .get(pd);
 
             if (items != null && !items.isEmpty()) {
-                Map<Long, BillMaterialServiceItem> result = items.stream().collect(Collectors.toMap(BillMaterialServiceItem::getItem, (c) -> c));
+                Map<Long, BillMaterialServiceItem> result = items.stream()
+                        .collect(Collectors.toMap(
+                                BillMaterialServiceItem::getItem, (c) -> c));
 
                 return result.get(itemId);
             }
@@ -405,7 +357,8 @@ public class ProjectCommon extends Common {
 
     public BillMaterialServiceItem getFirstBillMaterialServiceItem(Long pd) {
         if (!mapBillMaterialServiceItem.isEmpty() && pd != null) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                    .get(pd);
 
             if (items != null && !items.isEmpty()) {
                 return items.get(0);
@@ -414,10 +367,10 @@ public class ProjectCommon extends Common {
 
         return null;
     }
-    
-    public void setVirtualBillMaterialService(BillMaterialService pb) {
-        if (pb != null) {
-            mapBillMaterialService.put(pb.getProject(), pb);
+
+    public void setVirtualBillMaterialService(BillMaterialService bms) {
+        if (bms != null) {
+            mapBillMaterialService.put(bms.getProject(), bms);
         }
     }
 
@@ -427,46 +380,58 @@ public class ProjectCommon extends Common {
         }
     }
 
-    public void setVirtualBillMaterialServiceItem(Long pd, BillMaterialServiceItem bmsi) {
+    public void setVirtualBillMaterialServiceItem(Long pd,
+            BillMaterialServiceItem bmsi) {
         if (pd != null && bmsi != null) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                    .get(pd);
 
             if (items != null) {
                 items.add(bmsi);
             } else {
-                mapBillMaterialServiceItem.put(pd, new ArrayList<>(Arrays.asList(bmsi)));
+                mapBillMaterialServiceItem.put(pd,
+                        new ArrayList<>(Arrays.asList(bmsi)));
             }
         }
     }
 
-    public void editVirtualBillMaterialServiceItem(Long pd, BillMaterialServiceItem bmsi) {
+    public void editVirtualBillMaterialServiceItem(Long pd,
+            BillMaterialServiceItem bmsi) {
         if (pd != null && bmsi != null && bmsi.getItem() != null) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                    .get(pd);
 
             if (items != null && !items.isEmpty()) {
-                items.stream().
-                        filter((item) -> (item.getItem().equals(bmsi.getItem()))).
-                        forEach((item) -> {
+                items.stream().filter(
+                        (item) -> (item.getItem().equals(bmsi.getItem())))
+                        .forEach((item) -> {
                             item = bmsi;
                         });
             }
         }
     }
 
-    public void setVirtualBillMaterialServiceItemBillId(Long pd, Long bms) {
+    public void setBillMaterialServiceItemInfo(Long pd, Long bms,
+            String quantities) {
         if (pd != null && bms != null) {
-            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+            String[] values = quantities.split(",");
+            Integer i = 0;
+            List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                    .get(pd);
 
             if (items != null && !items.isEmpty()) {
-                items.forEach((item) -> {
+                for (BillMaterialServiceItem item : items) {
+                    item.setQuantity(Integer.valueOf(values[i++]));
                     item.setBillMaterialService(bms);
-                });
+                }
             }
         }
     }
 
-    public void removeVirtualBillMaterialServiceItem(ProjectManagerService srvProjectManager, Long pd, Long itemId) {
-        List<BillMaterialServiceItem> items = mapBillMaterialServiceItem.get(pd);
+    public void removeVirtualBillMaterialServiceItem(
+            ProjectManagerService srvProjectManager, Long pd, Long itemId) {
+        List<BillMaterialServiceItem> items = mapBillMaterialServiceItem
+                .get(pd);
 
         if (items != null && !items.isEmpty()) {
             Map<Long, BillMaterialServiceItem> map = new HashMap<>();
@@ -478,17 +443,22 @@ public class ProjectCommon extends Common {
             BillMaterialServiceItem removeItem = map.remove(itemId);
 
             if (removeItem != null) {
-                removeItem = srvProjectManager.getDaoBillMaterialServiceItem().getById(removeItem.getId());
-                srvProjectManager.getDaoBillMaterialServiceItem().delete(removeItem);
+                removeItem = srvProjectManager.getDaoBillMaterialServiceItem()
+                        .getById(removeItem.getId());
+                srvProjectManager.getDaoBillMaterialServiceItem()
+                        .delete(removeItem);
             }
-            mapBillMaterialServiceItem.replace(pd, new ArrayList<>(map.values()));
+            mapBillMaterialServiceItem.replace(pd,
+                    new ArrayList<>(map.values()));
         }
     }
 
-    public void clearVirtualBillMaterialService(Long pd) {
+    public Boolean clearVirtualBillMaterialService(Long pd) {
         if (pd != null) {
             mapBillMaterialServiceItem.remove(pd);
-            mapBillMaterialService.remove(pd);
+            return (mapBillMaterialService.remove(pd) != null) ? Boolean.TRUE : Boolean.FALSE;
         }
+
+        return Boolean.TRUE;
     }
 }

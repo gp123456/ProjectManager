@@ -71,7 +71,7 @@
         <table class="table tablesorter">
             <thead>
                 <tr>
-                    <th>Description of Project Bill</th>
+                    <th>Description of Bill of Material or Service</th>
                     <th>Quantity (pcs)</th>
                     <th>Gross Weight (kgs)</th>
                 </tr>

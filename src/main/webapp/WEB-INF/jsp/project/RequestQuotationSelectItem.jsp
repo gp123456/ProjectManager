@@ -11,7 +11,7 @@
         <select id="subproject" onchange="changeBMSSubproject()">${subproject}</select>
     </label>
     <br>
-    <h2>Bill of Material Summary</h2>
+    <h2>Bill of Material(s) Summary</h2>
     <div>
         <table class="table tablesorter">
             <thead>
@@ -24,14 +24,14 @@
         </table>
     </div>
     <div>
-        <h2>Bill of Material Detail</h2>
+        <h2>Bill of Material(s) Details</h2>
         <table class="table tablesorter">
             <thead>
                 <tr>
                     <th>Code</th>
                     <th>Stock</th>
                     <th>Quantity</th>
-                    <th>Include<p></p><input type='checkbox' onclick='handleAll();'></label></th>
+                    <th>Include<p></p><input type='checkbox' onclick='handleAll(this);'></th>
                 </tr>
             </thead>
             <tbody id="bill-material-service-item">${billMaterialServiceItems}</tbody>

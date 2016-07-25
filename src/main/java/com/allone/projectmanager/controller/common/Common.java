@@ -63,27 +63,38 @@ public class Common {
 
     private SearchCriteria searchCriteria;
 
-    public String createSearchType() {
+    public String fillSearchType() {
         List<SearchInfo> info = getSearchCriteriaTypeProject();
         String finalResponse = "<option value=\"none\" selected=\"selected\">Select Type</option>";
         String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
-            response += info.stream().map((si) -> "<option value=\"" +
-                                                    si.getId() + "\">" +
-                                                    si.getName() + "</option>").
-            reduce(response, String::concat);
+            response += info.stream().map((si) -> "<option value=\""
+                    + si.getId() + "\">"
+                    + si.getName() + "</option>").
+                    reduce(response, String::concat);
             finalResponse += response;
         }
 
         return finalResponse;
     }
 
-    public String createSearchVessel(ProjectManagerService srvProjectManager, String id) {
+    public String fillSearchStatus(String version) {
+        List<SearchInfo> info = getSearchCriteriaStatusProject(version);
+        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
+
+        if (info != null && info.isEmpty() == false && info.get(0) != null) {
+            response += info.stream()
+                    .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
+                    reduce(response, String::concat);
+        }
+
+        return response;
+    }
+
+    public String fillSearchVessel(ProjectManagerService srvProjectManager, String id) {
         List<SearchInfo> info = getSearchCriteriaVessel(srvProjectManager);
-        String response = (Strings.isNullOrEmpty(id)) ?
-                          "<option value='-1' selected='selected'>Select Vessel</option>" :
-                          "<option value='-1' >Select</option>";
+        String response = "<option value='-1' selected='selected'>Select Vessel</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
@@ -99,18 +110,18 @@ public class Common {
         return response;
     }
 
-    public String createSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
+    public String fillSearchCompany(ProjectManagerService srvProjectManager, String name, CompanyTypeEnum type) {
         List<SearchInfo> info = getSearchCriteriaCompany(srvProjectManager, type);
-        String response = (Strings.isNullOrEmpty(name)) ?
-                          "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>" :
-                          "<option value='none'>Select</option>";
+        String response = (Strings.isNullOrEmpty(name))
+                ? "<option value='none' selected='selected'>Select " + type.toString().toLowerCase() + "</option>"
+                : "<option value='none'>Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (SearchInfo si : info) {
                 if (!Strings.isNullOrEmpty(name)) {
                     if (si.getId().equals(name)) {
-                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName() +
-                                    "</option>";
+                        response += "<option value='" + si.getName() + "' selected='selected'>" + si.getName()
+                                + "</option>";
                     }
                 }
                 response += "<option value='" + si.getName() + "'>" + si.getName() + "</option>";
@@ -120,25 +131,25 @@ public class Common {
         return response;
     }
 
-    public String createSearchCompany() {
+    public String fillSearchOwnCompany() {
         List<SearchInfo> info = getSearchCriteriaCompany();
         String finalResponse = "<option value=\"none\" selected=\"selected\">Select Company</option>";
         String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream()
-            .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
-                                                                                                          String::concat);
+                    .map((si) -> "<option value=\"" + si.getName() + "\">" + si.getName() + "</option>").reduce(response,
+                    String::concat);
             finalResponse += response;
         }
 
         return finalResponse;
     }
 
-    public String createSearchContact(ProjectManagerService srvProjectManager, Long id) {
+    public String fillSearchContact(ProjectManagerService srvProjectManager, Long id) {
         List<Contact> info = srvProjectManager.getDaoContact().getAll();
-        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>" :
-                          "<option value='-1' >Select</option>";
+        String response = (id == null) ? "<option value='-1' selected='selected'>Select Contact</option>"
+                : "<option value='-1' >Select</option>";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             for (Contact c : info) {
@@ -196,11 +207,11 @@ public class Common {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
     public String getClassContent() {
         return classContent;
     }
-    
+
     public void setClassContent(String classContent) {
         this.classContent = classContent;
     }
@@ -257,8 +268,6 @@ public class Common {
         List<SearchInfo> si = new ArrayList<>();
 
         if (v != null && v.isEmpty() == false && v.get(0) != null) {
-            logger.log(Level.INFO, "Vessel size={0}", v.size());
-
             v.stream().forEach((value) -> {
                 si.add(new SearchInfo(value.getId().toString(), value.getName()));
             });
@@ -364,9 +373,9 @@ public class Common {
         String response = "";
 
         for (LocationEnum location : LocationEnum.values()) {
-            response += (location.equals(LocationEnum.GREECE)) ?
-                        "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>" :
-                        "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
+            response += (location.equals(LocationEnum.GREECE))
+                    ? "<option value='" + location.getId() + "' selected>" + location.toString() + "</option>"
+                    : "<option value='" + location.getId() + "'>" + location.toString() + "</option>";
         }
 
         return response;
@@ -376,9 +385,9 @@ public class Common {
         String response = "";
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
-            response += (currency.equals(selected)) ?
-                        "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>" :
-                        "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
+            response += (currency.equals(selected))
+                    ? "<option value='" + currency.getId() + "' selected>" + currency.toString() + "</option>"
+                    : "<option value='" + currency.getId() + "'>" + currency.toString() + "</option>";
         }
 
         return response;
@@ -398,18 +407,23 @@ public class Common {
         props.put("mail.smtp.host", mailServer);
         //props.put("mail.smtp.host", "smtp.gmail.com");
         props.setProperty("mail.smtp.auth", "true");
-            //props.setProperty("mail.smtp.port", "" + 25);
-        //props.setProperty("mail.smtp.starttls.enable", "true");
+        props.setProperty("mail.smtp.port", "" + 25);
+        props.setProperty("mail.smtp.starttls.enable", "true");
         // Get a mail session
-        //Session session = Session.getInstance(props, null);
 
-        Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("info@wcs.com.gr", "n3wp@ssword");
+                return new PasswordAuthentication("gpatitakis@hol.gr", "gp!21031965");
             }
         });
 
+//        Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+//            @Override
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication("gpatitakis@hol.gr", "gp!21031965");
+//            }
+//        });
         Message message = new MimeMessage(session);
         // Define a new mail message
         message.setFrom(new InternetAddress(from));

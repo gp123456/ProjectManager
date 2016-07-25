@@ -8,13 +8,20 @@
 
 <%String path = request.getContextPath();%>
 
+<!--<script>
+    function closeTabs() {
+        window.close('<%=path%>/project/snapshot');
+        window.close('<%=path%>/stock/snapshot');
+    };
+</script>-->
+
 <!DOCTYPE html>
 <html>
     <title>Project Manager Login</title>
     <head>
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/login.css">
     </head>
-    <body>
+    <body onload="">
         <div class="bganimate2 image1 "></div>
         <div class="bganimate"> </div>	
         <div class="login-container">

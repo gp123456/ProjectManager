@@ -59,7 +59,7 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Project Bill', '#dlg-request-quotation',
+        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Bill of Material or Service', '#dlg-request-quotation',
                         '#lst-request-quotation', '/ProjectManager/project/request-quotation')">Request for Quotation</h3>
         <div id="dlg-request-quotation" hidden="true" title="Bill Material Service">
             <form>
@@ -116,8 +116,8 @@
         <h3 id="project-credit-size" onclick="">Credit Note</h3>
     </div>
     <div class="menu-item">
-        <h3 onclick="dlgProject('old','', '#dlg-statistics-project',
-                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of New Project</h3>
+        <h3 onclick="dlgProject('old', '', '#dlg-statistics-project',
+                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of Projects</h3>
         <div id="dlg-statistics-project" hidden="true" title="Project Statistics">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
@@ -125,33 +125,19 @@
                 </fieldset>
             </form>
         </div>
-        <!--        <ul id="project-statistics">
-                    <li onclick="window.location.href = '/project/statistics?year=2007';">2007</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2008';">2008</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2009';">2009</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2010';">2010</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2011';">2011</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2012';">2012</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2013';">2013</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2014';">2014</li>
-                    <li onclick="window.location.href = '/project/statistics?year=2015';">2015</li>
-                </ul>-->
+        <ul id="statistics">
+            <li onclick="window.location.href = '/project/statistics?year=2007';">2007</li>
+            <li onclick="window.location.href = '/project/statistics?year=2008';">2008</li>
+            <li onclick="window.location.href = '/project/statistics?year=2009';">2009</li>
+            <li onclick="window.location.href = '/project/statistics?year=2010';">2010</li>
+            <li onclick="window.location.href = '/project/statistics?year=2011';">2011</li>
+            <li onclick="window.location.href = '/project/statistics?year=2012';">2012</li>
+            <li onclick="window.location.href = '/project/statistics?year=2013';">2013</li>
+            <li onclick="window.location.href = '/project/statistics?year=2014';">2014</li>
+            <li onclick="window.location.href = '/project/statistics?year=2015';">2015</li>
+        </ul>
     </div>
     <div class="menu-item">
-        <h3 onclick="dlgProject('old','', '#dlg-statistics-project',
-                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of Old Project</h3>
-        <div id="dlg-statistics-project" hidden="true" title="Project Statistics">
-            <form>
-                <fieldset style="padding:0; border:0; margin-top:25px;">
-                    <div id="lst-statistics-project"></div>
-                </fieldset>
-            </form>
-        </div>
-    </div>
-    <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History of New Project</h3>
-    </div>
-    <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/project/history-old-project';">History of Old Project</h3>
+        <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History of Projects</h3>
     </div>
 </nav>

@@ -16,20 +16,8 @@
         <h3 onclick="window.location.href = '<%=path%>/stock/edit';">Edit</h3>
     </div>
     <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/stock/bill';">Stock Bill</h3>
-    </div>
-    <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/stock/request-quotation';">Request for Quotation</h3>
-    </div>
-    <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/stock/purchase-order';">Purchase Order</h3>
-    </div>
-    <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/stock/qc-check-logging';">QC Check & Logging</h3>
-    </div>
-    <div class="menu-item">
         <h3>Statistics</h3>
-        <ul id="project-statistics">
+        <ul id="statistics">
             <li onclick="window.location.href = '<%=path%>/stock/statistic?year=2007';">2007</li>
             <li onclick="window.location.href = '<%=path%>/stock/statistic?year=2008';">2008</li>
             <li onclick="window.location.href = '<%=path%>/stock/statistic?year=2009';">2009</li>

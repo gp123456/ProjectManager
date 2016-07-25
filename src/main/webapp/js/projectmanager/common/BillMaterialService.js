@@ -58,14 +58,14 @@ function removeItem(pdid, id) {
 }
 
 function getBillMaterialServiceItems() {
+    var data = "pdId=" + $("#subproject option:selected").val();
+
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/get-bill-material-items",
-        data: $("#subproject option:selected").val(),
+        data: data,
         success: function (response) {
-            if (response) {
-                saveBillMaterialService(response);
-            }
+            saveBillMaterialService(response);
         },
         error: function (e) {
         }
@@ -73,36 +73,41 @@ function getBillMaterialServiceItems() {
 }
 
 function saveBillMaterialService(response) {
-    alert(response);
-    
-    var items = JSON.parse(response);
+    var items = (response) ? JSON.parse(response) : null;
+    var pdId = $("#subproject option:selected").val();
+    var data = "project=" + pdId +
+            "&name=" + $("#name" + pdId).text() +
+            "&note=" + $("#note").val();
 
     if (items !== null) {
-        var pdId = $("#subproject option:selected").val();
-        var data = "project=" + pdId +
-                "&name=" + $("#name" + pdId).text() +
-                "&note=" + $("#note").val();
-        
-        items.forEach(function (item) {
-            data += "&quantities=" + $("#quantity" + pdId + item).text() + ",";
-        });
+        data += "&quantities=";
 
-        $.ajax({
-            type: "POST",
-            url: "/ProjectManager/project/bill-material-service/save",
-            data: data,
-            success: function (response) {
-                if (response === "index") {
-                    location.reload();
-                } else {
-                    $("#bill-header").html(response);
-                }
-            },
-            error: function (e) {
-                alert(e);
-            }
+        items.forEach(function (item) {
+            data += $("#quantity" + pdId + item).text() + ",";
         });
+    } else {
+        data += "&quantities=";
     }
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/bill-material-service/save",
+        data: data,
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#header").html(content.header);
+            if (content.moreBillMaterialService === "true") {
+                setTimeout(function () {
+                    location.reload();
+                }, 3000);
+
+            }
+        },
+        error: function (e) {
+            alert(e);
+        }
+    });
 }
 
 function savePDF(prjRef) {
@@ -308,6 +313,9 @@ function viewSubproject() {
             $("#vessel").val(content.vessel);
             $("#contact").val(content.contact);
             $("#bill-material-service").html(content.billMaterialService);
+            $("#bill-material-title").text(content.BillMaterialTitle);
+            $("#bill-material-summary").text(content.BillMaterialSummary);
+            $("#bill-material-detail").text(content.BillMaterialDetail);
             if (content.noItems === "false") {
                 $('#select-item').show();
                 $('#select-bill-material-service-item').show();
@@ -327,16 +335,12 @@ function viewSubproject() {
 function removeBillMaterialService() {
     var data = "pdId=" + $("#subproject option:selected").val();
 
-    alert(data);
-
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/remove",
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
-
-            alert(response);
 
             $("#bill-material-service").html(content.billMaterialService);
             if (content.noItems === "false") {

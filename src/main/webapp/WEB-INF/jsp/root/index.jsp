@@ -51,9 +51,7 @@
     </head>
     <body>
         <div id="container">
-            <c:if test="${project_header != null}" >
-                <div class="top-bar"><jsp:include page="${project_header}"/></div>
-            </c:if>
+            <div class="top-bar"><jsp:include page="${project_header}"/></div>
             <div class="maincontent">
                 <c:if test="${side_bar != null}" >
                     <div class="leftmenucontainer">

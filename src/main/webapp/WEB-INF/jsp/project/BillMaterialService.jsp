@@ -17,17 +17,31 @@
             success: function (response) {
                 var content = JSON.parse(response);
 
+                console.log("Title:" + content.BillMaterialTitle);
+                console.log("Summary:" + content.BillMaterialSummary);
+                console.log("Detail:" + content.BillMaterialDetail);
+
                 $("#subproject").html(content.subprojects);
                 $("#item").html(content.items);
                 $("#supplier").html(content.suppliers);
                 $("#bill-material-service").html(content.billMaterialService);
                 $("#note").val(content.note);
-                $("#bill-material-service-item").html(content.billMaterialServiceItems);
+                if (content.noItems === "false") {
+                    $('#select-item').show();
+                    $('#select-bill-material-service-item').show();
+                    $("#bill-material-service-item").html(content.billMaterialServiceItems);
+                } else {
+                    $('#select-item').hide();
+                    $('#select-bill-material-service-item').hide();
+                }
                 $("#info-type").val(content.type);
                 $("#company").val(content.company);
                 $("#customer").val(content.customer);
                 $("#vessel").val(content.vessel);
                 $("#contact").val(content.contact);
+                $("#bill-material-title").text(content.BillMaterialTitle);
+                $("#bill-material-summary").text(content.BillMaterialSummary);
+                $("#bill-material-detail").text(content.BillMaterialDetail);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -36,8 +50,8 @@
     });
 </script>
 
-<div id="bill-header" class="formLayout">
-    <h1>Bill of materials or services - REF:${project_reference}</h1>
+<div id="header" class="formLayout">
+    <h1 id="bill-material-title"></h1>
     <input type="hidden" id="bill-project-id" value=${p_id} />
     <div style="overflow-y: scroll">
         <h3>Project Info</h3>
@@ -182,14 +196,15 @@
             </table>
         </div>
     </div>
-    <h2>Bill of Materials Summary</h2>
+    <h2 id="bill-material-summary"></h2>
     <div>
         <table class="table tablesorter">
             <thead>
                 <tr>
                     <th style="display:none">Project Id</th>
-                    <th>Name*</th>
                     <th>Subproject</th>
+                    <th>Name*</th>
+
                 </tr>
             </thead>
             <tbody id="bill-material-service"></tbody>
@@ -201,7 +216,7 @@
         </form>
     </div>
     <div id="select-bill-material-service-item">
-        <h2>Bill of Materials Detail</h2>
+        <h2 id="bill-material-detail"></h2>
         <table class="table tablesorter">
             <thead>
                 <tr>
@@ -214,7 +229,7 @@
             <tbody id="bill-material-service-item"></tbody>
         </table>
     </div>
-    <div><h2>Note</h2><textarea id="note" name="notes" rows="10" style="width: 100%"></textarea></div>
+    <div><h2>Notes</h2><textarea id="note" name="notes" rows="10" style="width: 100%"></textarea></div>
     <div>${button_save}${button_remove}${button_save_pdf}${button_save_excel}${button_send_email}</div>
     <div>${button_action_message}</div>
 </div>
