@@ -8,10 +8,8 @@ function searchContent(offset, size) {
     var reference = $("#search-reference").val();
     var type = $("#search-type option:selected").attr("value");
     var status = $("#search-status option:selected").attr("value");
-    var vessel = $("#search-vessel option:selected").attr("value");
-    var vesselCustom = $("#search-vessel-custom").val();
+    var vessel = $("#search-vessel").val();
     var customer = $("#search-customer").val();
-    var customerCustom = $("#search-customer-custom").val();
     var company = $("#search-company option:selected").attr("value");
     var date_start = $("#date-start").val();
     var date_end = $("#date-end").val();
@@ -20,25 +18,19 @@ function searchContent(offset, size) {
     data = "reference=" + reference;
     data += "&type=" + type;
     data += "&status=" + status;
-    data += "&vessel=" + vessel;
     data += "&customer=" + customer;
     data += "&company=" + company;
     data += "&date_start=" + date_start;
     data += "&date_end=" + date_end;
-    data += "&vesselCustom=" + vesselCustom;
-    data += "&customerCustom=" + customerCustom;
+    data += "&vessel=" + vessel;
     data += "&offset=" + offset;
     data += "&size=" + size;
-
-    console.log(data);
 
     $.ajax({
         type: "POST",
         url: "search",
         data: data,
         success: function (response) {
-            console.log(response);
-
             var content = JSON.parse(response)
 
             $("#header").html(content.header);
@@ -200,7 +192,7 @@ function printXLS(id) {
 
 function saveProject() {
     var type = $("#type option:selected").attr("value");
-    var expired = $("#expired").datepicker({dateFormat: 'yy-mm-dd'}).val();
+    var expired = $("#expired").datepicker().val();
     var customer = $("#customer option:selected").attr("value");
     var vessel = $("#vessel option:selected").attr("value");
     var company = $("#company option:selected").attr("value");
@@ -527,8 +519,6 @@ function fillSearchCriteriaProject(version) {
 
             $("#search-type").html(content.type);
             $("#search-status").html(content.status);
-            $("#search-vessel").html(content.vessel);
-            $("#search-customer").html(content.customer);
             $("#search-company").html(content.company);
 
             searchContent(0, 10);

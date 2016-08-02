@@ -17,10 +17,6 @@
             success: function (response) {
                 var content = JSON.parse(response);
 
-                console.log("Title:" + content.BillMaterialTitle);
-                console.log("Summary:" + content.BillMaterialSummary);
-                console.log("Detail:" + content.BillMaterialDetail);
-
                 $("#subproject").html(content.subprojects);
                 $("#item").html(content.items);
                 $("#supplier").html(content.suppliers);
@@ -203,7 +199,7 @@
                 <tr>
                     <th style="display:none">Project Id</th>
                     <th>Subproject</th>
-                    <th>Name*</th>
+                    <th onclick="editValue()">Name*</th>
 
                 </tr>
             </thead>
@@ -223,6 +219,7 @@
                     <th>Code</th>
                     <th>Stock</th>
                     <th>Quantity*</th>
+                    <th>Edit</th>
                     <th>Remove</th>
                 </tr>
             </thead>

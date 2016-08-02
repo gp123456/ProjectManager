@@ -100,6 +100,13 @@ function saveXLS() {
 }
 
 function sendEmail() {
+    var currency = $("#currency option:selected").val();
+    
+    if (currency === 'none') {
+        alert("You must select currency first")
+        return;
+    }
+    
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&supplier=" + $("#supplier option:selected").val() +
             "&currency=" + $("#currency option:selected").val() +
@@ -110,7 +117,9 @@ function sendEmail() {
         url: "/ProjectManager/project/request-quotation/send-email",
         data: data,
         success: function (response) {
-            $("#header").html(response);
+//            $("#header").html(response);
+            window.location = response;
+            
         },
         error: function (e) {
         }
@@ -118,10 +127,8 @@ function sendEmail() {
 }
 
 function sendEmailSupplier() {
-    var data = "pdId=" + $("#subproject option:selected").val() +
+    var data = "pdId=" + $("#request-quotation-id").val() +
             "&supplierName=" + $("#supplier option:selected").val() +
-            "&currency=" + $("#currency option:selected").val() +
-            "&note=" + $("#note").val() +
             "&supplierNote=" + $("#supplier-note").val();
 
     $.ajax({
@@ -166,7 +173,7 @@ function getVirtualRequestQuotation() {
     });
 }
 
-function refresh(response) {
+function getValues(response) {
     var data = "";
 
     if (response !== null) {
@@ -176,35 +183,63 @@ function refresh(response) {
             if (content.billMaterialService !== null) {
                 var bms = content.billMaterialService;
 
-                data = "bms=" + bms + "&delivery=" + $("#delivery" + bms).text() + "&expenses=" + $("#expenses" + bms).text();
+                data = "bms=" + bms + "&delivery=" + $("#delivery").text() + "&expenses=" + $("#expenses").text();
 
                 if (content.billMaterialServiceItemIds !== null) {
                     var items = JSON.parse(content.billMaterialServiceItemIds);
                     var qties = JSON.parse(content.billMaterialServiceItemQuantities);
 
                     if (items !== null) {
-                        data += "&prices=";
+                        data += "&itemIds=";
                         items.forEach(function (item) {
-                            data += $("#price" + bms + item).text() + ",";
-                        });
-                        data += "&discounts=";
-                        items.forEach(function (item) {
-                            data += $("#discount" + bms + item).text() + ",";
-                        });
-                        data += "&availabilities=";
-                        items.forEach(function (item) {
-                            data += $("#availability" + bms + item).text() + ",";
+                            data += item + ",";
                         });
                         data += "&quantities=";
                         qties.forEach(function (qty) {
                             data += qty + ",";
+                        });
+                        data += "&discounts=";
+                        items.forEach(function (item) {
+                            data += $("#discount" + item).text() + ",";
+                        });
+                        data += "&prices=";
+                        items.forEach(function (item) {
+                            var value = $("#price" + item).text();
+                            
+                            if (value === '0') {
+                                alert("The price with zero value is invalid");
+                                data = "";
+                            }
+                            data += value + ",";
+                        });
+                        data += "&availabilities=";
+                        items.forEach(function (item) {
+                            var value = $("#availability" + item).text();
+                            
+                            if (value === '0') {
+                                alert("The availability with zero value is invalid");
+                                data = "";
+                            }
+                            data += value + ",";
                         });
                     }
                 }
             }
         }
     }
+    
+    return data;
+}
 
+function refresh(response) {
+    var data = getValues(response);
+    
+    console.log(data);
+    
+    if (data === '') {
+        return;
+    }
+    
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/request-quotation/refresh",

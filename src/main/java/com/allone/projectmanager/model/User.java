@@ -1,9 +1,8 @@
-    /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.allone.projectmanager.model;
 
 /**
@@ -11,6 +10,7 @@ package com.allone.projectmanager.model;
  * @author qbsstation5
  */
 public class User {
+
     private Long id;
     private String username;
     private String password;
@@ -20,6 +20,7 @@ public class User {
     private String avatar;
     private String project_reference;
     private Integer project_expired;
+    private String email;
 
     public String getProject_reference() {
         return project_reference;
@@ -28,7 +29,7 @@ public class User {
     public void setProject_reference(String project_reference) {
         this.project_reference = project_reference;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -36,7 +37,7 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getScreen_name() {
         return screen_name;
     }
@@ -67,8 +68,8 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    } 
-    
+    }
+
     public String getUsername() {
         return username;
     }
@@ -91,5 +92,13 @@ public class User {
 
     public void setProject_expired(Integer project_expired) {
         this.project_expired = project_expired;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

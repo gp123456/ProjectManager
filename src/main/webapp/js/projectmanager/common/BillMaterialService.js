@@ -57,6 +57,10 @@ function removeItem(pdid, id) {
     });
 }
 
+function editItem(id) {
+    $("#quantity" + id).html("<div contenteditable></div>");
+}
+
 function getBillMaterialServiceItems() {
     var data = "pdId=" + $("#subproject option:selected").val();
 
@@ -74,20 +78,23 @@ function getBillMaterialServiceItems() {
 
 function saveBillMaterialService(response) {
     var items = (response) ? JSON.parse(response) : null;
-    var pdId = $("#subproject option:selected").val();
-    var data = "project=" + pdId +
-            "&name=" + $("#name" + pdId).text() +
+    var name = $("#name").text();
+    name.replace(' ', '%20');
+    var data = "project=" + $("#subproject option:selected").val() +
+            "&name=" + name +
             "&note=" + $("#note").val();
 
     if (items !== null) {
         data += "&quantities=";
 
         items.forEach(function (item) {
-            data += $("#quantity" + pdId + item).text() + ",";
+            data += item + "-" + $("#quantity" + item).text() + ",";
         });
     } else {
         data += "&quantities=";
     }
+
+    console.log(data);
 
     $.ajax({
         type: "POST",
@@ -100,7 +107,7 @@ function saveBillMaterialService(response) {
             if (content.moreBillMaterialService === "true") {
                 setTimeout(function () {
                     location.reload();
-                }, 3000);
+                }, 5000);
 
             }
         },
@@ -355,4 +362,8 @@ function removeBillMaterialService() {
         error: function (e) {
         }
     });
+}
+
+function editValue() {
+    $('#name').html("<div contenteditable></div>");
 }

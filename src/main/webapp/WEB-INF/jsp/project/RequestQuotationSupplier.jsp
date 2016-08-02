@@ -14,7 +14,7 @@
             data: data,
             success: function (response) {
                 var content = JSON.parse(response);
-                
+
                 $("#subproject").val(content.subproject);
                 $("#supplier").val(content.supplier);
                 $("#currency").val(content.currency);
@@ -31,9 +31,15 @@
 
 <div id="bill-header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
-    <!--<h2 style="color: red">Please fill in the cells with black color only.<br> Push 'Refresh' button to verify and 'Send eMail' button to submit your offer</h2>-->
-    <h2 style="color: red">You are kindly requested to fill in the cost, availability and any additional expenses for the items listed below in accordance with any instructions given in the "Notes" section.<br> Push 'Calculate' button to verify and 'Submit' button to submit your offer</h2>
+    <h2 style="color: red">
+        You are kindly requested to fill in the information requested in the red colored cells.<br>
+        When finished, push the "calculate" button and the form will automatically calculate the total amounts.<br>
+        If you have any comments or clarifications, please mention in the "vendor notes" section and push the "submit" button in order to upload your
+        offer.
+    </h2>
     <input type="hidden" id="request-quotation-id" value=${requestQuotationId} />
+    <input type="hidden" id="request-quotation-items-id" value=${requestQuotationItemsId} />
+    <input type="hidden" id="email-sender" value=${emailSender} />
     <div style="overflow-y: scroll">
         <h2>Subproject</h2>
         <table>
@@ -78,7 +84,7 @@
                     <th>Quantity</th>
                     <th>Price Unit*</th>
                     <th>Discount(%)*</th>
-                    <th>In Days*</th>
+                    <th>Availability (days)*</th>
                     <th>Net Total</th>
                 </tr>
             </thead>

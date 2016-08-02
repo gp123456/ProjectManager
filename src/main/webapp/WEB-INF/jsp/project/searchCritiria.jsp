@@ -8,43 +8,48 @@
 
 <script>
     $(function () {
-        $("#date-start").datepicker();
+        $("#date-start").datepicker({dateFormat: 'dd/mm/yy'});
         $("#date-start").val("");
-        $("#date-end").datepicker();
+        $("#date-end").datepicker({dateFormat: 'dd/mm/yy'});
         $("#date-end").val("");
         $("#search-reference").val("");
-        $("#search-vessel-custom").val("");
-        $("#search-vessel-imo").val("");
-        $("#search-customer-custom").val("");
+        $("#search-vessel").val("");
+        $("#search-customer").val("");
     });
 </script>
 
-<label class="custom-select">Reference
-    <input type="text" id="search-reference" value="">
-</label>
-<label class="custom-select">Type
-    <select id="search-type" ></select>
-</label>
-<label class="custom-select">Status
+<!--<div class="formLayout">-->
+<form class="go-bottom">
+    <label class="custom-select">Type
+        <select id="search-type" ></select>
+    </label>
+    <label class="custom-select">Status
     <select id="search-status"></select>
-</label>
-<label class="custom-select">Vessel
-    <select id="search-vessel"></select>
-    <input type="text" id="search-vessel-custom" value="">
-</label>
-<label class="custom-select">Customer
-    <select id="search-customer"></select>
-    <input type="text" id="search-customer-custom" value="">
-</label>
-<label class="custom-select">Company
+    </label>
+    <label class="custom-select">Company
     <select id="search-company"></select>
-</label><br\>
-<label class="custom-select">Start date
-    <input name="sdate" type="text" id="date-start" value="${sdateVal}">
-</label>
-<span class="dateico"></span>
-<label class="custom-select">End date
-    <input name="edate" type="text" id="date-end" value="${edateVal}">
-</label><br>
-<input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
-<input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
+    </label>
+    <div>
+        <input type="text" id="search-reference" value="">
+        <label class="go-bottom-label" for="search-reference">Reference</label>
+    </div>
+    <div>
+        <input type="text" id="search-vessel" value="">
+        <label class="go-bottom-label" for="search-vessel">Vessel</label>
+    </div>
+    <div>
+        <input type="text" id="search-customer" value="">
+        <label class="go-bottom-label" for="search-customer">Customer</label>
+    </div>
+    <div>
+        <input name="sdate" type="text" id="date-start" value="${sdateVal}">
+        <label class="go-bottom-label" for="date-start">Start Date</label>
+    </div>
+    <div>
+        <input name="edate" type="text" id="date-end" value="${edateVal}">
+        <label class="go-bottom-label" for="date-end">End Date</label>
+    </div>
+    <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
+    <input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
+</form>
+<!--</div>-->

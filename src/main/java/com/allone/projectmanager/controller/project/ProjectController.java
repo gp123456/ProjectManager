@@ -189,7 +189,7 @@ public class ProjectController extends ProjectCommon {
             getUser().setProject_reference((user.getProjectId() + 1) + "/" + user.getProjectPrefix());
 
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 
             content.put("header", projectHeader);
             content.put("body", projectBody[1]);
@@ -205,10 +205,10 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(ProjectDetail p, String date_start, String date_end, String vesselCustom, String customerCustom, Integer offset, Integer size) {
+    String searchProject(ProjectDetail p, String vessel, String date_start, String date_end, Integer offset, Integer size) {
 //        mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
 
-        return searchProject(srvProjectManager, p, null, null, vesselCustom, customerCustom, offset, size);
+        return searchProject(srvProjectManager, p, null, null, vessel, offset, size);
     }
 
     @RequestMapping(value = {"/search-criteria"})
@@ -284,7 +284,7 @@ public class ProjectController extends ProjectCommon {
                     (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
 
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
@@ -311,7 +311,7 @@ public class ProjectController extends ProjectCommon {
             Printing.printing(strPath);
 
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -396,7 +396,7 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
@@ -423,7 +423,7 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());

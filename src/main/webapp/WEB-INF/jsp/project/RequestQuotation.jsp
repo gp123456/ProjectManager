@@ -89,7 +89,7 @@
                     <th>Quantity</th>
                     <th>Price Unit*</th>
                     <th>Discount(%)*</th>
-                    <th>Availability*</th>
+                    <th>Availability (days)*</th>
                     <th>Net Total</th>
                 </tr>
             </thead>

@@ -176,6 +176,7 @@ public class Common {
         model.addAttribute("content", content);
         model.addAttribute("classContent", classContent);
         model.addAttribute("project_reference", user.getProject_reference());
+        model.addAttribute("email", user.getEmail());
     }
 
     public void setItemInfo(Model model, ProjectManagerService srvProjectManager) {
