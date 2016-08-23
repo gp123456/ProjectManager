@@ -20,7 +20,9 @@ import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +39,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 
 /**
@@ -49,7 +53,7 @@ public class Common {
 
     private ProjectTypeEnum projectType;
 
-    private static final User user = new User();
+    private static final Map<String, User> user = new HashMap<>();
 
     private String side_bar;
 
@@ -165,18 +169,22 @@ public class Common {
         return response;
     }
 
-    public void setHeaderInfo(Model model) {
-        model.addAttribute("screen_name", user.getScreen_name());
-        model.addAttribute("full_name", user.getFull_name());
-        model.addAttribute("last_login", user.getLast_login());
-        model.addAttribute("avatar", user.getAvatar());
-        model.addAttribute("title", title);
-        model.addAttribute("project_header", header);
-        model.addAttribute("side_bar", side_bar);
-        model.addAttribute("content", content);
-        model.addAttribute("classContent", classContent);
-        model.addAttribute("project_reference", user.getProject_reference());
-        model.addAttribute("email", user.getEmail());
+    public void setHeaderInfo(HttpSession session, Model model) {
+        User user = getUser(session.getId());
+
+        if (user != null) {
+            model.addAttribute("screen_name", user.getScreen_name());
+            model.addAttribute("full_name", user.getFull_name());
+            model.addAttribute("last_login", user.getLast_login());
+            model.addAttribute("avatar", user.getAvatar());
+            model.addAttribute("title", title);
+            model.addAttribute("project_header", header);
+            model.addAttribute("side_bar", side_bar);
+            model.addAttribute("content", content);
+            model.addAttribute("classContent", classContent);
+            model.addAttribute("project_reference", user.getProject_reference());
+            model.addAttribute("email", user.getEmail());
+        }
     }
 
     public void setItemInfo(Model model, ProjectManagerService srvProjectManager) {
@@ -225,8 +233,40 @@ public class Common {
         this.title = title;
     }
 
-    public User getUser() {
-        return user;
+    public void setUser(String session, User user) {
+        this.user.put(session, user);
+    }
+
+    public User getUser(String session) {
+        User u = user.get(session);
+
+        return u;
+    }
+
+    public User setUserProjectId(String session, Long projectId) {
+        User u = user.get(session);
+
+        if (u != null) {
+            u.setProjectId(projectId);
+        }
+
+        return u;
+    }
+
+    public Boolean isLockProject(Long userId, Long projectId) {
+        for (User u : user.values()) {
+            Long pId = u.getProjectId();
+
+            if (!u.getId().equals(userId) && pId != null && pId.equals(projectId)) {
+                return Boolean.TRUE;
+            }
+        }
+
+        return Boolean.FALSE;
+    }
+
+    public User removeUser(String session) {
+        return user.remove(session);
     }
 
     public SearchCriteria getSearchCriteria() {
@@ -301,13 +341,21 @@ public class Common {
         return si;
     }
 
-    public String setPrjReference(Model model, ProjectManagerService srvProjectManager) {
-        Collabs collab = srvProjectManager.getDaoCollab().getById(getUser().getId());
-        String prj_reference = collab.getProjectId() + "/" + collab.getProjectPrefix();
+    public String setPrjReference(HttpServletRequest request, Model model, ProjectManagerService srvProjectManager) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        model.addAttribute("prj_reference", prj_reference);
+            if (session != null) {
+                Collabs collab = srvProjectManager.getDaoCollab().getById(getUser(session.getId()).getId());
+                String prj_reference = collab.getProjectId() + "/" + collab.getProjectPrefix();
 
-        return prj_reference;
+                model.addAttribute("prj_reference", prj_reference);
+
+                return prj_reference;
+            }
+        }
+
+        return null;
     }
 
     public String getProjectTypeName(String id) {
@@ -434,7 +482,6 @@ public class Common {
         }
         message.setSubject(subject);
         // Create a message part to represent the body text
-        logger.log(Level.INFO, "Create a message part to represent the body text");
         BodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setText(messageBody);
         Multipart multipart = new MimeMultipart();
@@ -450,8 +497,8 @@ public class Common {
         // Send the message
         Transport transport = session.getTransport("smtp");
         //transport.connect(mailServer, "technical@marpo.gr", "ma87#37d");
-        transport.connect(mailServer, "info@wcs.com.gr", "n3wp@ssword");
-        Transport.send(message);
+//        transport.connect(mailServer, "info@wcs.com.gr", "n3wp@ssword");
+        transport.send(message);
         transport.close();
     }
 }

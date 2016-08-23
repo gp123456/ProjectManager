@@ -101,29 +101,29 @@ function editRow(pId) {
     var contact = $("#contact option:selected").attr("value");
     var data = "";
 
-    if (pId === -1) {
+    if (pId == -1) {
         alert("No edit the project detail with id:" + pId);
         return;
     } else {
         data += "id=" + pId;
     }
-    if (company !== "none") {
+    if (company != "none") {
         data += "&company=" + company;
     }
-    if (type !== "none") {
+    if (type != "none") {
         data += "&type=" + type;
     }
-    if (expired !== "") {
-        data += "&expired=" + expired;
-    }
-    if (vessel !== -1) {
+    if (vessel != -1) {
         data += "&vessel=" + vessel;
     }
-    if (customer !== "none") {
+    if (customer != "none") {
         data += "&customer=" + customer;
     }
-    if (contact !== -1) {
+    if (contact != -1) {
         data += "&contact=" + contact;
+    }
+    if (expired != "") {
+        data += "&dateExpired=" + expired;
     }
 
     $.ajax({
@@ -136,6 +136,9 @@ function editRow(pId) {
             $("#header").html(content.header);
             $("#body").html(content.body);
             $("#edit").attr('class', 'button');
+            setTimeout(function () {
+                window.location = content.location;
+            }, 5000);
         },
         error: function () {
         }
@@ -198,23 +201,23 @@ function saveProject() {
     var company = $("#company option:selected").attr("value");
     var contact = $("#contact option:selected").attr("value");
 
-    if (company === "none") {
+    if (company == "none") {
         alert("you must select company");
         return;
     }
-    if (type === "none") {
+    if (type == "none") {
         alert("you must select type");
         return;
     }
-    if (customer === "none") {
+    if (customer == "none") {
         alert("you must select a customer or add one");
         return;
     }
-    if (vessel === -1 || vessel === null || isNaN(vessel)) {
+    if (vessel == -1 || isNaN(vessel)) {
         alert("you must select a vessel or add one");
         return;
     }
-    if (contact === -1 || contact === null || isNaN(contact)) {
+    if (contact == -1 || isNaN(contact)) {
         alert("you must select a contact or add one");
         return;
     }
@@ -222,9 +225,7 @@ function saveProject() {
     $.ajax({
         type: "POST",
         url: "save",
-        data: "type=" + type + "&expired=" + expired + "&customer=" + customer
-                + "&vessel=" + vessel + "&company=" + company + "&contact=" +
-                contact,
+        data: "type=" + type + "&customer=" + customer + "&vessel=" + vessel + "&company=" + company + "&contact=" + contact + "&dateExpired=" + expired,
         success: function (response) {
             var content = JSON.parse(response)
 
@@ -236,7 +237,10 @@ function saveProject() {
             }
             $("#project-reference").text(content.project_reference);
             $("#save").attr('class', 'button');
-            $("#save").attr('disabled','disabled');
+            $("#save").attr('disabled', 'disabled');
+            setTimeout(function () {
+                window.location = content.location;
+            }, 5000);
         },
         error: function (e) {
         }
@@ -493,9 +497,7 @@ function dlgEditProject() {
                     dest_path = "/ProjectManager/project/snapshot";
                 }
 
-                console.log(status + "," + dest_path);
-
-                dlgProject('RQ', 'new', status, dlg_id, div_id, dest_path);
+                dlgProject('RQ-EDIT', 'new', status, dlg_id, div_id, dest_path);
             }
         },
         show: {

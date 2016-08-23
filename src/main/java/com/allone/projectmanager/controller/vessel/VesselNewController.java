@@ -9,6 +9,8 @@ import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import com.allone.projectmanager.entities.Vessel;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,13 +31,21 @@ public class VesselNewController extends Common {
     ProjectManagerService srvProjectManager;
 
     @RequestMapping(value = "/new")
-    public String New(Model model) {
-        this.setTitle("Vessel-New");
-        this.setSide_bar("../vessel/sidebar.jsp");
-        this.setContent("../vessel/New.jsp");
-        setHeaderInfo(model);
+    public String New(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Vessel-New");
+                this.setSide_bar("../vessel/sidebar.jsp");
+                this.setContent("../vessel/New.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 
     @RequestMapping(value = "/add")
@@ -46,9 +56,9 @@ public class VesselNewController extends Common {
         if (vess != null) {
             vess = srvProjectManager.getDaoVessel().add(vess);
 
-            response = "<option value='" +
-                       vess.getId() + "' selected='selected'>" +
-                       vess.getName() + "</option>";
+            response = "<option value='"
+                    + vess.getId() + "' selected='selected'>"
+                    + vess.getName() + "</option>";
         }
 
         return response;

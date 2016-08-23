@@ -18,16 +18,15 @@
     });
 </script>
 
-<!--<div class="formLayout">-->
-<form class="go-bottom">
+<form id="demo" class="go-bottom">
     <label class="custom-select">Type
         <select id="search-type" ></select>
     </label>
     <label class="custom-select">Status
-    <select id="search-status"></select>
+        <select id="search-status"></select>
     </label>
     <label class="custom-select">Company
-    <select id="search-company"></select>
+        <select id="search-company"></select>
     </label>
     <div>
         <input type="text" id="search-reference" value="">
@@ -52,4 +51,3 @@
     <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
     <input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
 </form>
-<!--</div>-->

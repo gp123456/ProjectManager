@@ -6,6 +6,8 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.controller.common.Common;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +19,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/project")
 public class HistoryOldProjectController extends Common {
+
     @RequestMapping(value = "/history-old-project")
-    public String WorkOrder(Model model) {
-        this.setTitle("History-Old-Project");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/HistoryOldProject.jsp");
-        model.addAttribute("prj_version", "old");
-        setHeaderInfo(model);
-        
-        return "index";
+    public String WorkOrder(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                this.setTitle("History-Old-Project");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/HistoryOldProject.jsp");
+                model.addAttribute("prj_version", "old");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

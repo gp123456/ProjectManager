@@ -10,6 +10,8 @@ import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.ProjectDetail;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/project")
 public class PackingListController extends ProjectCommon {
-    private static final Logger LOG = Logger.getLogger(Root.class.getName());
+
+    private static final Logger logger = Logger.getLogger(Root.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
@@ -38,13 +41,21 @@ public class PackingListController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/packing-list")
-    public String PackingList(Model model) {
-        this.setTitle("Projects-Packing List");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/PackingList.jsp");
-        setHeaderInfo(model);
+    public String PackingList(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Projects-Packing List");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/PackingList.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 
     @RequestMapping(value = "/packing-list/id")

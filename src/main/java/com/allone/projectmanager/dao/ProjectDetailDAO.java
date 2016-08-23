@@ -128,6 +128,30 @@ public class ProjectDetailDAO {
     }
 
     @SuppressWarnings("unchecked")
+    public List getByProjectIdType(Long project, String type) {
+        List value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (project != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType")
+                        .setParameter("project", project)
+                        .setParameter("type", type);
+
+                value = (query != null)
+                        ? query.getResultList()
+                        : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return value;
+    }
+
+    @SuppressWarnings("unchecked")
     public List getByType(String type, Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();

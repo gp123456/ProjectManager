@@ -7,6 +7,8 @@ package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.controller.common.ProjectCommon;
 import com.allone.projectmanager.entities.Project;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,15 +20,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/project")
 public class PurchaseOrderController extends ProjectCommon {
+
     @RequestMapping(value = "/purchase-order")
-    public String PurchaseOrder(Project p, Long pdId, Model model) {
-        this.setTitle("Projects - Purchase Order");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/PurchaseOrder.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("pd_id", pdId);
-        model.addAttribute("project_reference", p.getReference());
-        
-        return "index";
+    public String PurchaseOrder(HttpServletRequest request, Project p, Long pdId, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                this.setTitle("Projects - Purchase Order");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/PurchaseOrder.jsp");
+                setHeaderInfo(session, model);
+                model.addAttribute("pd_id", pdId);
+                model.addAttribute("project_reference", p.getReference());
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

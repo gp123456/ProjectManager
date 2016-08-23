@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.print.PrintException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -56,35 +58,54 @@ public class Root extends ProjectCommon {
     }
 
     @RequestMapping(value = "/")
-    public String login() {
+    public String logout(HttpServletRequest request) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                removeUser(session.getId());
+            }
+        }
+
         return "login";
     }
 
     @RequestMapping(value = "/home")
-    public String index(@Validated User user, Model model) throws ParseException, UnsupportedEncodingException {
-        Collabs collab = srvProjectManager.getDaoCollab().login(user.getUsername(), user.getPassword());
+    public String index(HttpServletRequest request, @Validated User _user, Model model) throws ParseException, UnsupportedEncodingException {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        if (collab != null) {
-            SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-            String current = ds.format(new Date());
+            if (session != null) {
+                Collabs collab = srvProjectManager.getDaoCollab().login(_user.getUsername(), _user.getPassword());
 
-            getUser().setId(collab.getId());
-            getUser().setScreen_name(user.getUsername());
-            getUser().setLast_login(new String(current.getBytes("ISO-8859-1")));
-            getUser().setFull_name(collab.getSurname() + " " + collab.getName());
-            getUser().setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
-            getUser().setProject_expired(collab.getProjectExpired());
-            setTitle("Project Manager");
-            setHeader("main_header.jsp");
-            setContent("../project/ViewProject.jsp");
-            setHeaderInfo(model);
-            model.addAttribute("login", "true");
-            model.addAttribute("role", collab.getRole());
+                if (collab != null) {
+                    SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                    String current = ds.format(new Date());
+                    User user = new User();
 
-            return "index";
-        } else {
-            return "login";
+                    user.setId(collab.getId());
+                    user.setScreen_name(user.getUsername());
+                    user.setLast_login(new String(current.getBytes("ISO-8859-1")));
+                    user.setFull_name(collab.getSurname() + " " + collab.getName());
+                    user.setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
+                    user.setProject_expired(collab.getProjectExpired());
+                    user.setEmail(collab.getEmail());
+                    setUser(session.getId(), user);
+                    setTitle("Project Manager");
+                    setHeader("main_header.jsp");
+                    setContent("../project/ViewProject.jsp");
+                    setHeaderInfo(session, model);
+                    model.addAttribute("login", "true");
+                    model.addAttribute("role", collab.getRole());
+
+                    return "index";
+                } else {
+                    return "login";
+                }
+            }
         }
+
+        return "";
     }
 
     @RequestMapping(value = "/items")
@@ -96,14 +117,11 @@ public class Root extends ProjectCommon {
     public @ResponseBody
     String getView() {
         Map<String, List<PlotInfoModel>> content = new HashMap<>();
-        content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.
-                toString()));
-        content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.
-                toString()));
-        content.put("OpenProjectSaleCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SALE.
-                toString()));
-        content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.
-                toString()));
+
+        content.put("OpenProjectSaleStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SALE.toString()));
+        content.put("OpenProjectServiceStatus", getOpenProjectStatusByType(srvProjectManager, ProjectTypeEnum.SERVICE.toString()));
+        content.put("OpenProjectSaleCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SALE.toString()));
+        content.put("OpenProjectServiceCompany", getOpenProjectCompanyByType(srvProjectManager, ProjectTypeEnum.SERVICE.toString()));
 
         return new Gson().toJson(content);
     }

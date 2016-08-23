@@ -6,6 +6,7 @@
 package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,8 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "request_quotation")
 @XmlRootElement
 @NamedQueries(
-        {@NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService", query = "SELECT rq FROM RequestQuotation rq WHERE rq.billMaterialService = :billMaterialService"),
-         @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findById", query = "SELECT rq FROM RequestQuotation rq WHERE rq.id = :id")})
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService", query = "SELECT rq FROM RequestQuotation rq WHERE rq.billMaterialService = :billMaterialService ORDER BY rq.id DESC"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findById", query = "SELECT rq FROM RequestQuotation rq WHERE rq.id = :id")})
 public class RequestQuotation implements Serializable {
 
     @Id
@@ -47,30 +49,30 @@ public class RequestQuotation implements Serializable {
     @Column(name = "currency")
     @NotNull
     private Integer currency;
-    
+
     @Column(name = "material_cost")
-    private Integer materialCost;
-    
-//    @Column(name = "expenses_cost")
-//    private Integer expensesCost;
+    private BigDecimal materialCost;
 
     @Column(name = "grand_total")
-    private Integer grandTotal;
-    
+    private BigDecimal grandTotal;
+
     @Column(name = "delivery_cost")
-    private Integer deliveryCost;
+    private BigDecimal deliveryCost;
 
     @Column(name = "other_expenses")
-    private Integer otherExpenses;
-    
+    private BigDecimal otherExpenses;
+
     @Column(name = "note")
     private String note;
-    
+
     @Column(name = "supplier_note")
     private String supplierNote;
-    
-    @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
+
+    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
     private Boolean complete;
+
+    @Column(name = "name")
+    private String name;
 
     public RequestQuotation() {
     }
@@ -80,12 +82,13 @@ public class RequestQuotation implements Serializable {
         billMaterialService = builder.billMaterialService;
         currency = builder.currency;
         materialCost = builder.materialCost;
-//        expensesCost = builder.expensesCost;
         grandTotal = builder.grandTotal;
         deliveryCost = builder.deliveryCost;
         otherExpenses = builder.otherExpenses;
         note = builder.note;
         supplierNote = builder.supplierNote;
+        complete = builder.complete;
+        name = builder.name;
     }
 
     public Long getId() {
@@ -120,43 +123,35 @@ public class RequestQuotation implements Serializable {
         this.currency = currency;
     }
 
-    public Integer getMaterialCost() {
+    public BigDecimal getMaterialCost() {
         return materialCost;
     }
 
-    public void setMaterialCost(Integer materialCost) {
+    public void setMaterialCost(BigDecimal materialCost) {
         this.materialCost = materialCost;
     }
 
-//    public Integer getExpensesCost() {
-//        return expensesCost;
-//    }
-//
-//    public void setExpensesCost(Integer expensesCost) {
-//        this.expensesCost = expensesCost;
-//    }
-
-    public Integer getGrandTotal() {
+    public BigDecimal getGrandTotal() {
         return grandTotal;
     }
 
-    public void setGrandTotal(Integer grandTotal) {
+    public void setGrandTotal(BigDecimal grandTotal) {
         this.grandTotal = grandTotal;
     }
 
-    public Integer getDeliveryCost() {
+    public BigDecimal getDeliveryCost() {
         return deliveryCost;
     }
 
-    public void setDeliveryCost(Integer deliveryCost) {
+    public void setDeliveryCost(BigDecimal deliveryCost) {
         this.deliveryCost = deliveryCost;
     }
 
-    public Integer getOtherExpenses() {
+    public BigDecimal getOtherExpenses() {
         return otherExpenses;
     }
 
-    public void setOtherExpenses(Integer otherExpenses) {
+    public void setOtherExpenses(BigDecimal otherExpenses) {
         this.otherExpenses = otherExpenses;
     }
 
@@ -167,7 +162,7 @@ public class RequestQuotation implements Serializable {
     public void setNote(String note) {
         this.note = note;
     }
-    
+
     public String getSupplierNote() {
         return supplierNote;
     }
@@ -182,6 +177,14 @@ public class RequestQuotation implements Serializable {
 
     public void setComplete(Boolean complete) {
         this.complete = complete;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -215,22 +218,22 @@ public class RequestQuotation implements Serializable {
         private Long billMaterialService;
 
         private Integer currency;
-        
-        private Integer materialCost;
-        
-//        private Integer expensesCost;
-        
-        private Integer grandTotal;
-        
-        private Integer deliveryCost;
-        
-        private Integer otherExpenses;
+
+        private BigDecimal materialCost;
+
+        private BigDecimal grandTotal;
+
+        private BigDecimal deliveryCost;
+
+        private BigDecimal otherExpenses;
 
         private String note;
-        
+
         private String supplierNote;
 
         private Boolean complete;
+
+        private String name;
 
         public RequestQuotation.Builder setSupplier(String supplier) {
             this.supplier = supplier;
@@ -244,37 +247,31 @@ public class RequestQuotation implements Serializable {
             return this;
         }
 
-        public Builder setMaterialCost(Integer materialCost) {
+        public Builder setMaterialCost(BigDecimal materialCost) {
             this.materialCost = materialCost;
 
             return this;
         }
-        
+
         public Builder setCurrency(Integer currency) {
             this.currency = currency;
 
             return this;
         }
-        
-//        public Builder setExpensesCost(Integer expensesCost) {
-//            this.expensesCost = expensesCost;
-//
-//            return this;
-//        }
-        
-        public Builder setGrandTotal(Integer grandTotal) {
+
+        public Builder setGrandTotal(BigDecimal grandTotal) {
             this.grandTotal = grandTotal;
 
             return this;
         }
-        
-        public Builder setDeliveryCost(Integer deliveryCost) {
+
+        public Builder setDeliveryCost(BigDecimal deliveryCost) {
             this.deliveryCost = deliveryCost;
 
             return this;
         }
 
-        public Builder setOtherExpenses(Integer otherExpenses) {
+        public Builder setOtherExpenses(BigDecimal otherExpenses) {
             this.otherExpenses = otherExpenses;
 
             return this;
@@ -285,7 +282,7 @@ public class RequestQuotation implements Serializable {
 
             return this;
         }
-        
+
         public Builder setSupplierNote(String supplierNote) {
             this.supplierNote = supplierNote;
 
@@ -294,6 +291,12 @@ public class RequestQuotation implements Serializable {
 
         public Builder setComplete(Boolean complete) {
             this.complete = complete;
+
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
 
             return this;
         }

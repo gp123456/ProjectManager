@@ -8,6 +8,8 @@ package com.allone.projectmanager.controller.stock;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,13 +29,21 @@ public class StockHistory extends Common {
     ProjectManagerService srvProjectManager;
 
     @RequestMapping(value = "/snapshot")
-    public String History(Model model) {
-        this.setTitle("Stock");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../stock/sidebar.jsp");
-        this.setContent("../stock/History.jsp");
-        setHeaderInfo(model);
+    public String History(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Stock");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../stock/sidebar.jsp");
+                this.setContent("../stock/History.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

@@ -19,6 +19,8 @@ import com.google.common.base.Strings;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,14 +50,22 @@ public class DebugController extends Common {
 //        this.srvWCSProjectManager = srvWCSProjectManager;
 //    }
     @RequestMapping(value = "/snapshot")
-    public String Snapshot(Model model) {
-        this.setTitle("Debug");
-        this.setHeader(null);
-        this.setSide_bar("../debug/sidebar.jsp");
-        this.setContent(null);
-        setHeaderInfo(model);
+    public String Snapshot(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Debug");
+                this.setHeader(null);
+                this.setSide_bar("../debug/sidebar.jsp");
+                this.setContent(null);
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 
     @RequestMapping(value = "/db-files")

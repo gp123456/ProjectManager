@@ -8,6 +8,8 @@ package com.allone.projectmanager.controller.contact;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,13 +29,21 @@ public class ContactHistoryController extends Common {
     ProjectManagerService srvProjectManager;
 
     @RequestMapping(value = "/snapshot")
-    public String History(Model model) {
-        this.setTitle("Contact");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../contact/sidebar.jsp");
-        this.setContent("../contact/History.jsp");
-        setHeaderInfo(model);
+    public String History(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Contact");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../contact/sidebar.jsp");
+                this.setContent("../contact/History.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

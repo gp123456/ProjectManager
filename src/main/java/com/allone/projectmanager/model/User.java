@@ -21,6 +21,7 @@ public class User {
     private String project_reference;
     private Integer project_expired;
     private String email;
+    private Long projectId;
 
     public String getProject_reference() {
         return project_reference;
@@ -100,5 +101,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

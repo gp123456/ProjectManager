@@ -8,6 +8,8 @@ package com.allone.projectmanager.controller.stock;
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,18 +22,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/stock")
 public class StockBill extends Common {
-    private static final Logger LOG = Logger.getLogger(StockBill.class.getName());
+
+    private static final Logger logger = Logger.getLogger(StockBill.class.getName());
 
     @Autowired
     ProjectManagerService srvProjectManager;
-    
-    @RequestMapping(value = "/bill")
-    public String Bill(Model model) {
-        this.setTitle("Stock-Bill");
-        this.setSide_bar("../stock/sidebar.jsp");
-        this.setContent("../stock/Bill.jsp");
-        setHeaderInfo(model);
 
-        return "index";
+    @RequestMapping(value = "/bill")
+    public String Bill(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                this.setTitle("Stock-Bill");
+                this.setSide_bar("../stock/sidebar.jsp");
+                this.setContent("../stock/Bill.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

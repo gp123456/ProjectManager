@@ -6,6 +6,8 @@
 package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.controller.common.Common;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +19,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/project")
 public class WorkOrderController extends Common {
+
     @RequestMapping(value = "/work-order")
-    public String WorkOrder(Model model) {
-        this.setTitle("Projects-Work Order");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/WorkOrder.jsp");
-        setHeaderInfo(model);
-        
-        return "index";
+    public String WorkOrder(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                this.setTitle("Projects-Work Order");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/WorkOrder.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 }

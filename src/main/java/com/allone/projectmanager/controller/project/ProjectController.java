@@ -15,12 +15,14 @@ import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.model.User;
 import com.allone.projectmanager.tools.JasperReport;
 import com.allone.projectmanager.tools.Printing;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +31,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -119,85 +123,132 @@ public class ProjectController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/snapshot")
-    public String Snapshot(Model model) {
-        this.setTitle("Project");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/HistoryNewProject.jsp");
-        setHeaderInfo(model);
+    public String Snapshot(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        return "index";
+            if (session != null) {
+                this.setTitle("Project");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/HistoryNewProject.jsp");
+                setHeaderInfo(session, model);
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 
     @RequestMapping(value = "/new")
-    public String NewProject(Model model) {
-        Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+    public String NewProject(HttpServletRequest request, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        this.setTitle("Project - New");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        model.addAttribute("p_id", -1);
-        model.addAttribute("project_reference", "New Project - REF:" + getUser().getProject_reference());
-        model.addAttribute("expired", format.format(expired));
-        model.addAttribute("button_save", "<input type='button' class='button alarm' id='save' onclick='saveProject()' value='Save' />\n");
+            if (session != null) {
+                User user = getUser(session.getId());
+                Date expired = new Date(new Date().getTime() + user.getProject_expired() * 86400000l);
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
 
-        return "index";
+                this.setTitle("Project - New");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/NewProject.jsp");
+                setHeaderInfo(session, model);
+                model.addAttribute("p_id", -1);
+                model.addAttribute("project_reference", "New Project - REF:" + user.getProject_reference());
+                model.addAttribute("expired", format.format(expired));
+                model.addAttribute("button_save", "<input type='button' class='button alarm' id='save' onclick='saveProject()' value='Save' />\n");
+
+                return "index";
+            }
+        }
+
+        return "";
     }
 
     @RequestMapping(value = "/edit-form")
-    public String EditProject(Project p, Model model) {
-        this.setTitle("Projects - Edit");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/NewProject.jsp");
-        setHeaderInfo(model);
-        p = srvProjectManager.getDaoProject().getById(p.getId());
-        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
-        if (p != null && pds != null && !pds.isEmpty()) {
-            model.addAttribute("p_id", p.getId());
-            model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-            model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='editRow(" + pds.get(0).getId()
-                    + ")' value='Edit' />\n");
+    @SuppressWarnings("empty-statement")
+    public String EditProject(HttpServletRequest request, Project p, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                this.setTitle("Projects - Edit");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/NewProject.jsp");
+                setHeaderInfo(session, model);
+                p = srvProjectManager.getDaoProject().getById(p.getId());
+                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+                if (p != null && pds != null && !pds.isEmpty()) {
+                    setUserProjectId(session.getId(), p.getId());
+                    model.addAttribute("p_id", p.getId());
+                    model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
+                    model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='editRow(" + pds.get(0).getId()
+                            + ")' value='Edit' />\n");
+                }
+
+                return "index";
+            }
         }
 
-        return "index";
+        return "";
     }
 
     @RequestMapping(value = {"/save"})
     public @ResponseBody
-    String saveProject(ProjectDetail pd, Integer offset, Integer size, Model model) {
-        Collabs user = srvProjectManager.getDaoCollab().getById(getUser().getId());
-        Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+    String saveProject(HttpServletRequest request, ProjectDetail pd, String dateExpired, Integer offset, Integer size, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        if (user != null) {
-            Map<String, Object> content = new HashMap<>();
-            Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(getUser().
-                    getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
+            if (session != null) {
+                User user = getUser(session.getId());
+                Collabs collab = srvProjectManager.getDaoCollab().getById(user.getId());
+                Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
 
-            pd.setProject(p.getId());
-            pd.setStatus(ProjectStatusEnum.CREATE.toString());
-            pd.setCreator(user.getId());
-            pd.setCreated(new Date());
-            pd.setReference(p.getReference() + "/1");
-            pd.setVesselName((v != null) ? v.getName() : "");
-            pd = srvProjectManager.getDaoProjectDetail().add(pd);
+                if (collab != null) {
+                    Map<String, Object> content = new HashMap<>();
+                    Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(user.
+                            getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
 
-            user = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
-            getUser().setProject_reference((user.getProjectId() + 1) + "/" + user.getProjectPrefix());
+                    pd.setProject(p.getId());
+                    pd.setStatus(ProjectStatusEnum.CREATE.toString());
+                    pd.setCreator(collab.getId());
+                    pd.setCreated(new Date());
+                    pd.setReference(p.getReference() + "/1");
+                    pd.setVesselName((v != null) ? v.getName() : "");
+                    if (!Strings.isNullOrEmpty(dateExpired)) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            Date parsedDate = formatter.parse(dateExpired);
+                            pd.setExpired(parsedDate);
+                        } catch (ParseException ex) {
+                            logger.log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    pd = srvProjectManager.getDaoProjectDetail().add(pd);
 
-            String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+                    if (pd != null) {
+                        setUserProjectId(session.getId(), p.getId());
+                        collab = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
+                        user.setProject_reference((collab.getProjectId() + 1) + "/" + collab.getProjectPrefix());
 
-            content.put("header", projectHeader);
-            content.put("body", projectBody[1]);
-            content.put("project_reference", "New Project - REF:" + getUser().getProject_reference());
-            content.put("project_type", getProjectType());
-            content.putAll(getMenuInfo());
+                        String projectHeader = createProjectHeader();
+                        Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
 
-            return new Gson().toJson(content);
+                        content.put("header", projectHeader);
+                        content.put("body", projectBody[1]);
+                        content.put("project_reference", "New Project - REF:" + user.getProject_reference());
+                        content.put("project_type", getProjectType());
+                        content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
+                        content.putAll(getMenuInfo());
+
+                        return new Gson().toJson(content);
+                    }
+                }
+            }
         }
 
         return "";
@@ -219,7 +270,7 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/project-edit"})
     public @ResponseBody
-    String editProject(ProjectDetail pd) {
+    String editProject(ProjectDetail pd, String dateExpired) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
@@ -228,8 +279,14 @@ public class ProjectController extends ProjectCommon {
                 if (pd.getType() != null) {
                     dbpd.setType(pd.getType());
                 }
-                if (pd.getExpired() != null) {
-                    dbpd.setExpired(pd.getExpired());
+                if (!Strings.isNullOrEmpty(dateExpired)) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    try {
+                        Date parsedDate = formatter.parse(dateExpired);
+                        dbpd.setExpired(parsedDate);
+                    } catch (ParseException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                    }
                 }
                 if (pd.getCustomer() != null) {
                     dbpd.setCustomer(pd.getCustomer());
@@ -247,6 +304,7 @@ public class ProjectController extends ProjectCommon {
 
                 content.put("header", createProjectHeader());
                 content.put("body", createProjectRow(srvProjectManager, dbpd));
+                content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
 
                 return new Gson().toJson(content);
             }
@@ -436,26 +494,37 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/lst-project")
     public @ResponseBody
-    String lstProjects(Project prj) {
-        List<Project> prjs = srvProjectManager.getDaoProject().getByStatus(prj.getStatus(), 0, Integer.MAX_VALUE);
+    String lstProjects(HttpServletRequest request, Project prj) {
         String response = "";
 
-        if (prjs != null && !prjs.isEmpty()) {
-            String vessel = "";
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-            for (Project p : prjs) {
-                ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getLastByProject(p.getId());
+            if (session != null) {
+                List<Project> prjs = srvProjectManager.getDaoProject().getByStatus(prj.getStatus(), 0, Integer.MAX_VALUE);
 
-                if (pd != null) {
-                    Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+                if (prjs != null && !prjs.isEmpty()) {
+                    String vessel = "";
+                    Long userId = getUser(session.getId()).getId();
 
-                    if (v != null) {
-                        vessel = v.getName();
+                    for (Project p : prjs) {
+                        if (isLockProject(userId, p.getId())) {
+                            continue;
+                        }
+                        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getLastByProject(p.getId());
+
+                        if (pd != null) {
+                            Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+
+                            if (v != null) {
+                                vessel = v.getName();
+                            }
+                        }
+                        response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId()
+                                + "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel
+                                + "</label><br>";
                     }
                 }
-                response += "<input type='radio' id='" + p.getId() + "' name='radio-project' value='" + p.getId()
-                        + "'><label for='" + p.getId() + "' class='radio-label'>" + p.getReference() + "-" + vessel
-                        + "</label><br>";
             }
         }
 

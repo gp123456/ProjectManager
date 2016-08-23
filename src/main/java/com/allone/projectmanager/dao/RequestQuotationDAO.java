@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.RequestQuotation;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,8 +52,8 @@ public class RequestQuotationDAO {
         }
     }
 
-    public RequestQuotation getByBillMaterialService(Long bms) {
-        RequestQuotation value = null;
+    public List getByBillMaterialService(Long bms) {
+        List<RequestQuotation> value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -61,7 +62,7 @@ public class RequestQuotationDAO {
                         ? em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService").
                         setParameter("billMaterialService", bms) : null;
                 value = (query != null)
-                        ? (RequestQuotation) query.getSingleResult()
+                        ? query.getResultList()
                         : null;
             }
         } catch (HibernateException | NoResultException e) {
@@ -91,29 +92,31 @@ public class RequestQuotationDAO {
         }
     }
 
-    public void edit(RequestQuotation ms) {
+    public RequestQuotation edit(RequestQuotation rq) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rq != null) {
                 em.getTransaction().begin();
-                em.refresh(ms);
+                em.merge(rq);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
+
+            return rq;
         }
     }
 
-    public void delete(RequestQuotation ms) {
+    public void delete(RequestQuotation rq) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rq != null) {
                 em.getTransaction().begin();
-                em.remove(ms);
+                em.remove(rq);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {

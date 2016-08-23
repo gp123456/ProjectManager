@@ -69,7 +69,19 @@ function getBillMaterialServiceItems() {
         url: "/ProjectManager/project/bill-material-service/get-bill-material-items",
         data: data,
         success: function (response) {
-            saveBillMaterialService(response);
+            var content = JSON.parse(response);
+            var type = content.type;
+            var items = content.items;
+
+            if (type === "SERVICE") {
+                saveBillMaterialService(null);
+            } else {
+                if (type === "SALE" && items !== null) {
+                    saveBillMaterialService(items);
+                } else {
+                    alert("You must submit one item at least");
+                }
+            }
         },
         error: function (e) {
         }
@@ -88,13 +100,17 @@ function saveBillMaterialService(response) {
         data += "&quantities=";
 
         items.forEach(function (item) {
-            data += item + "-" + $("#quantity" + item).text() + ",";
+            var value = $("#quantity" + item).text();
+
+            if (value == '' || isNaN(value)) {
+                alert("you must insert values in all quantities");
+            } else {
+                data += item + "-" + value + ",";
+            }
         });
     } else {
         data += "&quantities=";
     }
-
-    console.log(data);
 
     $.ajax({
         type: "POST",
@@ -104,12 +120,14 @@ function saveBillMaterialService(response) {
             var content = JSON.parse(response);
 
             $("#header").html(content.header);
-            if (content.moreBillMaterialService === "true") {
-                setTimeout(function () {
-                    location.reload();
-                }, 5000);
 
-            }
+            setTimeout(function () {
+                if (content.moreBillMaterialService === "true") {
+                    location.reload();
+                } else {
+                    window.location = content.location;
+                }
+            }, 5000);
         },
         error: function (e) {
             alert(e);

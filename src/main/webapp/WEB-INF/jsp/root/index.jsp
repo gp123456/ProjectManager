@@ -26,6 +26,7 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
 
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -39,6 +40,7 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/layout.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/canvasjs-1.7.0/canvasjs.min.js"></script>
+        <!--<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/BillMaterialService.js"></script>

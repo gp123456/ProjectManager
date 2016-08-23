@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -263,27 +265,36 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/bill-material-service")
-    public String BillMaterialService(Project p, String mode, Model model) {
-        this.setTitle("Projects - Bill of materials or services");
-        this.setHeader("header.jsp");
-        this.setSide_bar("../project/sidebar.jsp");
-        this.setContent("../project/BillMaterialService.jsp");
-        setHeaderInfo(model);
-        p = srvProjectManager.getDaoProject().getById(p.getId());
+    public String BillMaterialService(HttpServletRequest request, Project p, String mode, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        if (p != null) {
-            model.addAttribute("p_id", p.getId());
-            model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='getBillMaterialServiceItems()'>\n");
-            model.addAttribute("button_remove", "<input type='button' value='Remove' class='button alarm' onclick='removeBillMaterialService()'>\n");
-            model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\""
-                    + p.getReference() + "\")'>\n");
-            model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\""
-                    + p.getReference() + "\")'>\n");
-            model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\""
-                    + p.getId() + "\")'>\n");
+            if (session != null) {
+                this.setTitle("Projects - Bill of materials or services");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/BillMaterialService.jsp");
+                setHeaderInfo(session, model);
+                p = srvProjectManager.getDaoProject().getById(p.getId());
+
+                if (p != null) {
+                    setUserProjectId(session.getId(), p.getId());
+                    model.addAttribute("p_id", p.getId());
+                    model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='getBillMaterialServiceItems()'>\n");
+                    model.addAttribute("button_remove", "<input type='button' value='Remove' class='button alarm' onclick='removeBillMaterialService()'>\n");
+                    model.addAttribute("button_save_pdf", "<input type='button' value='Save PDF' class='button' onclick='savePDF(\""
+                            + p.getReference() + "\")'>\n");
+                    model.addAttribute("button_save_excel", "<input type='button' value='Save Excel' class='button' onclick='saveXLS(\""
+                            + p.getReference() + "\")'>\n");
+                    model.addAttribute("button_send_email", "<input type='button' value='Send eMail' class='button' onclick='sendEmail(\""
+                            + p.getId() + "\")'>\n");
+                }
+
+                return "index";
+            }
         }
 
-        return "index";
+        return "";
     }
 
     @RequestMapping(value = "/bill-material-service/item/insert")
@@ -389,18 +400,21 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String getBMSItems(Long pdId) {
         Collection<BillMaterialServiceItem> items = getBillMaterialServiceItems(pdId);
+        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
         Set<Long> bmsi = new HashSet<>();
+        Map<String, String> content = new HashMap<>();
 
+        content.put("type", pd.getType());
         if (items != null) {
             items.stream().forEach((item) -> {
                 bmsi.add(item.getItem());
             });
             String response = new Gson().toJson(bmsi.toArray(), Long[].class);
 
-            return response;
+            content.put("items", response);
         }
 
-        return null;
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/bill-material-service/save")
@@ -452,11 +466,12 @@ public class BillMaterialServiceController extends ProjectCommon {
                     List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getCreatedByProjectExceptId(pd.getProject(), pd.getId());
                     response = "<h1>Bill of "
                             + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "Materials" : "Services")
-                            + " - REF:" + pd.getReference() + " - Complete "
-                            + ((pds != null && !pds.isEmpty()) ? "back to bill of materials or services, you have incomplete sub-project(s) pending" : "")
-                            + "</h1>\n";
+                            + " - REF:" + pd.getReference() + " - Complete " + ((pds != null && !pds.isEmpty()) ? "back to bill of "
+                                    + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "materials" : "services")
+                                    + ", you have incomplete sub-project(s) pending" : "") + "</h1>\n";
                     content.put("header", response);
                     content.put("moreBillMaterialService", (pds != null && !pds.isEmpty()) ? "true" : "false");
+                    content.put("location", (pds != null && !pds.isEmpty()) ? "" : "http://localhost:8081/ProjectManager/project/history-new-project");
                 }
             }
         }
@@ -507,40 +522,45 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/new-subproject")
     public @ResponseBody
-    String newSubProject() {
-        Date expired = new Date(new Date().getTime() + getUser().getProject_expired() * 86400000l);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+    String newSubProject(HttpServletRequest request) {
         Map<String, String> content = new HashMap<>();
-        String htmlCompany = "<select id='subproject-company'>\n" + "<option value='none' selected='selected'>Select</option>\n";
-        String htmlType = "<select id='type'>\n" + "<option value='none' selected='selected'>Select</option>\n";
-        List<Collabs> collabs = srvProjectManager.getDaoCollab().getByRole(CollabRoleEnum.TECHNICAL.getValue());
 
-        for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
-            htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                Date expired = new Date(new Date().getTime() + getUser(session.getId()).getProject_expired() * 86400000l);
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+                String htmlCompany = "<select id='subproject-company'>\n" + "<option value='none' selected='selected'>Select</option>\n";
+                String htmlType = "<select id='type'>\n" + "<option value='none' selected='selected'>Select</option>\n";
+                List<Collabs> collabs = srvProjectManager.getDaoCollab().getByRole(CollabRoleEnum.TECHNICAL.getValue());
+
+                for (OwnCompanyEnum company : OwnCompanyEnum.values()) {
+                    htmlCompany += "<option value='" + company.toString() + "'>" + company.toString() + "</option>\n";
+                }
+                htmlCompany += "</select>";
+                content.put("company", htmlCompany);
+
+                for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
+                    htmlType += "<option value='" + type.toString() + "'>" + type.toString() + "</option>\n";
+                }
+                htmlType += "</select>";
+                content.put("type", htmlType);
+
+                content.put("expired", format.format(expired));
+
+                if (collabs != null && !collabs.isEmpty()) {
+                    String htmlTechical = "<option value='none' selected='selected'>Select</option>\n";
+
+                    htmlTechical = collabs.stream().map((collab) -> "<option value='" + collab.getId() + "'>"
+                            + collab.getSurname() + " " + collab.getName() + "</option>\n")
+                            .reduce(htmlTechical, String::concat);
+                    content.put("technical", htmlTechical);
+                }
+            }
         }
-        htmlCompany += "</select>";
-        content.put("company", htmlCompany);
 
-        for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
-            htmlType += "<option value='" + type.toString() + "'>" + type.toString() + "</option>\n";
-        }
-        htmlType += "</select>";
-        content.put("type", htmlType);
-
-        content.put("expired", format.format(expired));
-
-        if (collabs != null && !collabs.isEmpty()) {
-            String htmlTechical = "<option value='none' selected='selected'>Select</option>\n";
-
-            htmlTechical = collabs.stream().map((collab) -> "<option value='" + collab.getId() + "'>"
-                    + collab.getSurname() + " " + collab.getName() + "</option>\n")
-                    .reduce(htmlTechical, String::concat);
-            content.put("technical", htmlTechical);
-        }
-
-        String result = new Gson().toJson(content);
-
-        return result;
+        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/bill-material-service/item/stock")
@@ -572,36 +592,42 @@ public class BillMaterialServiceController extends ProjectCommon {
 
     @RequestMapping(value = "/bill-material-service/save-subproject")
     public @ResponseBody
-    String saveSubproject(ProjectDetail pd) {
-        if (pd != null) {
-            pd.setStatus(ProjectStatusEnum.CREATE.toString());
-            pd.setCreator(getUser().getId());
-            pd.setCreated(new Date());
+    String saveSubproject(HttpServletRequest request, ProjectDetail pd) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-            ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getLastByProject(pd.getProject());
+            if (session != null) {
+                if (pd != null) {
+                    pd.setStatus(ProjectStatusEnum.CREATE.toString());
+                    pd.setCreator(getUser(session.getId()).getId());
+                    pd.setCreated(new Date());
 
-            if (dbpd != null) {
-                String dbpdReference = dbpd.getReference();
-                String reference = dbpdReference.substring(0, dbpdReference.lastIndexOf("/"));
-                String subid = dbpdReference.substring(dbpdReference.lastIndexOf("/") + 1);
-                Integer nextsubid = Integer.parseInt(subid) + 1;
+                    ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getLastByProject(pd.getProject());
 
-                pd.setReference(reference + "/" + nextsubid.toString());
-                pd.setCustomer(dbpd.getCustomer());
-                pd.setVessel(dbpd.getVessel());
-                pd.setContact(dbpd.getContact());
+                    if (dbpd != null) {
+                        String dbpdReference = dbpd.getReference();
+                        String reference = dbpdReference.substring(0, dbpdReference.lastIndexOf("/"));
+                        String subid = dbpdReference.substring(dbpdReference.lastIndexOf("/") + 1);
+                        Integer nextsubid = Integer.parseInt(subid) + 1;
 
-                pd = srvProjectManager.getDaoProjectDetail().add(pd);
-                setVirtualBillMaterialService(new BillMaterialService.Builder()
-                        .setClassSave("save alarm")
-                        .setProject(pd.getId())
-                        .build());
+                        pd.setReference(reference + "/" + nextsubid.toString());
+                        pd.setCustomer(dbpd.getCustomer());
+                        pd.setVessel(dbpd.getVessel());
+                        pd.setContact(dbpd.getContact());
+
+                        pd = srvProjectManager.getDaoProjectDetail().add(pd);
+                        setVirtualBillMaterialService(new BillMaterialService.Builder()
+                                .setClassSave("save alarm")
+                                .setProject(pd.getId())
+                                .build());
+                    }
+
+                    return "index";
+                }
             }
-
-            return "index";
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     @RequestMapping(value = "/bill-material-service/view-subproject")
@@ -631,6 +657,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         }
 
         return new Gson().toJson(content);
+
     }
 
     private class SubProjectInfo {

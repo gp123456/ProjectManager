@@ -14,13 +14,12 @@
             data: data,
             success: function (response) {
                 var content = JSON.parse(response);
-
+                
                 $("#subproject").val(content.subproject);
                 $("#supplier").val(content.supplier);
                 $("#currency").val(content.currency);
                 $("#request-quotation").html(content.requestQuotation);
                 $("#request-quotation-items").html(content.itemRequestQuotation);
-                $("#note").val(content.note);
             },
             error: function (xhr, status, error) {
                 alert(error);
@@ -29,7 +28,7 @@
     });
 </script>
 
-<div id="bill-header" class="formLayout">
+<div id="header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - REF:${projectReference}</h1>
     <h2 style="color: red">
         You are kindly requested to fill in the information requested in the red colored cells.<br>
@@ -93,5 +92,5 @@
     </div>
     <div><p><h2>Marpo Group Notes</h2><textarea id="note" name="note" rows="10" style="width: 100%" readonly="readonly">${noteRequestQuotation}</textarea></div>
     <div><p><h2>Vendor Notes</h2><textarea id="supplier-note" name="note" rows="10" style="width: 100%">${noteSupplierRequestQuotation}</textarea></div>
-    <div>${buttonCancel}${buttonRefresh}${buttonSendEmail}</div>
+    <div>${buttonClearAll}${buttonRefresh}${buttonSendEmail}</div>
 </div>

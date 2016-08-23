@@ -50,6 +50,26 @@ public class RequestQuotationItemDAO {
         }
     }
 
+    public RequestQuotationItem getByBillMaterialServiceItem(Long billMaterialServiceItem) {
+        RequestQuotationItem value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (billMaterialServiceItem != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotationItem.findByBillMaterialServiceItem").
+                        setParameter("billMaterialServiceItem", billMaterialServiceItem);
+
+                value = (query != null) ? (RequestQuotationItem) query.getSingleResult() : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+
+            return value;
+        }
+    }
+
     public List getByRequestQuotation(Long rq) {
         List value = null;
         EntityManager em = emf.createEntityManager();
@@ -77,7 +97,9 @@ public class RequestQuotationItemDAO {
             if (rqis != null && !rqis.isEmpty()) {
                 em.getTransaction().begin();
                 for (RequestQuotationItem rqi : rqis) {
-                    em.persist(rqi);
+                    if (rqi.getId() == null) {
+                        em.persist(rqi);
+                    }
                 }
                 em.getTransaction().commit();
             }
@@ -90,33 +112,33 @@ public class RequestQuotationItemDAO {
         }
     }
 
-    public List add(List<RequestQuotationItem> ms) {
+    public List add(List<RequestQuotationItem> rqis) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null && !ms.isEmpty()) {
+            if (rqis != null && !rqis.isEmpty()) {
                 em.getTransaction().begin();
-                for (RequestQuotationItem item : ms) {
+                for (RequestQuotationItem item : rqis) {
                     em.persist(item);
                 }
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         } finally {
             em.close();
 
-            return ms;
+            return rqis;
         }
     }
 
-    public void edit(RequestQuotationItem ms) {
+    public void edit(RequestQuotationItem rqi) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rqi != null) {
                 em.getTransaction().begin();
-                em.refresh(ms);
+                em.merge(rqi);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
@@ -126,13 +148,13 @@ public class RequestQuotationItemDAO {
         }
     }
 
-    public void delete(RequestQuotationItem ms) {
+    public void delete(RequestQuotationItem rqi) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (rqi != null) {
                 em.getTransaction().begin();
-                em.remove(ms);
+                em.remove(rqi);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
@@ -142,13 +164,13 @@ public class RequestQuotationItemDAO {
         }
     }
 
-    public void delete(List<RequestQuotationItem> ms) {
+    public void delete(List<RequestQuotationItem> rqis) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null && !ms.isEmpty()) {
+            if (rqis != null && !rqis.isEmpty()) {
                 em.getTransaction().begin();
-                for (RequestQuotationItem item : ms) {
+                for (RequestQuotationItem item : rqis) {
                     em.remove(item);
                 }
                 em.getTransaction().commit();

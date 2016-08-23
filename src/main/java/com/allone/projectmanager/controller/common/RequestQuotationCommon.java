@@ -9,7 +9,6 @@ import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
-import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,8 +29,7 @@ public class RequestQuotationCommon extends Common {
 
     private final Map<Long, List<RequestQuotationItem>> mapRequestQuotationItems = new HashMap<>();
 
-    private final Map<Long, List<String>> mapSuppliers = new HashMap<>();
-
+//    private final Map<Long, List<String>> mapSuppliers = new HashMap<>();
     public Collection<RequestQuotationItem> getRequestQuotationItems(Long bms) {
         return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(bms) : null;
     }
@@ -82,6 +80,16 @@ public class RequestQuotationCommon extends Common {
         }
     }
 
+    public void removeRequestQuotationItems(Long bms) {
+        if (bms != null) {
+            List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
+
+            if (items != null && !items.isEmpty()) {
+                items.clear();
+            }
+        }
+    }
+
     public Boolean findVirtualItem(Long bms, Long itemId) {
         if (bms != null && itemId != null) {
             List<RequestQuotationItem> items = mapRequestQuotationItems.get(bms);
@@ -124,33 +132,33 @@ public class RequestQuotationCommon extends Common {
                 : null;
     }
 
-    public Collection<String> addSupplier(Long bms, String supplier) {
-        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
-            List<String> suppliers = mapSuppliers.get(bms);
-
-            if (suppliers != null && !suppliers.isEmpty()) {
-                suppliers.add(supplier);
-            } else {
-                mapSuppliers.put(bms, new ArrayList<>(Arrays.asList(supplier)));
-            }
-        }
-
-        return mapSuppliers.get(bms);
-    }
-
-    public Collection<String> getSuppliers(Long bms) {
-        return mapSuppliers.get(bms);
-    }
-
-    public Collection<String> removeVirtualSupplier(Long bms, String supplier) {
-        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
-            List<String> suppliers = mapSuppliers.get(bms);
-
-            if (suppliers != null && !suppliers.isEmpty()) {
-                suppliers.remove(supplier);
-            }
-        }
-
-        return mapSuppliers.get(bms);
-    }
+//    public Collection<String> addSupplier(Long bms, String supplier) {
+//        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
+//            List<String> suppliers = mapSuppliers.get(bms);
+//
+//            if (suppliers != null && !suppliers.isEmpty()) {
+//                suppliers.add(supplier);
+//            } else {
+//                mapSuppliers.put(bms, new ArrayList<>(Arrays.asList(supplier)));
+//            }
+//        }
+//
+//        return mapSuppliers.get(bms);
+//    }
+//
+//    public Collection<String> getSuppliers(Long bms) {
+//        return mapSuppliers.get(bms);
+//    }
+//
+//    public Collection<String> removeVirtualSupplier(Long bms, String supplier) {
+//        if (bms != null && !Strings.isNullOrEmpty(supplier)) {
+//            List<String> suppliers = mapSuppliers.get(bms);
+//
+//            if (suppliers != null && !suppliers.isEmpty()) {
+//                suppliers.remove(supplier);
+//            }
+//        }
+//
+//        return mapSuppliers.get(bms);
+//    }
 }
