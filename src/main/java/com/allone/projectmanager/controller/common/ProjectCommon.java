@@ -58,7 +58,7 @@ public class ProjectCommon extends Common {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
 
         response += "<tr>"
-                + "<td>" + pd.getReference() + "</td>\n"
+                + "<td><a href='#' onclick='dlgViewProject(" + pd.getId() + ")'>" + pd.getReference() + "</a></td>\n"
                 + "<td>" + pd.getType() + "</td>\n"
                 + "<td>" + pd.getStatus() + "</td>\n"
                 + "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n"

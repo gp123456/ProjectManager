@@ -533,3 +533,28 @@ function fillSearchCriteriaProject(version) {
 function alarmEdit() {
     $("#edit").attr('class', 'button alarm');
 }
+
+function getProjectInfo(id) {
+    
+}
+
+function dlgViewProject(id) {
+    getProjectInfo(id);
+    
+    $("#dlg-view-project").dialog({
+        autoOpen: true,
+        modal: true,
+        width: 372,
+        position: {
+            my: "top - 25"
+        },
+        show: {
+            effect: "blind",
+            duration: 1000
+        },
+        hide: {
+            effect: "explode",
+            duration: 1000
+        }
+    });
+}

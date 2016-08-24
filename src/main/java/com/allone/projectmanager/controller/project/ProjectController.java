@@ -257,8 +257,6 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = {"/search"})
     public @ResponseBody
     String searchProject(ProjectDetail p, String vessel, String date_start, String date_end, Integer offset, Integer size) {
-//        mode = (Strings.isNullOrEmpty(mode)) ? "edit" : mode;
-
         return searchProject(srvProjectManager, p, null, null, vessel, offset, size);
     }
 

@@ -12,7 +12,7 @@
 
 <a href="#demo" data-toggle="collapse"><h1>Search Criteria</h1></a>
 <!--<div id="demo" class="collapse">-->
-    <div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
+<div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
 <!--</div>-->
 <h1>Results</h1>
 <div class="formLayout">
@@ -21,4 +21,9 @@
         <tbody id="body"></tbody>
         <tfoot id="footer"></tfoot>
     </table>
+    <div id="dlg-view-project" hidden="true" title="View Project">
+        <form>
+            <div><jsp:include page="ViewProjectInfo.jsp"/></div>
+        </form>
+    </div>
 </div>
