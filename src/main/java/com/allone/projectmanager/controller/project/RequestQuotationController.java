@@ -880,17 +880,18 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         removeRequestQuotation(bms.getId());
                         removeRequestQuotationItems(bms.getId());
                         Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, _rq.getSupplier());
+                        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
                         User user = getUser(session.getId());
 
                         if (company != null && !Strings.isNullOrEmpty(company.getEmail1()) && user != null
-                                && !Strings.isNullOrEmpty(user.getEmail())) {
-//                            sendMail("smtp.dmail.hol.gr", user.getEmail(), company.getEmail1(), null, "MARPO GROUP RFQ - REF:"
-//                                    + pd.getReference(), "http://5.55.168.47:8080/ProjectManager/project/request-quotation?id="
-//                                    + _rq.getId() + "&emailSender=" + getUser().getEmail() + "&mode=RQS");
-//
-//                            response = "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n";
-                            response = "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
-                                    + user.getEmail() + "&mode=RQS";
+                                && !Strings.isNullOrEmpty(user.getEmail()) && pd != null) {
+                            sendMail("smtp.dmail.hol.gr", user.getEmail(), company.getEmail1(), null, "MARPO GROUP RFQ - REF:"
+                                    + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
+                                    + _rq.getId().toString() + "&emailSender=" + user.getEmail() + "&mode=RQS");
+
+                            response = "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n";
+//                            response = "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
+//                                    + user.getEmail() + "&mode=RQS";
                         } else if (company == null) {
                             response = "<h1>No found supplier</h1>\n";
                         } else if (Strings.isNullOrEmpty(company.getEmail1())) {
@@ -995,7 +996,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     @RequestMapping(value = "/request-quotation/send-email-supplier")
     public @ResponseBody
     @SuppressWarnings("null")
-    String sendEmailSupplier(final RequestQuotation rq) throws MessagingException {
+    String sendEmailSupplier(final RequestQuotation rq, final String emailSender) throws MessagingException {
         String response = "";
         RequestQuotation dbrq = srvProjectManager.getDaoRequestQuotation().getById(rq.getId());
 
@@ -1007,6 +1008,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
             if (bms != null) {
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+                Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, dbrq.getSupplier());
+
+                sendMail("smtp.dmail.hol.gr", company.getEmail1(), emailSender, null, "MARPO GROUP RFQ - REF:"
+                        + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
+                        + dbrq.getId().toString() + "&mode=RQS");
 
                 response = "<h1>REQUEST FOR QUOTATION - REF:" + pd.getReference() + " - Complete</h1>\n";
             }

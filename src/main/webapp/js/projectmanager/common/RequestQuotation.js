@@ -141,7 +141,7 @@ function sendEmail() {
 }
 
 function sendEmailSupplier() {
-    var data = "id=" + $('#request-quotation-id').val() + "&supplierNote=" + $("#supplier-note").val();
+    var data = "id=" + $('#request-quotation-id').val() + "&supplierNote=" + $("#supplier-note").val() + "&emailSender=" + $("#email-sender").val();
 
     $.ajax({
         type: "POST",
