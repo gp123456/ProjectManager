@@ -23,7 +23,7 @@
     </table>
     <div id="dlg-view-project" hidden="true" title="View Project">
         <form>
-            <div><jsp:include page="ViewProjectInfo.jsp"/></div>
+            <div><jsp:include page="HistoryBillMaterialService.jsp"/></div>
         </form>
     </div>
 </div>

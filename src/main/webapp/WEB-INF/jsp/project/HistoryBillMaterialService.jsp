@@ -55,7 +55,7 @@
             </table>
             <div id="dlg-view-project" hidden="true" title="View Request Quotation">
                 <form>
-                    <div><jsp:include page="ViewRequestQuotationInfo.jsp"/></div>
+                    <div><jsp:include page="HistoryRequestQuotation.jsp"/></div>
                 </form>
             </div>
         </div>
