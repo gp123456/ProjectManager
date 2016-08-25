@@ -892,7 +892,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                             content.put("header", "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n");
                             content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
-//                            response = "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
+//                            response = "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
 //                                    + user.getEmail() + "&mode=RQS";
                         } else if (company == null) {
                             response = "<h1>No found supplier</h1>\n";
@@ -1127,7 +1127,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                             pd.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
                             srvProjectManager.getDaoProjectDetail().edit(pd);
                             content.put("header", "REQUEST FOR QUOTATION - REF:" + p.getReference() + " COMPLETE");
-                            content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
+                            content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
 
                             return new Gson().toJson(content);
                         }
