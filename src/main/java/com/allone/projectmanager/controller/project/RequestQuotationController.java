@@ -1010,7 +1010,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
                 Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, dbrq.getSupplier());
 
-                sendMail("smtp.dmail.hol.gr", company.getEmail1(), emailSender, null, "MARPO GROUP RFQ - REF:"
+                sendMail("smtp.dmail.hol.gr", emailSender, "gpatitakis@gmail.com", null, "MARPO GROUP RFQ - REF:"
                         + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
                         + dbrq.getId().toString() + "&mode=RQS");
 
