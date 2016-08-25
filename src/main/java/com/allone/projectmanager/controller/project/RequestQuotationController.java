@@ -882,6 +882,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, _rq.getSupplier());
                         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
                         User user = getUser(session.getId());
+                        Map<String, String> content = new HashMap<>();
 
                         if (company != null && !Strings.isNullOrEmpty(company.getEmail1()) && user != null
                                 && !Strings.isNullOrEmpty(user.getEmail()) && pd != null) {
@@ -889,7 +890,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                     + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
                                     + _rq.getId().toString() + "&emailSender=" + user.getEmail() + "&mode=RQS");
 
-                            response = "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n";
+                            content.put("header", "<h1>Request Quotation - REF:" + pd.getReference() + " - Complete</h1>\n");
+                            content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
 //                            response = "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
 //                                    + user.getEmail() + "&mode=RQS";
                         } else if (company == null) {
@@ -897,7 +899,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         } else if (Strings.isNullOrEmpty(company.getEmail1())) {
                             response = "<h1>The supplier " + company.getName() + " has invalid email:" + company.getEmail1() + "</h1>\n";
                         } else if (user == null) {
-                            response = "<h1>You have lost the session. Yu must login again</h1>\n";
+                            response = "<h1>You have lost the session. You must login again</h1>\n";
                         } else if (user.getEmail() == null) {
                             response = "<h1>You have invalid email:" + user.getEmail() + "</h1>\n";
                         }

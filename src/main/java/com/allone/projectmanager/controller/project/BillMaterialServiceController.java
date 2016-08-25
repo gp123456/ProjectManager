@@ -471,7 +471,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                                     + ", you have incomplete sub-project(s) pending" : "") + "</h1>\n";
                     content.put("header", response);
                     content.put("moreBillMaterialService", (pds != null && !pds.isEmpty()) ? "true" : "false");
-                    content.put("location", (pds != null && !pds.isEmpty()) ? "" : "http://localhost:8081/ProjectManager/project/history-new-project");
+                    content.put("location", (pds != null && !pds.isEmpty()) ? "" : "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
                 }
             }
         }

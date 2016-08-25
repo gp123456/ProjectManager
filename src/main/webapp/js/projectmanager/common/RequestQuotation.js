@@ -127,8 +127,15 @@ function saveRFQ(url) {
         url: url,
         data: data,
         success: function (response) {
-//            $("#header").html(response);
-            window.location = response;
+            var content = JSON.parse(response);
+            
+            $("#header").html(content.header);
+            setTimeout(function () {
+                if (content.location) {
+                    location.href = content.location;
+                }
+            }, 5000);
+            }
 
         },
         error: function (e) {
@@ -378,7 +385,7 @@ function changeRequestQuotalion(hasList) {
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
-            
+
             $("#request-quotation").html(content.requestQuotation);
             $("#request-quotation-items").html(content.itemRequestQuotation);
             if (hasList === true) {

@@ -242,7 +242,7 @@ public class ProjectController extends ProjectCommon {
                         content.put("body", projectBody[1]);
                         content.put("project_reference", "New Project - REF:" + user.getProject_reference());
                         content.put("project_type", getProjectType());
-                        content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
+                        content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
                         content.putAll(getMenuInfo());
 
                         return new Gson().toJson(content);
