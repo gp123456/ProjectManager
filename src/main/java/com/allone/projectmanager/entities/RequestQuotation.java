@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -38,6 +39,15 @@ public class RequestQuotation implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
+    private Boolean complete;
+
+    @Column(name = "discard", columnDefinition = "Bit(1) default 'b0'")
+    private Boolean discard;
+
     @Column(name = "supplier")
     @NotNull
     private String supplier;
@@ -51,15 +61,19 @@ public class RequestQuotation implements Serializable {
     private Integer currency;
 
     @Column(name = "material_cost")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for materialCost")
     private BigDecimal materialCost;
 
     @Column(name = "grand_total")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for grandTotal")
     private BigDecimal grandTotal;
 
     @Column(name = "delivery_cost")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for deliveryCost")
     private BigDecimal deliveryCost;
 
     @Column(name = "other_expenses")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for otherExpenses")
     private BigDecimal otherExpenses;
 
     @Column(name = "note")
@@ -68,16 +82,13 @@ public class RequestQuotation implements Serializable {
     @Column(name = "supplier_note")
     private String supplierNote;
 
-    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
-    private Boolean complete;
-
-    @Column(name = "name")
-    private String name;
-
     public RequestQuotation() {
     }
 
     private RequestQuotation(RequestQuotation.Builder builder) {
+        name = builder.name;
+        complete = builder.complete;
+        discard = builder.discard;
         supplier = builder.supplier;
         billMaterialService = builder.billMaterialService;
         currency = builder.currency;
@@ -87,8 +98,6 @@ public class RequestQuotation implements Serializable {
         otherExpenses = builder.otherExpenses;
         note = builder.note;
         supplierNote = builder.supplierNote;
-        complete = builder.complete;
-        name = builder.name;
     }
 
     public Long getId() {
@@ -97,6 +106,30 @@ public class RequestQuotation implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean getComplete() {
+        return complete;
+    }
+
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
+
+    public Boolean getDiscard() {
+        return discard;
+    }
+
+    public void setDiscard(Boolean discard) {
+        this.discard = discard;
     }
 
     public String getSupplier() {
@@ -171,22 +204,6 @@ public class RequestQuotation implements Serializable {
         this.supplierNote = supplierNote;
     }
 
-    public Boolean getComplete() {
-        return complete;
-    }
-
-    public void setComplete(Boolean complete) {
-        this.complete = complete;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public String toString() {
         return "com.allone.projectmanager.entities.ProjectRequestQuotation[ id=" + id + " ]";
@@ -213,6 +230,12 @@ public class RequestQuotation implements Serializable {
 
     public static class Builder {
 
+        private String name;
+
+        private Boolean complete;
+
+        private Boolean discard;
+
         private String supplier;
 
         private Long billMaterialService;
@@ -231,9 +254,23 @@ public class RequestQuotation implements Serializable {
 
         private String supplierNote;
 
-        private Boolean complete;
+        public Builder setName(String name) {
+            this.name = name;
 
-        private String name;
+            return this;
+        }
+
+        public Builder setComplete(Boolean complete) {
+            this.complete = complete;
+
+            return this;
+        }
+
+        public Builder setDiscard(Boolean discard) {
+            this.discard = discard;
+
+            return this;
+        }
 
         public RequestQuotation.Builder setSupplier(String supplier) {
             this.supplier = supplier;
@@ -285,18 +322,6 @@ public class RequestQuotation implements Serializable {
 
         public Builder setSupplierNote(String supplierNote) {
             this.supplierNote = supplierNote;
-
-            return this;
-        }
-
-        public Builder setComplete(Boolean complete) {
-            this.complete = complete;
-
-            return this;
-        }
-
-        public Builder setName(String name) {
-            this.name = name;
 
             return this;
         }

@@ -16,7 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -40,12 +40,12 @@ public class BillMaterialServiceItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    
+
     @Basic(optional = false)
     @Column(name = "bill_material_service")
     @NotNull
     private Long billMaterialService;
-    
+
     @Basic(optional = false)
     @Column(name = "item")
     @NotNull
@@ -56,9 +56,9 @@ public class BillMaterialServiceItem implements Serializable {
     @NotNull
     private Integer available;
 
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for price")
     @NotNull
     private BigDecimal price;
 
@@ -97,7 +97,7 @@ public class BillMaterialServiceItem implements Serializable {
     public void setBillMaterialService(Long billMaterialService) {
         this.billMaterialService = billMaterialService;
     }
-    
+
     public Long getItem() {
         return item;
     }
@@ -105,7 +105,7 @@ public class BillMaterialServiceItem implements Serializable {
     public void setItem(Long item) {
         this.item = item;
     }
-    
+
     public Integer getAvailable() {
         return available;
     }
@@ -134,7 +134,7 @@ public class BillMaterialServiceItem implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        
+
         return hash;
     }
 
@@ -144,12 +144,12 @@ public class BillMaterialServiceItem implements Serializable {
         if (!(object instanceof BillMaterialServiceItem)) {
             return false;
         }
-        
+
         BillMaterialServiceItem other = (BillMaterialServiceItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -161,15 +161,15 @@ public class BillMaterialServiceItem implements Serializable {
     public static class Builder {
 
         private Long billMaterialService;
-        
+
         private Long item;
-        
+
         private Integer available;
 
         private BigDecimal price;
 
         private Integer quantity;
-        
+
         public Builder setBillMaterialService(Long billMaterialService) {
             this.billMaterialService = billMaterialService;
 
@@ -193,7 +193,7 @@ public class BillMaterialServiceItem implements Serializable {
 
             return this;
         }
-        
+
         public Builder setQuantity(Integer quantity) {
             this.quantity = quantity;
 

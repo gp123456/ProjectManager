@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,22 +90,18 @@ public class ProjectController extends ProjectCommon {
 
     private Map<String, Object> getMenuInfo() {
         Map<String, Object> content = new HashMap<>();
-        Long create = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.CREATE.toString());
-        Long bill = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-        Long quota = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.
-                toString());
-        Long purchase = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.PURCHASE_ORDER.
-                toString());
-        Long work = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.WORK_ORDER.toString());
-        Long ack = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.ACK_ORDER.toString());
-        Long packing = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.PACKING_LIST.toString());
-        Long delivery = srvProjectManager.getDaoProjectDetail().
-                countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString());
-        Long shipping = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.
-                toString());
-        Long invoice = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.INVOICE.toString());
-        Long box = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.BOX_MARKING.toString());
-        Long credit = srvProjectManager.getDaoProjectDetail().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString());
+        Long create = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREATE.toString());
+        Long bill = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
+        Long quota = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
+        Long purchase = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PURCHASE_ORDER.toString());
+        Long work = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.WORK_ORDER.toString());
+        Long ack = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.ACK_ORDER.toString());
+        Long packing = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PACKING_LIST.toString());
+        Long delivery = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString());
+        Long shipping = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.toString());
+        Long invoice = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.INVOICE.toString());
+        Long box = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BOX_MARKING.toString());
+        Long credit = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString());
 
         content.put("project_new_size", "New[" + create + "]");
         content.put("project_bill_size", "Bill of materials or services[" + bill + "]");
@@ -186,8 +183,7 @@ public class ProjectController extends ProjectCommon {
                     setUserProjectId(session.getId(), p.getId());
                     model.addAttribute("p_id", p.getId());
                     model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-                    model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='editRow(" + pds.get(0).getId()
-                            + ")' value='Edit' />\n");
+                    model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='getSubProject()' value='Edit' />\n");
                 }
 
                 return "index";
@@ -205,7 +201,7 @@ public class ProjectController extends ProjectCommon {
 
             if (session != null) {
                 User user = getUser(session.getId());
-                Collabs collab = srvProjectManager.getDaoCollab().getById(user.getId());
+                Collabs collab = srvProjectManager.getDaoCollabs().getById(user.getId());
                 Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
 
                 if (collab != null) {
@@ -232,17 +228,17 @@ public class ProjectController extends ProjectCommon {
 
                     if (pd != null) {
                         setUserProjectId(session.getId(), p.getId());
-                        collab = srvProjectManager.getDaoCollab().updateProjectId(user.getId());
+                        collab = srvProjectManager.getDaoCollabs().updateProjectId(user.getId());
                         user.setProject_reference((collab.getProjectId() + 1) + "/" + collab.getProjectPrefix());
 
                         String projectHeader = createProjectHeader();
-                        Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+                        Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
 
                         content.put("header", projectHeader);
                         content.put("body", projectBody[1]);
                         content.put("project_reference", "New Project - REF:" + user.getProject_reference());
                         content.put("project_type", getProjectType());
-                        content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
+                        content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
                         content.putAll(getMenuInfo());
 
                         return new Gson().toJson(content);
@@ -256,59 +252,25 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/search"})
     public @ResponseBody
-    String searchProject(ProjectDetail p, String vessel, String date_start, String date_end, Integer offset, Integer size) {
-        return searchProject(srvProjectManager, p, null, null, vessel, offset, size);
+    String searchProject(ProjectDetail p, String date_start, String date_end, Integer offset, Integer size) {
+        try {
+            Date start = !Strings.isNullOrEmpty(date_start) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_start) : null;
+            Date end = !Strings.isNullOrEmpty(date_end) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_end) : null;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+            return searchProject(srvProjectManager, p, start != null ? formatter.format(start) : null, end != null ? formatter.format(end) : null,
+                    offset, size);
+        } catch (ParseException ex) {
+            Logger.getLogger(ProjectController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return "";
     }
 
     @RequestMapping(value = {"/search-criteria"})
     public @ResponseBody
     String searchCriteria(String version) {
         return searchCriteria(srvProjectManager, version);
-    }
-
-    @RequestMapping(value = {"/project-edit"})
-    public @ResponseBody
-    String editProject(ProjectDetail pd, String dateExpired) {
-        if (pd != null) {
-            Map<String, String> content = new HashMap<>();
-            ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
-
-            if (dbpd != null) {
-                if (pd.getType() != null) {
-                    dbpd.setType(pd.getType());
-                }
-                if (!Strings.isNullOrEmpty(dateExpired)) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                    try {
-                        Date parsedDate = formatter.parse(dateExpired);
-                        dbpd.setExpired(parsedDate);
-                    } catch (ParseException ex) {
-                        logger.log(Level.SEVERE, null, ex);
-                    }
-                }
-                if (pd.getCustomer() != null) {
-                    dbpd.setCustomer(pd.getCustomer());
-                }
-                if (pd.getVessel() != null) {
-                    dbpd.setVessel(pd.getVessel());
-                }
-                if (pd.getCompany() != null) {
-                    dbpd.setCompany(pd.getCompany());
-                }
-                if (pd.getContact() != null) {
-                    dbpd.setContact(pd.getContact());
-                }
-                srvProjectManager.getDaoProjectDetail().edit(dbpd);
-
-                content.put("header", createProjectHeader());
-                content.put("body", createProjectRow(srvProjectManager, dbpd));
-                content.put("location", "http://46.176.159.231:8080/ProjectManager/project/history-new-project");
-
-                return new Gson().toJson(content);
-            }
-        }
-
-        return "";
     }
 
     @RequestMapping(value = {"/remove"})
@@ -340,7 +302,7 @@ public class ProjectController extends ProjectCommon {
                     (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
 
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
@@ -367,7 +329,7 @@ public class ProjectController extends ProjectCommon {
             Printing.printing(strPath);
 
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
 //            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
 
             content.put("project_header", projectHeader);
@@ -380,11 +342,36 @@ public class ProjectController extends ProjectCommon {
         return "";
     }
 
-    @RequestMapping(value = {
-        "/createxls"})
+    @RequestMapping(value = {"/create-excel"})
     public @ResponseBody
-    String createProjectXLS(ProjectDetail pd) {
-        return "";
+    String createProjectXLS(Long pdId) {
+        return ExportExcel(srvProjectManager, pdId);
+    }
+
+    @RequestMapping(value = {"/create-all-excel"})
+    public @ResponseBody
+    String createProjectsXLS(ProjectDetail p, String date_start, String date_end) {
+        String response = "no found project details";
+
+        try {
+            Date start = !Strings.isNullOrEmpty(date_start) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_start) : null;
+            Date end = !Strings.isNullOrEmpty(date_end) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_end) : null;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            List<ProjectDetail> pds = getProjectsToExcel(srvProjectManager,
+                    p,
+                    start != null ? formatter.format(start) : null,
+                    end != null ? formatter.format(end) : null);
+
+            if (pds != null && !pds.isEmpty()) {
+                for (ProjectDetail pd : pds) {
+                    response = ExportExcel(srvProjectManager, pd.getId());
+                }
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(ProjectController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return response;
     }
 
     @RequestMapping(value = {"/printxls"})
@@ -452,7 +439,7 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
@@ -467,7 +454,6 @@ public class ProjectController extends ProjectCommon {
     public @ResponseBody
     String getProjectCreate() {
         Map<String, Object> content = getMenuInfo();
-
         String project = new Gson().toJson(content);
 
         return project;
@@ -479,7 +465,7 @@ public class ProjectController extends ProjectCommon {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, null, offset, size);
+            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
 
             content.put("project_header", projectHeader);
             content.put("project_body", projectBody[1].toString());
@@ -541,5 +527,114 @@ public class ProjectController extends ProjectCommon {
         }
 
         return response;
+    }
+
+    /**
+     *
+     * @param request
+     * @param p
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/edit-project")
+    public @ResponseBody
+    String editProject(HttpServletRequest request, Project p, Model model) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                p = srvProjectManager.getDaoProject().getByReference(p.getReference());
+                if (p != null) {
+                    setUserProjectId(session.getId(), p.getId());
+                    return "edit-form?id=" + p.getId();
+                }
+            }
+        }
+
+        return "";
+    }
+
+    @RequestMapping(value = "/lst-sub-project")
+    public @ResponseBody
+    String lstSubProjects(HttpServletRequest request, Project p) {
+        String response = "";
+        Map<String, Object> content = new HashMap<>();
+
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+
+                if (pds != null && !pds.isEmpty()) {
+                    String vessel = "";
+
+                    if (pds.size() > 1) {
+                        for (ProjectDetail pd : pds) {
+                            Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+
+                            if (v != null) {
+                                vessel = v.getName();
+                            }
+                            response += "<input type='radio' id='" + pd.getId() + "' name='radio-sub-project' value='" + pd.getId()
+                                    + "'><label for='" + pd.getId() + "' class='radio-label'>" + pd.getReference() + "-" + vessel
+                                    + "</label><br>";
+                        }
+                        content.put("value", response);
+                    } else {
+                        content.put("value", pds.get(0).getId());
+                    }
+
+                    content.put("count", pds.size());
+                }
+            }
+        }
+
+        return new Gson().toJson(content);
+    }
+
+    @RequestMapping(value = {"/edit-sub-project"})
+    public @ResponseBody
+    String editSubProject(ProjectDetail pd, String dateExpired) {
+        if (pd != null) {
+            Map<String, String> content = new HashMap<>();
+            ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getById(pd.getId());
+
+            if (dbpd != null) {
+                if (pd.getType() != null) {
+                    dbpd.setType(pd.getType());
+                }
+                if (!Strings.isNullOrEmpty(dateExpired)) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    try {
+                        Date parsedDate = formatter.parse(dateExpired);
+                        dbpd.setExpired(parsedDate);
+                    } catch (ParseException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                    }
+                }
+                if (pd.getCustomer() != null) {
+                    dbpd.setCustomer(pd.getCustomer());
+                }
+                if (pd.getVessel() != null) {
+                    dbpd.setVessel(pd.getVessel());
+                }
+                if (pd.getCompany() != null) {
+                    dbpd.setCompany(pd.getCompany());
+                }
+                if (pd.getContact() != null) {
+                    dbpd.setContact(pd.getContact());
+                }
+                srvProjectManager.getDaoProjectDetail().edit(dbpd);
+
+                content.put("header", createProjectHeader());
+                content.put("body", createProjectRow(srvProjectManager, dbpd));
+                content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
+
+                return new Gson().toJson(content);
+            }
+        }
+
+        return "";
     }
 }

@@ -26,14 +26,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "item")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll",
-                           query = "SELECT i FROM Item i, Stock s WHERE i.location=s.id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findById",
-                           query = "SELECT i FROM Item i WHERE i.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findLastId",
-                           query = "SELECT MAX(i.id) FROM Item i"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Item.findByImno",
-                           query = "SELECT i FROM Item i WHERE i.imno = :imno")})
+@NamedQueries({
+    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findAll",
+            query = "SELECT i FROM Item i, Stock s WHERE i.location=s.id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findById",
+            query = "SELECT i FROM Item i WHERE i.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findLastId",
+            query = "SELECT MAX(i.id) FROM Item i"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Item.findByImno",
+            query = "SELECT i FROM Item i WHERE i.imno = :imno")})
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,7 +56,6 @@ public class Item implements Serializable {
     @NotNull
     private Integer quantity;
 
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "price")
     @NotNull
     private BigDecimal price;

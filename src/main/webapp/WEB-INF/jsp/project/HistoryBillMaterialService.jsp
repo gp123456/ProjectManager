@@ -17,43 +17,37 @@
                 <tbody>
                     <tr>
                         <td><label>Name</label></td>
-                        <td><input type="text" readonly>${bms-name}</td>
+                        <td><textarea id="bms-name" readonly></textarea></td>
                     </tr>
                     <tr>
                         <td><label>Project</label></td>
-                        <td><input type="text" readonly>${bms-project}</td>
+                        <td><input type="text" id="bms-project" readonly></td>
                     </tr>
                     <tr>
                         <td><label>Complete</label></td>
-                        <td><td><input type="text" readonly>${bms-complete}</td></td>
+                        <td><input type="text" id="bms-complete" readonly></td>
                     </tr>
                     <tr>
                         <td><label>Note</label></td>
-                        <td><td><textarea readonly>${bms-project}</textarea></td></td>
-                    </tr>
-                    <tr>
-                        <td><label>Items</label></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table class="table tablesorter">
-                                <thead id="bmsi-header"></thead>
-                                <tbody id="bmsi-body"></tbody>
-                                <tfoot id="bmsi-footer"></tfoot>
-                            </table>
-                        </td>
+                        <td><textarea id="bms-note" readonly></textarea></td>
                     </tr>
                 </tbody>
             </table>
+            <label>Items</label>
+            <table class="table tablesorter">
+                <thead id="bmsi-header"></thead>
+                <tbody id="bmsi-body"></tbody>
+                <tfoot id="bmsi-footer"></tfoot>
+            </table>
         </div>
         <div class="formLayout">
-            <h3>Request Quotation</h3>
+            <h3>Request for Quotation</h3>
             <table class="table tablesorter">
                 <thead id="rfq-header"></thead>
                 <tbody id="rfq-body"></tbody>
                 <tfoot id="rfq-footer"></tfoot>
             </table>
-            <div id="dlg-view-project" hidden="true" title="View Request Quotation">
+            <div id="dlg-view-rfq" hidden="true" title="View Request for Quotation">
                 <form>
                     <div><jsp:include page="HistoryRequestQuotation.jsp"/></div>
                 </form>

@@ -16,7 +16,7 @@ public class RequestQuotationItemModel {
     public Long id;
     public Integer qty;
     public BigDecimal price;
-    public Integer discount;
+    public BigDecimal discount;
     public Integer availability;
     public BigDecimal net;
 

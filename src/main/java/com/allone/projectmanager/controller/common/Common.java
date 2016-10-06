@@ -71,6 +71,7 @@ public class Common {
         List<SearchInfo> info = getSearchCriteriaTypeProject();
         String finalResponse = "<option value=\"none\" selected=\"selected\">Select Type</option>";
         String response = "";
+        int i = 0;
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream().map((si) -> "<option value=\""
@@ -85,15 +86,17 @@ public class Common {
 
     public String fillSearchStatus(String version) {
         List<SearchInfo> info = getSearchCriteriaStatusProject(version);
-        String response = "<option value=\"none\" selected=\"selected\">Select Status</option>";
+        String finalResponse = "<option value=\"none\" selected=\"selected\">Select Status</option>";
+        String response = "";
 
         if (info != null && info.isEmpty() == false && info.get(0) != null) {
             response += info.stream()
                     .map((si) -> "<option value=\"" + si.getId() + "\">" + si.getName() + "</option>").
                     reduce(response, String::concat);
+            finalResponse += response;
         }
 
-        return response;
+        return finalResponse;
     }
 
     public String fillSearchVessel(ProjectManagerService srvProjectManager, String id) {
@@ -346,7 +349,7 @@ public class Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                Collabs collab = srvProjectManager.getDaoCollab().getById(getUser(session.getId()).getId());
+                Collabs collab = srvProjectManager.getDaoCollabs().getById(getUser(session.getId()).getId());
                 String prj_reference = collab.getProjectId() + "/" + collab.getProjectPrefix();
 
                 model.addAttribute("prj_reference", prj_reference);
@@ -467,12 +470,6 @@ public class Common {
             }
         });
 
-//        Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication("gpatitakis@hol.gr", "gp!21031965");
-//            }
-//        });
         Message message = new MimeMessage(session);
         // Define a new mail message
         message.setFrom(new InternetAddress(from));
@@ -500,5 +497,18 @@ public class Common {
 //        transport.connect(mailServer, "info@wcs.com.gr", "n3wp@ssword");
         transport.send(message);
         transport.close();
+    }
+
+    public String getCurrencyName(Integer currency) {
+        String name = "";
+
+        for (CurrencyEnum value : CurrencyEnum.values()) {
+            if (value.getId().equals(currency)) {
+                name = value.getSymbol();
+                break;
+            }
+        }
+
+        return name;
     }
 }

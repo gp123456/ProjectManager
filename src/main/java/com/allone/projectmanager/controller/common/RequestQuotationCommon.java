@@ -5,8 +5,6 @@
  */
 package com.allone.projectmanager.controller.common;
 
-import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
 import java.util.ArrayList;
@@ -34,10 +32,8 @@ public class RequestQuotationCommon extends Common {
         return (mapRequestQuotationItems != null && !mapRequestQuotationItems.isEmpty()) ? mapRequestQuotationItems.get(bms) : null;
     }
 
-    public void setRequestQuotation(ProjectManagerService srvProjectManager, Long bmsId, RequestQuotation rq) {
+    public void setRequestQuotation(Long bmsId, RequestQuotation rq) {
         if (bmsId != null && rq != null && (mapRequestQuotation.get(bmsId) == null)) {
-            BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
-
             mapRequestQuotation.put(bmsId, rq);
         }
     }

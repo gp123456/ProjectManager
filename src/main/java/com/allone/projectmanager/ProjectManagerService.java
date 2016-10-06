@@ -128,10 +128,6 @@ public class ProjectManagerService {
         return daoRequestQuotationItem;
     }
 
-    public CollabsDAO getDaoCollab() {
-        return daoCollabs;
-    }
-
     public CompanyDAO getDaoCompany() {
         return daoCompany;
     }
@@ -179,7 +175,7 @@ public class ProjectManagerService {
     public ContactDAO getDaoContact() {
         return daoContact;
     }
-    
+
     public ServiceCollabDAO getDaoServiceCollab() {
         return daoServiceCollab;
     }

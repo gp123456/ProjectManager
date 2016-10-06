@@ -169,4 +169,9 @@
         <thead id="header"></thead>
         <tbody id="body"></tbody>
     </table>
+    <div id="dlg-sub-project" hidden="true" title="Select Sub Project">
+        <form>
+            <div id="lst-sub-project" class="radio"></div>
+        </form>
+    </div>
 </div>

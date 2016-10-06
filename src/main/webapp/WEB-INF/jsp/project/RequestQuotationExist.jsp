@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <div id="header" class="formLayout">
     <h1>REQUEST FOR QUOTATION - SUBPROJECT REF:${projectReference}</h1>
-    <br><h2>Select Request Quotation</h2>
+    <br><h2>Select Request for Quotation</h2>
     <label class="custom-select-large">
         <select id="request-quotations" onchange="changeRequestQuotalion(false)">${requestQuotations}</select>
     </label>
@@ -29,7 +29,6 @@
         <table class="table tablesorter">
             <thead>
                 <tr>
-                    <th>Name</th>
                     <th>Delivery Cost*</th>
                     <th>Other Expenses*</th>
                     <th>Material Cost</th>

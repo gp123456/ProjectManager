@@ -49,13 +49,13 @@
 
 <div id="header" class="formLayout">
     <h1>
-        REQUEST FOR QUOTATION - REF:${projectReference}
-        <input type="button" class="button" value="Complete RFQ" onclick="completeRFQ()"/>
-        <input type="button" class="button" id="existing-rfq" value="Existing RFQ" onclick="existingRequestQuotations('<%=path%>')"/>
+        REQUEST FOR QUOTATION, PROJECT REF:${projectReference}
+        <input type="button" class="button" id="existing-rfq" value=${existingRFQ} onclick="existingRequestQuotations('<%=path%>')"/>
+        <input type="button" class="button" value="Complete RFQ" onclick="complete('#subproject option:selected', 0)"/>
     </h1>
     <input type="hidden" id="project-id" value=${projectId} />
+    <input type="hidden" id="request-quotation-id" value=${requestQuotationId} />
     <input type="hidden" id="mode" value=${mode} />
-    <!--<div style="overflow-y: scroll">-->
     <h2>Select Subproject</h2>
     <table>
         <tbody>
@@ -71,33 +71,27 @@
             </tr>
         </tbody>
     </table>
-    <br/><h2 id="select-request-quotation">Select Request Quotation</h2>
+    <br/><h2 id="select-request-quotation">Select Request for Quotation</h2>
     <label class="custom-select-large">
         <select id="request-quotations" onchange="changeRequestQuotalion(true)"></select>
     </label>
     <br><h2>Select Supplier</h2>
     <p>
         <label class="custom-select-large">
-            <!--<select id="supplier" onchange="changeRequestQuotationSupplier()"></select>-->
             <select id="supplier" style="width:350px"></select>
         </label>
     </p>
-    <!--        <table class="table tablesorter">
-                <tbody id="request-quotation-supplier"></tbody>
-            </table>-->
     <br><h2>Select Currency</h2>
     <p>
         <label class="custom-select">
             <select id="currency"></select>
         </label>
     </p>
-    <!--</div>-->
     <br><h2>Request for Quotation Summary</h2>
     <div>
         <table class="table tablesorter">
             <thead>
                 <tr>
-                    <th>Name</th>
                     <th>Delivery Cost*</th>
                     <th>Other Expenses*</th>
                     <th>Material Cost</th>
@@ -107,7 +101,6 @@
             <tbody id="request-quotation"></tbody>
         </table>
     </div>
-    <!--<div>-->
     <h2>Request for Quotation Details</h2>
     <table class="table tablesorter">
         <thead>
@@ -124,8 +117,13 @@
         </thead>
         <tbody id="request-quotation-items"></tbody>
     </table>
-    <!--</div>-->
     <div><p><h2>Marpo Group Notes</h2><textarea id="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
     <div><p><h2>Vendor Notes</h2><textarea id="supplier-note" rows="10" style="width: 100%" readonly="readonly">${noteSupplierRequestQuotation}</textarea></div>
-    <div>${buttonSave}${buttonSendEmail}${buttonSavePDF}${buttonSaveExcel}</div>
+    <div>${buttonSave}${buttonSendEmail}</div>
+    <div id="dlg-email" hidden="true" title="Setup Email of Sender">
+        <div>
+            <input type="text" id="email-sender" required>
+            <label class="go-bottom-label" for="email-sender">Email of Sender</label>
+        </div>
+    </div>
 </div>

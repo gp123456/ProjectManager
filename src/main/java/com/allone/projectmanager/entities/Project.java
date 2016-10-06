@@ -26,16 +26,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "project")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Project.findAll",
-                           query = "SELECT p FROM Project p"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Project.countAll",
-                           query = "SELECT count(p) FROM Project p"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Project.findById",
-                           query = "SELECT p FROM Project p WHERE p.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByStatus",
-                           query = "SELECT DISTINCT p FROM Project p, ProjectDetail pd WHERE p.id = pd.project AND p.status = :status ORDER BY p.id DESC"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Project.countByStatus",
-                           query = "SELECT count(p) FROM Project p WHERE p.status = :status")})
+@NamedQueries({
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findAll",
+            query = "SELECT p FROM Project p"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.countAll",
+            query = "SELECT count(p) FROM Project p"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findById",
+            query = "SELECT p FROM Project p WHERE p.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByStatus",
+            query = "SELECT DISTINCT p FROM Project p, ProjectDetail pd WHERE p.id = pd.project AND p.status = :status ORDER BY p.id DESC"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.findByReference",
+            query = "SELECT p FROM Project p WHERE p.reference like :reference"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Project.countByStatus",
+            query = "SELECT count(p) FROM Project p WHERE p.status = :status")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,7 +58,7 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "status")
     private String status;
-    
+
     @Transient
     private Long projectDetail;
 
@@ -114,8 +117,8 @@ public class Project implements Serializable {
             return false;
         }
         Project other = (Project) object;
-        if ((this.id == null && other.id != null) || (this.id != null &&
-                !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null) || (this.id != null
+                && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -127,19 +130,20 @@ public class Project implements Serializable {
     }
 
     public final static class Builder {
+
         private String reference;
-        
+
         private String status;
-        
+
         private Long projectDetail;
-        
+
         public String getReference() {
             return reference;
         }
 
         public Builder setReference(String reference) {
             this.reference = reference;
-            
+
             return this;
         }
 
@@ -149,7 +153,7 @@ public class Project implements Serializable {
 
         public Builder setStatus(String status) {
             this.status = status;
-            
+
             return this;
         }
 
@@ -159,7 +163,7 @@ public class Project implements Serializable {
 
         public Builder setProjectDetail(Long projectDetail) {
             this.projectDetail = projectDetail;
-            
+
             return this;
         }
 

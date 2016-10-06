@@ -10,7 +10,10 @@ import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
+import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.entities.RequestQuotation;
+import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
@@ -18,6 +21,8 @@ import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.model.PlotInfoModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +35,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 /**
  *
@@ -50,9 +62,61 @@ public class ProjectCommon extends Common {
 
     private final Map<Long, BillMaterialService> mapBillMaterialService = new HashMap<>();
 
+    private Object[] getProjectsByCriteria(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, Integer offset,
+            Integer size) {
+        if (pd == null) {
+            return new Object[]{0l, ""};
+        }
+
+        String ref = pd.getReference();
+        Long prjCount = 0l;
+        List<ProjectDetail> lstPrj = (!Strings.isNullOrEmpty(ref)) ? Arrays.asList(srvProjectManager.getDaoProjectDetail().getByReference(ref)) : null;
+
+        if (lstPrj != null) {
+            prjCount = new Long(lstPrj.size());
+        } else {
+            Map<String, String> criteria = new HashMap<>();
+            String type = pd.getType();
+            String status = pd.getStatus();
+            String customer = pd.getCustomer();
+            String company = pd.getCompany();
+            String vessel = pd.getVesselName();
+
+            if (!Strings.isNullOrEmpty(type) && !type.equals("none")) {
+                criteria.put("type", type);
+            }
+            if (!Strings.isNullOrEmpty(status) && !status.equals("none")) {
+                criteria.put("status", status);
+            }
+            if (!Strings.isNullOrEmpty(vessel)) {
+                criteria.put("vesselCustom", vessel);
+            }
+            if (!Strings.isNullOrEmpty(customer)) {
+                criteria.put("customerCustom", customer);
+            }
+            if (!Strings.isNullOrEmpty(customer) && !customer.equals("none")) {
+                criteria.put("customer", customer);
+            }
+            if (!Strings.isNullOrEmpty(company) && !company.equals("none")) {
+                criteria.put("company", company);
+            }
+            if (!Strings.isNullOrEmpty(date_start)) {
+                criteria.put("start", date_start);
+            }
+            if (!Strings.isNullOrEmpty(date_end)) {
+                criteria.put("end", date_end);
+            }
+
+            lstPrj = srvProjectManager.getDaoProject().getByCriteria(criteria, offset, size);
+            prjCount = srvProjectManager.getDaoProject().getCountByCriteria(criteria);
+        }
+
+        return new Object[]{prjCount, lstPrj};
+    }
+
     public String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd) {
         String response = "";
-        Collabs user = srvProjectManager.getDaoCollab().getById(pd.getCreator());
+        Collabs user = srvProjectManager.getDaoCollabs().getById(pd.getCreator());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
@@ -98,65 +162,22 @@ public class ProjectCommon extends Common {
 
     public String createProjectFooter(Integer offset, Integer last, Integer size) {
         return "<tr>"
-                + "<td>" + "<div class='img last-page' title='Last Page' onclick=\"projectLastPage('" + last + "," + size + ")\"/>"
-                + "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage('" + offset + "," + size + ")\"/>"
-                + "<div class='img next-page' title='Next Page' onclick=\"projectNextPage('" + offset + "," + size + ")\"/>"
-                + "<div class='img first-page' title='First Page' onclick=\"projectFirstPage('" + 0 + "," + size + ")\"/>" + "</td>"
+                + "<td colspan='2' align='center'>" + "<div class='img last-page' title='Last Page' onclick=\"projectLastPage(" + last + "," + size + ")\"/>"
+                + "<div class='img previous-page' title='Previous Page' onclick=\"projectPreviousPage(" + offset + "," + size + ")\"/>"
+                + "<div class='img next-page' title='Next Page' onclick=\"projectNextPage(" + offset + "," + size + ")\"/>"
+                + "<div class='img first-page' title='First Page' onclick=\"projectFirstPage(" + 0 + "," + size + ")\"/>" + "</td>"
                 + "</tr>";
     }
 
-    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, String vessel,
-            Integer offset, Integer size) {
-        Long prjCount = 0l;
+    public Object[] createProjectBody(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, Integer offset,
+            Integer size) {
         String response = "";
+        Object[] obj = getProjectsByCriteria(srvProjectManager, pd, date_start, date_end, offset, size);
 
-        if (pd == null) {
-            return new Object[]{prjCount, response};
-        }
+        Long prjCount = (Long) obj[0];
+        List<ProjectDetail> lstPrj = (List<ProjectDetail>) obj[1];
 
-        Long id = pd.getId();
-        ProjectDetail onePrj = (id != null) ? srvProjectManager.getDaoProjectDetail().getById(id) : null;
-        List<ProjectDetail> lstPrj = null;
-
-        if (onePrj == null) {
-            Map<String, String> criteria = new HashMap<>();
-            String type = pd.getType();
-            String status = pd.getStatus();
-            String customer = pd.getCustomer();
-            String company = pd.getCompany();
-
-            if (!Strings.isNullOrEmpty(type) && !type.equals("none")) {
-                criteria.put("type", type);
-            }
-            if (!Strings.isNullOrEmpty(status) && !status.equals("none")) {
-                criteria.put("status", status);
-            }
-            if (!Strings.isNullOrEmpty(vessel)) {
-                criteria.put("vesselCustom", vessel);
-            }
-            if (!Strings.isNullOrEmpty(customer)) {
-                criteria.put("customerCustom", customer);
-            }
-            if (!Strings.isNullOrEmpty(customer) && !customer.equals("none")) {
-                criteria.put("customer", customer);
-            }
-            if (!Strings.isNullOrEmpty(company) && !company.equals("none")) {
-                criteria.put("company", company);
-            }
-            if (!Strings.isNullOrEmpty(date_start)) {
-                criteria.put("start", date_start);
-            }
-            if (!Strings.isNullOrEmpty(date_end)) {
-                criteria.put("end", date_end);
-            }
-
-            lstPrj = srvProjectManager.getDaoProject().getByCriteria(criteria, offset, size);
-            prjCount = srvProjectManager.getDaoProject().getCountByCriteria(criteria);
-        }
-
-        if (onePrj != null) {
-            response = createProjectRow(srvProjectManager, onePrj);
-        } else if (lstPrj != null && !lstPrj.isEmpty()) {
+        if (lstPrj != null && !lstPrj.isEmpty()) {
             for (ProjectDetail prj : lstPrj) {
                 response += createProjectRow(srvProjectManager, prj);
             }
@@ -165,8 +186,17 @@ public class ProjectCommon extends Common {
         return new Object[]{prjCount, response};
     }
 
-    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, String vessel,
-            Integer offset, Integer size) {
+    public List<ProjectDetail> getProjectsToExcel(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end) {
+        Object[] obj = getProjectsByCriteria(srvProjectManager, pd, date_start, date_end, null, null);
+        List<ProjectDetail> lst = (List<ProjectDetail>) obj[1];
+
+        logger.log(Level.INFO, "size={0}", lst.size());
+
+        return lst;
+    }
+
+    public String searchProject(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end, Integer offset,
+            Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
             String header = null;
@@ -175,19 +205,22 @@ public class ProjectCommon extends Common {
             Long count = null;
 
             header = createProjectHeader();
-            body = createProjectBody(srvProjectManager, pd, date_start, date_end, vessel, offset, size);
+            body = createProjectBody(srvProjectManager, pd, date_start, date_end, offset, size);
 
-            if (body != null && ((Long) body[0]).compareTo(new Long(size)) > 0) {
+            if (body != null) {
                 count = (Long) body[0];
+                if (count.compareTo(new Long(size)) > 0) {
 
-                Long last = ((Long) body[0] / size) - 1l;
+                    Long last = (count / size);
 
-                footer = createProjectFooter(offset, last.intValue(), size);
+                    footer = createProjectFooter(offset, last.intValue(), size);
+                }
             }
 
             content.put("header", (!Strings.isNullOrEmpty(header)) ? header : "");
             content.put("body", (body != null) ? body[1].toString() : "");
             content.put("footer", (!Strings.isNullOrEmpty(footer)) ? footer : "");
+            content.put("count", (count != null) ? count.toString() : "0");
 
             return new Gson().toJson(content);
         }
@@ -406,5 +439,178 @@ public class ProjectCommon extends Common {
         }
 
         return Boolean.TRUE;
+    }
+
+    private void ProjectSheet(WritableWorkbook workbook, ProjectManagerService srvProjectManager, ProjectDetail pd) {
+        try {
+            WritableSheet sheet = workbook.createSheet("Project", 0);
+            WritableCellFormat cf = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD, true));
+            Collabs user = srvProjectManager.getDaoCollabs().getById(pd.getCreator());
+            Contact contact = srvProjectManager.getDaoContact().getById(pd.getContact());
+
+            sheet.addCell(new Label(0, 0, "REFERENCE", cf));
+            sheet.addCell(new Label(1, 0, "STATUS", cf));
+            sheet.addCell(new Label(2, 0, "TYPE", cf));
+            sheet.addCell(new Label(3, 0, "USER", cf));
+            sheet.addCell(new Label(4, 0, "HANDLING COMPANY", cf));
+            sheet.addCell(new Label(5, 0, "CREATE DATE", cf));
+            sheet.addCell(new Label(6, 0, "EXPIRED DATE", cf));
+            sheet.addCell(new Label(7, 0, "CUSTOMER", cf));
+            sheet.addCell(new Label(8, 0, "VESSEL", cf));
+            sheet.addCell(new Label(9, 0, "CONTACT", cf));
+            sheet.addCell(new Label(0, 1, !Strings.isNullOrEmpty(pd.getReference()) ? pd.getReference() : ""));
+            sheet.addCell(new Label(1, 1, !Strings.isNullOrEmpty(pd.getStatus()) ? pd.getStatus() : ""));
+            sheet.addCell(new Label(2, 1, !Strings.isNullOrEmpty(pd.getType()) ? pd.getType() : ""));
+            sheet.addCell(new Label(3, 1, (user != null) ? user.getSurname() + " " + user.getName() : ""));
+            sheet.addCell(new Label(4, 1, !Strings.isNullOrEmpty(pd.getCompany()) ? pd.getCompany() : ""));
+            sheet.addCell(new Label(5, 1, (pd.getCreated() != null) ? pd.getCreated().toString() : ""));
+            sheet.addCell(new Label(6, 1, (pd.getExpired() != null) ? pd.getExpired().toString() : ""));
+            sheet.addCell(new Label(7, 1, !Strings.isNullOrEmpty(pd.getCustomer()) ? pd.getCustomer() : ""));
+            sheet.addCell(new Label(8, 1, !Strings.isNullOrEmpty(pd.getVesselName()) ? pd.getVesselName() : ""));
+            sheet.addCell(new Label(9, 1, (contact != null) ? contact.getSurname() + " " + contact.getName() : ""));
+        } catch (WriteException ex) {
+            Logger.getLogger(ProjectCommon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void BMSSheet(WritableWorkbook workbook, ProjectManagerService srvProjectManager, BillMaterialService bms) {
+        try {
+            WritableSheet sheet = workbook.createSheet("Bill Materials or Services", 1);
+            WritableCellFormat cf = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD, true));
+            List<BillMaterialServiceItem> items = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
+
+            sheet.addCell(new Label(0, 0, "NAME", cf));
+            sheet.addCell(new Label(1, 0, "COMPLETE", cf));
+            sheet.addCell(new Label(2, 0, "NOTES", cf));
+            sheet.addCell(new Label(0, 1, !Strings.isNullOrEmpty(bms.getName()) ? bms.getName() : ""));
+            sheet.addCell(new Label(1, 1, (bms.getComplete().equals(Boolean.TRUE)) ? "TRUE" : "FALSE"));
+            sheet.addCell(new Label(2, 1, !Strings.isNullOrEmpty(bms.getNote()) ? bms.getNote() : ""));
+
+            if (items != null && !items.isEmpty()) {
+                Integer rowItems = 4;
+
+                sheet.mergeCells(0, 2, 2, 2).getTopLeft();
+                sheet.addCell(new Label(0, 3, "IMNO", cf));
+                sheet.addCell(new Label(1, 3, "DESCRIPTION", cf));
+                sheet.addCell(new Label(2, 3, "QUANTITY", cf));
+                sheet.addCell(new Label(3, 3, "PRICE", cf));
+                sheet.addCell(new Label(4, 3, "AVAILABILITY", cf));
+                for (BillMaterialServiceItem bmsi : items) {
+                    Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                    if (item != null) {
+                        sheet.addCell(new Label(0, rowItems, !Strings.isNullOrEmpty(item.getImno()) ? item.getImno() : ""));
+                        sheet.addCell(new Label(1, rowItems, !Strings.isNullOrEmpty(item.getDescription()) ? item.getDescription() : ""));
+                        sheet.addCell(new Label(2, rowItems, bmsi.getQuantity() != null ? bmsi.getQuantity().toString() : ""));
+                        sheet.addCell(new Label(3, rowItems, bmsi.getPrice() != null ? bmsi.getPrice().toString() : ""));
+                        sheet.addCell(new Label(4, rowItems++, bmsi.getAvailable() != null ? bmsi.getAvailable().toString() : ""));
+                    }
+                }
+            }
+        } catch (WriteException ex) {
+            Logger.getLogger(ProjectCommon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void RQSheet(WritableWorkbook workbook, ProjectManagerService srvProjectManager, RequestQuotation rq, Integer sheetNo) {
+        try {
+            WritableSheet sheet = workbook.createSheet("Request for Quotation " + rq.getId(), sheetNo);
+            WritableCellFormat cf = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD, true));
+            List<RequestQuotationItem> items = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
+
+            sheet.addCell(new Label(0, 0, "NAME", cf));
+            sheet.addCell(new Label(1, 0, "COMPLETE", cf));
+            sheet.addCell(new Label(2, 0, "DISCARD", cf));
+            sheet.addCell(new Label(3, 0, "SUPPLIER", cf));
+            sheet.addCell(new Label(4, 0, "CURRENCY", cf));
+            sheet.addCell(new Label(5, 0, "MATERIAL COST", cf));
+            sheet.addCell(new Label(6, 0, "DELIVERY COST", cf));
+            sheet.addCell(new Label(7, 0, "OTHER EXPENSES", cf));
+            sheet.addCell(new Label(8, 0, "GRAND TOTAL", cf));
+            sheet.addCell(new Label(9, 0, "NOTES", cf));
+            sheet.addCell(new Label(10, 0, "SUPPLIER NOTES", cf));
+            sheet.addCell(new Label(0, 1, !Strings.isNullOrEmpty(rq.getName()) ? rq.getName() : ""));
+            sheet.addCell(new Label(1, 1, rq.getComplete().toString()));
+            sheet.addCell(new Label(2, 1, rq.getDiscard().toString()));
+            sheet.addCell(new Label(3, 1, !Strings.isNullOrEmpty(rq.getSupplier()) ? rq.getSupplier() : ""));
+            sheet.addCell(new Label(4, 1, rq.getCurrency() != null ? getCurrencyById(rq.getCurrency()) : ""));
+            sheet.addCell(new Label(5, 1, rq.getMaterialCost() != null ? rq.getMaterialCost().toString() : ""));
+            sheet.addCell(new Label(6, 1, rq.getDeliveryCost() != null ? rq.getDeliveryCost().toString() : ""));
+            sheet.addCell(new Label(7, 1, rq.getOtherExpenses() != null ? rq.getOtherExpenses().toString() : ""));
+            sheet.addCell(new Label(8, 1, rq.getGrandTotal() != null ? rq.getGrandTotal().toString() : ""));
+            sheet.addCell(new Label(9, 1, !Strings.isNullOrEmpty(rq.getNote()) ? rq.getNote() : ""));
+            sheet.addCell(new Label(10, 1, !Strings.isNullOrEmpty(rq.getSupplierNote()) ? rq.getSupplierNote() : ""));
+
+            if (items != null && !items.isEmpty()) {
+                Integer rowItems = 4;
+
+                sheet.mergeCells(0, 2, 10, 2).getTopLeft();
+                sheet.addCell(new Label(0, 3, "IMNO", cf));
+                sheet.addCell(new Label(1, 3, "DESCRIPTION", cf));
+                sheet.addCell(new Label(2, 3, "UNIT PRICE", cf));
+                sheet.addCell(new Label(3, 3, "DISCOUNT", cf));
+                sheet.addCell(new Label(4, 3, "NET TOTAL", cf));
+                sheet.addCell(new Label(5, 3, "AVAILABILITY", cf));
+                for (RequestQuotationItem rqi : items) {
+                    BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(rqi.getBillMaterialServiceItem());
+
+                    if (bmsi != null) {
+                        Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                        if (item != null) {
+                            sheet.addCell(new Label(0, rowItems, !Strings.isNullOrEmpty(item.getImno()) ? item.getImno() : ""));
+                            sheet.addCell(new Label(1, rowItems, !Strings.isNullOrEmpty(item.getDescription()) ? item.getDescription() : ""));
+                            sheet.addCell(new Label(2, rowItems, rqi.getUnitPrice() != null ? rqi.getUnitPrice().toString() : ""));
+                            sheet.addCell(new Label(3, rowItems, rqi.getDiscount() != null ? rqi.getDiscount().toString() : ""));
+                            sheet.addCell(new Label(4, rowItems, rqi.getTotal() != null ? rqi.getTotal().toString() : ""));
+                            sheet.addCell(new Label(5, rowItems++, rqi.getAvailability() != null ? rqi.getAvailability().toString() : ""));
+                        }
+                    }
+                }
+            }
+        } catch (WriteException ex) {
+            Logger.getLogger(ProjectCommon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String ExportExcel(ProjectManagerService srvProjectManager, Long pdId) {
+        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+
+        if (pd != null) {
+            String strPath = "C:\\ProjectManager\\";
+            File f = new File(strPath);
+            if (f.exists() == false) {
+                f.mkdirs();
+            }
+            String strStoreFile = "Project" + pd.getReference().replace("/", "_") + ".xls";
+
+            try {
+                WritableWorkbook workbook = Workbook.createWorkbook(new File(strPath + strStoreFile));
+                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
+
+                ProjectSheet(workbook, srvProjectManager, pd);
+                if (bms != null) {
+                    BMSSheet(workbook, srvProjectManager, bms);
+
+                    List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
+
+                    if (rqs != null && !rqs.isEmpty()) {
+                        Integer sheetNo = 2;
+
+                        for (RequestQuotation rq : rqs) {
+                            RQSheet(workbook, srvProjectManager, rq, sheetNo++);
+                        }
+                    }
+                }
+                workbook.write();
+                workbook.close();
+            } catch (IOException | WriteException e) {
+                return "error create xls file: " + strPath + strStoreFile;
+            }
+
+            return "create xls file: " + strPath + strStoreFile;
+        }
+
+        return "no found project with id:" + pdId;
     }
 }

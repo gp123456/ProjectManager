@@ -199,14 +199,12 @@
                 <tr>
                     <th style="display:none">Project Id</th>
                     <th>Subproject</th>
-                    <th onclick="editValue()">Name*</th>
-
                 </tr>
             </thead>
             <tbody id="bill-material-service"></tbody>
         </table>
     </div>
-    <div id="replace-bill-material-service" hidden="true" title="Add Bill Material or Service Items">
+    <div id="replace-bill-material-service" hidden="true" title="Add Bill Materials or Services Items">
         <form class="go-bottom">
             <div id="lst-bill-material-service-item"></div>
         </form>
@@ -227,6 +225,6 @@
         </table>
     </div>
     <div><h2>Notes</h2><textarea id="note" name="notes" rows="10" style="width: 100%"></textarea></div>
-    <div>${button_save}${button_remove}${button_save_pdf}${button_save_excel}${button_send_email}</div>
+    <div>${button_save}${button_remove}</div>
     <div>${button_action_message}</div>
 </div>

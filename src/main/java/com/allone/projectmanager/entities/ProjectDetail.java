@@ -41,6 +41,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType",
             query = "SELECT p FROM ProjectDetail p WHERE p.project = :project AND p.type = :type ORDER BY p.created DESC"),
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findById", query = "SELECT p FROM ProjectDetail p WHERE p.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByReference",
+            query = "SELECT p FROM ProjectDetail p WHERE p.reference like :reference"),
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findLastByProject",
             query = "SELECT p FROM ProjectDetail p WHERE p.project = :project ORDER BY p.id DESC"),
     @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findByStatus",

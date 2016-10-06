@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -50,15 +51,18 @@ public class RequestQuotationItem implements Serializable {
     private Long billMaterialServiceItem;
 
     @Column(name = "unit_price")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for unitPrice")
     private BigDecimal unitPrice;
 
     @Column(name = "discount")
-    private Integer discount;
+    @Digits(integer = 2, fraction = 1, message = "Validation digits failed for discount")
+    private BigDecimal discount;
 
     @Column(name = "availability")
     private Integer availability;
 
     @Column(name = "total")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for total")
     private BigDecimal total;
 
     public RequestQuotationItem() {
@@ -106,11 +110,11 @@ public class RequestQuotationItem implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    public Integer getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(Integer discount) {
+    public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
 
@@ -168,7 +172,7 @@ public class RequestQuotationItem implements Serializable {
 
         private BigDecimal unitPrice;
 
-        private Integer discount;
+        private BigDecimal discount;
 
         private Integer availability;
 
@@ -192,7 +196,7 @@ public class RequestQuotationItem implements Serializable {
             return this;
         }
 
-        public Builder setDiscount(Integer discount) {
+        public Builder setDiscount(BigDecimal discount) {
             this.discount = discount;
 
             return this;

@@ -11,8 +11,9 @@ package com.allone.projectmanager.enums;
  */
 public enum ProjectStatusEnum {
     CREATE("Create"),
-    BILL_MATERIAL_SERVICE("Bill of Material or Service"),
-    REQUEST_QUOTATION("Request Quotation"),
+    BILL_MATERIAL_SERVICE("Bill of Materials or Services"),
+    REQUEST_QUOTATION("Request for Quotation"),
+    QUOTATION("Quotation"),
     PURCHASE_ORDER("Purchase Order"),
     WORK_ORDER("Work Order"),
     ACK_ORDER("Acknowledge Order"),

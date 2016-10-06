@@ -152,6 +152,30 @@ public class ProjectDetailDAO {
     }
 
     @SuppressWarnings("unchecked")
+    public ProjectDetail getFirstByProjectIdType(Long project, String type) {
+        ProjectDetail value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (project != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType")
+                        .setParameter("project", project)
+                        .setParameter("type", type);
+
+                value = (query != null)
+                        ? (ProjectDetail) query.getResultList().get(0)
+                        : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return value;
+    }
+
+    @SuppressWarnings("unchecked")
     public List getByType(String type, Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();
@@ -431,7 +455,7 @@ public class ProjectDetailDAO {
     }
 
     public ProjectDetail getById(Long id) {
-        ProjectDetail values = null;
+        ProjectDetail value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -439,7 +463,7 @@ public class ProjectDetailDAO {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findById")
                         .setParameter("id", id);
 
-                values = (query != null)
+                value = (query != null)
                         ? (ProjectDetail) query.getSingleResult()
                         : null;
             }
@@ -449,7 +473,29 @@ public class ProjectDetailDAO {
             em.close();
         }
 
-        return values;
+        return value;
+    }
+
+    public ProjectDetail getByReference(String reference) {
+        ProjectDetail value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (!Strings.isNullOrEmpty(reference)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByReference")
+                        .setParameter("reference", "%" + reference + "%");
+
+                value = (query != null)
+                        ? (ProjectDetail) query.getSingleResult()
+                        : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return value;
     }
 
     public ProjectDetail getLastByProject(Long project) {

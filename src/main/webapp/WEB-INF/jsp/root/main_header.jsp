@@ -8,19 +8,25 @@
 
 <%
     String path = request.getContextPath();
-    String role = (String)request.getAttribute("role");
+    String role = (String) request.getAttribute("role");
 %>
 
 <script>
+    var wins = [];
+    
     function OpenInNewTab(url) {
         var win = window.open(url, '_blank');
 
-        win.focus();
+        if (win != null) {
+            wins.push(win);
+            
+            win.focus();
+        }
     }
 </script>
 
 <div class="logo"></div>
-<div class="version">Software version 1.0.0</div>
+<div class="main_version">Software version 1.0.0</div>
 <div class="headmenu">
     <input type="button" class="button-header" value="Project" onclick="OpenInNewTab('<%=path%>/project/snapshot');"/>
 </div>
@@ -36,10 +42,10 @@
 <div class="headmenu">
     <input type="button" class="button-header" value="Contact" onclick="OpenInNewTab('<%=path%>/contact/snapshot');"/>
 </div>
-<% if (role.equals("SUPER ADMIN")) { %>
-    <div class="headmenu">
-        <input type="button" class="button-header" value="Debug" onclick="OpenInNewTab('<%=path%>/debug/snapshot');"/>
-    </div>
+<% if (role.equals("SUPER ADMIN")) {%>
+<div class="headmenu">
+    <input type="button" class="button-header" value="Debug" onclick="OpenInNewTab('<%=path%>/debug/snapshot');"/>
+</div>
 <%}%>
 <div id="userHead">
     <div class="loginInfo"> 
@@ -48,7 +54,6 @@
     </div>
 
     <div class="logout">
-        <a href="<%=path%>"><img src="images/projectmanager/common/logout.png"></a>
-        <br/><label>Exit</label>
+        <input type="button" class="button-header" value="Exit" onclick="closeAllWindows(wins);"/>
     </div>
 </div>

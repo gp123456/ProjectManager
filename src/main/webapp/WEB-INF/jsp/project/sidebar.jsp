@@ -37,11 +37,22 @@
 
 <nav>
     <div class="menu-item">
-        <h3 id="project-edit-size" onclick="dlgEditProject()">Edit</h3>
-        <div id="dlg-edit-project" hidden="true" title="Select form to edit">
+        <h3 id="project-edit-size" onclick="dlgEditStatus()">Edit Status</h3>
+        <div id="dlg-edit-status" hidden="true" title="Select the status">
             <form>
                 <div id="lst-edit-project" class="radio"></div>
                 <input type="hidden" id="edit-path" value=${edit_path} />
+            </form>
+        </div>
+    </div>
+    <div class="menu-item">
+        <h3 id="project-edit-size" onclick="dlgEditProject()">Edit Project</h3>
+        <div id="dlg-edit-project" hidden="true" title="Select the project">
+            <form class="go-bottom">
+                <div>
+                    <input type="text" id="project-reference" required>
+                    <label class="go-bottom-label" for="project-reference">Reference</label>
+                </div>
             </form>
         </div>
     </div>
@@ -59,7 +70,7 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Bill of Material or Service', '#dlg-request-quotation',
+        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Bill of Materials or Services', '#dlg-request-quotation',
                         '#lst-request-quotation', '/ProjectManager/project/request-quotation')">Request for Quotation</h3>
         <div id="dlg-request-quotation" hidden="true" title="Bill Material Service">
             <form>
@@ -70,9 +81,9 @@
         </div>
     </div>
     <div class="menu-item">
-        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Request Quotation', '#dlg-quotation',
+        <h3 id="project-quota-size" onclick="dlgProject('NEW', 'new', 'Request for Quotation', '#dlg-quotation',
                         '#lst-quotation', '/ProjectManager/project/quotation')">Quotation</h3>
-        <div id="dlg-quota-project" hidden="true" title="Request Quotation">
+        <div id="dlg-quota-project" hidden="true" title="Request for Quotation">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
                     <div id="lst-quotation"></div>
@@ -83,7 +94,7 @@
     <div class="menu-item">
         <h3 id="project-purchase-size" onclick="dlgProject('NEW', 'new', 'Bill Material Service', '#dlg-purchase-order',
                         '#lst-purchase-order', '/ProjectManager/project/purchase-order')">Purchase Order</h3>
-        <div id="dlg-purchase-project" hidden="true" title="Bill Material Service">
+        <div id="dlg-purchase-project" hidden="true" title="Quotation">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
                     <div id="lst-purchase-order"></div>
@@ -116,8 +127,7 @@
         <h3 id="project-credit-size" onclick="">Credit Note</h3>
     </div>
     <div class="menu-item">
-        <h3 onclick="dlgProject('old', '', '#dlg-statistics-project',
-                        '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics of Projects</h3>
+        <h3 onclick="dlgProject('old', '', '#dlg-statistics-project', '#lst-statistics-project', '/ProjectManager/project/statistics')">Statistics</h3>
         <div id="dlg-statistics-project" hidden="true" title="Project Statistics">
             <form>
                 <fieldset style="padding:0; border:0; margin-top:25px;">
@@ -138,6 +148,6 @@
         </ul>
     </div>
     <div class="menu-item">
-        <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History of Projects</h3>
+        <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History</h3>
     </div>
 </nav>

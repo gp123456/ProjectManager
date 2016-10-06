@@ -90,10 +90,7 @@ function getBillMaterialServiceItems() {
 
 function saveBillMaterialService(response) {
     var items = (response) ? JSON.parse(response) : null;
-    var name = $("#name").text();
-    name.replace(' ', '%20');
     var data = "project=" + $("#subproject option:selected").val() +
-            "&name=" + name +
             "&note=" + $("#note").val();
 
     if (items !== null) {
@@ -131,50 +128,6 @@ function saveBillMaterialService(response) {
         },
         error: function (e) {
             alert(e);
-        }
-    });
-}
-
-function savePDF(prjRef) {
-    var data = "projectReference=" + prjRef;
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/savepdf",
-        data: data,
-        success: function () {
-        },
-        error: function () {
-        }
-    });
-}
-
-function saveXLS(prjRef) {
-    var data = "projectReference=" + prjRef;
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/savexls",
-        data: data,
-        success: function (response) {
-            $("#button-action-message").html(response);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function sendEmail(prjRef) {
-    var data = "projectReference=" + prjRef;
-
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/sendemail",
-        data: data,
-        success: function (response) {
-            $("#button-action-message").html(response);
-        },
-        error: function (e) {
         }
     });
 }
@@ -293,7 +246,7 @@ function dlgNewSubProject() {
 
 function saveSubProject() {
     var type = $("#type option:selected").val();
-    var expired = $("#expired").datepicker({dateFormat: 'yy-mm-dd'}).val();
+    var expired = $("#expired").datepicker({dateFormat: 'yyyy-mm-dd'}).val();
     var company = $("#subproject-company option:selected").val();
     var project = $("#bill-project-id").val();
 

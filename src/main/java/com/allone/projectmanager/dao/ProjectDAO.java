@@ -6,6 +6,7 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.Project;
+import com.allone.projectmanager.entities.ProjectDetail;
 import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,28 @@ public class ProjectDAO {
         }
     }
 
+    public Long countByStatus(String status) {
+        Long values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (!Strings.isNullOrEmpty(status)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByStatus")
+                        .setParameter("status", status);
+
+                values = (query != null)
+                        ? (Long) query.getSingleResult()
+                        : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return values;
+    }
+
     public List getByStatus(String status, Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();
@@ -131,28 +154,6 @@ public class ProjectDAO {
 
                 values = (query != null)
                         ? query.getResultList()
-                        : null;
-            }
-        } catch (HibernateException | NoResultException e) {
-            logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return values;
-        }
-    }
-
-    public Long countByStatus(String status) {
-        Long values = null;
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            if (!Strings.isNullOrEmpty(status)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByStatus")
-                        .setParameter("status", status);
-
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
                         : null;
             }
         } catch (HibernateException | NoResultException e) {
@@ -178,6 +179,28 @@ public class ProjectDAO {
         } finally {
             em.close();
         }
+    }
+
+    public Project getByReference(String reference) {
+        Project value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (!Strings.isNullOrEmpty(reference)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByReference")
+                        .setParameter("reference", "%" + reference + "%");
+
+                value = (query != null)
+                        ? (Project) query.getSingleResult()
+                        : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return value;
     }
 
     public Project getById(Long id) {
@@ -223,10 +246,10 @@ public class ProjectDAO {
                                 qcriteria += "p.company LIKE '%" + criteria.get(key) + "%' AND ";
                                 break;
                             case "start":
-                                qcriteria += "p.created >= " + criteria.get(key) + " AND ";
+                                qcriteria += "p.created BETWEEN '" + criteria.get(key) + " 00:00:00' AND ";
                                 break;
                             case "end":
-                                qcriteria += "p.created <=" + criteria.get(key) + " AND ";
+                                qcriteria += "'" + criteria.get(key) + " 23:59:59' AND ";
                                 break;
                             default:
                                 qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";
@@ -239,9 +262,11 @@ public class ProjectDAO {
             }
             qcriteria += " ORDER BY p.created DESC";
 
-            Query query = em.createQuery(qcriteria)
+            Query query = (offset != null && size != null)
+                    ? em.createQuery(qcriteria)
                     .setFirstResult(offset * size)
-                    .setMaxResults(size);
+                    .setMaxResults(size)
+                    : em.createQuery(qcriteria);
 
             values = (query != null)
                     ? query.getResultList()
@@ -274,6 +299,12 @@ public class ProjectDAO {
                                 break;
                             case "customerCustom":
                                 qcriteria += "p.company LIKE '%" + criteria.get(key) + "%' AND ";
+                                break;
+                            case "start":
+                                qcriteria += "p.created BETWEEN '" + criteria.get(key) + " 00:00:00' AND ";
+                                break;
+                            case "end":
+                                qcriteria += "'" + criteria.get(key) + " 23:59:59' AND ";
                                 break;
                             default:
                                 qcriteria += "p." + key + "='" + criteria.get(key) + "' AND ";

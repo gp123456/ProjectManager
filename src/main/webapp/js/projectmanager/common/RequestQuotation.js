@@ -24,7 +24,11 @@ function clearValue(response) {
             });
         }
         $("#refresh").removeAttr('disabled');
+        $("#refresh").removeClass('button alarm');
+        $("#refresh").addClass('button');
         $("#email").attr('disabled', 'disabled');
+        $("#email").removeClass('button');
+        $("#email").addClass('button alarm');
     }
 }
 
@@ -100,26 +104,15 @@ function dlgRequestQuotation() {
     });
 }
 
-function savePDF() {
-
-}
-
-function saveXLS() {
-
-}
-
-function saveRFQ(url) {
-    var currency = $("#currency option:selected").val();
-
+function saveRFQ(url, pdId, rqId, supplier, currency, email) {
     if (currency === 'none') {
         alert("You must select currency first")
         return;
     }
 
-    var data = "pdId=" + $("#subproject option:selected").val() +
-            "&name=" + $("#name").text() +
-            "&supplier=" + $("#supplier option:selected").val() +
-            "&currency=" + $("#currency option:selected").val() +
+    var data = "pdId=" + pdId +
+            "&supplier=" + supplier +
+            "&currency=" + currency +
             "&note=" + $("#note").val();
 
     $.ajax({
@@ -128,15 +121,15 @@ function saveRFQ(url) {
         data: data,
         success: function (response) {
             var content = JSON.parse(response);
-            
+
+            console.log(content);
+
             $("#header").html(content.header);
             setTimeout(function () {
                 if (content.location) {
                     location.href = content.location;
                 }
             }, 5000);
-            }
-
         },
         error: function (e) {
         }
@@ -144,7 +137,19 @@ function saveRFQ(url) {
 }
 
 function sendEmail() {
-    saveRFQ("/ProjectManager/project/request-quotation/send-email");
+    saveRFQ("/ProjectManager/project/request-quotation/send-email",
+            $("#subproject option:selected").val(),
+            null,
+            $("#supplier option:selected").val(),
+            $("#currency option:selected").val());
+}
+
+function sendEmailNCRFQ() {
+    saveRFQ("/ProjectManager/project/request-quotation/send-email",
+            $("#project_detail-id").val(),
+            $("#request-quotation-id").val(),
+            $("#supplier").val(),
+            $("#currency-id").val());
 }
 
 function sendEmailSupplier() {
@@ -254,7 +259,11 @@ function refresh(response) {
             $("#request-quotation").html(content.requestQuotation);
             $("#request-quotation-items").html(content.itemRequestQuotation);
             $("#refresh").attr('disabled', 'disabled');
+            $("#refresh").removeClass('button');
+            $("#refresh").addClass('button alarm');
             $("#email").removeAttr('disabled');
+            $("#email").removeClass('button alarm');
+            $("#email").addClass('button');
         },
         error: function (e) {
         }
@@ -289,6 +298,7 @@ function changeSubproject() {
             $("#request-quotation").html(content.requestQuotation);
             $("#request-quotation-items").html(content.itemRequestQuotation);
             $("#note").val(content.note);
+            $("#existing-rfq").val("ExistingRFQ" + content.countRFQ);
         },
         error: function (e) {
         }
@@ -311,38 +321,38 @@ function selectBMSI() {
     });
 }
 
-//function changeRequestQuotationSupplier() {
-//    var data = "pdId=" + $("#subproject option:selected").val() +
-//            "&supplier=" + $("#supplier option:selected").val();
-//
-//    $.ajax({
-//        type: "POST",
-//        url: "/ProjectManager/project/request-quotation/change-supplier",
-//        data: data,
-//        success: function (response) {
-////            $("#request-quotation-supplier").html(response);
-//        },
-//        error: function (e) {
-//        }
-//    });
-//}
+function discard() {
+    var data = "rqId=" + $("#request-quotation-id").val();
 
-//function removeRequestQuotationSupplier(supplier) {
-//    var data = "pdId=" + $("#subproject option:selected").val() + "&supplier=" + supplier;
-//
-//    $.ajax({
-//        type: "POST",
-//        url: "/ProjectManager/project/request-quotation/remove-supplier",
-//        data: data,
-//        success: function (response) {
-//            $("#request-quotation-supplier").html(response);
-//        },
-//        error: function (e) {
-//        }
-//    });
-//}
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/discard",
+        data: data,
+        success: function (response) {
+            if (response) {
+                var content = JSON.parse(response);
 
-function completeRFQ() {
+                if (content.header) {
+                    $("#header").html(content.header);
+                } else {
+                    $("#header").html(response);
+                }
+
+                setTimeout(function () {
+                    if (content.location) {
+                        location.href = content.location;
+                    } else {
+                        location.reload();
+                    }
+                }, 5000);
+            }
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function complete() {
     var data = "pdId=" + $("#subproject option:selected").val();
 
     $.ajax({
@@ -355,6 +365,8 @@ function completeRFQ() {
 
                 if (content.header) {
                     $("#header").html(content.header);
+                } else {
+                    $("#header").html(response);
                 }
 
                 setTimeout(function () {
@@ -363,7 +375,6 @@ function completeRFQ() {
                     } else {
                         location.reload();
                     }
-//                window.location = content.location;
                 }, 5000);
             }
         },
@@ -373,7 +384,11 @@ function completeRFQ() {
 }
 
 function save() {
-    saveRFQ("/ProjectManager/project/request-quotation/save");
+    saveRFQ("/ProjectManager/project/request-quotation/save",
+            $("#subproject option:selected").val(),
+            null,
+            $("#supplier option:selected").val(),
+            $("#currency option:selected").val());
 }
 
 function changeRequestQuotalion(hasList) {
@@ -408,4 +423,38 @@ function existingRequestQuotations(path) {
     var win = window.open(url, '_blank');
 
     win.focus();
+}
+
+function setupEmailSender() {
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/request-quotation/setup-email-sender",
+        success: function (response) {
+            $("#email-sender").html(response);
+            dlgNewItem();
+        },
+        error: function (e) {
+        }
+    });
+}
+
+function dlgSetupEmailSender() {
+    $("#dlg-email").dialog({
+        autoOpen: true,
+        modal: true,
+        width: 365,
+        buttons: {
+            "submit": function () {
+                sendEmail();
+            }
+        },
+        show: {
+            effect: "blind",
+            duration: 1000
+        },
+        hide: {
+            effect: "explode",
+            duration: 1000
+        }
+    });
 }

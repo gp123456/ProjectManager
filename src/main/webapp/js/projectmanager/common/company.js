@@ -33,7 +33,9 @@ function addCompany(type) {
         modal: true,
         width: 400,
         buttons: {
-            "submit": commitCompany(type)
+            "submit": function() {
+                commitCompany(type);
+            }
         },
         show: {
             effect: "blind",

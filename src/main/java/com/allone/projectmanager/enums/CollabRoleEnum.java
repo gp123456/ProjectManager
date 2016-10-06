@@ -13,8 +13,10 @@ public enum CollabRoleEnum {
     SUPER_ADMIN("SUPER ADMIN"),
     ADMIN("ADMIN"),
     TECHNICAL("TECHNICAL"),
-    EPLOYEE("EMPLOYEE");
-    
+    ACCOUNTER("ACCOUNTER"),
+    STOREKEEPER("STOREKEEPER"),
+    GUEST("GUEST");
+
     private String value;
 
     private CollabRoleEnum(String value) {

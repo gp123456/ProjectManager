@@ -11,16 +11,17 @@
     String role = (String) request.getAttribute("role");
 %>
 
-<div class="brochure"></div>
-<div class="version">Software version 1.0.0</div>
-<div id="userHead">
-    <div class="loginInfo"> 
-        <div class="status">${full_name}</div>
-        <p></p><div>Last login: ${last_login}</div>
-    </div>
+<!--<div class="login-container">-->
+    <div class="logo"></div>
+    <div class="version">Software version 1.0.0</div>
+    <div id="userHead">
+        <div class="loginInfo"> 
+            <div class="status">${full_name}</div>
+            <p></p><div>Last login: ${last_login}</div>
+        </div>
 
-    <div class="logout">
-        <a href="<%=path%>"><img src="../images/projectmanager/common/logout.png"></a>
-        <br/><label>Exit</label>
+<!--        <div class="logout">
+            <input type="button" class="button-header" value="Exit" onclick="closeAllWindows(wins);"/>
+        </div>-->
     </div>
-</div>
+<!--</div>-->

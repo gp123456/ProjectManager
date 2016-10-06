@@ -18,7 +18,7 @@
     });
 </script>
 
-<form id="demo" class="go-bottom">
+<form class="go-bottom">
     <label class="custom-select">Type
         <select id="search-type" ></select>
     </label>
@@ -41,13 +41,13 @@
         <label class="go-bottom-label" for="search-customer">Customer</label>
     </div>
     <div>
-        <input name="sdate" type="text" id="date-start" value="${sdateVal}">
+        <input name="sdate" type="text" id="date-start">
         <label class="go-bottom-label" for="date-start">Start Date</label>
     </div>
     <div>
-        <input name="edate" type="text" id="date-end" value="${edateVal}">
+        <input name="edate" type="text" id="date-end">
         <label class="go-bottom-label" for="date-end">End Date</label>
     </div>
-    <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
-    <input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
+    <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/></h3>
+<input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
 </form>

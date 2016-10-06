@@ -13,16 +13,18 @@
     height: 100%;
 }
 
-.top-bar .brochure {
+.top-bar .main_version {
     float: left;
-    width: 65%;
-    background: url('../../../images/brochure.png') no-repeat left;
-    height: 100%;
+    width: 12%;
+    margin-top: 25px;
+    font-size: 10px;
+    color: black;
+    padding: 10px;
 }
 
 .top-bar .version {
     float: left;
-    width: 10%;
+    width: 60%;
     margin-top: 25px;
     font-size: 10px;
     color: black;
