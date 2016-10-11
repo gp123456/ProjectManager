@@ -7,6 +7,7 @@ package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.controller.Root;
 import com.allone.projectmanager.entities.Vessel;
+import com.google.common.base.Strings;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ public class VesselDAO {
 
     private static final Logger logger = Logger.getLogger(Root.class.getName());
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     public VesselDAO(EntityManagerFactory emf) {
         this.emf = emf;
@@ -38,76 +39,67 @@ public class VesselDAO {
 
             values = (query != null) ? query.getResultList() : null;
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
-
-            return values;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
 
     public Vessel getById(Long id) {
-        Query query = null;
+        Vessel value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findById").setParameter("id", id);
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            Vessel value = null;
+            if (id != null && id.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findById").setParameter("id", id);
 
-            try {
                 value = (query != null) ? (Vessel) query.getSingleResult() : null;
-            } catch (HibernateException e) {
-                System.out.printf("%s", e.getMessage());
-            } finally {
-                em.close();
-
-                return value;
             }
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return value;
     }
 
     public List getByCompany(String company) {
-        Query query = null;
+        List value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findByCompany")
-                    .setParameter("company", company);
+            if (!Strings.isNullOrEmpty(company)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findByCompany").setParameter("company", company);
+
+                value = (query != null) ? query.getResultList() : null;
+            }
         } catch (HibernateException e) {
             System.out.printf("%s", e.getMessage());
-        } finally {
-            List value = null;
-
-            try {
-                value = (query != null) ? query.getResultList() : null;
-            } catch (HibernateException e) {
-                System.out.printf("%s", e.getMessage());
-            } finally {
-                em.close();
-
-                return value;
-            }
         }
+
+        em.close();
+
+        return value;
     }
 
-    public Vessel add(Vessel v) {
+    public Vessel add(Vessel item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (v != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(v);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            System.out.printf("%s\n", e.getMessage());
-        } finally {
-            em.close();
-
-            return v;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return item;
     }
 }

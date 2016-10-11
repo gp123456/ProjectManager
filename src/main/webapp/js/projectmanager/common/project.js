@@ -214,7 +214,8 @@ function saveProject() {
             if (content.body) {
                 $("#body").html(content.body);
             }
-            $("#project-reference").text(content.project_reference);
+            
+            $("h1").text(content.projectReference);
             $("#save").attr('class', 'button');
             $("#save").attr('disabled', 'disabled');
             setTimeout(function () {

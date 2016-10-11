@@ -29,9 +29,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries(
         {
-            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findById", query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.id = :id"),
-            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findByBillMaterialServiceItem", query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.billMaterialServiceItem = :billMaterialServiceItem"),
-            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findByRequestQuotation", query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.requestQuotation = :requestQuotation")})
+            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findById",
+                    query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.id = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findByBillMaterialServiceItem",
+                    query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.billMaterialServiceItem = :billMaterialServiceItem"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotationItem.findByRequestQuotation",
+                    query = "SELECT rqi FROM RequestQuotationItem rqi WHERE rqi.requestQuotation = :requestQuotation")
+        })
 public class RequestQuotationItem implements Serializable {
 
     private static final long serialVersionUID = 1L;

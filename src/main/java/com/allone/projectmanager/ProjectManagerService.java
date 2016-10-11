@@ -21,6 +21,8 @@ import com.allone.projectmanager.dao.StockTransDAO;
 import com.allone.projectmanager.dao.VesselDAO;
 import com.allone.projectmanager.dao.ContactDAO;
 import com.allone.projectmanager.dao.ProjectDetailDAO;
+import com.allone.projectmanager.dao.QuotationDAO;
+import com.allone.projectmanager.dao.QuotationItemDAO;
 import com.allone.projectmanager.dao.RequestQuotationDAO;
 import com.allone.projectmanager.dao.RequestQuotationItemDAO;
 import com.allone.projectmanager.dao.ServiceCollabDAO;
@@ -68,6 +70,8 @@ public class ProjectManagerService {
     private final BillMaterialServiceItemDAO daoBillMaterialServiceItem = new BillMaterialServiceItemDAO(emf);
     private final RequestQuotationDAO daoRequestQuotation = new RequestQuotationDAO(emf);
     private final RequestQuotationItemDAO daoRequestQuotationItem = new RequestQuotationItemDAO(emf);
+    private final QuotationDAO daoQuotation = new QuotationDAO(emf);
+    private final QuotationItemDAO daoQuotationItem = new QuotationItemDAO(emf);
     private final ContactDAO daoContact = new ContactDAO(emf);
     private final ServiceCollabDAO daoServiceCollab = new ServiceCollabDAO(emf);
 
@@ -126,6 +130,14 @@ public class ProjectManagerService {
 
     public RequestQuotationItemDAO getDaoRequestQuotationItem() {
         return daoRequestQuotationItem;
+    }
+
+    public QuotationDAO getDaoQuotation() {
+        return daoQuotation;
+    }
+
+    public QuotationItemDAO getDaoQuotationItem() {
+        return daoQuotationItem;
     }
 
     public CompanyDAO getDaoCompany() {

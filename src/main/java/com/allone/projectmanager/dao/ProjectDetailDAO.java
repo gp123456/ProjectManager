@@ -27,9 +27,13 @@ public class ProjectDetailDAO {
 
     private final EntityManagerFactory emf;
 
-    private void checkPagingAttributes(Integer offset, Integer size) {
-        offset = (offset.compareTo(0) < 0 || offset.compareTo(Integer.MAX_VALUE) == 0) ? 0 : offset;
-        size = (size.compareTo(0) < 0 || size.compareTo(Integer.MAX_VALUE) == 0) ? 10 : size;
+    private Integer[] checkPagingAttributes(Integer offset, Integer size) {
+        Integer[] values = new Integer[]{0, 10};
+
+        values[0] = (offset != null && offset.compareTo(0) > 0) ? offset : 0;
+        values[1] = (size != null && size.compareTo(0) > 0) ? size : 10;
+
+        return values;
     }
 
     public ProjectDetailDAO(EntityManagerFactory emf) {
@@ -42,20 +46,18 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (creator != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByCreator")
-                        .setParameter("creator", creator)
+            if (creator != null && status != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByCreator").setParameter("creator", creator)
                         .setParameter("status", status.toString());
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
+
         return values;
     }
 
@@ -65,112 +67,99 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            checkPagingAttributes(offset, size);
+            Integer[] limits = checkPagingAttributes(offset, size);
 
-            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findAll")
-                    .setFirstResult(offset * size)
-                    .setMaxResults(size);
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findAll").setFirstResult(limits[0] * limits[1])
+                    .setMaxResults(limits[1]);
 
-            values = (query != null)
-                    ? query.getResultList()
-                    : null;
+            values = (query != null) ? query.getResultList() : null;
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
     @SuppressWarnings("unchecked")
-    public Long countByProject(Long pId) {
+    public Long countByProject(Long id) {
         Long count = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByProject")
-                    .setParameter("project", pId);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByProject").setParameter("project", id);
 
-            count = (query != null)
-                    ? (Long) query.getSingleResult()
-                    : null;
+                count = (query != null) ? (Long) query.getSingleResult() : null;
+            }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return count;
     }
 
     @SuppressWarnings("unchecked")
-    public List getByProjectId(Long project) {
+    public List getByProjectId(Long id) {
         List value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (project != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectId")
-                        .setParameter("project", project);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectId").setParameter("project", id);
 
-                value = (query != null)
-                        ? query.getResultList()
-                        : null;
+                value = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return value;
     }
 
     @SuppressWarnings("unchecked")
-    public List getByProjectIdType(Long project, String type) {
+    public List getByProjectIdType(Long id, String type) {
         List value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (project != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType")
-                        .setParameter("project", project)
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType").setParameter("project", id)
                         .setParameter("type", type);
 
-                value = (query != null)
-                        ? query.getResultList()
-                        : null;
+                value = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return value;
     }
 
     @SuppressWarnings("unchecked")
-    public ProjectDetail getFirstByProjectIdType(Long project, String type) {
+    public ProjectDetail getFirstByProjectIdType(Long id, String type) {
         ProjectDetail value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (project != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType")
-                        .setParameter("project", project)
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByProjectIdType").setParameter("project", id)
                         .setParameter("type", type);
 
-                value = (query != null)
-                        ? (ProjectDetail) query.getResultList().get(0)
-                        : null;
+                value = (query != null) ? (ProjectDetail) query.getResultList().get(0) : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return value;
     }
@@ -181,23 +170,19 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (type != null) {
-                checkPagingAttributes(offset, size);
+            if (!Strings.isNullOrEmpty(type)) {
+                Integer[] limits = checkPagingAttributes(offset, size);
 
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType")
-                        .setParameter("type", type)
-                        .setFirstResult(offset * size)
-                        .setMaxResults(size);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByType").setParameter("type", type)
+                        .setFirstResult(limits[0] * limits[1]).setMaxResults(limits[1]);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -208,112 +193,96 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(type)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByType")
-                        .setParameter("type", type);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByType").setParameter("type", type);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public List getMyProjectType(Long creator, String type) {
+    public List getMyProjectType(Long id, String type) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (creator != null && !Strings.isNullOrEmpty(type)) {
+            if (id != null && id.compareTo(0l) > 0 && !Strings.isNullOrEmpty(type)) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectType")
-                        .setParameter("status", ProjectStatusEnum.CREATE.toString())
-                        .setParameter("creator", creator)
-                        .setParameter("type", type);
+                        .setParameter("status", ProjectStatusEnum.CREATE.toString()).setParameter("creator", id).setParameter("type", type);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public List getMyProjectCompany(Long creator, String company) {
+    public List getMyProjectCompany(Long id, String company) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (creator != null && creator.compareTo(0l) >= 0 && !Strings.isNullOrEmpty(company)) {
+            if (id != null && id.compareTo(0l) > 0 && !Strings.isNullOrEmpty(company)) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findMyProjectCompany")
-                        .setParameter("status", ProjectStatusEnum.CREATE.toString())
-                        .setParameter("creator", creator)
-                        .setParameter("company", company);
+                        .setParameter("status", ProjectStatusEnum.CREATE.toString()).setParameter("creator", id).setParameter("company", company);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public List getByVessel(Long vessel, Integer offset, Integer size) {
+    public List getByVessel(Long id, Integer offset, Integer size) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (vessel != null && vessel.compareTo(0l) >= 0) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByVessel")
-                        .setParameter("vessel", vessel)
-                        .setFirstResult(offset * size)
-                        .setMaxResults(size);
+            if (id != null && id.compareTo(0l) > 0) {
+                Integer[] limits = checkPagingAttributes(offset, size);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByVessel").setParameter("vessel", id)
+                        .setFirstResult(limits[0] * limits[1]).setMaxResults(limits[1]);
+
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public Long countByVessel(Long vessel) {
+    public Long countByVessel(Long id) {
         Long values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (vessel != null && vessel.compareTo(0l) >= 0) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByVessel")
-                        .setParameter("vessel", vessel);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByVessel").setParameter("vessel", id);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -324,19 +293,18 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(customer)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByCustomer")
-                        .setParameter("customer", customer)
-                        .setFirstResult(offset * size).setMaxResults(size);
+                Integer[] limits = checkPagingAttributes(offset, size);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByCustomer").setParameter("customer", customer)
+                        .setFirstResult(limits[0] * limits[1]).setMaxResults(limits[1]);
+
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -347,18 +315,15 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(customer)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCustomer")
-                        .setParameter("customer", customer);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCustomer").setParameter("customer", customer);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -369,19 +334,17 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(company)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByCompany")
-                        .setParameter("company", company)
-                        .setFirstResult(offset * size).setMaxResults(size);
+                Integer[] limits = checkPagingAttributes(offset, size);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.findByCompany").setParameter("company", company)
+                        .setFirstResult(limits[0] * limits[1]).setMaxResults(limits[1]);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -392,18 +355,15 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(company)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCompany")
-                        .setParameter("company", company);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Project.countByCompany").setParameter("company", company);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -414,20 +374,17 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(status)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByStatus")
-                        .setParameter("status", status)
-                        .setFirstResult(offset * size)
-                        .setMaxResults(size);
+                Integer[] limits = checkPagingAttributes(offset, size);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByStatus").setParameter("status", status)
+                        .setFirstResult(limits[0] * limits[1]).setMaxResults(limits[1]);
 
-                values = (query != null)
-                        ? query.getResultList()
-                        : null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -438,8 +395,7 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(status)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByStatus")
-                        .setParameter("status", status);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByStatus").setParameter("status", status);
 
                 values = (query != null)
                         ? (Long) query.getSingleResult()
@@ -447,9 +403,9 @@ public class ProjectDetailDAO {
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -459,19 +415,16 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (id != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findById")
-                        .setParameter("id", id);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findById").setParameter("id", id);
 
-                value = (query != null)
-                        ? (ProjectDetail) query.getSingleResult()
-                        : null;
+                value = (query != null) ? (ProjectDetail) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return value;
     }
@@ -485,73 +438,69 @@ public class ProjectDetailDAO {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByReference")
                         .setParameter("reference", "%" + reference + "%");
 
-                value = (query != null)
-                        ? (ProjectDetail) query.getSingleResult()
-                        : null;
+                value = (query != null) ? (ProjectDetail) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return value;
     }
 
-    public ProjectDetail getLastByProject(Long project) {
+    public ProjectDetail getLastByProject(Long id) {
         ProjectDetail values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (project != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findLastByProject")
-                        .setParameter("project", project).setMaxResults(1);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findLastByProject").setParameter("project", id)
+                        .setMaxResults(1);
 
-                values = (query != null)
-                        ? (ProjectDetail) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (ProjectDetail) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public ProjectDetail add(ProjectDetail pd) {
+    public ProjectDetail add(ProjectDetail item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pd != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(pd);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
 
-        return pd;
+        em.close();
+
+        return item;
     }
 
-    public void edit(ProjectDetail pd) {
+    public void edit(ProjectDetail item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pd != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.merge(pd);
+                em.merge(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 
     public Long countAll() {
@@ -561,14 +510,12 @@ public class ProjectDetailDAO {
         try {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countAll");
 
-            values = (query != null)
-                    ? (Long) query.getSingleResult()
-                    : null;
+            values = (query != null) ? (Long) query.getSingleResult() : null;
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -578,19 +525,17 @@ public class ProjectDetailDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findCreatedByProjectExceptId")
-                    .setParameter("pId", pId)
-                    .setParameter("pdId", pdId)
-                    .setParameter("status", ProjectStatusEnum.CREATE.toString());
+            if (pId != null && pId.compareTo(0l) > 0 && pdId != null && pdId.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findCreatedByProjectExceptId").setParameter("pId", pId)
+                        .setParameter("pdId", pdId).setParameter("status", ProjectStatusEnum.CREATE.toString());
 
-            values = (query != null)
-                    ? query.getResultList()
-                    : null;
+                values = (query != null) ? query.getResultList() : null;
+            }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -601,19 +546,16 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(type)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countOpenByType")
-                        .setParameter("type", type)
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countOpenByType").setParameter("type", type)
                         .setParameter("status", ProjectStatusEnum.INVOICE.toString());
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -624,19 +566,16 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(type) && !Strings.isNullOrEmpty(status)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus")
-                        .setParameter("type", type)
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByTypeStatus").setParameter("type", type)
                         .setParameter("status", status);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
@@ -647,37 +586,33 @@ public class ProjectDetailDAO {
 
         try {
             if (!Strings.isNullOrEmpty(type) && !Strings.isNullOrEmpty(company)) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany")
-                        .setParameter("type", type)
-                        .setParameter("status", ProjectStatusEnum.INVOICE.toString())
-                        .setParameter("company", company);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany").setParameter("type", type)
+                        .setParameter("status", ProjectStatusEnum.INVOICE.toString()).setParameter("company", company);
 
-                values = (query != null)
-                        ? (Long) query.getSingleResult()
-                        : null;
+                values = (query != null) ? (Long) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
 
         return values;
     }
 
-    public void delete(ProjectDetail pd) {
+    public void delete(ProjectDetail item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pd != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.remove(em.contains(pd) ? pd : em.merge(pd));
+                em.remove(em.contains(item) ? item : em.merge(item));
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 }

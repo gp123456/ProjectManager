@@ -23,10 +23,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "company")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Company.findAll",
-                           query = "SELECT c FROM Company c WHERE c.type = :type ORDER BY c.name"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Company.findByTypeName",
-                           query = "SELECT c FROM Company c WHERE c.type = :type AND c.name = :name")})
+@NamedQueries(
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.Company.findAll",
+                    query = "SELECT c FROM Company c WHERE c.type = :type ORDER BY c.name"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Company.findByTypeName",
+                    query = "SELECT c FROM Company c WHERE c.type = :type AND c.name = :name")
+        })
 public class Company implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -97,10 +100,8 @@ public class Company implements Serializable {
 //    
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "customer")
 //    private List<ProjectDetail> listProjectDetail;
-    
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "company")
 //    private List<Vessel> listVessels;
-
     private Company(Builder builder) {
         name = builder.getName();
         referenceNumber = builder.getReferenceNumber();
@@ -286,7 +287,6 @@ public class Company implements Serializable {
 //    public List<Item> getListItem() {
 //        return listItem;
 //    }
-
 //    public void setListItem(List<Item> listItem) {
 //        this.listItem = listItem;
 //    }
@@ -299,7 +299,6 @@ public class Company implements Serializable {
 //    public void setListProjectDetail(List<ProjectDetail> listProjectDetail) {
 //        this.listProjectDetail = listProjectDetail;
 //    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -326,57 +325,56 @@ public class Company implements Serializable {
     }
 
     public static class Builder {
+
         private String name;
-        
+
         private String referenceNumber;
-        
+
         private String type;
-        
+
         private String address;
-        
+
         private String postCountry;
-        
+
         private String postCode;
-        
+
         private String country;
-        
+
         private String telefone1;
-        
+
         private String telefone2;
-        
+
         private String telefone3;
-        
+
         private String fax1;
-        
+
         private String fax2;
-        
+
         private String email1;
-        
+
         private String email2;
-        
+
         private String email3;
-        
+
         private String vat;
-        
+
         private String doy;
-        
+
         private String note;
-        
+
 //        private List<Contact> listContact;
 //        
 //        private List<Item> listItem;
 //        
 //        private List<ProjectDetail> listProjectDetail;
-        
 //        private List<Vessel> listVessels;
-
         public String getName() {
             return name;
         }
 
         public Builder setName(String name) {
             this.name = name;
-            
+
             return this;
         }
 
@@ -386,7 +384,7 @@ public class Company implements Serializable {
 
         public Builder setReferenceNumber(String referenceNumber) {
             this.referenceNumber = referenceNumber;
-            
+
             return this;
         }
 
@@ -396,7 +394,7 @@ public class Company implements Serializable {
 
         public Builder setType(String type) {
             this.type = type;
-            
+
             return this;
         }
 
@@ -406,7 +404,7 @@ public class Company implements Serializable {
 
         public Builder setAddress(String address) {
             this.address = address;
-            
+
             return this;
         }
 
@@ -416,7 +414,7 @@ public class Company implements Serializable {
 
         public Builder setPostCountry(String postCountry) {
             this.postCountry = postCountry;
-            
+
             return this;
         }
 
@@ -426,7 +424,7 @@ public class Company implements Serializable {
 
         public Builder setPostCode(String postCode) {
             this.postCode = postCode;
-            
+
             return this;
         }
 
@@ -436,7 +434,7 @@ public class Company implements Serializable {
 
         public Builder setCountry(String country) {
             this.country = country;
-            
+
             return this;
         }
 
@@ -446,7 +444,7 @@ public class Company implements Serializable {
 
         public Builder setTelefone1(String telefone1) {
             this.telefone1 = telefone1;
-            
+
             return this;
         }
 
@@ -456,7 +454,7 @@ public class Company implements Serializable {
 
         public Builder setTelefone2(String telefone2) {
             this.telefone2 = telefone2;
-            
+
             return this;
         }
 
@@ -466,7 +464,7 @@ public class Company implements Serializable {
 
         public Builder setTelefone3(String telefone3) {
             this.telefone3 = telefone3;
-            
+
             return this;
         }
 
@@ -476,7 +474,7 @@ public class Company implements Serializable {
 
         public Builder setFax1(String fax1) {
             this.fax1 = fax1;
-            
+
             return this;
         }
 
@@ -486,7 +484,7 @@ public class Company implements Serializable {
 
         public Builder setFax2(String fax2) {
             this.fax2 = fax2;
-            
+
             return this;
         }
 
@@ -496,7 +494,7 @@ public class Company implements Serializable {
 
         public Builder setEmail1(String email1) {
             this.email1 = email1;
-            
+
             return this;
         }
 
@@ -506,7 +504,7 @@ public class Company implements Serializable {
 
         public Builder setEmail2(String email2) {
             this.email2 = email2;
-            
+
             return this;
         }
 
@@ -516,7 +514,7 @@ public class Company implements Serializable {
 
         public Builder setEmail3(String email3) {
             this.email3 = email3;
-            
+
             return this;
         }
 
@@ -526,7 +524,7 @@ public class Company implements Serializable {
 
         public Builder setVat(String vat) {
             this.vat = vat;
-            
+
             return this;
         }
 
@@ -536,7 +534,7 @@ public class Company implements Serializable {
 
         public Builder setDoy(String doy) {
             this.doy = doy;
-            
+
             return this;
         }
 
@@ -546,7 +544,7 @@ public class Company implements Serializable {
 
         public Builder setNote(String note) {
             this.note = note;
-            
+
             return this;
         }
 
@@ -569,7 +567,6 @@ public class Company implements Serializable {
 //            
 //            return this;
 //        }
-
 //        public List<ProjectDetail> getListProjectDetail() {
 //            return listProjectDetail;
 //        }
@@ -579,7 +576,6 @@ public class Company implements Serializable {
 //            
 //            return this;
 //        }
-
 //        public List<Vessel> getListVessels() {
 //            return listVessels;
 //        }
@@ -589,7 +585,6 @@ public class Company implements Serializable {
 //            
 //            return this;
 //        }
-        
         public Company build() {
             return new Company(this);
         }

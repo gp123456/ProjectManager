@@ -198,7 +198,7 @@
             <thead>
                 <tr>
                     <th style="display:none">Project Id</th>
-                    <th>Subproject</th>
+                    <th>Name</th>
                 </tr>
             </thead>
             <tbody id="bill-material-service"></tbody>

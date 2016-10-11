@@ -8,6 +8,8 @@ package com.allone.projectmanager.dao;
 import com.allone.projectmanager.entities.Item;
 import com.google.common.base.Strings;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -18,6 +20,8 @@ import org.hibernate.HibernateException;
  * @author antonia
  */
 public class ItemDAO extends Item {
+
+    private static final Logger logger = Logger.getLogger(ItemDAO.class.getName());
 
     private EntityManagerFactory emf;
 
@@ -31,15 +35,15 @@ public class ItemDAO extends Item {
 
         try {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findAll");
-            
+
             values = query.getResultList();
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
-
-            return values;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
 
     public Item getByImno(String imno) {
@@ -47,18 +51,18 @@ public class ItemDAO extends Item {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (!Strings.isNullOrEmpty(imno)) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Item.findByImno").setParameter("imno", imno) :
-                          null;
-            
-            values = (Item) query.getSingleResult();
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
+            if (!Strings.isNullOrEmpty(imno)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findByImno").setParameter("imno", imno);
 
-            return values;
+                values = (query != null) ? (Item) query.getSingleResult() : null;
+            }
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
 
     public Item getById(Long id) {
@@ -66,17 +70,18 @@ public class ItemDAO extends Item {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Item.findById").setParameter("id", id) : null;
-            
-            values = (Item) query.getSingleResult();
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
+            if (id != null && id.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findById").setParameter("id", id);
 
-            return values;
+                values = (query != null) ? (Item) query.getSingleResult() : null;
+            }
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
 
     public Long getLastId() {
@@ -85,32 +90,32 @@ public class ItemDAO extends Item {
 
         try {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findLastId");
-            
-            values = (Long) query.getSingleResult();
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
 
-            return values;
+            values = (query != null) ? (Long) query.getSingleResult() : null;
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
-    
-    public Item add(Item i) {
+
+    public Item add(Item item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (i != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(i);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            System.out.printf("%s\n", e.getMessage());
-        } finally {
-            em.close();
-
-            return i;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return item;
     }
 }

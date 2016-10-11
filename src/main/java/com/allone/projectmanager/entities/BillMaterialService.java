@@ -27,8 +27,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "bill_material_service")
 @XmlRootElement
 @NamedQueries(
-        {@NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findByProject", query = "SELECT p FROM BillMaterialService p WHERE p.project = :project"),
-         @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findById", query = "SELECT p FROM BillMaterialService p WHERE p.id = :id")})
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findByProject",
+                    query = "SELECT p FROM BillMaterialService p WHERE p.project = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialService.findById",
+                    query = "SELECT p FROM BillMaterialService p WHERE p.id = :id")
+        })
 public class BillMaterialService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,9 +55,9 @@ public class BillMaterialService implements Serializable {
 
     @Column(name = "note")
     private String note;
-    
+
     @Basic(optional = false)
-    @Column(name = "complete", columnDefinition="Bit(1) default 'b0'")
+    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
     private Boolean complete;
 
     @Transient
@@ -127,7 +131,7 @@ public class BillMaterialService implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        
+
         return hash;
     }
 
@@ -137,7 +141,7 @@ public class BillMaterialService implements Serializable {
         if (!(object instanceof BillMaterialService)) {
             return false;
         }
-        
+
         BillMaterialService other = (BillMaterialService) object;
         return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
@@ -156,7 +160,7 @@ public class BillMaterialService implements Serializable {
         private String note;
 
         private Boolean complete;
-     
+
         private String classSave;
 
         public Builder setName(String name) {
@@ -164,7 +168,7 @@ public class BillMaterialService implements Serializable {
 
             return this;
         }
-        
+
         public Builder setProject(Long project) {
             this.project = project;
 
@@ -182,7 +186,7 @@ public class BillMaterialService implements Serializable {
 
             return this;
         }
-        
+
         public Builder setClassSave(String classSave) {
             this.classSave = classSave;
 

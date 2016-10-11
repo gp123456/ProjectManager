@@ -5,9 +5,10 @@
  */
 package com.allone.projectmanager.dao;
 
-import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.Stock;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -19,7 +20,18 @@ import org.hibernate.HibernateException;
  */
 public class StockDAO extends Stock {
 
-    private EntityManagerFactory emf;
+    private static final Logger logger = Logger.getLogger(StockDAO.class.getName());
+
+    private final EntityManagerFactory emf;
+
+    private Integer[] checkPagingAttributes(final Integer offset, final Integer size) {
+        Integer[] values = new Integer[]{0, 10};
+
+        values[0] = (offset != null && offset.compareTo(0) > 0) ? offset : 0;
+        values[1] = (size != null && size.compareTo(0) > 0) ? size : 10;
+
+        return values;
+    }
 
     public StockDAO(EntityManagerFactory emf) {
         this.emf = emf;
@@ -27,38 +39,40 @@ public class StockDAO extends Stock {
 
     @SuppressWarnings("unchecked")
     public List getAll(Integer offset, Integer size) {
-        Query query = null;
+        List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            query = em.createNamedQuery("com.allone.projectmanager.entities.Stock.findAll").setFirstResult(
-            offset * size).setMaxResults(size);
+            Integer[] limits = checkPagingAttributes(offset, size);
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.Stock.findAll").setFirstResult(limits[0] * limits[1])
+                    .setMaxResults(limits[1]);
+
+            values = (query != null) ? query.getResultList() : null;
         } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            List values = query.getResultList();
-
-            em.close();
-
-            return values;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
-    
+
     public Stock getById(Long id) {
         Stock values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            Query query = (id != null && id.compareTo(0l) >= 0) ? em.createNamedQuery(
-                          "com.allone.projectmanager.entities.Stock.findById").setParameter("id", id) : null;
-            
-            values = (Stock) query.getSingleResult();
-        } catch (HibernateException e) {
-            System.out.printf("%s", e.getMessage());
-        } finally {
-            em.close();
+            if (id != null && id.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Stock.findById").setParameter("id", id);
 
-            return values;
+                values = (Stock) query.getSingleResult();
+            }
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return values;
     }
 }

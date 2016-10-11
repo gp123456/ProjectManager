@@ -25,13 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "vessel")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findAll",
-                query = "SELECT v FROM Vessel v ORDER BY v.name"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findById",
-                query = "SELECT v FROM Vessel v WHERE v.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findByCompany",
-                query = "SELECT v FROM Vessel v WHERE v.company = :company ORDER BY v.name")})
+@NamedQueries(
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findAll",
+                    query = "SELECT v FROM Vessel v ORDER BY v.name"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findById",
+                    query = "SELECT v FROM Vessel v WHERE v.id = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Vessel.findByCompany",
+                    query = "SELECT v FROM Vessel v WHERE v.company = :company ORDER BY v.name")
+        })
 public class Vessel implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -243,7 +245,7 @@ public class Vessel implements Serializable {
     public static class Builder {
 
         private String name;
-        
+
         private String company;
 
         private String flag;
@@ -263,7 +265,7 @@ public class Vessel implements Serializable {
         private String class1;
 
         private String document;
-        
+
         public String getName() {
             return name;
         }
@@ -373,7 +375,7 @@ public class Vessel implements Serializable {
 
             return this;
         }
-        
+
         public Vessel build() {
             return new Vessel(this);
         }

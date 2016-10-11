@@ -4,10 +4,15 @@
     Author     : gpatitakis
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <div id="header" class="formLayout">
-    <h1>REQUEST FOR QUOTATION - SUBPROJECT REF:${projectReference}</h1>
+    <c:choose>
+        <c:when test="${is_quotation == 0}" >
+            <h1>REQUEST FOR QUOTATION - SUBPROJECT REF:${projectReference}</h1>
+        </c:when>
+    </c:choose>
     <br><h2>Select Request for Quotation</h2>
     <label class="custom-select-large">
         <select id="request-quotations" onchange="changeRequestQuotalion(false)">${requestQuotations}</select>

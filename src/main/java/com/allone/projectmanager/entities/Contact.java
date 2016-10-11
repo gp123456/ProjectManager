@@ -24,10 +24,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "contact")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "com.allone.projectmanager.entities.Contact.findAll", query = "SELECT c FROM Contact c ORDER BY c.name"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById", query = "SELECT c FROM Contact c WHERE c.id = :id"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByCompany", query = "SELECT c FROM Contact c WHERE c.company=:company ORDER BY c.name"),
-               @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByVessel", query = "SELECT c FROM Contact c WHERE c.vessel=:vessel ORDER BY c.name")})
+@NamedQueries(
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findAll",
+                    query = "SELECT c FROM Contact c ORDER BY c.name"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findById",
+                    query = "SELECT c FROM Contact c WHERE c.id = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByCompany",
+                    query = "SELECT c FROM Contact c WHERE c.company=:company ORDER BY c.name"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Contact.findByVessel",
+                    query = "SELECT c FROM Contact c WHERE c.vessel=:id ORDER BY c.name")
+        })
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,7 +65,7 @@ public class Contact implements Serializable {
 
     @Column(name = "vessel")
     private Long vessel;
-    
+
     @Column(name = "department")
     private String department;
 
@@ -147,7 +154,7 @@ public class Contact implements Serializable {
     public void setDepartment(String department) {
         this.department = department;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -188,7 +195,7 @@ public class Contact implements Serializable {
         private String note;
 
         private Long vessel;
-        
+
         private String department;
 
         public Builder setName(String name) {
@@ -232,7 +239,7 @@ public class Contact implements Serializable {
 
             return this;
         }
-        
+
         public Builder setDepartment(String department) {
             this.department = department;
 

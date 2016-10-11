@@ -22,10 +22,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "stock")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Stock.findAll", query = "SELECT s FROM Stock s"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Stock.findById",
-                query = "SELECT s FROM Stock s WHERE s.id=:id")})
+@NamedQueries(
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.Stock.findAll",
+                    query = "SELECT s FROM Stock s"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Stock.findById",
+                    query = "SELECT s FROM Stock s WHERE s.id=:id")
+        })
 public class Stock implements Serializable {
 
     private static final long serialVersionUID = 1L;

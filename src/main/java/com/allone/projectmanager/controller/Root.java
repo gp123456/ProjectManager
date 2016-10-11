@@ -13,7 +13,6 @@ import com.allone.projectmanager.model.PlotInfoModel;
 import org.springframework.stereotype.Controller;
 import com.allone.projectmanager.model.User;
 import com.google.gson.Gson;
-import java.awt.Window;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -97,6 +95,8 @@ public class Root extends ProjectCommon {
                 } else {
                     return "login";
                 }
+            } else {
+                return "login";
             }
         }
 

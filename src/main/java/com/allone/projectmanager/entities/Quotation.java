@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,9 +28,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "quotation")
 @XmlRootElement
 @NamedQueries(
-        {@NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findByBillMaterialService", query = "SELECT q FROM Quotation q WHERE q.billMaterialService = :billMaterialService"),
-         @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findById", query = "SELECT q FROM Quotation q WHERE q.id = :id")})
+        {
+            @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findById",
+                    query = "SELECT q FROM Quotation q WHERE q.id = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findByRequestForQuotation",
+                    query = "SELECT q FROM Quotation q WHERE q.requestForQuotation = :id")
+        })
 public class Quotation implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -37,79 +43,75 @@ public class Quotation implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    
-    @Basic(optional = false)
+
     @Column(name = "name")
     private String name;
-    
-    @Basic(optional = false)
-    @Column(name = "bill_material_service")
-    private Long billMaterialService;
-    
-    @Basic(optional = false)
-    @Column(name = "total_cost")
-    @NotNull
-    private BigDecimal totalCost;
 
-    @Basic(optional = false)
-    @Column(name = "averange_discount")
-    @NotNull
-    private BigDecimal averangeDiscount;
+    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
+    private Boolean complete;
 
-    @Basic(optional = false)
-    @Column(name = "total_sale_price")
-    @NotNull
-    private BigDecimal totalSalePrice;
+    @Column(name = "discard", columnDefinition = "Bit(1) default 'b0'")
+    private Boolean discard;
 
-    @Basic(optional = false)
-    @Column(name = "total_net_price")
+    @Column(name = "customer")
     @NotNull
-    private BigDecimal totalNetPrice;
-    
-    @Basic(optional = false)
+    private String customer;
+
+    @Column(name = "request_for_quotation")
+    @NotNull
+    private Long requestForQuotation;
+
     @Column(name = "currency")
     @NotNull
     private Integer currency;
 
-    @Basic(optional = false)
+    @Column(name = "availability")
+    private Integer availability;
+
+    @Column(name = "delivery")
+    private Integer delivery;
+
+    @Column(name = "packing")
+    private Integer packing;
+
+    @Column(name = "payment")
+    private Integer payment;
+
+    @Column(name = "validity")
+    private Integer validity;
+
     @Column(name = "location")
-    private Integer location;
-    
-    @Basic(optional = false)
-    @Column(name = "complete", columnDefinition = "tinyint(1) default 0")
     @NotNull
-    private Boolean complete;
-    
-    @Basic(optional = false)
+    private String location;
+
+    @Column(name = "grand_total")
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for grandTotal")
+    private BigDecimal grandTotal;
+
     @Column(name = "note")
     private String note;
 
+    @Column(name = "customer_note")
+    private String customerNote;
+
     private Quotation(Builder builder) {
         name = builder.name;
-        billMaterialService = builder.billMaterialService;
-        totalCost = builder.totalCost;
-        averangeDiscount = builder.averangeDiscount;
-        totalSalePrice = builder.totalSalePrice;
-        totalNetPrice = builder.totalNetPrice;
+        requestForQuotation = builder.requestForQuotation;
+        customer = builder.customer;
         currency = builder.currency;
         location = builder.location;
         complete = builder.complete;
+        discard = builder.discard;
+        availability = builder.availability;
+        delivery = builder.delivery;
+        packing = builder.packing;
+        payment = builder.payment;
+        validity = builder.validity;
+        grandTotal = builder.grandTotal;
         note = builder.note;
+        customerNote = builder.customerNote;
     }
 
-    private Quotation(Quotation builder) {
-        name = builder.name;
-        billMaterialService = builder.billMaterialService;
-        totalCost = builder.totalCost;
-        averangeDiscount = builder.averangeDiscount;
-        totalSalePrice = builder.totalSalePrice;
-        totalNetPrice = builder.totalNetPrice;
-        currency = builder.currency;
-        location = builder.location;
-        complete = builder.complete;
-        note = builder.note;
-    }
-    
     public Quotation() {
     }
 
@@ -125,60 +127,12 @@ public class Quotation implements Serializable {
         this.name = name;
     }
 
-    public Long getBillMaterialService() {
-        return billMaterialService;
-    }
-
-    public void setBillMaterialService(Long billMaterialService) {
-        this.billMaterialService = billMaterialService;
-    }
-
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public BigDecimal getAverangeDiscount() {
-        return averangeDiscount;
-    }
-
-    public void setAverangeDiscount(BigDecimal averangeDiscount) {
-        this.averangeDiscount = averangeDiscount;
-    }
-
-    public BigDecimal getTotalSalePrice() {
-        return totalSalePrice;
-    }
-
-    public void setTotalSalePrice(BigDecimal totalSalePrice) {
-        this.totalSalePrice = totalSalePrice;
-    }
-
-    public BigDecimal getTotalNetPrice() {
-        return totalNetPrice;
-    }
-
-    public void setTotalNetPrice(BigDecimal totalNetPrice) {
-        this.totalNetPrice = totalNetPrice;
-    }
-
     public Integer getCurrency() {
         return currency;
     }
 
     public void setCurrency(Integer currency) {
         this.currency = currency;
-    }
-
-    public Integer getLocation() {
-        return location;
-    }
-
-    public void setLocation(Integer location) {
-        this.location = location;
     }
 
     public Boolean getComplete() {
@@ -197,6 +151,94 @@ public class Quotation implements Serializable {
         this.note = note;
     }
 
+    public Boolean getDiscard() {
+        return discard;
+    }
+
+    public void setDiscard(Boolean discard) {
+        this.discard = discard;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public Long getRequestForQuotation() {
+        return requestForQuotation;
+    }
+
+    public void setRequestForQuotation(Long requestForQuotation) {
+        this.requestForQuotation = requestForQuotation;
+    }
+
+    public Integer getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(Integer availability) {
+        this.availability = availability;
+    }
+
+    public Integer getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(Integer delivery) {
+        this.delivery = delivery;
+    }
+
+    public Integer getPacking() {
+        return packing;
+    }
+
+    public void setPacking(Integer packing) {
+        this.packing = packing;
+    }
+
+    public Integer getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Integer payment) {
+        this.payment = payment;
+    }
+
+    public Integer getValidity() {
+        return validity;
+    }
+
+    public void setValidity(Integer validity) {
+        this.validity = validity;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public BigDecimal getGrandTotal() {
+        return grandTotal;
+    }
+
+    public void setGrandTotal(BigDecimal grandTotal) {
+        this.grandTotal = grandTotal;
+    }
+
+    public String getCustomerNote() {
+        return customerNote;
+    }
+
+    public void setCustomerNote(String customerNote) {
+        this.customerNote = customerNote;
+    }
+
     @Override
     public String toString() {
         return "com.allone.projectmanager.entities.Quotation[ id=" + id + " ]";
@@ -206,7 +248,7 @@ public class Quotation implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        
+
         return hash;
     }
 
@@ -216,92 +258,135 @@ public class Quotation implements Serializable {
         if (!(obj instanceof Quotation)) {
             return false;
         }
-        
+
         Quotation other = (Quotation) obj;
         return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
-    
+
     public static class Builder {
 
         private String name;
 
-        private Long billMaterialService;
-        
-        private BigDecimal totalCost;
-        
-        private BigDecimal averangeDiscount;
-
-        private BigDecimal totalSalePrice;
-        
-        private BigDecimal totalNetPrice;
-        
-        private Integer currency;
-        
-        private Integer location;
-        
         private Boolean complete;
 
+        private Boolean discard;
+
+        private String customer;
+
+        private Long requestForQuotation;
+
+        private Integer currency;
+
+        private Integer availability;
+
+        private Integer delivery;
+
+        private Integer packing;
+
+        private Integer payment;
+
+        private Integer validity;
+
+        private String location;
+
+        private BigDecimal grandTotal;
+
         private String note;
-        
+
+        private String customerNote;
+
         public Builder setName(String name) {
             this.name = name;
 
             return this;
         }
-        
-        public Builder setBillMaterialService(Long billMaterialService) {
-            this.billMaterialService = billMaterialService;
 
-            return this;
-        }
-        
-        public Builder setTotalCost(BigDecimal totalCost) {
-            this.totalCost = totalCost;
-
-            return this;
-        }
-        
-        public Builder setAverangeDiscount(BigDecimal averangeDiscount) {
-            this.averangeDiscount = averangeDiscount;
-
-            return this;
-        }
-        
-        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
-            this.totalSalePrice = totalSalePrice;
-
-            return this;
-        }
-        
-        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
-            this.totalNetPrice = totalNetPrice;
-
-            return this;
-        }
-        
-        public Builder setCurrency(Integer currency) {
-            this.currency = currency;
-
-            return this;
-        }
-        
-        public Builder setLocation(Integer location) {
-            this.location = location;
-
-            return this;
-        }
-        
         public Builder setComplete(Boolean complete) {
             this.complete = complete;
 
             return this;
         }
-        
+
+        public Builder setDiscard(Boolean discard) {
+            this.discard = discard;
+
+            return this;
+        }
+
+        public Builder setCustomer(Boolean discard) {
+            this.discard = discard;
+
+            return this;
+        }
+
+        public Builder setRequestForQuotation(Long requestForQuotation) {
+            this.requestForQuotation = requestForQuotation;
+
+            return this;
+        }
+
+        public Builder setCurrency(Integer currency) {
+            this.currency = currency;
+
+            return this;
+        }
+
+        public Builder setAvailability(Integer availability) {
+            this.availability = availability;
+
+            return this;
+        }
+
+        public Builder setDelivery(Integer delivery) {
+            this.delivery = delivery;
+
+            return this;
+        }
+
+        public Builder setPacking(Integer packing) {
+            this.packing = packing;
+
+            return this;
+        }
+
+        public Builder setPayment(Integer payment) {
+            this.payment = payment;
+
+            return this;
+        }
+
+        public Builder setValidity(Integer validity) {
+            this.validity = validity;
+
+            return this;
+        }
+
+        public Builder setLocation(String location) {
+            this.location = location;
+
+            return this;
+        }
+
+        public Builder setGrandTotal(BigDecimal grandTotal) {
+            this.grandTotal = grandTotal;
+
+            return this;
+        }
+
         public Builder setNote(String note) {
             this.note = note;
 
             return this;
         }
-        
+
+        public Builder setCustomerNote(String customerNote) {
+            this.customerNote = customerNote;
+
+            return this;
+        }
+
+        public Quotation build() {
+            return new Quotation(this);
+        }
     }
 }

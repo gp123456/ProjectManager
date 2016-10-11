@@ -7,7 +7,6 @@ package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.RequestQuotation;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -24,7 +23,7 @@ public class RequestQuotationDAO {
 
     private static final Logger logger = Logger.getLogger(RequestQuotationDAO.class.getName());
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     public RequestQuotationDAO(EntityManagerFactory emf) {
         this.emf = emf;
@@ -35,94 +34,89 @@ public class RequestQuotationDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (id != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findById").
-                        setParameter("id", id);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findById").setParameter("id", id);
 
-                value = (query != null)
-                        ? (RequestQuotation) query.getSingleResult()
-                        : null;
+                value = (query != null) ? (RequestQuotation) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return value;
         }
+
+        em.close();
+
+        return value;
     }
 
-    public List getByBillMaterialService(Long bms) {
+    public List getByBillMaterialService(Long id) {
         List<RequestQuotation> value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (bms != null) {
-                Query query = (bms != null && bms.compareTo(0l) >= 0)
-                        ? em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService").
-                        setParameter("billMaterialService", bms) : null;
-                value = (query != null)
-                        ? query.getResultList()
-                        : null;
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService")
+                        .setParameter("billMaterialService", id);
+
+                value = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return value;
         }
+
+        em.close();
+
+        return value;
     }
 
-    public RequestQuotation add(RequestQuotation rq) {
+    public RequestQuotation add(RequestQuotation item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (rq != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(rq);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return rq;
         }
+
+        em.close();
+
+        return item;
     }
 
-    public RequestQuotation edit(RequestQuotation rq) {
+    public RequestQuotation edit(RequestQuotation item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (rq != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.merge(rq);
+                em.merge(item);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return rq;
         }
+
+        em.close();
+
+        return item;
     }
 
-    public void delete(RequestQuotation rq) {
+    public void delete(RequestQuotation item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (rq != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.remove(rq);
+                em.remove(item);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 }

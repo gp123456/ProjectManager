@@ -24,7 +24,7 @@ public class BillMaterialServiceDAO extends BillMaterialService {
 
     private final EntityManagerFactory emf;
 
-    public BillMaterialServiceDAO(EntityManagerFactory emf) {
+    public BillMaterialServiceDAO(final EntityManagerFactory emf) {
         this.emf = emf;
     }
 
@@ -33,92 +33,89 @@ public class BillMaterialServiceDAO extends BillMaterialService {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (id != null) {
+            if (id != null && id.compareTo(0l) > 0) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findById")
-                      .setParameter("id", id);
+                        .setParameter("id", id);
 
-                value = (query != null) ?
-                        (BillMaterialService) query.getSingleResult() :
-                        null;
+                value = (query != null)
+                        ? (BillMaterialService) query.getSingleResult()
+                        : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return value;
         }
+
+        em.close();
+
+        return value;
     }
 
-    public BillMaterialService getByProject(Long project) {
+    public BillMaterialService getByProject(Long id) {
         BillMaterialService value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (project != null && project.compareTo(0l) >= 0) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findByProject")
-                      .setParameter("project", project);
+            if (id != null && id.compareTo(0l) > 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialService.findByProject").setParameter("id", id);
 
-                value = (query != null) ?
-                        (BillMaterialService) query.getSingleResult() :
-                        null;
+                value = (query != null) ? (BillMaterialService) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return value;
         }
+
+        em.close();
+
+        return value;
     }
 
-    public BillMaterialService add(BillMaterialService ms) {
+    public BillMaterialService add(BillMaterialService item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(ms);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return ms;
         }
+
+        em.close();
+
+        return item;
     }
 
-    public void edit(BillMaterialService ms) {
+    public void edit(BillMaterialService item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (ms != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.merge(ms);
+                em.merge(item);
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 
-    public void delete(BillMaterialService bms) {
+    public void delete(BillMaterialService item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (bms != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.remove(em.contains(bms) ? bms : em.merge(bms));
+                em.remove(em.contains(item) ? item : em.merge(item));
                 em.getTransaction().commit();
             }
         } catch (HibernateException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 }

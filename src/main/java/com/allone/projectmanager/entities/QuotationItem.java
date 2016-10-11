@@ -27,11 +27,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "quotation_item")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.QuotationItem.findById", query = "SELECT qi FROM QuotationItem qi WHERE qi.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByQuotation", query = "SELECT qi FROM QuotationItem qi WHERE qi.quotation = :quotation")
+    @NamedQuery(name = "com.allone.projectmanager.entities.QuotationItem.findById", query = "SELECT qi FROM QuotationItem qi WHERE qi.id = :id")
 })
 public class QuotationItem implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -39,31 +38,16 @@ public class QuotationItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    
+
     @Basic(optional = false)
     @Column(name = "quotation")
     @NotNull
     private Long quotation;
-    
-    @Basic(optional = false)
-    @Column(name = "bill_material_service_item")
-    @NotNull
-    private Long billMaterialServiceItem;
-    
-    @Basic(optional = false)
-    @Column(name = "cost")
-    @NotNull
-    private BigDecimal cost;
 
     @Basic(optional = false)
-    @Column(name = "total_cost")
+    @Column(name = "request_for_quotation_item")
     @NotNull
-    private BigDecimal totalCost;
-
-    @Basic(optional = false)
-    @Column(name = "percentage")
-    @NotNull
-    private BigDecimal percentage;
+    private Long requestForQuotationItem;
 
     @Basic(optional = false)
     @Column(name = "discount")
@@ -71,42 +55,23 @@ public class QuotationItem implements Serializable {
     private BigDecimal discount;
 
     @Basic(optional = false)
-    @Column(name = "sale_price")
+    @Column(name = "unit_price")
     @NotNull
-    private BigDecimal salePrice;
+    private BigDecimal unitPrice;
 
     @Basic(optional = false)
-    @Column(name = "total_sale_price")
+    @Column(name = "total")
     @NotNull
-    private BigDecimal totalSalePrice;
-
-    @Column(name = "total_net_price")
-    private BigDecimal totalNetPrice;
+    private BigDecimal total;
 
     private QuotationItem(Builder builder) {
         this.quotation = builder.quotation;
-        this.billMaterialServiceItem = builder.billMaterialServiceItem;
-        this.cost = builder.cost;
-        this.totalCost = builder.totalCost;
-        this.percentage = builder.percentage;
+        this.requestForQuotationItem = builder.requestForQuotationItem;
         this.discount = builder.discount;
-        this.salePrice = builder.salePrice;
-        this.totalSalePrice = builder.totalSalePrice;
-        this.totalNetPrice = builder.totalNetPrice;
+        this.unitPrice = builder.unitPrice;
+        this.total = builder.total;
     }
 
-    private QuotationItem(QuotationItem builder) {
-        this.quotation = builder.quotation;
-        this.billMaterialServiceItem = builder.billMaterialServiceItem;
-        this.cost = builder.cost;
-        this.totalCost = builder.totalCost;
-        this.percentage = builder.percentage;
-        this.discount = builder.discount;
-        this.salePrice = builder.salePrice;
-        this.totalSalePrice = builder.totalSalePrice;
-        this.totalNetPrice = builder.totalNetPrice;
-    }
-    
     public QuotationItem() {
     }
 
@@ -122,36 +87,12 @@ public class QuotationItem implements Serializable {
         this.quotation = quotation;
     }
 
-    public Long getBillMaterialServiceItem() {
-        return billMaterialServiceItem;
+    public Long getRequestForQuotationItem() {
+        return requestForQuotationItem;
     }
 
-    public void setBillMaterialServiceItem(Long billMaterialServiceItem) {
-        this.billMaterialServiceItem = billMaterialServiceItem;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
-    }
-
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public BigDecimal getPercentage() {
-        return percentage;
-    }
-
-    public void setPercentage(BigDecimal percentage) {
-        this.percentage = percentage;
+    public void setRequestForQuotationItem(Long requestForQuotationItem) {
+        this.requestForQuotationItem = requestForQuotationItem;
     }
 
     public BigDecimal getDiscount() {
@@ -162,35 +103,27 @@ public class QuotationItem implements Serializable {
         this.discount = discount;
     }
 
-    public BigDecimal getSalePrice() {
-        return salePrice;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setSalePrice(BigDecimal salePrice) {
-        this.salePrice = salePrice;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
-    public BigDecimal getTotalSalePrice() {
-        return totalSalePrice;
+    public BigDecimal getTotal() {
+        return total;
     }
 
-    public void setTotalSalePrice(BigDecimal totalSalePrice) {
-        this.totalSalePrice = totalSalePrice;
-    }
-
-    public BigDecimal getTotalNetPrice() {
-        return totalNetPrice;
-    }
-
-    public void setTotalNetPrice(BigDecimal totalNetPrice) {
-        this.totalNetPrice = totalNetPrice;
+    public void setTotal(BigDecimal total) {
+        this.total = total;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        
+
         return hash;
     }
 
@@ -200,12 +133,12 @@ public class QuotationItem implements Serializable {
         if (!(object instanceof QuotationItem)) {
             return false;
         }
-        
+
         QuotationItem other = (QuotationItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -213,82 +146,45 @@ public class QuotationItem implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.QuotationItem[ id=" + id + " ]";
     }
-    
+
     public static class Builder {
 
         private Long quotation;
-        
-        private Long billMaterialServiceItem;
-        
-        private BigDecimal cost;
-        
-        private BigDecimal totalCost;
-        
-        private BigDecimal percentage;
-        
+
+        private Long requestForQuotationItem;
+
         private BigDecimal discount;
-        
-        private BigDecimal salePrice;
-        
-        private BigDecimal totalSalePrice;
-        
-        private BigDecimal totalNetPrice;
-        
-        public Builder setBillMaterialServiceItem(Long billMaterialServiceItem) {
-            this.billMaterialServiceItem = billMaterialServiceItem;
+
+        private BigDecimal unitPrice;
+
+        private BigDecimal total;
+
+        public Builder setRequestForQuotationItem(Long requestForQuotationItem) {
+            this.requestForQuotationItem = requestForQuotationItem;
 
             return this;
         }
 
-        public Builder setCost(BigDecimal cost) {
-            this.cost = cost;
+        public Builder setUnitPrice(BigDecimal unitPrice) {
+            this.unitPrice = unitPrice;
 
             return this;
         }
 
-        public Builder setTotalCost(BigDecimal totalCost) {
-            this.totalCost = totalCost;
+        public Builder setTotal(BigDecimal total) {
+            this.total = total;
 
             return this;
         }
-        
-        public Builder setPercentage(BigDecimal percentage) {
-            this.percentage = percentage;
 
-            return this;
-        }
-        
-        public Builder setSalePrice(BigDecimal salePrice) {
-            this.salePrice = salePrice;
-
-            return this;
-        }
-        
-        public Builder setTotalSalePrice(BigDecimal totalSalePrice) {
-            this.totalSalePrice = totalSalePrice;
-
-            return this;
-        }
-        
-        public Builder setTotalNetPrice(BigDecimal totalNetPrice) {
-            this.totalNetPrice = totalNetPrice;
-
-            return this;
-        }
-        
         public Builder setDiscount(BigDecimal discount) {
             this.discount = discount;
 
             return this;
         }
-        
+
         public QuotationItem build() {
             return new QuotationItem(this);
         }
-
-        public QuotationItem build(QuotationItem qi) {
-            return new QuotationItem(qi);
-        }
     }
-    
 }

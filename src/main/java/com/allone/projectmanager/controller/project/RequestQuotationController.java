@@ -603,6 +603,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         model.addAttribute("itemRequestQuotation", info[4]);
                         model.addAttribute("noteRequestQuotation", info[5]);
                         model.addAttribute("noteSupplierRequestQuotation", info[6]);
+                        model.addAttribute("is_quotation", 0);
                         break;
                     }
                     case "BMSI": {

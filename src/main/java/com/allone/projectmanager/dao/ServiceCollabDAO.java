@@ -6,6 +6,8 @@
 package com.allone.projectmanager.dao;
 
 import com.allone.projectmanager.entities.ServiceCollab;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -14,27 +16,30 @@ import javax.persistence.EntityManagerFactory;
  * @author antonia
  */
 public class ServiceCollabDAO {
-    private EntityManagerFactory emf;
-    
+
+    private static final Logger logger = Logger.getLogger(ServiceCollabDAO.class.getName());
+
+    private final EntityManagerFactory emf;
+
     public ServiceCollabDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    
-    public ServiceCollab add(ServiceCollab sc) {
+
+    public ServiceCollab add(ServiceCollab item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (sc != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(sc);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
-            System.out.printf("%s\n", e.getMessage());
-        } finally {
-            em.close();
-
-            return sc;
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
+
+        em.close();
+
+        return item;
     }
 }

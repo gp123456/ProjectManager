@@ -210,10 +210,9 @@ public class BillMaterialServiceController extends ProjectCommon {
                 BillMaterialService bms = getBillMaterialService(pd.getId());
 
                 String notes = (bms != null && !Strings.isNullOrEmpty(bms.getNote())) ? bms.getNote() : "";
-                String subproject = (!Strings.isNullOrEmpty(pd.getReference())) ? pd.getReference() : "";
 
                 response[0] = "<tr>\n"
-                        + "<td id='subproject'>" + subproject + "</td>\n"
+                        + "<td>" + pd.getReference() + "-" + pd.getCustomer() + "</td>\n"
                         + "</tr>\n";
                 response[1] = notes;
             }

@@ -105,6 +105,11 @@ function dlgRequestQuotation() {
 }
 
 function saveRFQ(url, pdId, rqId, supplier, currency, email) {
+    if (supplier === 'none') {
+        alert("You must select supplier first")
+        return;
+    }
+    
     if (currency === 'none') {
         alert("You must select currency first")
         return;

@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-
 function changeLocationBitMaterialService() {
     var data = "pdId=" + $("#subproject option:selected").val() +
             "&location=" + $("#location option:selected").val();
@@ -86,4 +85,8 @@ function replaceBillMaterialService() {
         error: function (e) {
         }
     });
+}
+
+function submit() {
+    
 }

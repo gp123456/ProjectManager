@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,9 +76,7 @@ public class ProjectController extends ProjectCommon {
             String projectBody = "";
 
             if (pds != null && !pds.isEmpty()) {
-                for (ProjectDetail pd : pds) {
-                    projectBody += createProjectRow(srvProjectManager, pd);
-                }
+                projectBody = pds.stream().map((pd) -> createProjectRow(srvProjectManager, pd)).reduce(projectBody, String::concat);
             }
             content.put("header", createProjectHeader());
             content.put("body", projectBody);
@@ -90,31 +87,33 @@ public class ProjectController extends ProjectCommon {
 
     private Map<String, Object> getMenuInfo() {
         Map<String, Object> content = new HashMap<>();
-        Long create = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREATE.toString());
-        Long bill = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-        Long quota = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
-        Long purchase = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PURCHASE_ORDER.toString());
-        Long work = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.WORK_ORDER.toString());
-        Long ack = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.ACK_ORDER.toString());
-        Long packing = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PACKING_LIST.toString());
-        Long delivery = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString());
-        Long shipping = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.toString());
-        Long invoice = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.INVOICE.toString());
-        Long box = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BOX_MARKING.toString());
-        Long credit = srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString());
 
-        content.put("project_new_size", "New[" + create + "]");
-        content.put("project_bill_size", "Bill of materials or services[" + bill + "]");
-        content.put("project_quota_size", "Request for Quotation[" + quota + "]");
-        content.put("project_purchase_size", "Purchase Order[" + purchase + "]");
-        content.put("project_work_size", "Work Order[" + work + "]");
-        content.put("project_ack_size", "Order Acknowledge[" + ack + "]");
-        content.put("project_packing_size", "Packing List[" + packing + "]");
-        content.put("project_delivery_size", "Delivery Note[" + delivery + "]");
-        content.put("project_shipping_size", "Shipping Invoice[" + shipping + "]");
-        content.put("project_invoice_size", "Invoice[" + invoice + "]");
-        content.put("project_box_size", "Box Markings[" + box + "]");
-        content.put("project_credit_size", "Credit Note[" + credit + "]");
+        content.put("sizeNew", "New["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREATE.toString()) + "]");
+        content.put("sizeBillMaterialService", "Bill of materials or services["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString()) + "]");
+        content.put("sizeRequestQuotation", "Request for Quotation["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString()) + "]");
+        content.put("sizeQuotation", "Quotation["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.QUOTATION.toString()) + "]");
+        content.put("sizePurchase", "Purchase Order["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PURCHASE_ORDER.toString()) + "]");
+        content.put("sizeWorkOrder", "Work Order["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.WORK_ORDER.toString()) + "]");
+        content.put("sizeOrderAcknowledge", "Order Acknowledge["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.ACK_ORDER.toString()) + "]");
+        content.put("sizePackingList", "Packing List["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PACKING_LIST.toString()) + "]");
+        content.put("sizeDeliveryNote", "Delivery Note["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString()) + "]");
+        content.put("sizeShippingInvoice", "Shipping Invoice["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.toString()) + "]");
+        content.put("sizeInvoice", "Invoice["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.INVOICE.toString()) + "]");
+        content.put("sizeBoxMarking", "Box Markings["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BOX_MARKING.toString()) + "]");
+        content.put("sizeCreditNote", "Credit Note["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString()) + "]");
 
         return content;
     }
@@ -122,17 +121,21 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/snapshot")
     public String Snapshot(HttpServletRequest request, Model model) {
         if (request != null) {
+            String queryString = request.getQueryString();
+
+//            if (!Strings.isNullOrEmpty(queryString)) {
             HttpSession session = request.getSession();
 
-            if (session != null) {
-                this.setTitle("Project");
-                this.setHeader("header.jsp");
-                this.setSide_bar("../project/sidebar.jsp");
-                this.setContent("../project/HistoryNewProject.jsp");
-                setHeaderInfo(session, model);
+            this.setTitle("Project");
+            this.setHeader("header.jsp");
+            this.setSide_bar("../project/sidebar.jsp");
+            this.setContent("../project/HistoryNewProject.jsp");
+            setHeaderInfo(session, model);
 
-                return "index";
-            }
+            return "index";
+//            } else {
+//                return "login";
+//            }
         }
 
         return "";
@@ -178,12 +181,15 @@ public class ProjectController extends ProjectCommon {
                 this.setContent("../project/NewProject.jsp");
                 setHeaderInfo(session, model);
                 p = srvProjectManager.getDaoProject().getById(p.getId());
-                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
-                if (p != null && pds != null && !pds.isEmpty()) {
-                    setUserProjectId(session.getId(), p.getId());
-                    model.addAttribute("p_id", p.getId());
-                    model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
-                    model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='getSubProject()' value='Edit' />\n");
+                if (p != null) {
+                    List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+
+                    if (pds != null && !pds.isEmpty()) {
+                        setUserProjectId(session.getId(), p.getId());
+                        model.addAttribute("p_id", p.getId());
+                        model.addAttribute("project_reference", "Edit Project - REF:" + p.getReference());
+                        model.addAttribute("button_save", "<input type='button' class='button alarm' id='edit' onclick='getSubProject()' value='Edit' />\n");
+                    }
                 }
 
                 return "index";
@@ -236,8 +242,7 @@ public class ProjectController extends ProjectCommon {
 
                         content.put("header", projectHeader);
                         content.put("body", projectBody[1]);
-                        content.put("project_reference", "New Project - REF:" + user.getProject_reference());
-                        content.put("project_type", getProjectType());
+                        content.put("projectReference", "New Project - REF:" + user.getProject_reference());
                         content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
                         content.putAll(getMenuInfo());
 

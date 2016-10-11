@@ -28,8 +28,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "bill_material_service_item")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById", query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.id = :id"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService", query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.billMaterialService = :billMaterialService")
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findById",
+            query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService",
+            query = "SELECT bmsi FROM BillMaterialServiceItem bmsi WHERE bmsi.billMaterialService = :id")
 })
 public class BillMaterialServiceItem implements Serializable {
 

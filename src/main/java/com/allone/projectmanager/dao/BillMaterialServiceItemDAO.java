@@ -35,162 +35,157 @@ public class BillMaterialServiceItemDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (id != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findById")
-                      .setParameter("id", id);
+            if (id != null && id.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findById").setParameter("id", id);
 
-                values = (query != null) ?
-                         (BillMaterialServiceItem) query.getSingleResult() :
-                         null;
+                values = (query != null) ? (BillMaterialServiceItem) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return values;
         }
+
+        em.close();
+
+        return values;
     }
 
-    public List getByBillMaterialService(Long projectBill) {
+    public List getByBillMaterialService(Long id) {
         List values = null;
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (projectBill != null && projectBill.compareTo(0l) >= 0) {
+            if (id != null && id.compareTo(0l) >= 0) {
                 Query query = em.createNamedQuery("com.allone.projectmanager.entities.BillMaterialServiceItem.findByBillMaterialService")
-                      .setParameter("billMaterialService", projectBill);
+                        .setParameter("id", id);
 
-                values = (query != null) ?
-                         query.getResultList() :
-                         null;
+                values = (query != null) ? query.getResultList() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return values;
         }
+
+        em.close();
+
+        return values;
     }
 
-    public Collection<BillMaterialServiceItem> add(Collection<BillMaterialServiceItem> pbis) {
+    public Collection<BillMaterialServiceItem> add(Collection<BillMaterialServiceItem> items) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pbis != null && !pbis.isEmpty()) {
+            if (items != null && !items.isEmpty()) {
                 em.getTransaction().begin();
-                for (BillMaterialServiceItem pbi : pbis) {
-                    em.persist(pbi);
-                }
+                items.stream().forEach((item) -> {
+                    em.persist(item);
+                });
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return pbis;
         }
+
+        em.close();
+
+        return items;
     }
 
-    public BillMaterialServiceItem add(BillMaterialServiceItem pbi) {
+    public BillMaterialServiceItem add(BillMaterialServiceItem item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pbi != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.persist(pbi);
+                em.persist(item);
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return pbi;
         }
+
+        em.close();
+
+        return item;
     }
 
-    public void edit(List<BillMaterialServiceItem> pbis) {
+    public void edit(List<BillMaterialServiceItem> items) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pbis != null && !pbis.isEmpty()) {
+            if (items != null && !items.isEmpty()) {
                 em.getTransaction().begin();
-                for (BillMaterialServiceItem pbi : pbis) {
-                    em.refresh(pbi);
-                }
+                items.stream().forEach((item) -> {
+                    em.refresh(item);
+                });
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 
-    public void edit(Long projectBill, List<BillMaterialServiceItem> pbis) {
+    public void edit(Long id, List<BillMaterialServiceItem> _items) {
         EntityManager em = emf.createEntityManager();
-        List<BillMaterialServiceItem> _pbis = getByBillMaterialService(projectBill);
+        List<BillMaterialServiceItem> items = (id != null && id.compareTo(0l) >= 0) ? getByBillMaterialService(id) : null;
 
         try {
             em.getTransaction().begin();
-            if (_pbis != null && !_pbis.isEmpty()) {
-                for (BillMaterialServiceItem pbi : _pbis) {
-                    em.remove(pbi);
-                }
+            if (items != null && !items.isEmpty()) {
+                items.stream().forEach((item) -> {
+                    em.remove(item);
+                });
             }
-            if (pbis != null && !pbis.isEmpty()) {
-                for (BillMaterialServiceItem pbi : pbis) {
-                    em.persist(pbi);
-                }
+            if (items != null && !items.isEmpty()) {
+                items.stream().forEach((item) -> {
+                    em.persist(item);
+                });
             }
             em.getTransaction().commit();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 
-    public BillMaterialServiceItem edit(BillMaterialServiceItem pbi) {
+    public BillMaterialServiceItem edit(BillMaterialServiceItem item) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            if (pbi != null) {
+            if (item != null) {
                 em.getTransaction().begin();
-                em.merge(pbi);
+                em.merge(item);
                 em.getTransaction().commit();
             }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return pbi;
         }
+
+        em.close();
+
+        return item;
     }
 
-    public void delete(Long bmsId) {
+    public void delete(Long id) {
         EntityManager em = emf.createEntityManager();
-        List<BillMaterialServiceItem> bmsis = getByBillMaterialService(bmsId);
+        List<BillMaterialServiceItem> items = (id != null && id.compareTo(0l) >= 0) ? getByBillMaterialService(id) : null;
 
         try {
-            if (bmsis != null && !bmsis.isEmpty()) {
+            if (items != null && !items.isEmpty()) {
                 em.getTransaction().begin();
 
-                for (BillMaterialServiceItem bmsi : bmsis) {
-                    em.remove(bmsi);
-                }
+                items.stream().forEach((item) -> {
+                    em.remove(item);
+                });
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
         }
+
+        em.close();
     }
 
     public void delete(BillMaterialServiceItem item) {
