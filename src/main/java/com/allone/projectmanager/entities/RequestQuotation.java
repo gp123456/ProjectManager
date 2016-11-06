@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries(
         {
             @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findByBillMaterialService",
-                    query = "SELECT rq FROM RequestQuotation rq WHERE rq.billMaterialService = :billMaterialService ORDER BY rq.id DESC"),
+                    query = "SELECT rq FROM RequestQuotation rq WHERE rq.billMaterialService=:billMaterialService AND rq.complete=1 AND rq.discard=0"
+                    + " ORDER BY rq.id DESC"),
             @NamedQuery(name = "com.allone.projectmanager.entities.RequestQuotation.findById",
                     query = "SELECT rq FROM RequestQuotation rq WHERE rq.id = :id")
         })

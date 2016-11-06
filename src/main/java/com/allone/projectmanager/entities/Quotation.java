@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
             @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findById",
                     query = "SELECT q FROM Quotation q WHERE q.id = :id"),
             @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findByRequestForQuotation",
-                    query = "SELECT q FROM Quotation q WHERE q.requestForQuotation = :id")
+                    query = "SELECT q FROM Quotation q WHERE q.requestQuotation = :id")
         })
 public class Quotation implements Serializable {
 
@@ -50,54 +50,62 @@ public class Quotation implements Serializable {
     @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
     private Boolean complete;
 
-    @Column(name = "discard", columnDefinition = "Bit(1) default 'b0'")
+    @Column(name = "discard", columnDefinition = "Bit(1) default 'b1'")
     private Boolean discard;
 
     @Column(name = "customer")
     @NotNull
     private String customer;
 
-    @Column(name = "request_for_quotation")
+    @Column(name = "customer_reference")
     @NotNull
-    private Long requestForQuotation;
+    private String customerReference;
+
+    @Column(name = "request_quotation")
+    @NotNull
+    private Long requestQuotation;
 
     @Column(name = "currency")
     @NotNull
     private Integer currency;
 
     @Column(name = "availability")
-    private Integer availability;
+    private String availability;
 
     @Column(name = "delivery")
-    private Integer delivery;
+    private String delivery;
 
     @Column(name = "packing")
-    private Integer packing;
+    private String packing;
 
     @Column(name = "payment")
-    private Integer payment;
+    private String payment;
 
     @Column(name = "validity")
-    private Integer validity;
+    private String validity;
 
     @Column(name = "location")
     @NotNull
-    private String location;
+    private Integer location;
 
     @Column(name = "grand_total")
     @Digits(integer = 10, fraction = 2, message = "Validation digits failed for grandTotal")
     private BigDecimal grandTotal;
 
+    @Column(name = "welcome")
+    private String welcome;
+
+    @Column(name = "remark")
+    private String remark;
+
     @Column(name = "note")
     private String note;
 
-    @Column(name = "customer_note")
-    private String customerNote;
-
     private Quotation(Builder builder) {
         name = builder.name;
-        requestForQuotation = builder.requestForQuotation;
+        requestQuotation = builder.requestQuotation;
         customer = builder.customer;
+        customerReference = builder.customerReference;
         currency = builder.currency;
         location = builder.location;
         complete = builder.complete;
@@ -108,8 +116,9 @@ public class Quotation implements Serializable {
         payment = builder.payment;
         validity = builder.validity;
         grandTotal = builder.grandTotal;
+        welcome = builder.welcome;
+        remark = builder.remark;
         note = builder.note;
-        customerNote = builder.customerNote;
     }
 
     public Quotation() {
@@ -167,59 +176,67 @@ public class Quotation implements Serializable {
         this.customer = customer;
     }
 
-    public Long getRequestForQuotation() {
-        return requestForQuotation;
+    public String getCustomerReference() {
+        return customerReference;
     }
 
-    public void setRequestForQuotation(Long requestForQuotation) {
-        this.requestForQuotation = requestForQuotation;
+    public void setCustomerReference(String customerReference) {
+        this.customerReference = customerReference;
     }
 
-    public Integer getAvailability() {
+    public Long getRequestQuotation() {
+        return requestQuotation;
+    }
+
+    public void setRequestQuotation(Long requestQuotation) {
+        this.requestQuotation = requestQuotation;
+    }
+
+    public String getAvailability() {
         return availability;
     }
 
-    public void setAvailability(Integer availability) {
+    public void setAvailability(String availability) {
         this.availability = availability;
     }
 
-    public Integer getDelivery() {
+    public String getDelivery() {
         return delivery;
     }
 
-    public void setDelivery(Integer delivery) {
+    public void setDelivery(String delivery) {
         this.delivery = delivery;
     }
 
-    public Integer getPacking() {
+    public String getPacking() {
         return packing;
     }
 
-    public void setPacking(Integer packing) {
+    public void setPacking(String packing) {
         this.packing = packing;
     }
 
-    public Integer getPayment() {
+    public String getPayment() {
         return payment;
     }
 
-    public void setPayment(Integer payment) {
+    public void setPayment(String payment) {
         this.payment = payment;
     }
 
-    public Integer getValidity() {
+    public String getValidity() {
         return validity;
     }
 
-    public void setValidity(Integer validity) {
+    public void setValidity(String validity) {
         this.validity = validity;
     }
 
-    public String getLocation() {
+    public Integer getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Integer location) {
         this.location = location;
     }
 
@@ -231,12 +248,20 @@ public class Quotation implements Serializable {
         this.grandTotal = grandTotal;
     }
 
-    public String getCustomerNote() {
-        return customerNote;
+    public String getWelcome() {
+        return welcome;
     }
 
-    public void setCustomerNote(String customerNote) {
-        this.customerNote = customerNote;
+    public void setWelcome(String welcome) {
+        this.welcome = welcome;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @Override
@@ -273,27 +298,31 @@ public class Quotation implements Serializable {
 
         private String customer;
 
-        private Long requestForQuotation;
+        private String customerReference;
+
+        private Long requestQuotation;
 
         private Integer currency;
 
-        private Integer availability;
+        private String availability;
 
-        private Integer delivery;
+        private String delivery;
 
-        private Integer packing;
+        private String packing;
 
-        private Integer payment;
+        private String payment;
 
-        private Integer validity;
+        private String validity;
 
-        private String location;
+        private Integer location;
 
         private BigDecimal grandTotal;
 
-        private String note;
+        private String welcome;
 
-        private String customerNote;
+        private String remark;
+
+        private String note;
 
         public Builder setName(String name) {
             this.name = name;
@@ -313,14 +342,20 @@ public class Quotation implements Serializable {
             return this;
         }
 
-        public Builder setCustomer(Boolean discard) {
-            this.discard = discard;
+        public Builder setCustomer(String customer) {
+            this.customer = customer;
 
             return this;
         }
 
-        public Builder setRequestForQuotation(Long requestForQuotation) {
-            this.requestForQuotation = requestForQuotation;
+        public Builder setCustomerReference(String customerReference) {
+            this.customerReference = customerReference;
+
+            return this;
+        }
+
+        public Builder setRequestQuotation(Long requestQuotation) {
+            this.requestQuotation = requestQuotation;
 
             return this;
         }
@@ -331,37 +366,37 @@ public class Quotation implements Serializable {
             return this;
         }
 
-        public Builder setAvailability(Integer availability) {
+        public Builder setAvailability(String availability) {
             this.availability = availability;
 
             return this;
         }
 
-        public Builder setDelivery(Integer delivery) {
+        public Builder setDelivery(String delivery) {
             this.delivery = delivery;
 
             return this;
         }
 
-        public Builder setPacking(Integer packing) {
+        public Builder setPacking(String packing) {
             this.packing = packing;
 
             return this;
         }
 
-        public Builder setPayment(Integer payment) {
+        public Builder setPayment(String payment) {
             this.payment = payment;
 
             return this;
         }
 
-        public Builder setValidity(Integer validity) {
+        public Builder setValidity(String validity) {
             this.validity = validity;
 
             return this;
         }
 
-        public Builder setLocation(String location) {
+        public Builder setLocation(Integer location) {
             this.location = location;
 
             return this;
@@ -373,14 +408,20 @@ public class Quotation implements Serializable {
             return this;
         }
 
-        public Builder setNote(String note) {
-            this.note = note;
+        public Builder setWelcome(String welcome) {
+            this.welcome = welcome;
 
             return this;
         }
 
-        public Builder setCustomerNote(String customerNote) {
-            this.customerNote = customerNote;
+        public Builder setRemark(String remark) {
+            this.remark = remark;
+
+            return this;
+        }
+
+        public Builder setNote(String note) {
+            this.note = note;
 
             return this;
         }

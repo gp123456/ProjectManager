@@ -18,6 +18,7 @@ import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.PlotInfoModel;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -122,7 +123,9 @@ public class ProjectCommon extends Common {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
 
         response += "<tr>"
-                + "<td><a href='#' onclick='dlgViewProject(" + pd.getId() + ")'>" + pd.getReference() + "</a></td>\n"
+                + ((pd.getType().equals(ProjectTypeEnum.SALE.toString()))
+                ? "<td><a href='#' onclick='dlgViewProject(" + pd.getId() + ")'>" + pd.getReference() + "</a></td>\n"
+                : "<td>" + pd.getReference() + "</td>\n")
                 + "<td>" + pd.getType() + "</td>\n"
                 + "<td>" + pd.getStatus() + "</td>\n"
                 + "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n"
@@ -187,7 +190,7 @@ public class ProjectCommon extends Common {
     }
 
     public List<ProjectDetail> getProjectsToExcel(ProjectManagerService srvProjectManager, ProjectDetail pd, String date_start, String date_end) {
-        Object[] obj = getProjectsByCriteria(srvProjectManager, pd, date_start, date_end, null, null);
+        Object[] obj = getProjectsByCriteria(srvProjectManager, pd, date_start, date_end, 0, Integer.MAX_VALUE);
         List<ProjectDetail> lst = (List<ProjectDetail>) obj[1];
 
         logger.log(Level.INFO, "size={0}", lst.size());
@@ -232,7 +235,8 @@ public class ProjectCommon extends Common {
         Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
         Long allCreate = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREATE.toString());
         Long allBill = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-        Long allQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.REQUEST_QUOTATION.toString());
+        Long allReqQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.REQUEST_QUOTATION.toString());
+        Long allQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.QUOTATION.toString());
         Long allPurchase = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PURCHASE_ORDER.toString());
         Long allWork = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.WORK_ORDER.toString());
         Long allAck = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.ACK_ORDER.toString());
@@ -245,7 +249,8 @@ public class ProjectCommon extends Common {
             result.add(new PlotInfoModel("All", (allOpen.toString())));
             result.add(new PlotInfoModel("Create", allCreate.toString()));
             result.add(new PlotInfoModel("Bill Material", allBill.toString()));
-            result.add(new PlotInfoModel("Request Quota", allQuota.toString()));
+            result.add(new PlotInfoModel("Request Quotation", allReqQuota.toString()));
+            result.add(new PlotInfoModel("Quotation", allQuota.toString()));
             result.add(new PlotInfoModel("Purchase Order", allPurchase.toString()));
             result.add(new PlotInfoModel("Work Order", allWork.toString()));
             result.add(new PlotInfoModel("Ack Order", allAck.toString()));

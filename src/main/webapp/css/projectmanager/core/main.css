@@ -1,12 +1,13 @@
 /* ----------- Left Menu    Panel ----------- */
 
-/*body{
-    font-family: 'roboto';
-    margin: 0;
-    color: #2C2828;
-    background: #ebebeb;
-    font-size: 13px;
-}*/
+#containerIntro h1,
+#containerIntro input {
+    display: inline;
+    vertical-align: top;
+    /*font-family: 'Open Sans', sans-serif;*/
+    /*font-size: 16px;*/
+    /*line-height: 28px;*/
+}
 
 select {
     width:150px;

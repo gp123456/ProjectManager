@@ -40,9 +40,10 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/canvasjs-1.7.0/canvasjs.min.js"></script>
 
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/project.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/Project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/BillMaterialService.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/RequestQuotation.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/Quotation.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/contact.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/company.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/vessel.js"></script>

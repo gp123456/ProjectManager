@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,7 +29,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "quotation_item")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.QuotationItem.findById", query = "SELECT qi FROM QuotationItem qi WHERE qi.id = :id")
+    @NamedQuery(name = "com.allone.projectmanager.entities.QuotationItem.findById",
+            query = "SELECT qi FROM QuotationItem qi WHERE qi.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.QuotationItem.findByQuotation",
+            query = "SELECT qi FROM QuotationItem qi WHERE qi.quotation = :quotation")
 })
 public class QuotationItem implements Serializable {
 
@@ -45,31 +50,35 @@ public class QuotationItem implements Serializable {
     private Long quotation;
 
     @Basic(optional = false)
-    @Column(name = "request_for_quotation_item")
+    @Column(name = "request_quotation_item")
     @NotNull
-    private Long requestForQuotationItem;
+    private Long requestQuotationItem;
 
     @Basic(optional = false)
     @Column(name = "discount")
-    @NotNull
+    @Digits(integer = 10, fraction = 1, message = "Validation digits failed for discount")
     private BigDecimal discount;
 
     @Basic(optional = false)
     @Column(name = "unit_price")
-    @NotNull
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for unitPrice")
     private BigDecimal unitPrice;
 
     @Basic(optional = false)
     @Column(name = "total")
-    @NotNull
+    @Digits(integer = 10, fraction = 2, message = "Validation digits failed for total")
     private BigDecimal total;
+
+    @Transient
+    private Boolean edit;
 
     private QuotationItem(Builder builder) {
         this.quotation = builder.quotation;
-        this.requestForQuotationItem = builder.requestForQuotationItem;
+        this.requestQuotationItem = builder.requestQuotationItem;
         this.discount = builder.discount;
         this.unitPrice = builder.unitPrice;
         this.total = builder.total;
+        this.edit = builder.edit;
     }
 
     public QuotationItem() {
@@ -87,12 +96,12 @@ public class QuotationItem implements Serializable {
         this.quotation = quotation;
     }
 
-    public Long getRequestForQuotationItem() {
-        return requestForQuotationItem;
+    public Long getRequestQuotationItem() {
+        return requestQuotationItem;
     }
 
-    public void setRequestForQuotationItem(Long requestForQuotationItem) {
-        this.requestForQuotationItem = requestForQuotationItem;
+    public void setRequestQuotationItem(Long requestQuotationItem) {
+        this.requestQuotationItem = requestQuotationItem;
     }
 
     public BigDecimal getDiscount() {
@@ -119,6 +128,14 @@ public class QuotationItem implements Serializable {
         this.total = total;
     }
 
+    public Boolean getEdit() {
+        return edit;
+    }
+
+    public void setEdit(Boolean edit) {
+        this.edit = edit;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -135,11 +152,10 @@ public class QuotationItem implements Serializable {
         }
 
         QuotationItem other = (QuotationItem) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-
-        return true;
+        return (this.id == null || other.id == null)
+                ? (other.requestQuotationItem != null && this.requestQuotationItem != null
+                && this.requestQuotationItem.equals(other.requestQuotationItem)) ? true : false
+                : (this.id.equals(other.id)) ? true : false;
     }
 
     @Override
@@ -151,7 +167,7 @@ public class QuotationItem implements Serializable {
 
         private Long quotation;
 
-        private Long requestForQuotationItem;
+        private Long requestQuotationItem;
 
         private BigDecimal discount;
 
@@ -159,8 +175,10 @@ public class QuotationItem implements Serializable {
 
         private BigDecimal total;
 
-        public Builder setRequestForQuotationItem(Long requestForQuotationItem) {
-            this.requestForQuotationItem = requestForQuotationItem;
+        private Boolean edit;
+
+        public Builder setRequestQuotationItem(Long requestQuotationItem) {
+            this.requestQuotationItem = requestQuotationItem;
 
             return this;
         }
@@ -179,6 +197,12 @@ public class QuotationItem implements Serializable {
 
         public Builder setDiscount(BigDecimal discount) {
             this.discount = discount;
+
+            return this;
+        }
+
+        public Builder setEdit(Boolean edit) {
+            this.edit = edit;
 
             return this;
         }

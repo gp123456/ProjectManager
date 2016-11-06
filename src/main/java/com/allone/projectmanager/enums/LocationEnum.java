@@ -14,10 +14,10 @@ public enum LocationEnum {
     CHINA(2, "china"),
     SKOREA(3, "s korea"),
     TAIWAN(4, "taiwan");
-    
-    private Integer id;
-    
-    private String name;
+
+    private final Integer id;
+
+    private final String name;
 
     private LocationEnum(Integer id, String name) {
         this.id = id;

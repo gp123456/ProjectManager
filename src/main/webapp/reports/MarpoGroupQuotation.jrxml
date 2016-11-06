@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MarpoGroupQuotation" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="0" uuid="cffc794c-11cf-4876-86b2-aecb94eb27fa">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#FFFFFF" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<parameter name="customer" class="java.lang.String"/>
+	<parameter name="telephone" class="java.lang.String"/>
+	<parameter name="contract" class="java.lang.String"/>
+	<parameter name="reference" class="java.lang.String"/>
+	<parameter name="vessel" class="java.lang.String"/>
+	<parameter name="your_ref" class="java.lang.String"/>
+	<parameter name="welcome" class="java.lang.String"/>
+	<parameter name="offer" class="java.lang.String"/>
+	<parameter name="request_quotation" class="java.lang.String"/>
+	<parameter name="remark" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     quotation_item.`id` AS quotation_item_id,
+     quotation_item.`quotation` AS quotation_item_quotation,
+     quotation_item.`request_quotation_item` AS quotation_item_request_quotation_item,
+     quotation_item.`discount` AS quotation_item_discount,
+     quotation_item.`unit_price` AS quotation_item_unit_price,
+     quotation_item.`total` AS quotation_item_total,
+     bill_material_service_item.`id` AS bill_material_service_item_id,
+     bill_material_service_item.`bill_material_service` AS bill_material_service_item_bill_material_service,
+     bill_material_service_item.`item` AS bill_material_service_item_item,
+     bill_material_service_item.`available` AS bill_material_service_item_available,
+     bill_material_service_item.`price` AS bill_material_service_item_price,
+     bill_material_service_item.`quantity` AS bill_material_service_item_quantity,
+     request_quotation_item.`id` AS request_quotation_item_id,
+     request_quotation_item.`availability` AS request_quotation_item_availability,
+     request_quotation_item.`unit_price` AS request_quotation_item_unit_price,
+     request_quotation_item.`discount` AS request_quotation_item_discount,
+     request_quotation_item.`total` AS request_quotation_item_total,
+     request_quotation_item.`bill_material_service_item` AS request_quotation_item_bill_material_service_item,
+     request_quotation_item.`request_quotation` AS request_quotation_item_request_quotation,
+     item.`id` AS item_id,
+     item.`description` AS item_description,
+     item.`location` AS item_location,
+     item.`quantity` AS item_quantity,
+     item.`price` AS item_price,
+     item.`currency` AS item_currency,
+     item.`note` AS item_note,
+     item.`company` AS item_company,
+     item.`imno` AS item_imno,
+     item.`start_quantity` AS item_start_quantity,
+     item.`start_price` AS item_start_price,
+     item.`offer_quantity` AS item_offer_quantity,
+     item.`inventory_quantity` AS item_inventory_quantity,
+     item.`inventory_price` AS item_inventory_price,
+     item.`inventory_edit` AS item_inventory_edit,
+     quotation.`id` AS quotation_id,
+     quotation.`name` AS quotation_name,
+     quotation.`complete` AS quotation_complete,
+     quotation.`discard` AS quotation_discard,
+     quotation.`request_quotation` AS quotation_request_quotation,
+     quotation.`customer` AS quotation_customer,
+     quotation.`customer_reference` AS quotation_customer_reference,
+     quotation.`currency` AS quotation_currency,
+     quotation.`availability` AS quotation_availability,
+     quotation.`delivery` AS quotation_delivery,
+     quotation.`packing` AS quotation_packing,
+     quotation.`payment` AS quotation_payment,
+     quotation.`validity` AS quotation_validity,
+     quotation.`location` AS quotation_location,
+     quotation.`grand_total` AS quotation_grand_total,
+     quotation.`welcome` AS quotation_welcome,
+     quotation.`remark` AS quotation_remark,
+     quotation.`note` AS quotation_note
+FROM
+     `quotation_item` quotation_item INNER JOIN `quotation` quotation ON quotation_item.`quotation`=quotation.`id`,
+     `request_quotation_item` request_quotation_item,
+     `bill_material_service_item` bill_material_service_item,
+     `item` item
+WHERE
+     quotation.`request_quotation` = $P{request_quotation}
+ AND quotation_item.`request_quotation_item` = request_quotation_item.`id`
+ AND request_quotation_item.`bill_material_service_item` = bill_material_service_item.`id`
+ AND bill_material_service_item.`item` = item.`id`]]>
+	</queryString>
+	<field name="quotation_item_id" class="java.lang.Long"/>
+	<field name="quotation_item_quotation" class="java.lang.Long"/>
+	<field name="quotation_item_request_quotation_item" class="java.lang.Long"/>
+	<field name="quotation_item_discount" class="java.math.BigDecimal"/>
+	<field name="quotation_item_unit_price" class="java.math.BigDecimal"/>
+	<field name="quotation_item_total" class="java.math.BigDecimal"/>
+	<field name="bill_material_service_item_id" class="java.lang.Long"/>
+	<field name="bill_material_service_item_bill_material_service" class="java.lang.Long"/>
+	<field name="bill_material_service_item_item" class="java.lang.Long"/>
+	<field name="bill_material_service_item_available" class="java.lang.Integer"/>
+	<field name="bill_material_service_item_price" class="java.math.BigDecimal"/>
+	<field name="bill_material_service_item_quantity" class="java.lang.Integer"/>
+	<field name="request_quotation_item_id" class="java.lang.Long"/>
+	<field name="request_quotation_item_availability" class="java.lang.Integer"/>
+	<field name="request_quotation_item_unit_price" class="java.math.BigDecimal"/>
+	<field name="request_quotation_item_discount" class="java.math.BigDecimal"/>
+	<field name="request_quotation_item_total" class="java.math.BigDecimal"/>
+	<field name="request_quotation_item_bill_material_service_item" class="java.lang.Long"/>
+	<field name="request_quotation_item_request_quotation" class="java.lang.Long"/>
+	<field name="item_id" class="java.lang.Long"/>
+	<field name="item_description" class="java.lang.String"/>
+	<field name="item_location" class="java.lang.Long"/>
+	<field name="item_quantity" class="java.lang.Integer"/>
+	<field name="item_price" class="java.math.BigDecimal"/>
+	<field name="item_currency" class="java.lang.Long"/>
+	<field name="item_note" class="java.lang.String"/>
+	<field name="item_company" class="java.lang.String"/>
+	<field name="item_imno" class="java.lang.String"/>
+	<field name="item_start_quantity" class="java.lang.Integer"/>
+	<field name="item_start_price" class="java.math.BigDecimal"/>
+	<field name="item_offer_quantity" class="java.lang.Integer"/>
+	<field name="item_inventory_quantity" class="java.lang.Integer"/>
+	<field name="item_inventory_price" class="java.math.BigDecimal"/>
+	<field name="item_inventory_edit" class="java.lang.Boolean"/>
+	<field name="quotation_id" class="java.lang.Long"/>
+	<field name="quotation_name" class="java.lang.String"/>
+	<field name="quotation_complete" class="java.lang.Boolean"/>
+	<field name="quotation_discard" class="java.lang.Boolean"/>
+	<field name="quotation_request_quotation" class="java.lang.Long"/>
+	<field name="quotation_customer" class="java.lang.String"/>
+	<field name="quotation_customer_reference" class="java.lang.String"/>
+	<field name="quotation_currency" class="java.lang.Integer"/>
+	<field name="quotation_availability" class="java.lang.String"/>
+	<field name="quotation_delivery" class="java.lang.String"/>
+	<field name="quotation_packing" class="java.lang.String"/>
+	<field name="quotation_payment" class="java.lang.String"/>
+	<field name="quotation_validity" class="java.lang.String"/>
+	<field name="quotation_location" class="java.lang.Integer"/>
+	<field name="quotation_grand_total" class="java.math.BigDecimal"/>
+	<field name="quotation_welcome" class="java.lang.String"/>
+	<field name="quotation_remark" class="java.lang.String"/>
+	<field name="quotation_note" class="java.lang.String"/>
+	<background>
+		<band height="822" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="553" height="100" uuid="c3abb098-b1ef-4fa1-99ba-1883844bf998"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{remark}]]></textFieldExpression>
+			</textField>
+		</band>
+	</background>
+	<title>
+		<band height="348" splitType="Stretch">
+			<textField>
+				<reportElement x="408" y="205" width="159" height="20" uuid="3a582a3f-d312-40d8-9ead-e9b2833ee7f1"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{your_ref}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="335" y="177" width="62" height="20" uuid="3b9429d9-b05b-4190-a472-680db02dbacb"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="49" y="205" width="273" height="20" uuid="967b7b22-dc01-4040-ab20-f786512e379e"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{vessel}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="10" y="10" width="555" height="109" uuid="a9c1dde4-3112-4c2b-aa8e-62ce867535ce"/>
+				<imageExpression><![CDATA["C:\\gpat\\git_projects\\ProjectManager\\src\\main\\webapp\\images\\projectmanager\\common\\marpo_header_pfd.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="478" y="152" width="100" height="20" uuid="80ab1480-6caa-4dbc-966d-50dd9821f48e"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[(include this)]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement x="408" y="153" width="70" height="20" uuid="cdb69a70-c020-43d6-b264-261273ac8a5c"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="335" y="124" width="62" height="20" uuid="e3d74de5-327c-4d0b-a132-ff8eb0f2b6b3"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Our Ref:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="229" y="312" width="144" height="26" uuid="aa5fa814-1522-440f-84b2-f0524c96d604"/>
+				<textElement>
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OFFER DETAILS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="49" y="124" width="273" height="20" uuid="2e7d69f6-9e59-478e-8cbb-406838d4a052"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{customer}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="335" y="204" width="73" height="20" uuid="bacf05fa-c84e-4d1c-9d84-da69b090e213"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Your Ref:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="408" y="125" width="159" height="20" uuid="0701e62e-2114-4d64-b7ce-ba579ee8a168"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{reference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="178" width="273" height="20" uuid="933de82f-73d9-40ab-acfd-a2f81debb86f"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{contract}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="14" y="178" width="35" height="20" uuid="868b2eaa-8b80-4024-adce-99f268a27113"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Attn:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="125" width="30" height="20" uuid="7d0e438b-1331-41a7-bc98-0329bd393814"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[To:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="49" y="153" width="106" height="20" uuid="79c959de-b0a5-4a39-be4a-0475fad3ca36"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="239" width="553" height="73" uuid="2e36b06e-a7a3-49a6-8446-e82f8e48f361"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{welcome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="205" width="35" height="20" uuid="ecd0b22b-f95d-4978-8d48-2cfab16f173f"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Re:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="408" y="178" width="159" height="20" uuid="33ff0842-8fad-43f0-b28b-d3c2533a92de"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="12" y="153" width="30" height="20" uuid="3dd26a9a-1835-42ba-b324-63cb78b98b23"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tel:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="335" y="152" width="62" height="20" uuid="40d591bd-0ec9-4f81-bacf-7f5a38b8d760"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pages:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="5" y="0" width="550" height="20" backcolor="#666666" uuid="3e109cbf-bd4e-4d87-aa15-62ea873b07fb"/>
+				<staticText>
+					<reportElement x="0" y="0" width="100" height="20" uuid="49d952ce-8ec0-4d94-909e-b8e4ebd04294"/>
+					<text><![CDATA[item]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="100" y="0" width="100" height="20" uuid="b2e048a4-df32-41ac-ba10-d998885f6cfa"/>
+					<text><![CDATA[discount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="200" y="0" width="100" height="20" uuid="e120f978-4213-45bb-8080-09c9488b63e8"/>
+					<text><![CDATA[price]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="303" y="0" width="100" height="20" uuid="e15414ee-a6c7-4a76-b91d-04f0e1035084"/>
+					<text><![CDATA[total]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="51" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="43" uuid="10074089-f0d9-477b-9747-9d204095c8bb"/>
+				<textField>
+					<reportElement x="105" y="1" width="100" height="20" uuid="36a169fd-bec2-484f-ad22-b337e57c7ee6"/>
+					<textFieldExpression><![CDATA[$F{quotation_item_discount}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="205" y="1" width="100" height="20" uuid="4da24d5e-8d6d-44f9-9cd1-79222dedc252"/>
+					<textFieldExpression><![CDATA[$F{quotation_item_unit_price}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="308" y="0" width="100" height="20" uuid="9fed1a5e-0b5a-47a3-b1f4-e32f15f060f0"/>
+					<textFieldExpression><![CDATA[$F{quotation_item_total}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="1" width="100" height="20" uuid="46e0a4a6-87d8-4af9-8acb-893d588b1e35"/>
+					<textFieldExpression><![CDATA[$F{item_imno}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="4" y="43" width="551" height="4" uuid="65c29987-073d-41f4-9219-7afee06c9c23"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="100" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

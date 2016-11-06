@@ -37,6 +37,15 @@
 </script>
 
 <nav>
+    <input type="hidden" id="location"/>
+    <input type="hidden" id="email-rq-id" />
+    <div id="dlg-email" hidden="true" title="Send eMail">
+        <form>
+            <fieldset style="padding:0; border:0; margin-top:25px;">
+                <input type="text" id="email-address" required />
+            </fieldset>
+        </form>
+    </div>
     <div class="menu-item">
         <h3 onclick="dlgEditStatus()">Edit Status</h3>
         <div id="dlg-edit-status" hidden="true" title="Select the status">

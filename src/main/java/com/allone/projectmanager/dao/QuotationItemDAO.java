@@ -50,26 +50,6 @@ public class QuotationItemDAO {
         }
     }
 
-    public QuotationItem getByBillMaterialServiceItem(Long requestForQuotation) {
-        QuotationItem value = null;
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            if (requestForQuotation != null) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.QuotationItem.findByRequestForQuotation").
-                        setParameter("requestForQuotation", requestForQuotation);
-
-                value = (query != null) ? (QuotationItem) query.getSingleResult() : null;
-            }
-        } catch (HibernateException | NoResultException e) {
-            logger.log(Level.SEVERE, "{0}", e.getMessage());
-        } finally {
-            em.close();
-
-            return value;
-        }
-    }
-
     public List getByQuotation(Long q) {
         List value = null;
         EntityManager em = emf.createEntityManager();

@@ -104,12 +104,12 @@ function dlgRequestQuotation() {
     });
 }
 
-function saveRFQ(url, pdId, rqId, supplier, currency, email) {
+function saveRFQ(url, pdId, rqId, supplier, currency) {
     if (supplier === 'none') {
         alert("You must select supplier first")
         return;
     }
-    
+
     if (currency === 'none') {
         alert("You must select currency first")
         return;
@@ -127,14 +127,10 @@ function saveRFQ(url, pdId, rqId, supplier, currency, email) {
         success: function (response) {
             var content = JSON.parse(response);
 
-            console.log(content);
-
             $("#header").html(content.header);
-            setTimeout(function () {
-                if (content.location) {
-                    location.href = content.location;
-                }
-            }, 5000);
+            $("#email-address").val(content.email);
+            $("#location").val(content.location);
+            $("#email-rq-id").val(content.requestQuotationId);
         },
         error: function (e) {
         }
@@ -147,6 +143,42 @@ function sendEmail() {
             null,
             $("#supplier option:selected").val(),
             $("#currency option:selected").val());
+
+    $('#dlg-email').dialog({
+        autoOpen: true,
+        modal: true,
+        width: 374,
+        buttons: {
+            "submit": function () {
+                var data = "email=" + $('#email-address').val() + "&id=" + $('#email-rq-id').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ProjectManager/project/request-quotation/send-email-submit",
+                    data: data,
+                    success: function () {
+                        $("#dlg-email").dialog("close");
+                        
+                        setTimeout(function () {
+                            var l = $('#location').val();
+
+                            if (l) {
+                                location.href = l;
+                            }
+                        }, 5000);
+                    }
+                });
+            }
+        },
+        show: {
+            effect: "blind",
+            duration: 1000
+        },
+        hide: {
+            effect: "explode",
+            duration: 1000
+        }
+    });
 }
 
 function sendEmailNCRFQ() {
@@ -155,6 +187,15 @@ function sendEmailNCRFQ() {
             $("#request-quotation-id").val(),
             $("#supplier").val(),
             $("#currency-id").val());
+
+    setTimeout(function () {
+        var l = $('#location').val();
+
+        if (l) {
+            location.href = l;
+        }
+    }, 5000);
+
 }
 
 function sendEmailSupplier() {
@@ -394,10 +435,21 @@ function save() {
             null,
             $("#supplier option:selected").val(),
             $("#currency option:selected").val());
+
+    setTimeout(function () {
+        var l = $('#location').val();
+
+        if (l) {
+            location.href = l;
+        }
+    }, 5000);
 }
 
-function changeRequestQuotalion(hasList) {
-    var data = "rqId=" + $("#request-quotations option:selected").val() + "&hasList=" + hasList;
+function changeRequestQuotalion(hasList, isEdit) {
+    var pdId = $("#subproject option:selected").val();
+    var rqId = $("#request-quotations option:selected").val();
+    var data = "rqId=" + rqId + "&hasList=" + hasList + "&isEdit=" + isEdit;
+    setRequestQuotation(pdId, rqId);
 
     $.ajax({
         type: "POST",

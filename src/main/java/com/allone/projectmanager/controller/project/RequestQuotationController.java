@@ -136,7 +136,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @SuppressWarnings("null")
-    private String[] getRequestQuotationInfo(RequestQuotation rq) {
+    private String[] getRequestQuotationInfo(RequestQuotation rq, Boolean isEdit) {
         String[] result = {"", ""};
         Integer index = 1;
 
@@ -147,10 +147,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
             BigDecimal otherExpenses = (rq.getOtherExpenses() != null) ? rq.getOtherExpenses() : BigDecimal.ZERO;
 
             result[0] = "<tr>\n"
-                    + "<td id='delivery' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + ((isEdit.equals(Boolean.TRUE))
+                    ? "<td id='delivery' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
                     + ((!deliveryCost.equals(BigDecimal.ZERO)) ? deliveryCost : "0.00") + "</td>\n"
-                    + "<td id='expenses' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
-                    + ((!otherExpenses.equals(BigDecimal.ZERO)) ? otherExpenses : "0.00") + "</td>\n"
+                    : "<td>" + ((!deliveryCost.equals(BigDecimal.ZERO)) ? deliveryCost : "0.00") + "</td>\n")
+                    + ((isEdit.equals(Boolean.TRUE))
+                    ? "<td id='expenses' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'><div contenteditable></div>"
+                    + ((!otherExpenses.equals(BigDecimal.ZERO)) ? otherExpenses : 0.00) + "</td>\n"
+                    : "<td>" + ((!otherExpenses.equals(BigDecimal.ZERO)) ? otherExpenses : "0.00") + "</td>\n")
                     + "<td id='material' >" + ((!materialCost.equals(BigDecimal.ZERO)) ? materialCost : "0.00") + "</td>\n"
                     + "<td id='grand' >" + ((!grandTotal.equals(BigDecimal.ZERO)) ? grandTotal : "0.00") + "</td>\n"
                     + "</tr>\n";
@@ -178,12 +182,18 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         + "<td>" + imno + "</td>\n"
                         + "<td>" + description + "</td>\n"
                         + "<td>" + quantity + "</td>\n"
-                        + "<td id='price" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
+                        + ((isEdit.equals(Boolean.TRUE))
+                        ? "<td id='price" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
                         + "<div contenteditable></div>" + ((!price.equals(BigDecimal.ZERO)) ? price : "0.00") + "</td>\n"
-                        + "<td id='discount" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
-                        + "<div contenteditable></div>" + ((!discount.equals(0)) ? discount : "00.0") + "</td>\n"
-                        + "<td id='availability" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
+                        : "<td>" + ((!price.equals(BigDecimal.ZERO)) ? price : "0.00") + "</td>\n")
+                        + ((isEdit.equals(Boolean.TRUE))
+                        ? "<td id='discount" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
+                        + "<div contenteditable></div>" + ((!discount.equals(0)) ? discount : "0.00") + "</td>\n"
+                        : "<td>" + ((!discount.equals(0)) ? discount : "0.00") + "</td>\n")
+                        + ((isEdit.equals(Boolean.TRUE))
+                        ? "<td id='availability" + rqi.getId() + "' style='background: rgb(247, 128, 128);color:rgba(29, 25, 10, 0.84)'>"
                         + "<div contenteditable></div>" + ((!availability.equals(0)) ? availability : "0") + "</td>\n"
+                        : "<td>" + ((!availability.equals(0)) ? availability : "0") + "</td>\n")
                         + "<td id='net" + rqi.getId() + "'>" + ((!total.equals(BigDecimal.ZERO)) ? total : "0.00") + "</td>\n"
                         + "</tr>";
             }
@@ -461,7 +471,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             response[1] = rqs.get(0).getSupplier();
             response[2] = getCurrencyName(rqs.get(0).getCurrency());
 
-            String[] rqfInfo = getRequestQuotationInfo(rqs.get(0));
+            String[] rqfInfo = getRequestQuotationInfo(rqs.get(0), Boolean.TRUE);
 
             response[3] = rqfInfo[0];
             response[4] = rqfInfo[1];
@@ -891,6 +901,39 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return "";
     }
 
+    @RequestMapping(value = "/request-quotation/send-email-submit")
+    public @ResponseBody
+    @SuppressWarnings("null")
+    String sendEmailSubmit(HttpServletRequest request, String email, RequestQuotation rq) throws MessagingException {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                User user = getUser(session.getId());
+
+                if (user != null) {
+                    rq = srvProjectManager.getDaoRequestQuotation().getById(rq.getId());
+
+                    if (rq != null) {
+                        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(rq.getBillMaterialService());
+
+                        if (bms != null) {
+                            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+
+                            if (pd != null) {
+//                                sendMail("smtp.dmail.hol.gr", user.getEmail(), email, null, "MARPO GROUP RFQ - REF:"
+//                                        + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
+//                                        + rq.getId().toString() + "&emailSender=" + user.getEmail() + "&mode=RQS");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return "";
+    }
+
     @RequestMapping(value = "/request-quotation/send-email")
     public @ResponseBody
     @SuppressWarnings("null")
@@ -942,13 +985,11 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         if (company != null && !Strings.isNullOrEmpty(company.getEmail1()) && user != null
                                 && !Strings.isNullOrEmpty(user.getEmail()) && pd != null) {
                             content.put("header", "<h1>Request for Quotation - REF:" + pd.getReference() + " - Complete</h1>\n");
-//                            sendMail("smtp.dmail.hol.gr", user.getEmail(), company.getEmail1(), null, "MARPO GROUP RFQ - REF:"
-//                                    + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
-//                                    + _rq.getId().toString() + "&emailSender=" + user.getEmail() + "&mode=RQS");
-
-//                            content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
-                            content.put("location", "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
-                                    + user.getEmail() + "&mode=RQS");
+                            content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
+                            content.put("email", company.getEmail1());
+                            content.put("requestQuotationId", _rq.getId().toString());
+//                            content.put("location", "http://localhost:8081/ProjectManager/project/request-quotation?id=" + _rq.getId() + "&emailSender="
+//                                    + user.getEmail() + "&mode=RQS");
                         } else if (company == null) {
                             content.put("header", "<h1>No found supplier</h1>\n");
                         } else if (Strings.isNullOrEmpty(company.getEmail1())) {
@@ -1202,12 +1243,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/change-rfq")
     public @ResponseBody
-    String changeRFQ(Long rqId, Boolean hasList) {
+    String changeRFQ(Long rqId, Boolean hasList, Boolean isEdit) {
         if (rqId != null) {
             RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(rqId);
 
             if (rq != null) {
-                String[] info = getRequestQuotationInfo(rq);
+                String[] info = getRequestQuotationInfo(rq, isEdit);
                 Map<String, String> content = new HashMap<>();
 
                 if (hasList.equals(Boolean.TRUE)) {

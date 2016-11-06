@@ -5,13 +5,12 @@
 --%>
 <div id="header" class="formLayout">
     <h1>QUOTATION - SELECT REQUEST FOR QUOTATION - REF:${projectReference}</h1>
-    <input type="hidden" id="project-id" value=${projectId} />
     <h2>Select Subproject</h2>
     <label class="custom-select">
-        <select id="subproject" onchange="">${subprojects}</select>
+        <select id="subproject" onchange="changeQuotaSubproject('rfq')">${subprojects}</select>
     </label>
     <div class="searchCriteria"><jsp:include page="../project/RequestQuotationExist.jsp"/></div>
     <div>
-        <input type="button" value="Submit" class="button" onclick="submit()">
+        <input type="button" value="Submit" class="button" onclick="qSubmit()">
     </div>
 </div>

@@ -15,7 +15,14 @@
     </c:choose>
     <br><h2>Select Request for Quotation</h2>
     <label class="custom-select-large">
-        <select id="request-quotations" onchange="changeRequestQuotalion(false)">${requestQuotations}</select>
+        <c:choose>
+            <c:when test="${is_quotation == 0}" >
+                <select id="request-quotations" onchange="changeRequestQuotalion(false, true)">${requestQuotations}</select>
+            </c:when>
+            <c:otherwise>
+                <select id="request-quotations" onchange="changeRequestQuotalion(false, false)">${requestQuotations}</select>
+            </c:otherwise>
+        </c:choose>
     </label>
     <br><table>
         <tbody>

@@ -120,22 +120,22 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = "/snapshot")
     public String Snapshot(HttpServletRequest request, Model model) {
-        if (request != null) {
-            String queryString = request.getQueryString();
-
-//            if (!Strings.isNullOrEmpty(queryString)) {
+        try {
             HttpSession session = request.getSession();
 
-            this.setTitle("Project");
-            this.setHeader("header.jsp");
-            this.setSide_bar("../project/sidebar.jsp");
-            this.setContent("../project/HistoryNewProject.jsp");
-            setHeaderInfo(session, model);
+            if (session != null) {
+                this.setTitle("Project");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                this.setContent("../project/HistoryNewProject.jsp");
+                setHeaderInfo(session, model);
 
-            return "index";
-//            } else {
-//                return "login";
-//            }
+                return "index";
+            }
+        } catch (StackOverflowError e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+
+            return "login";
         }
 
         return "";
