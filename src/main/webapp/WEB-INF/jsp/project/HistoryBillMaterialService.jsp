@@ -40,7 +40,7 @@
                 <tfoot id="bmsi-footer"></tfoot>
             </table>
         </div>
-        <div class="formLayout">
+        <div class="formLayout" id="frm-rfq" hidden="true">
             <h3>Request for Quotation</h3>
             <table class="table tablesorter">
                 <thead id="rfq-header"></thead>
@@ -50,6 +50,19 @@
             <div id="dlg-view-rfq" hidden="true" title="View Request for Quotation">
                 <form>
                     <div><jsp:include page="HistoryRequestQuotation.jsp"/></div>
+                </form>
+            </div>
+        </div>
+        <div class="formLayout" id="frm-q" hidden="true">
+            <h3>Quotation</h3>
+            <table class="table tablesorter">
+                <thead id="q-header"></thead>
+                <tbody id="q-body"></tbody>
+                <tfoot id="q-footer"></tfoot>
+            </table>
+            <div id="dlg-view-q" hidden="true" title="View Quotation">
+                <form>
+                    <div><jsp:include page="HistoryQuotation.jsp"/></div>
                 </form>
             </div>
         </div>

@@ -28,6 +28,7 @@ import com.allone.projectmanager.dao.RequestQuotationItemDAO;
 import com.allone.projectmanager.dao.ServiceCollabDAO;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +43,7 @@ import javax.persistence.Persistence;
 @Stateless
 public class ProjectManagerService {
 
-    private static final Logger LOG = Logger.getLogger(ProjectManagerService.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectManagerService.class.getName());
 
     private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ProjectManagerPU");
 
@@ -93,7 +94,7 @@ public class ProjectManagerService {
                 this.pathProjectBill = prop.getProperty("project-bill-path");
                 this.pathProject = prop.getProperty("project-path");
 
-                LOG.info(pathProject);
+                logger.info(pathProject);
             } catch (IOException ex) {
                 Logger.getLogger(ProjectManagerService.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -111,8 +111,7 @@ function saveRFQ(url, pdId, rqId, supplier, currency) {
     }
 
     if (currency === 'none') {
-        alert("You must select currency first")
-        return;
+        currency = -1
     }
 
     var data = "pdId=" + pdId +
@@ -143,29 +142,31 @@ function sendEmail() {
             null,
             $("#supplier option:selected").val(),
             $("#currency option:selected").val());
-
+            
     $('#dlg-email').dialog({
         autoOpen: true,
         modal: true,
-        width: 374,
+        width: 670,
         buttons: {
             "submit": function () {
                 var data = "email=" + $('#email-address').val() + "&id=" + $('#email-rq-id').val();
-
+                
                 $.ajax({
                     type: "POST",
                     url: "/ProjectManager/project/request-quotation/send-email-submit",
                     data: data,
-                    success: function () {
+                    success: function (response) {
+                        location.href = response;
+                        
                         $("#dlg-email").dialog("close");
                         
-                        setTimeout(function () {
-                            var l = $('#location').val();
-
-                            if (l) {
-                                location.href = l;
-                            }
-                        }, 5000);
+//                        setTimeout(function () {
+//                            var l = $('#location').val();
+//
+//                            if (l) {
+//                                location.href = l;
+//                            }
+//                        }, 5000);
                     }
                 });
             }

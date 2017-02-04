@@ -75,7 +75,7 @@
                 <td width="300px">
                     <p>
                         <label class="custom-select-large">
-                            <select id="customer" onchange="projectFilterCustomer()"></select>
+                            <select id="customer"></select>
                         </label>    
                     </p>
                 </td>
@@ -83,12 +83,12 @@
                     <div id="add-company" hidden="true" title="Add Customer">
                         <form class="go-bottom">
                             <div>
-                                <input type="text" id="company-name" required>
-                                <label class="go-bottom-label" for="company-name">Name</label>
+                                <input type="text" id="company-name" style="width: 360px" required>
+                                <label class="go-bottom-label" for="company-name" style="width: 360px">Name</label>
                             </div>
                             <div>
-                                <input type="text" id="company-email" required>
-                                <label class="go-bottom-label" for="company-email">eMail</label>
+                                <input type="text" id="company-email" style="width: 360px" required>
+                                <label class="go-bottom-label" for="company-email" style="width: 360px">eMail</label>
                             </div>
                         </form>
                     </div>
@@ -108,12 +108,12 @@
                     <div id="add-vessel" hidden="true" title="Add Vessel">
                         <form class="go-bottom">
                             <div>
-                                <input type="text" id="vessel-name" name="vessel-name" required>
-                                <label class="go-bottom-label" for="vessel-name">Name</label>
+                                <input type="text" id="vessel-name" name="vessel-name" style="width: 360px" required>
+                                <label class="go-bottom-label" for="vessel-name" style="width: 360px">Name</label>
                             </div>
                             <div>
-                                <input type="text" id="vessel-imo" name="vessel-imo" required>
-                                <label class="go-bottom-label" for="vessel-imo">IMO</label>
+                                <input type="text" id="vessel-imo" name="vessel-imo" style="width: 360px" required>
+                                <label class="go-bottom-label" for="vessel-imo" style="width: 360px">IMO</label>
                             </div>
                         </form>
                     </div>
@@ -133,24 +133,24 @@
                     <div id="add-contact" hidden="true" title="Add Contact">
                         <form class="go-bottom">
                             <div>
-                                <input type="text" id="contact-department" required>
-                                <label class="go-bottom-label" for="contact-department">Department</label>
+                                <input type="text" id="contact-department" style="width: 360px" required>
+                                <label class="go-bottom-label" for="contact-department" style="width: 360px">Department</label>
                             </div>
                             <div>
-                                <input type="text" id="contact-name" required>
-                                <label class="go-bottom-label" for="contact-name">Name</label>
+                                <input type="text" id="contact-name" style="width: 360px" required>
+                                <label class="go-bottom-label" for="contact-name" style="width: 360px">Name</label>
                             </div>
                             <div>
-                                <input type="text" id="contact-surname" required>
-                                <label class="go-bottom-label" for="contact-surname" >Surname</label>
+                                <input type="text" id="contact-surname" style="width: 360px" required>
+                                <label class="go-bottom-label" for="contact-surname" style="width: 360px">Surname</label>
                             </div>
                             <div>
-                                <input type="text" id="contact-phone" required>
-                                <label class="go-bottom-label" for="contact-phone">Phone</label>
+                                <input type="text" id="contact-phone" style="width: 360px" required>
+                                <label class="go-bottom-label" for="contact-phone" style="width: 360px">Phone</label>
                             </div>
                             <div>
-                                <input type="text" id="contact-email" required>
-                                <label class="go-bottom-label" for="contact-email">eMail</label>
+                                <input type="text" id="contact-email" style="width: 360px" required>
+                                <label class="go-bottom-label" for="contact-email" style="width: 360px">eMail</label>
                             </div>
                         </form>
                     </div>

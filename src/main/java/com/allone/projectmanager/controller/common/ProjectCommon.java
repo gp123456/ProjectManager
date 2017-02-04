@@ -12,6 +12,8 @@ import com.allone.projectmanager.entities.Collabs;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.entities.Quotation;
+import com.allone.projectmanager.entities.QuotationItem;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Vessel;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -121,6 +124,18 @@ public class ProjectCommon extends Common {
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
+        Date current = new Date();
+        long diffQCurrent = pd.getExpiredCreate().getTime() - current.getTime();
+        long diffFCurrent = pd.getExpired().getTime() - current.getTime();
+        String alarm = (!pd.getStatus().equals(ProjectStatusEnum.FINAL.toString()))
+                ? ((!pd.getStatus().equals(ProjectStatusEnum.QUOTATION.toString()))
+                ? ((diffQCurrent > 0)
+                        ? "/ProjectManager/images/projectmanager/common/bullet-green.png"
+                        : "/ProjectManager/images/projectmanager/common/bullet-yellow.png")
+                : ((diffFCurrent > 0)
+                        ? "/ProjectManager/images/projectmanager/common/bullet-green.png"
+                        : "/ProjectManager/images/projectmanager/common/bullet-red.png"))
+                : "/ProjectManager/images/projectmanager/common/bullet-black.png";
 
         response += "<tr>"
                 + ((pd.getType().equals(ProjectTypeEnum.SALE.toString()))
@@ -130,11 +145,13 @@ public class ProjectCommon extends Common {
                 + "<td>" + pd.getStatus() + "</td>\n"
                 + "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n"
                 + "<td>" + format.format(pd.getCreated()) + "</td>\n"
+                + "<td>" + format.format(pd.getExpiredCreate()) + "</td>\n"
                 + "<td>" + format.format(pd.getExpired()) + "</td>\n"
                 + "<td>" + pd.getCompany() + "</td>"
                 + "<td>" + ((vess != null) ? vess.getName() : "") + "</td>\n"
                 + "<td>" + pd.getCustomer() + "</td>"
                 + "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n"
+                + "<td  align='center'><img src=" + alarm + " /></td>\n"
                 + "</tr>\n";
 
         return response;
@@ -155,11 +172,13 @@ public class ProjectCommon extends Common {
                 + "<th>Status</th>\n"
                 + "<th>User</th>\n"
                 + "<th>Created</th>\n"
-                + "<th>Expired</th>\n"
+                + "<th>Quotation Expired</th>\n"
+                + "<th>Final Expired</th>\n"
                 + "<th>Company</th>\n"
                 + "<th>Vessel</th>\n"
                 + "<th>Customer</th>\n"
                 + "<th>Contact</th>\n"
+                + "<th>Alarm</th>\n"
                 + "</tr>\n";
     }
 
@@ -235,28 +254,28 @@ public class ProjectCommon extends Common {
         Long allOpen = srvProjectManager.getDaoProjectDetail().getTotalOpenByType(type);
         Long allCreate = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREATE.toString());
         Long allBill = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-        Long allReqQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.REQUEST_QUOTATION.toString());
         Long allQuota = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.QUOTATION.toString());
         Long allPurchase = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PURCHASE_ORDER.toString());
         Long allWork = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.WORK_ORDER.toString());
         Long allAck = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.ACK_ORDER.toString());
-        Long allPacking = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.PACKING_LIST.toString());
-        Long allDelivery = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.DELIVERY_NOTE.toString());
-        Long allShipping = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.SHIPPING_INVOICE.toString());
+        Long allForwarding = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.FORWARDING_DOCUMENTS.toString());
+        Long allInvoice = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.INVOICE.toString());
+        Long allCreditNote = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREDIT_NOTE.toString());
+        Long allFinal = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.FINAL.toString());
         List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
             result.add(new PlotInfoModel("All", (allOpen.toString())));
             result.add(new PlotInfoModel("Create", allCreate.toString()));
             result.add(new PlotInfoModel("Bill Material", allBill.toString()));
-            result.add(new PlotInfoModel("Request Quotation", allReqQuota.toString()));
             result.add(new PlotInfoModel("Quotation", allQuota.toString()));
             result.add(new PlotInfoModel("Purchase Order", allPurchase.toString()));
             result.add(new PlotInfoModel("Work Order", allWork.toString()));
             result.add(new PlotInfoModel("Ack Order", allAck.toString()));
-            result.add(new PlotInfoModel("Packing List", allPacking.toString()));
-            result.add(new PlotInfoModel("Delivery Note", allDelivery.toString()));
-            result.add(new PlotInfoModel("Ship Invoice", allShipping.toString()));
+            result.add(new PlotInfoModel("Forwarding Documents", allForwarding.toString()));
+            result.add(new PlotInfoModel("Invoice", allInvoice.toString()));
+            result.add(new PlotInfoModel("Credit Note", allCreditNote.toString()));
+            result.add(new PlotInfoModel("Final", allFinal.toString()));
         }
 
         return result;
@@ -578,6 +597,77 @@ public class ProjectCommon extends Common {
         }
     }
 
+    private void QSheet(WritableWorkbook workbook, ProjectManagerService srvProjectManager, Quotation q, Integer sheetNo) {
+        try {
+            WritableSheet sheet = workbook.createSheet("Quotation " + ((q.getLocation() != null) ? getLocationNameById(q.getLocation()) : q.getId()),
+                    sheetNo);
+            WritableCellFormat cf = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD, true));
+            List<QuotationItem> items = srvProjectManager.getDaoQuotationItem().getByQuotation(q.getId());
+
+            sheet.addCell(new Label(0, 0, "NAME", cf));
+            sheet.addCell(new Label(1, 0, "COMPLETE", cf));
+            sheet.addCell(new Label(2, 0, "DISCARD", cf));
+            sheet.addCell(new Label(3, 0, "CUSTOMER", cf));
+            sheet.addCell(new Label(3, 0, "CUSTOMER REFERENCE", cf));
+            sheet.addCell(new Label(4, 0, "CURRENCY", cf));
+            sheet.addCell(new Label(5, 0, "AVAILABILITY", cf));
+            sheet.addCell(new Label(6, 0, "DELIVERY", cf));
+            sheet.addCell(new Label(7, 0, "PACKING", cf));
+            sheet.addCell(new Label(8, 0, "PAYMENT", cf));
+            sheet.addCell(new Label(9, 0, "VALIDITY", cf));
+            sheet.addCell(new Label(10, 0, "LOCATION", cf));
+            sheet.addCell(new Label(11, 0, "GRAND TOTAL", cf));
+            sheet.addCell(new Label(12, 0, "WELCOME", cf));
+            sheet.addCell(new Label(13, 0, "REMARK", cf));
+            sheet.addCell(new Label(14, 0, "NOTES", cf));
+            sheet.addCell(new Label(0, 1, !Strings.isNullOrEmpty(q.getName()) ? q.getName() : ""));
+            sheet.addCell(new Label(1, 1, q.getComplete().toString()));
+            sheet.addCell(new Label(2, 1, q.getDiscard().toString()));
+            sheet.addCell(new Label(3, 1, !Strings.isNullOrEmpty(q.getCustomer()) ? q.getCustomer() : ""));
+            sheet.addCell(new Label(3, 1, !Strings.isNullOrEmpty(q.getCustomerReference()) ? q.getCustomerReference() : ""));
+            sheet.addCell(new Label(4, 1, q.getCurrency() != null ? getCurrencyById(q.getCurrency()) : ""));
+            sheet.addCell(new Label(5, 1, !Strings.isNullOrEmpty(q.getAvailability()) ? q.getAvailability() : ""));
+            sheet.addCell(new Label(6, 1, !Strings.isNullOrEmpty(q.getDelivery()) ? q.getDelivery() : ""));
+            sheet.addCell(new Label(7, 1, !Strings.isNullOrEmpty(q.getPacking()) ? q.getPacking() : ""));
+            sheet.addCell(new Label(8, 1, !Strings.isNullOrEmpty(q.getPayment()) ? q.getPayment() : ""));
+            sheet.addCell(new Label(9, 1, !Strings.isNullOrEmpty(q.getValidity()) ? q.getValidity() : ""));
+            sheet.addCell(new Label(10, 1, q.getLocation() != null ? getLocationNameById(q.getLocation()) : ""));
+            sheet.addCell(new Label(11, 1, q.getGrandTotal() != null ? q.getGrandTotal().toString() : ""));
+            sheet.addCell(new Label(12, 1, !Strings.isNullOrEmpty(q.getWelcome()) ? q.getWelcome() : ""));
+            sheet.addCell(new Label(13, 1, !Strings.isNullOrEmpty(q.getRemark()) ? q.getRemark() : ""));
+            sheet.addCell(new Label(14, 1, !Strings.isNullOrEmpty(q.getNote()) ? q.getNote() : ""));
+
+            if (items != null && !items.isEmpty()) {
+                Integer rowItems = 4;
+
+                sheet.mergeCells(0, 2, 10, 2).getTopLeft();
+                sheet.addCell(new Label(0, 3, "IMNO", cf));
+                sheet.addCell(new Label(1, 3, "DESCRIPTION", cf));
+                sheet.addCell(new Label(2, 3, "UNIT PRICE", cf));
+                sheet.addCell(new Label(3, 3, "DISCOUNT", cf));
+                sheet.addCell(new Label(4, 3, "TOTAL", cf));
+                for (QuotationItem qi : items) {
+                    BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(qi.getBillMaterialServiceItem());
+
+                    if (bmsi != null) {
+                        Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                        if (item != null) {
+                            sheet.addCell(new Label(0, rowItems, !Strings.isNullOrEmpty(item.getImno()) ? item.getImno() : ""));
+                            sheet.addCell(new Label(1, rowItems, !Strings.isNullOrEmpty(item.getDescription()) ? item.getDescription() : ""));
+                            sheet.addCell(new Label(2, rowItems, qi.getUnitPrice() != null ? qi.getUnitPrice().toString() : ""));
+                            sheet.addCell(new Label(3, rowItems, qi.getDiscount() != null ? qi.getDiscount().toString() : ""));
+                            sheet.addCell(new Label(4, rowItems, qi.getTotal() != null ? qi.getTotal().toString() : ""));
+                            rowItems++;
+                        }
+                    }
+                }
+            }
+        } catch (WriteException ex) {
+            Logger.getLogger(ProjectCommon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public String ExportExcel(ProjectManagerService srvProjectManager, Long pdId) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
@@ -604,6 +694,15 @@ public class ProjectCommon extends Common {
 
                         for (RequestQuotation rq : rqs) {
                             RQSheet(workbook, srvProjectManager, rq, sheetNo++);
+                        }
+                    }
+                    List<Quotation> qs = srvProjectManager.getDaoQuotation().getByBillMaterialService(bms.getId());
+
+                    if (qs != null && !qs.isEmpty()) {
+                        Integer sheetNo = 2;
+
+                        for (Quotation q : qs) {
+                            QSheet(workbook, srvProjectManager, q, sheetNo++);
                         }
                     }
                 }

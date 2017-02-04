@@ -20,12 +20,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -64,43 +64,57 @@ public class Root extends ProjectCommon {
     }
 
     @RequestMapping(value = "/home")
-    public String index(HttpServletRequest request, @Validated User _user, Model model) throws ParseException, UnsupportedEncodingException {
+    public String index(HttpServletRequest request, User _user, Model model) throws ParseException, UnsupportedEncodingException {
         if (request != null) {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                Collabs collab = srvProjectManager.getDaoCollabs().login(_user.getUsername(), _user.getPassword());
+                User user = getUser(session.getId());
 
-                if (collab != null) {
-                    SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-                    String current = ds.format(new Date());
-                    User user = new User();
+                if (user == null) {
+                    Collabs collab = srvProjectManager.getDaoCollabs().login(_user.getUsername(), _user.getPassword());
 
-                    user.setId(collab.getId());
-                    user.setScreen_name(user.getUsername());
-                    user.setLast_login(new String(current.getBytes("ISO-8859-1")));
-                    user.setFull_name(collab.getSurname() + " " + collab.getName());
-                    user.setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
-                    user.setProject_expired(collab.getProjectExpired());
-                    user.setEmail(collab.getEmail());
-                    setUser(session.getId(), user);
+                    if (collab != null) {
+                        SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                        String current = ds.format(new Date());
+
+                        user = new User();
+                        user.setId(collab.getId());
+                        user.setScreen_name(user.getUsername());
+                        user.setLast_login(new String(current.getBytes("ISO-8859-1")));
+                        user.setFull_name(collab.getSurname() + " " + collab.getName());
+                        user.setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
+                        user.setProject_expired(collab.getProjectExpired());
+                        user.setEmail(collab.getEmail());
+                        user.setRole(collab.getRole());
+                        setUser(session.getId(), user);
+                        setTitle("Project Manager");
+                        setHeader("main_header.jsp");
+                        setContent("../project/ViewProject.jsp");
+                        setHeaderInfo(session, model);
+                        model.addAttribute("login", "true");
+                        model.addAttribute("role", user.getRole());
+
+                        return "index";
+                    } else {
+                        return "login";
+                    }
+                } else {
                     setTitle("Project Manager");
                     setHeader("main_header.jsp");
                     setContent("../project/ViewProject.jsp");
                     setHeaderInfo(session, model);
                     model.addAttribute("login", "true");
-                    model.addAttribute("role", collab.getRole());
+                    model.addAttribute("role", user.getRole());
 
                     return "index";
-                } else {
-                    return "login";
                 }
             } else {
                 return "login";
             }
         }
 
-        return "";
+        return "login";
     }
 
     @RequestMapping(value = "/view")

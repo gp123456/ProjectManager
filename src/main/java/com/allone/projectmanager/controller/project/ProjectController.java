@@ -7,21 +7,19 @@ package com.allone.projectmanager.controller.project;
 
 import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.ProjectCommon;
+import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.Collabs;
-import com.allone.projectmanager.entities.Company;
 import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.Vessel;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
+import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.User;
-import com.allone.projectmanager.tools.JasperReport;
-import com.allone.projectmanager.tools.Printing;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,10 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.print.PrintException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -92,8 +88,6 @@ public class ProjectController extends ProjectCommon {
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREATE.toString()) + "]");
         content.put("sizeBillMaterialService", "Bill of materials or services["
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString()) + "]");
-        content.put("sizeRequestQuotation", "Request for Quotation["
-                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString()) + "]");
         content.put("sizeQuotation", "Quotation["
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.QUOTATION.toString()) + "]");
         content.put("sizePurchase", "Purchase Order["
@@ -102,18 +96,14 @@ public class ProjectController extends ProjectCommon {
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.WORK_ORDER.toString()) + "]");
         content.put("sizeOrderAcknowledge", "Order Acknowledge["
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.ACK_ORDER.toString()) + "]");
-        content.put("sizePackingList", "Packing List["
-                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.PACKING_LIST.toString()) + "]");
-        content.put("sizeDeliveryNote", "Delivery Note["
-                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.DELIVERY_NOTE.toString()) + "]");
-        content.put("sizeShippingInvoice", "Shipping Invoice["
-                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.SHIPPING_INVOICE.toString()) + "]");
+        content.put("sizeForwardingDocs", "Forwarding Documents["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.FORWARDING_DOCUMENTS.toString()) + "]");
         content.put("sizeInvoice", "Invoice["
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.INVOICE.toString()) + "]");
-        content.put("sizeBoxMarking", "Box Markings["
-                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.BOX_MARKING.toString()) + "]");
         content.put("sizeCreditNote", "Credit Note["
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.CREDIT_NOTE.toString()) + "]");
+        content.put("sizeFinal", "Final["
+                + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.FINAL.toString()) + "]");
 
         return content;
     }
@@ -159,7 +149,7 @@ public class ProjectController extends ProjectCommon {
                 model.addAttribute("p_id", -1);
                 model.addAttribute("project_reference", "New Project - REF:" + user.getProject_reference());
                 model.addAttribute("expired", format.format(expired));
-                model.addAttribute("button_save", "<input type='button' class='button alarm' id='save' onclick='saveProject()' value='Save' />\n");
+                model.addAttribute("button_save", "<input type='button' class='button alarm' id='save' onclick='saveProject(1)' value='Save' />\n");
 
                 return "index";
             }
@@ -201,17 +191,33 @@ public class ProjectController extends ProjectCommon {
 
     @RequestMapping(value = {"/save"})
     public @ResponseBody
-    String saveProject(HttpServletRequest request, ProjectDetail pd, String dateExpired, Integer offset, Integer size, Model model) {
+    String saveProject(HttpServletRequest request,
+            ProjectDetail pd,
+            String dateExpired,
+            Boolean searchOpenExist,
+            Integer offset,
+            Integer size,
+            Model model) {
         if (request != null) {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                Map<String, Object> content = new HashMap<>();
+
+                if (searchOpenExist.equals(Boolean.TRUE)) {
+                    String reference = srvProjectManager.getDaoProjectDetail().getOpenExist(pd.getType(), pd.getVessel(), pd.getCompany());
+
+                    if (!Strings.isNullOrEmpty(reference)) {
+                        content.put("exist", "Found open subproject with same type, vessel and company:" + reference);
+
+                        return new Gson().toJson(content);
+                    }
+                }
                 User user = getUser(session.getId());
                 Collabs collab = srvProjectManager.getDaoCollabs().getById(user.getId());
                 Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
 
                 if (collab != null) {
-                    Map<String, Object> content = new HashMap<>();
                     Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(user.
                             getProject_reference()).setStatus(ProjectStatusEnum.CREATE.toString()).build());
 
@@ -225,6 +231,7 @@ public class ProjectController extends ProjectCommon {
                         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                         try {
                             Date parsedDate = formatter.parse(dateExpired);
+                            pd.setExpiredCreate(parsedDate);
                             pd.setExpired(parsedDate);
                         } catch (ParseException ex) {
                             logger.log(Level.SEVERE, null, ex);
@@ -291,62 +298,6 @@ public class ProjectController extends ProjectCommon {
         return new Gson().toJson(content);
     }
 
-    @RequestMapping(value = {"/createpdf"})
-    public @ResponseBody
-    String createProjectPDF(ProjectDetail pd, Integer offset, Integer size) throws JRException {
-        if (pd != null) {
-            Map<String, String> content = new HashMap<>();
-            Collabs user = srvProjectManager.getDaoCollabs().getById(pd.getCreator());
-            Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
-            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
-            Company cust = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.CUSTOMER, pd.
-                    getCustomer());
-
-            JasperReport.createProjectReport(p, pd, getProjectStatusName(pd.getStatus()), getProjectTypeName(pd.
-                    getType()), (user != null) ? user.getSurname() + ", " + user.getName() : "",
-                    (vess != null) ? vess.getName() : "", (cust != null) ? cust.getName() : "");
-
-            String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
-
-            content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
-
-            return new Gson().toJson(content);
-        }
-
-        return "";
-
-    }
-
-    @RequestMapping(
-            value = {"/printpdf"})
-    public @ResponseBody
-    String printProjectPDF(ProjectDetail pd, Integer offset, Integer size) throws IOException, FileNotFoundException,
-            PrintException {
-        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
-
-        if (p != null) {
-            Map<String, String> content = new HashMap<>();
-            String strPath = JasperReport.getPATH_PROJECT() + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                    + "/" + p.getReference().replace("/", "_") + ".pdf";
-
-            Printing.printing(strPath);
-
-            String projectHeader = createProjectHeader();
-            Object[] projectBody = createProjectBody(srvProjectManager, pd, null, null, offset, size);
-//            String projectFooter = (projectBody[0].equals(Boolean.TRUE)) ? createProjectFooter() : "";
-
-            content.put("project_header", projectHeader);
-            content.put("project_body", projectBody[1].toString());
-//            content.put("project_footer", projectFooter);
-
-            return new Gson().toJson(content);
-        }
-
-        return "";
-    }
-
     @RequestMapping(value = {"/create-excel"})
     public @ResponseBody
     String createProjectXLS(Long pdId) {
@@ -377,18 +328,6 @@ public class ProjectController extends ProjectCommon {
         }
 
         return response;
-    }
-
-    @RequestMapping(value = {"/printxls"})
-    public @ResponseBody
-    String printProjectXLS(ProjectDetail pd) {
-        return "";
-    }
-
-    @RequestMapping(value = {"/sendemail"})
-    public @ResponseBody
-    String sendProjectEmail(ProjectDetail p) {
-        return "";
     }
 
     @RequestMapping(value = {"/content"})
@@ -544,6 +483,9 @@ public class ProjectController extends ProjectCommon {
     @RequestMapping(value = "/edit-project")
     public @ResponseBody
     String editProject(HttpServletRequest request, Project p, Model model) {
+        Map<String, String> content = new HashMap<>();
+
+        content.put("status", "");
         if (request != null) {
             HttpSession session = request.getSession();
 
@@ -551,12 +493,50 @@ public class ProjectController extends ProjectCommon {
                 p = srvProjectManager.getDaoProject().getByReference(p.getReference());
                 if (p != null) {
                     setUserProjectId(session.getId(), p.getId());
-                    return "edit-form?id=" + p.getId();
+
+                    content.put("status", "OK");
+                    if (p.getStatus().equals(ProjectStatusEnum.CREATE.toString())) {
+                        content.put("value", "edit-form?id=" + p.getId());
+                    } else if (p.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
+                        content.put("value", "/bill-material-service?id=" + p.getId() + "&mode=EDIT-PROJECT");
+                    } else if (p.getStatus().equals(ProjectStatusEnum.QUOTATION.toString())) {
+                        Boolean foundRFQ = Boolean.FALSE;
+                        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+
+                        if (pds != null && !pds.isEmpty()) {
+                            for (ProjectDetail pd : pds) {
+                                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
+
+                                if (bms != null) {
+                                    List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
+
+                                    if (rqs != null && !rqs.isEmpty()) {
+                                        foundRFQ = Boolean.TRUE;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        content.put("value", (foundRFQ.equals(Boolean.FALSE))
+                                ? "/quotation?id=" + p.getId() + "&mode=EDIT-PROJECT"
+                                : ProjectStatusEnum.QUOTATION.toString());
+                        content.put("pId", p.getId().toString());
+                    }
+                } else {
+                    content.put("value", "No found project");
                 }
+            } else {
+                content.put("value", "expired login");
             }
+        } else {
+            content.put("value", "expired login");
         }
 
-        return "";
+        String response = new Gson().toJson(content);
+
+        logger.log(Level.INFO, "response={0}", response);
+
+        return response;
     }
 
     @RequestMapping(value = "/lst-sub-project")
@@ -641,5 +621,25 @@ public class ProjectController extends ProjectCommon {
         }
 
         return "";
+    }
+
+    @RequestMapping(value = {"/check-flag-rfq"})
+    public @ResponseBody
+    String checkFlagRFQ(Project p) {
+        String response = "";
+
+        if (p != null) {
+            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getFirstByProjectIdType(p.getId(), ProjectTypeEnum.SALE.toString());
+
+            if (pd != null) {
+                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
+
+                if (bms != null) {
+                    response = (bms.getFlagRFQ().equals(Boolean.TRUE)) ? "/ProjectManager/project/request-quotation" : "/ProjectManager/project/quotation";
+                }
+            }
+        }
+
+        return response;
     }
 }

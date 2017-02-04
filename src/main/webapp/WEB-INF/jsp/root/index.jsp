@@ -22,24 +22,16 @@
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/checkbox.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/radio-button.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/core/form-layout.css">
-        <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/image.css">
+       <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/image.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/menu.css">
         <link rel="stylesheet" type="text/css" href="<%=path%>/css/projectmanager/table.css">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="<%=path%>/js/projectmanager/jquery-ui-1.12.1.custom/jquery-ui.min.css">
 
-        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/chosen.jquery.min.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery.dataTables.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/jstree/jquery.jstree.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/critiria.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/expandAvailEvents.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/getToggleInput.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/setCustomDurationChallenge.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/layout.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/themeFunctions.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/canvasjs-1.7.0/canvasjs.min.js"></script>
-
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/jquery.collapse.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/Project.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/BillMaterialService.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/RequestQuotation.js"></script>
@@ -49,7 +41,7 @@
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/vessel.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/common.js"></script>
         <script type="text/javascript" src="<%=path%>/js/projectmanager/common/debug.js"></script>
-        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/jquery.collapse.js"></script>
+        <script type="text/javascript" src="<%=path%>/js/projectmanager/common/jqClock.min.js"></script>
     </head>
     <body>
         <div id="container">

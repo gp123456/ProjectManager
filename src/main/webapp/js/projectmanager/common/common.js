@@ -33,9 +33,9 @@ function setRequestQuotation(pdId, rqId) {
         });
 
         if (diff === true) {
-            requestQuotationIds.push({pd : pdId, rq: rqId});
+            requestQuotationIds.push({pd: pdId, rq: rqId});
         }
     } else {
-        requestQuotationIds.push({pd : pdId, rq: rqId});
+        requestQuotationIds.push({pd: pdId, rq: rqId});
     }
 }

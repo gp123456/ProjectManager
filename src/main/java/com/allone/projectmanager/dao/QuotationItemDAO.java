@@ -70,6 +70,24 @@ public class QuotationItemDAO {
         }
     }
 
+    public QuotationItem add(QuotationItem item) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (item != null) {
+                em.getTransaction().begin();
+                em.persist(item);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        } finally {
+            em.close();
+
+            return item;
+        }
+    }
+
     public Collection add(Collection<QuotationItem> items) {
         EntityManager em = emf.createEntityManager();
 

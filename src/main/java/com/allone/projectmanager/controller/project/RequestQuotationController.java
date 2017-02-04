@@ -18,7 +18,6 @@ import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.allone.projectmanager.entities.Stock;
 import com.allone.projectmanager.enums.CompanyTypeEnum;
 import com.allone.projectmanager.enums.CurrencyEnum;
-import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.RequestQuotationItemModel;
 import com.allone.projectmanager.model.User;
@@ -339,8 +338,20 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return result;
     }
 
+    private String getListCurrency() {
+        String result = "";
+
+        for (CurrencyEnum currency : CurrencyEnum.values()) {
+            result += (currency.name().equals(CurrencyEnum.EUR.name()))
+                    ? "<option value='" + currency.getId() + "' selected='selected'>" + currency.name() + "</option>\n"
+                    : "<option value='" + currency.getId() + "'>" + currency.name() + "</option>\n";
+        }
+
+        return result;
+    }
+
     private String[] getRequestQuotationById(Long rqId) {
-        String[] result = {"", "", "", "", "", "", "", ""};
+        String[] result = {"", "", "", "", "", "", "", "", ""};
         RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(rqId);
 
         if (rq != null) {
@@ -357,12 +368,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                         result[0] = pd.getReference();
                         result[1] = rq.getSupplier();
-                        result[2] = getCurrencyName(rq.getCurrency());
-                        result[3] = info[0];
-                        result[4] = info[1];
-                        result[5] = rq.getNote();
-                        result[6] = rq.getSupplierNote();
-                        result[7] = "REQUEST FOR QUOTATION, PROJECT REF:" + p.getReference();
+                        result[2] = (rq.getCurrency() != -1) ? "txt" : "lst";
+                        result[3] = (rq.getCurrency() != -1) ? getCurrencyName(rq.getCurrency()) : getListCurrency();
+                        result[4] = info[0];
+                        result[5] = info[1];
+                        result[6] = rq.getNote();
+                        result[7] = rq.getSupplierNote();
+                        result[8] = "REQUEST FOR QUOTATION, PROJECT REF:" + p.getReference();
                     }
                 }
             }
@@ -518,10 +530,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setClassContent("content");
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         if (p != null) {
-                            if (p.getStatus().equals(ProjectStatusEnum.REQUEST_QUOTATION.toString())) {
-                                p.setStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-                                srvProjectManager.getDaoProject().edit(p);
-                            }
                             setHeaderInfo(session, model);
                             model.addAttribute("projectId", p.getId());
                             model.addAttribute("mode", modeInfo[1]);
@@ -554,9 +562,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         model.addAttribute("requestQuotationId", p.getId());
                         model.addAttribute("emailSender", emailSender);
                         model.addAttribute("buttonClearAll", "<input type='button' value='Clear All' class='button' onclick='getRequestQuotation("
-                                + "\"clear\"" + ")'>");
+                                + "\"clear\")'>");
                         model.addAttribute("buttonRefresh", "<input type='button' value='Calculate' class='button alarm' onclick='getRequestQuotation("
-                                + "\"refresh\"" + ")' id='refresh' disabled='disabled'>");
+                                + "\"refresh\")' id='refresh' disabled='disabled'>");
                         model.addAttribute("buttonSendEmail", "<input type='button' value='Submit' class='button alarm' onclick='sendEmailSupplier()'"
                                 + " id='email' disabled='disabled'>");
 
@@ -616,6 +624,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         model.addAttribute("is_quotation", 0);
                         break;
                     }
+                    case "NEW":
                     case "BMSI": {
                         this.setTitle("Preparation Request for Quotation");
                         this.setHeader("header.jsp");
@@ -632,8 +641,24 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         model.addAttribute("billMaterialServiceItems", pbInfo[2]);
                         break;
                     }
+                    case "EDIT-PROJECT": {
+                        this.setTitle("Edit Request For Quotation");
+                        this.setHeader("header.jsp");
+                        this.setSide_bar("../project/sidebar.jsp");
+                        this.setContent("../project/RequestQuotationExist.jsp");
+                        this.setClassContent("content");
+                        setHeaderInfo(session, model);
+                        p = srvProjectManager.getDaoProject().getById(p.getId());
+                        String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
+                        model.addAttribute("projectId", p.getId());
+                        model.addAttribute("projectReference", p.getReference());
+                        model.addAttribute("subproject", pbInfo[0]);
+                        model.addAttribute("billMaterialService", pbInfo[1]);
+                        model.addAttribute("billMaterialServiceItems", pbInfo[2]);
+                        break;
+                    }
                     default: {
-                        this.setTitle("Preparation Request for Quotation");
+                        this.setTitle("Edit Request For Quotation");
                         this.setHeader("header.jsp");
                         this.setSide_bar("../project/sidebar.jsp");
                         this.setContent("../project/RequestQuotationSelectItem.jsp");
@@ -785,12 +810,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
             content.put("subprojects", rqInfo[0]);
             content.put("suppliers", rqInfo[1]);
-            content.put("currency", rqInfo[2]);
-            content.put("requestQuotation", rqInfo[3]);
-            content.put("itemRequestQuotation", rqInfo[4]);
-            content.put("notes", rqInfo[5]);
-            content.put("notesSupplier", rqInfo[6]);
-            content.put("reference", rqInfo[7]);
+            content.put("modeCurrency", rqInfo[2]);
+            content.put("currency", rqInfo[3]);
+            content.put("requestQuotation", rqInfo[4]);
+            content.put("itemRequestQuotation", rqInfo[5]);
+            content.put("notes", rqInfo[6]);
+            content.put("notesSupplier", rqInfo[7]);
+            content.put("reference", rqInfo[8]);
 
             return new Gson().toJson(content);
         } else {
@@ -807,9 +833,10 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
             content.put("subproject", rqInfo[0]);
             content.put("supplier", rqInfo[1]);
-            content.put("currency", rqInfo[2]);
-            content.put("requestQuotation", rqInfo[3]);
-            content.put("itemRequestQuotation", rqInfo[4]);
+            content.put("modeCurrency", rqInfo[2]);
+            content.put("currency", rqInfo[3]);
+            content.put("requestQuotation", rqInfo[4]);
+            content.put("itemRequestQuotation", rqInfo[5]);
 
             return new Gson().toJson(content);
         } else {
@@ -905,6 +932,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
     public @ResponseBody
     @SuppressWarnings("null")
     String sendEmailSubmit(HttpServletRequest request, String email, RequestQuotation rq) throws MessagingException {
+        String response = "";
+
         if (request != null) {
             HttpSession session = request.getSession();
 
@@ -924,6 +953,10 @@ public class RequestQuotationController extends RequestQuotationCommon {
 //                                sendMail("smtp.dmail.hol.gr", user.getEmail(), email, null, "MARPO GROUP RFQ - REF:"
 //                                        + pd.getReference(), "http://46.176.159.231:8080/ProjectManager/project/request-quotation?id="
 //                                        + rq.getId().toString() + "&emailSender=" + user.getEmail() + "&mode=RQS");
+                                response = "http://localhost:8081/ProjectManager/project/request-quotation?id=" + rq.getId() + "&emailSender="
+                                        + user.getEmail() + "&mode=RQS";
+
+                                logger.log(Level.INFO, "response={0}", response);
                             }
                         }
                     }
@@ -931,7 +964,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             }
         }
 
-        return "";
+        return response;
     }
 
     @RequestMapping(value = "/request-quotation/send-email")
@@ -949,10 +982,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
                     if (bms != null && pd != null) {
-                        if (pd.getStatus().equals(ProjectStatusEnum.REQUEST_QUOTATION.toString())) {
-                            pd.setStatus(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString());
-                            srvProjectManager.getDaoProjectDetail().edit(pd);
-                        }
                         RequestQuotation _rq = getRequestQuotation(bms.getId());
 
                         _rq.setName(pd.getReference() + "-" + rq.getSupplier());
@@ -1200,6 +1229,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
                 BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
 
                 if (bms != null) {
+                    bms.setFlagRFQ(Boolean.FALSE);
+                    srvProjectManager.getDaoBillMaterialService().edit(bms);
                     List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
                     Map<String, String> content = new HashMap<>();
 
@@ -1215,10 +1246,6 @@ public class RequestQuotationController extends RequestQuotationCommon {
                             }
                         }
                         if (complete.equals(Boolean.TRUE)) {
-                            p.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
-                            srvProjectManager.getDaoProject().edit(p);
-                            pd.setStatus(ProjectStatusEnum.REQUEST_QUOTATION.toString());
-                            srvProjectManager.getDaoProjectDetail().edit(pd);
                             content.put("header", "REQUEST FOR QUOTATION, SUB-PROJECT REF:" + p.getReference() + " COMPLETE");
                             content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
                         } else {

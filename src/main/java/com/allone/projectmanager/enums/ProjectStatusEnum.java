@@ -12,17 +12,14 @@ package com.allone.projectmanager.enums;
 public enum ProjectStatusEnum {
     CREATE("Create"),
     BILL_MATERIAL_SERVICE("Bill of Materials or Services"),
-    REQUEST_QUOTATION("Request for Quotation"),
     QUOTATION("Quotation"),
     PURCHASE_ORDER("Purchase Order"),
     WORK_ORDER("Work Order"),
     ACK_ORDER("Acknowledge Order"),
-    PACKING_LIST("Packing List"),
-    DELIVERY_NOTE("Delivery Note"),
-    SHIPPING_INVOICE("Shipping Invoice"),
+    FORWARDING_DOCUMENTS("Forwarding Documents"),
     INVOICE("Invoice"),
-    BOX_MARKING("Box Marking"),
-    CREDIT_NOTE("Credit Note");
+    CREDIT_NOTE("Credit Note"),
+    FINAL("Final");
 
     private final String value;
 

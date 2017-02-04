@@ -10,10 +10,10 @@ package com.allone.projectmanager.enums;
  * @author Admin
  */
 public enum LocationEnum {
-    GREECE(1, "greece"),
-    CHINA(2, "china"),
-    SKOREA(3, "s korea"),
-    TAIWAN(4, "taiwan");
+    GREECE(1, "GREECE"),
+    CHINA(2, "CHINA"),
+    SKOREA(3, "S KOREA"),
+    TAIWAN(4, "TAIWAN");
 
     private final Integer id;
 

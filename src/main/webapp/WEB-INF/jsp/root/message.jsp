@@ -5,6 +5,6 @@
 --%>
 
 <div id="header" class="formLayout">
-    <h1>QUOTATION - SELECT REQUEST FOR QUOTATION - REF:${projectReference}</h1>
+    <h1>{title}</h1>
     <h3 style="color: red">${message}</h3>
 </div>

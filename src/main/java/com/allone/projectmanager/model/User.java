@@ -19,9 +19,11 @@ public class User {
     private String last_login;
     private String avatar;
     private String project_reference;
+    private Integer project_expired_created;
     private Integer project_expired;
     private String email;
     private Long projectId;
+    private String role;
 
     public String getProject_reference() {
         return project_reference;
@@ -109,5 +111,13 @@ public class User {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

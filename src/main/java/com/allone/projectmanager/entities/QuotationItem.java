@@ -50,9 +50,9 @@ public class QuotationItem implements Serializable {
     private Long quotation;
 
     @Basic(optional = false)
-    @Column(name = "request_quotation_item")
+    @Column(name = "bill_material_service_item")
     @NotNull
-    private Long requestQuotationItem;
+    private Long billMaterialServiceItem;
 
     @Basic(optional = false)
     @Column(name = "discount")
@@ -74,7 +74,7 @@ public class QuotationItem implements Serializable {
 
     private QuotationItem(Builder builder) {
         this.quotation = builder.quotation;
-        this.requestQuotationItem = builder.requestQuotationItem;
+        this.billMaterialServiceItem = builder.billMaterialServiceItem;
         this.discount = builder.discount;
         this.unitPrice = builder.unitPrice;
         this.total = builder.total;
@@ -96,12 +96,12 @@ public class QuotationItem implements Serializable {
         this.quotation = quotation;
     }
 
-    public Long getRequestQuotationItem() {
-        return requestQuotationItem;
+    public Long getBillMaterialServiceItem() {
+        return billMaterialServiceItem;
     }
 
-    public void setRequestQuotationItem(Long requestQuotationItem) {
-        this.requestQuotationItem = requestQuotationItem;
+    public void setBillMaterialServiceItem(Long billMaterialServiceItem) {
+        this.billMaterialServiceItem = billMaterialServiceItem;
     }
 
     public BigDecimal getDiscount() {
@@ -153,8 +153,8 @@ public class QuotationItem implements Serializable {
 
         QuotationItem other = (QuotationItem) object;
         return (this.id == null || other.id == null)
-                ? (other.requestQuotationItem != null && this.requestQuotationItem != null
-                && this.requestQuotationItem.equals(other.requestQuotationItem)) ? true : false
+                ? (other.billMaterialServiceItem != null && this.billMaterialServiceItem != null
+                && this.billMaterialServiceItem.equals(other.billMaterialServiceItem)) ? true : false
                 : (this.id.equals(other.id)) ? true : false;
     }
 
@@ -167,7 +167,7 @@ public class QuotationItem implements Serializable {
 
         private Long quotation;
 
-        private Long requestQuotationItem;
+        private Long billMaterialServiceItem;
 
         private BigDecimal discount;
 
@@ -177,8 +177,8 @@ public class QuotationItem implements Serializable {
 
         private Boolean edit;
 
-        public Builder setRequestQuotationItem(Long requestQuotationItem) {
-            this.requestQuotationItem = requestQuotationItem;
+        public Builder setBillMaterialServiceItem(Long billMaterialServiceItem) {
+            this.billMaterialServiceItem = billMaterialServiceItem;
 
             return this;
         }

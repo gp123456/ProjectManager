@@ -11,6 +11,8 @@ import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
+import com.allone.projectmanager.entities.Quotation;
+import com.allone.projectmanager.entities.QuotationItem;
 import com.allone.projectmanager.entities.RequestQuotation;
 import com.allone.projectmanager.entities.RequestQuotationItem;
 import com.google.common.base.Strings;
@@ -148,6 +150,74 @@ public class HistoryNewProjectController extends Common {
         return response;
     }
 
+    private String getQIHeader() {
+        return "<tr>"
+                + "<th>Item</th>\n"
+                + "<th>Price</th>\n"
+                + "<th>Discount</th>\n"
+                + "<th>Total</th>\n"
+                + "</tr>\n";
+    }
+
+    private String getQIBody(List<QuotationItem> qis) {
+        String response = "";
+
+        for (QuotationItem qi : qis) {
+            BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(qi.getBillMaterialServiceItem());
+
+            if (bmsi != null) {
+                Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                if (item != null) {
+                    response += "<tr>\n"
+                            + "<td>" + (!Strings.isNullOrEmpty(item.getImno()) ? item.getImno() : "") + "</td>\n"
+                            + "<td>" + (qi.getUnitPrice() != null ? qi.getUnitPrice() : "0.00") + "</td>\n"
+                            + "<td>" + (qi.getDiscount() != null ? qi.getDiscount() : "0.00") + "</td>\n"
+                            + "<td>" + (qi.getTotal() != null ? qi.getTotal() : "0.00") + "</td>\n"
+                            + "</tr>";
+                }
+            }
+        }
+
+        return response;
+    }
+
+    private String getQIFooter(Integer count) {
+        String response = "";
+
+        return response;
+    }
+
+    private String getQSHeader() {
+        return "<tr>"
+                + "<th>Customer</th>\n"
+                + "<th>Location</th>\n"
+                + "<th>Currency</th>\n"
+                + "<th>Grand Total</th>\n"
+                + "</tr>\n";
+    }
+
+    private String getQSBody(List<Quotation> qs) {
+        String response = "";
+
+        for (Quotation q : qs) {
+            response += "<tr>\n"
+                    + "<td><a href='#' onclick='dlgViewQ(" + q.getId() + ")'>" + q.getCustomer() + "</a></td>\n"
+                    + "<td>" + getLocationNameById(q.getLocation()) + "</td>\n"
+                    + "<td>" + getCurrencyName(q.getCurrency()) + "</td>\n"
+                    + "<td>" + q.getGrandTotal() + "</td>\n"
+                    + "</tr>";
+        }
+
+        return response;
+    }
+
+    private String getQSFooter(Integer count) {
+        String response = "";
+
+        return response;
+    }
+
     @RequestMapping(value = "/history-new-project")
     public String WorkOrder(HttpServletRequest request, Model model) {
         if (request != null) {
@@ -196,6 +266,14 @@ public class HistoryNewProjectController extends Common {
                     content.put("rfqBody", getRQSBody(rqs));
                     content.put("rfqFooter", getRQSFooter(rqs.size()));
                 }
+
+                List<Quotation> qs = srvProjectManager.getDaoQuotation().getByBillMaterialService(bms.getId());
+
+                if (qs != null && !qs.isEmpty()) {
+                    content.put("qHeader", getQSHeader());
+                    content.put("qBody", getQSBody(qs));
+                    content.put("qFooter", getQSFooter(qs.size()));
+                }
             }
         }
 
@@ -226,6 +304,41 @@ public class HistoryNewProjectController extends Common {
                 content.put("rfqiHeader", getRFQIHeader());
                 content.put("rfqiBody", getRFQIBody(rfqi));
                 content.put("rfqiFooter", getRFQIFooter(rfqi.size()));
+            }
+        }
+
+        return new Gson().toJson(content);
+    }
+
+    @RequestMapping(value = "/history-new-project/q-info")
+    public @ResponseBody
+    String getQInfo(Long qId) {
+        Map<String, String> content = new HashMap<>();
+        Quotation q = srvProjectManager.getDaoQuotation().getById(qId);
+
+        if (q != null) {
+            List<QuotationItem> qi = srvProjectManager.getDaoQuotationItem().getByQuotation(q.getId());
+
+            content.put("qName", !Strings.isNullOrEmpty(q.getName()) ? q.getName() : "");
+            content.put("qComplete", q.getComplete().toString());
+            content.put("qDiscard", q.getDiscard().toString());
+            content.put("qCustomer", !Strings.isNullOrEmpty(q.getCustomer()) ? q.getCustomer() : "");
+            content.put("qCustomerRef", !Strings.isNullOrEmpty(q.getCustomerReference()) ? q.getCustomerReference() : "");
+            content.put("qLocation", q.getLocation() != null ? getLocationNameById(q.getLocation()) : "");
+            content.put("qCurrency", q.getCurrency() != null ? getCurrencyById(q.getCurrency()) : "");
+            content.put("qAvailability", !Strings.isNullOrEmpty(q.getAvailability()) ? q.getAvailability() : "");
+            content.put("qDelivery", !Strings.isNullOrEmpty(q.getDelivery()) ? q.getDelivery() : "");
+            content.put("qPacking", !Strings.isNullOrEmpty(q.getPacking()) ? q.getPacking() : "");
+            content.put("qPayment", !Strings.isNullOrEmpty(q.getPayment()) ? q.getPayment() : "");
+            content.put("qValidity", !Strings.isNullOrEmpty(q.getValidity()) ? q.getValidity() : "");
+            content.put("qGrandTotal", q.getGrandTotal() != null ? q.getGrandTotal().toString() : "");
+            content.put("qWelcome", !Strings.isNullOrEmpty(q.getWelcome()) ? q.getWelcome() : "");
+            content.put("qRemarks", !Strings.isNullOrEmpty(q.getRemark()) ? q.getRemark() : "");
+            content.put("qNote", !Strings.isNullOrEmpty(q.getNote()) ? q.getNote() : "");
+            if (qi != null && !qi.isEmpty()) {
+                content.put("qiHeader", getQIHeader());
+                content.put("qiBody", getQIBody(qi));
+                content.put("qiFooter", getQIFooter(qi.size()));
             }
         }
 

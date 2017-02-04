@@ -7,6 +7,7 @@ package com.allone.projectmanager.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,8 +34,10 @@ import javax.xml.bind.annotation.XmlRootElement;
         {
             @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findById",
                     query = "SELECT q FROM Quotation q WHERE q.id = :id"),
-            @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findByRequestForQuotation",
-                    query = "SELECT q FROM Quotation q WHERE q.requestQuotation = :id")
+            @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findByBillMaterialService",
+                    query = "SELECT q FROM Quotation q WHERE q.billMaterialService = :id"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.Quotation.findValid",
+                    query = "SELECT q FROM Quotation q WHERE q.billMaterialService = :id AND q.complete=1 AND q.discard=0 ORDER BY q.created DESC")
         })
 public class Quotation implements Serializable {
 
@@ -46,6 +51,12 @@ public class Quotation implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "created")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
 
     @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
     private Boolean complete;
@@ -61,9 +72,9 @@ public class Quotation implements Serializable {
     @NotNull
     private String customerReference;
 
-    @Column(name = "request_quotation")
+    @Column(name = "bill_material_service")
     @NotNull
-    private Long requestQuotation;
+    private Long billMaterialService;
 
     @Column(name = "currency")
     @NotNull
@@ -103,7 +114,8 @@ public class Quotation implements Serializable {
 
     private Quotation(Builder builder) {
         name = builder.name;
-        requestQuotation = builder.requestQuotation;
+        created = builder.created;
+        billMaterialService = builder.billMaterialService;
         customer = builder.customer;
         customerReference = builder.customerReference;
         currency = builder.currency;
@@ -134,6 +146,14 @@ public class Quotation implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public Integer getCurrency() {
@@ -184,12 +204,12 @@ public class Quotation implements Serializable {
         this.customerReference = customerReference;
     }
 
-    public Long getRequestQuotation() {
-        return requestQuotation;
+    public Long getBillMaterialService() {
+        return billMaterialService;
     }
 
-    public void setRequestQuotation(Long requestQuotation) {
-        this.requestQuotation = requestQuotation;
+    public void setBillMaterialService(Long billMaterialService) {
+        this.billMaterialService = billMaterialService;
     }
 
     public String getAvailability() {
@@ -292,6 +312,8 @@ public class Quotation implements Serializable {
 
         private String name;
 
+        private Date created;
+
         private Boolean complete;
 
         private Boolean discard;
@@ -300,7 +322,7 @@ public class Quotation implements Serializable {
 
         private String customerReference;
 
-        private Long requestQuotation;
+        private Long billMaterialService;
 
         private Integer currency;
 
@@ -330,6 +352,12 @@ public class Quotation implements Serializable {
             return this;
         }
 
+        public Builder setCreated(Date created) {
+            this.created = created;
+
+            return this;
+        }
+
         public Builder setComplete(Boolean complete) {
             this.complete = complete;
 
@@ -354,8 +382,8 @@ public class Quotation implements Serializable {
             return this;
         }
 
-        public Builder setRequestQuotation(Long requestQuotation) {
-            this.requestQuotation = requestQuotation;
+        public Builder setBillMaterialService(Long billMaterialService) {
+            this.billMaterialService = billMaterialService;
 
             return this;
         }

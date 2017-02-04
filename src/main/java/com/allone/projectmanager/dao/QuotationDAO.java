@@ -48,15 +48,34 @@ public class QuotationDAO {
         return value;
     }
 
-    public List getByRequestForQuotation(Long id) {
+    public List getByBillMaterialService(Long id) {
         List<Quotation> value = null;
         EntityManager em = emf.createEntityManager();
 
         try {
             if (id != null && id.compareTo(0l) >= 0) {
-                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Quotation.findByRequestForQuotation").setParameter("id", id);
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Quotation.findByBillMaterialService").setParameter("id", id);
 
                 value = (query != null) ? query.getResultList() : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return value;
+    }
+
+    public Quotation getValid(Long id) {
+        Quotation value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (id != null && id.compareTo(0l) >= 0) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.Quotation.findValid").setParameter("id", id).setMaxResults(1);
+
+                value = (query != null) ? (Quotation) query.getSingleResult() : null;
             }
         } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());

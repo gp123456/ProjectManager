@@ -76,7 +76,9 @@ import javax.xml.bind.annotation.XmlRootElement;
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findCreatedByProjectExceptId",
                     query = "SELECT p FROM ProjectDetail p WHERE p.project = :pId AND p.id != :pdId AND p.status = :status"),
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
-                    query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company")
+                    query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findOpenExist",
+                    query = "SELECT p.reference FROM ProjectDetail p WHERE p.type = :type AND p.vessel = :vessel AND p.company = :company AND p.status <> :status")
         })
 public class ProjectDetail implements Serializable {
 
@@ -115,6 +117,11 @@ public class ProjectDetail implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date expired;
 
+    @Basic(optional = false)
+    @Column(name = "expiredCreate")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expiredCreate;
+
     @Column(name = "customer")
     private String customer;
 
@@ -126,7 +133,6 @@ public class ProjectDetail implements Serializable {
     @Column(name = "company")
     private String company;
 
-    @Basic(optional = false)
     @Column(name = "contact")
     private Long contact;
 
@@ -134,7 +140,6 @@ public class ProjectDetail implements Serializable {
     @Column(name = "reference")
     private String reference;
 
-    @Basic(optional = false)
     @Column(name = "vesselName")
     private String vesselName;
 
@@ -145,6 +150,7 @@ public class ProjectDetail implements Serializable {
         creator = builder.creator;
         created = builder.created;
         expired = builder.expired;
+        expiredCreate = builder.expiredCreate;
         customer = builder.customer;
         vessel = builder.vessel;
         company = builder.company;
@@ -208,6 +214,14 @@ public class ProjectDetail implements Serializable {
         this.expired = expired;
     }
 
+    public Date getExpiredCreate() {
+        return expiredCreate;
+    }
+
+    public void setExpiredCreate(Date expiredCreate) {
+        this.expiredCreate = expiredCreate;
+    }
+
     public String getCompany() {
         return company;
     }
@@ -264,50 +278,6 @@ public class ProjectDetail implements Serializable {
         this.reference = reference;
     }
 
-//    @XmlTransient
-//    public List<ItemTrans> getListItemTrans() {
-//        return listItemTrans;
-//    }
-//
-//    public void setListItemTrans(List<ItemTrans> listItemTrans) {
-//        this.listItemTrans = listItemTrans;
-//    }
-//
-//    @XmlTransient
-//    public List<ProjectBill> getListProjectBill() {
-//        return listProjectBill;
-//    }
-//
-//    public void setListProjectBill(List<ProjectBill> listProjectBill) {
-//        this.listProjectBill = listProjectBill;
-//    }
-//
-//    @XmlTransient
-//    public List<PurchaseOrder> getListPurchaseOrders() {
-//        return listPurchaseOrders;
-//    }
-//
-//    public void setListPurchaseOrders(List<PurchaseOrder> listPurchaseOrders) {
-//        this.listPurchaseOrders = listPurchaseOrders;
-//    }
-//
-//    @XmlTransient
-//    public List<Repimage> getListRepimages() {
-//        return listRepimages;
-//    }
-//
-//    public void setListRepimages(List<Repimage> listRepimages) {
-//        this.listRepimages = listRepimages;
-//    }
-//
-//    @XmlTransient
-//    public List<RequestQuotation> getListRequestQuotations() {
-//        return listRequestQuotations;
-//    }
-//
-//    public void setListRequestQuotations(List<RequestQuotation> listRequestQuotations) {
-//        this.listRequestQuotations = listRequestQuotations;
-//    }
     @Override
     public int hashCode() {
         int hash = 0;
@@ -346,6 +316,8 @@ public class ProjectDetail implements Serializable {
         private Date created;
 
         private Date expired;
+
+        private Date expiredCreate;
 
         private String customer;
 
@@ -391,6 +363,12 @@ public class ProjectDetail implements Serializable {
 
         public Builder setExpired(Date expired) {
             this.expired = expired;
+
+            return this;
+        }
+
+        public Builder setExpiredCreate(Date expired) {
+            this.expiredCreate = expired;
 
             return this;
         }

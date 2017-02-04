@@ -7,16 +7,28 @@
 <script>
     $(function () {
         fillSearchCriteriaProject("new");
+        setTimeout(function () {
+            location.reload(1);
+        }, 600000);
     });
 </script>
 
 <div id="default-example" data-collapse>
-    <h1>Search Criteria</h1>
+    <h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Search Criteria</td>
+                    <td><input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/></td>
+                </tr>
+            </tbody>
+        </table>
+    </h2>
     <div class="searchCriteria"><jsp:include page="../project/searchCritiria.jsp"/></div>
 </div>
-<h1 id="count">Results
+<h2 id="count">Results
     <input type="button" class="button" value="Create Excel" onclick="createAllExcel()"/>
-</h1>
+</h2>
 <div class="formLayout">
     <input type="hidden" id="project-detail-id"/>
     <table class="table tablesorter">

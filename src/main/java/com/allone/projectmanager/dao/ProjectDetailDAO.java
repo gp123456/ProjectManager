@@ -469,6 +469,30 @@ public class ProjectDetailDAO {
         return values;
     }
 
+    public String getOpenExist(String type, Long vessel, String company) {
+        String value = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (!Strings.isNullOrEmpty(type) && vessel != null && vessel.compareTo(0l) > 0 && !Strings.isNullOrEmpty(company)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findOpenExist")
+                        .setParameter("type", type)
+                        .setParameter("vessel", vessel)
+                        .setParameter("company", company)
+                        .setParameter("status", ProjectStatusEnum.INVOICE.toString())
+                        .setMaxResults(1);
+
+                value = (query != null) ? (String) query.getSingleResult() : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return value;
+    }
+
     public ProjectDetail add(ProjectDetail item) {
         EntityManager em = emf.createEntityManager();
 

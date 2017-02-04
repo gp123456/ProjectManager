@@ -47,7 +47,7 @@
     <input type="button" class="button-header" value="Debug" onclick="OpenInNewTab('<%=path%>/debug/snapshot');"/>
 </div>
 <%}%>
-<div id="userHead">
+<div id="userMainHead">
     <div class="loginInfo"> 
         <div class="status">${full_name}</div>
         <p></p><div>Last login: ${last_login}</div>

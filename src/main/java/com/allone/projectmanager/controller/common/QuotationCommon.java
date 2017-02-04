@@ -5,12 +5,8 @@
  */
 package com.allone.projectmanager.controller.common;
 
-import com.allone.projectmanager.ProjectManagerService;
-import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.Quotation;
 import com.allone.projectmanager.entities.QuotationItem;
-import com.allone.projectmanager.entities.RequestQuotation;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,17 +27,14 @@ public class QuotationCommon extends Common {
 
     private final Map<QuotationKey, List<QuotationItem>> mapQuotationItems = new HashMap<>();
 
-    private final List<RequestQuotationInfo> lstRQInfo = new ArrayList<>();
-
     public void resetCommonValues() {
         mapQuotation.clear();
         mapQuotationItems.clear();
-        lstRQInfo.clear();
     }
 
     public void setMapQuotation(final Quotation q) {
         if (q != null) {
-            mapQuotation.put(new QuotationKey(q.getRequestQuotation(), q.getLocation()), q);
+            mapQuotation.put(new QuotationKey(q.getBillMaterialService(), q.getLocation()), q);
         }
     }
 
@@ -117,58 +110,6 @@ public class QuotationCommon extends Common {
         }
 
         return null;
-    }
-
-    public void setLstRQInfo(final String infoRQ, ProjectManagerService srvProjectManager) {
-        RequestQuotationInfo[] rqis = new Gson().fromJson(infoRQ, RequestQuotationInfo[].class);
-
-        if (rqis != null && rqis.length > 0) {
-            lstRQInfo.addAll(Arrays.asList(rqis));
-            for (RequestQuotationInfo rqi : rqis) {
-                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(rqi.getPd());
-
-                if (bms != null) {
-                    List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
-
-                    if (rqs != null && !rqs.isEmpty()) {
-                        rqs.stream().filter((rq) -> (!rq.getId().equals(rqi.getRq()))).map((rq) -> {
-                            rq.setDiscard(Boolean.TRUE);
-                            return rq;
-                        }).forEach((rq) -> {
-                            srvProjectManager.getDaoRequestQuotation().edit(rq);
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    public Long getRQId() {
-        return (!lstRQInfo.isEmpty()) ? lstRQInfo.get(0).getRq() : null;
-    }
-
-    public List getRQIds() {
-        List<Long> rqIds = new ArrayList<>();
-
-        if (!lstRQInfo.isEmpty()) {
-            for (int i = lstRQInfo.size() - 1; i >= 0; i--) {
-                rqIds.add(lstRQInfo.get(i).getRq());
-            }
-        }
-
-        return rqIds;
-    }
-
-    public List<Long> getPDIds() {
-        List<Long> pdIds = new ArrayList<>();
-
-        if (!lstRQInfo.isEmpty()) {
-            for (int i = lstRQInfo.size() - 1; i >= 0; i--) {
-                pdIds.add(lstRQInfo.get(i).getPd());
-            }
-        }
-
-        return pdIds;
     }
 }
 

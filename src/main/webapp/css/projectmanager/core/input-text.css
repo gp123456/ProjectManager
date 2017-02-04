@@ -30,7 +30,7 @@ form input {
 }
 
 form input, form textarea {
-    width: 100%;
+    width: 600px;
     border: 2px solid gray;
     background: none;
     position: relative;
@@ -45,6 +45,7 @@ form input:valid, form textarea:valid {
 }
 form input:focus, form textarea:focus {
     border-color: #f06d06;
+    /*width: 100%;*/
 }
 form input:focus + label.go-bottom-label, form textarea:focus + label.go-bottom-label {
     background: #f06d06;

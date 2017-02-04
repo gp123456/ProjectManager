@@ -93,22 +93,6 @@ function removeRow(id) {
     });
 }
 
-function createTo(id) {
-    $.ajax({
-        type: "POST",
-        url: "createpdf",
-        data: "id=" + id + "&offset=0&size=10",
-        success: function (response) {
-            var content = JSON.parse(response)
-
-            $("#header").html(content.header);
-            $("#body").html(content.body);
-        },
-        error: function (e) {
-        }
-    });
-}
-
 function createAllExcel() {
     var reference = $("#search-reference").val();
     var type = $("#search-type option:selected").attr("value");
@@ -156,23 +140,9 @@ function createExcel(pdId) {
     });
 }
 
-function printXLS(id) {
-    $.ajax({
-        type: "POST",
-        url: "printxls",
-        data: "id=" + id,
-        success: function (response) {
-            var content = JSON.parse(response)
+function saveProject(searchOpenExist) {
+    console.log(searchOpenExist);
 
-            $("#project-header").html(content.project_header);
-            $("#project-body").html(content.project_body);
-        },
-        error: function (e) {
-        }
-    });
-}
-
-function saveProject() {
     var type = $("#type option:selected").attr("value");
     var expired = $("#expired").datepicker({dateFormat: 'yyyy-mm-dd'}).val();
     var customer = $("#customer option:selected").attr("value");
@@ -180,46 +150,49 @@ function saveProject() {
     var company = $("#company option:selected").attr("value");
     var contact = $("#contact option:selected").attr("value");
 
-    if (company == "none") {
+    if (company === "none") {
         alert("you must select company");
         return;
     }
-    if (type == "none") {
+    if (type === "none") {
         alert("you must select type");
         return;
     }
-    if (customer == "none") {
+    if (customer === "none") {
         alert("you must select a customer or add one");
-        return;
-    }
-    if (vessel == -1 || isNaN(vessel)) {
-        alert("you must select a vessel or add one");
-        return;
-    }
-    if (contact == -1 || isNaN(contact)) {
-        alert("you must select a contact or add one");
         return;
     }
 
     $.ajax({
         type: "POST",
         url: "save",
-        data: "type=" + type + "&customer=" + customer + "&vessel=" + vessel + "&company=" + company + "&contact=" + contact + "&dateExpired=" + expired,
+        data: "type=" + type
+                + "&customer=" + customer
+                + "&vessel=" + vessel
+                + "&company=" + company
+                + "&contact=" + contact
+                + "&dateExpired=" + expired
+                + "&searchOpenExist=" + searchOpenExist,
         success: function (response) {
             var content = JSON.parse(response)
 
+            if (typeof content.exist !== "undefined") {
+                if (!confirm(content.exist)) {
+                    saveProject(0);
+                }
+            }
             if (content.header) {
                 $("#header").html(content.header);
             }
             if (content.body) {
                 $("#body").html(content.body);
             }
-            
+
             $("h1").text(content.projectReference);
             $("#save").attr('class', 'button');
             $("#save").attr('disabled', 'disabled');
             setTimeout(function () {
-                window.location = content.location;
+                location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
             }, 5000);
         },
         error: function (e) {
@@ -278,6 +251,8 @@ function projectFilterCustomer() {
 }
 
 function plotStatusInfo(id, title, info) {
+    console.log(info);
+
     var chart = new CanvasJS.Chart(id, {
         width: 600,
         title: {
@@ -294,7 +269,8 @@ function plotStatusInfo(id, title, info) {
                     {label: info[5]["name"] + "[" + info[5]["value"] + "]", y: info[5]["value"]},
                     {label: info[6]["name"] + "[" + info[6]["value"] + "]", y: info[6]["value"]},
                     {label: info[7]["name"] + "[" + info[7]["value"] + "]", y: info[7]["value"]},
-                    {label: info[8]["name"] + "[" + info[8]["value"] + "]", y: info[8]["value"]}
+                    {label: info[8]["name"] + "[" + info[8]["value"] + "]", y: info[8]["value"]},
+                    {label: info[9]["name"] + "[" + info[9]["value"] + "]", y: info[9]["value"]}
                 ]
             }
         ]
@@ -334,8 +310,7 @@ function dashboardView() {
         url: "view",
         success: function (response) {
             var content = JSON.parse(response);
-            var totalSaleStatus = null, totalServiceStatus = null, totalSaleCompany = null,
-                    totalServiceCompany = null;
+            var totalSaleStatus = null, totalServiceStatus = null, totalSaleCompany = null, totalServiceCompany = null;
             var SaleStatus = [], ServiceStatus = [], SaleCompany = [], ServiceCompany = [];
 
             if (content.OpenProjectSaleStatus.length !== 0) {
@@ -418,12 +393,29 @@ function getStatuses() {
     });
 }
 
-function setProjectByStatus(mode, dest_path) {
+function setProjectByStatus(dlg_id, dest_path, mode) {
     var id = $('input[name = "radio-project"]:checked').val();
 
-    window.location.href = dest_path + "?id=" + id + "&mode=" + mode;
+    if (typeof id !== "undefined") {
+        if (typeof dest_path === "undefined") {
+            $.ajax({
+                type: "POST",
+                url: "check-flag-rfq",
+                data: "id=" + id,
+                success: function (response) {
+                    location.href = response + "?id=" + id + "&mode=" + mode;
+                },
+                error: function (e) {
+                }
+            });
+        } else {
+            window.location.href = dest_path + "?id=" + id + "&mode=" + mode;
+        }
+    } else {
+        window.location.href = "/ProjectManager/project/snapshot";
+    }
 
-    $("#dlg-edit-status").dialog("close");
+    $(dlg_id).dialog("close");
 }
 
 function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
@@ -438,7 +430,7 @@ function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
         width: 374,
         buttons: {
             "submit": function () {
-                setProjectByStatus(mode, dest_path);
+                setProjectByStatus(dlg_id, dest_path, mode);
             }
         },
         show: {
@@ -453,18 +445,30 @@ function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
 }
 
 function editProject() {
-    var reference = $("#project-reference").val();
+    var reference = $("#prj-reference").val();
 
     var data = "reference=" + reference;
+
+    console.log(data);
 
     $.ajax({
         type: "GET",
         url: "/ProjectManager/project/edit-project",
         data: data,
         success: function (response) {
-            window.location.href = response;
+            var content = JSON.parse(response);
 
-            $("#dlg-edit-project").dialog("close");
+            if (content.status === "OK") {
+                if (content.value === "Quotation") {
+                    if (confirm("Edit RFQ?")) {
+                        location.href = "/ProjectManager/project/request-quotation?id=" + content.pId + "&mode=EDIT-PROJECT"
+                    } else {
+                        location.href = "/ProjectManager/project/quotation?id=" + content.pId + "&mode=EDIT-PROJECT";
+                    }
+                } else {
+                    location.href = "/ProjectManager/project/" + content.value;
+                }
+            }
         },
         error: function (e) {
         }
@@ -507,19 +511,23 @@ function dlgEditStatus() {
                 var dlg_id = "#dlg-edit-status";
                 var div_id = "#lst-edit-project";
                 var dest_path = null;
+                var mode = null;
 
                 if (status === 'Create') {
                     dest_path = "/ProjectManager/project/edit-form";
+                    mode = "C-EDIT";
                 } else if (status === 'Bill of Materials or Services') {
                     dest_path = "/ProjectManager/project/bill-material-service";
-                } else if (status === 'Request for Quotation') {
-                    dest_path = "/ProjectManager/project/request-quotation";
+                    mode = "BMS-EDIT";
+                } else if (status === 'Quotation') {
+                    dest_path = "/ProjectManager/project/quotation";
+                    mode = "Q-EDIT";
                 } else {
-                    alert("No found path");
                     dest_path = "/ProjectManager/project/snapshot";
+                    mode = "NO-EDIT";
                 }
 
-                dlgProject('RQ-EDIT', 'new', status, dlg_id, div_id, dest_path);
+                dlgProject(mode, 'new', status, dlg_id, div_id, dest_path);
             }
         },
         show: {
@@ -573,9 +581,18 @@ function getProjectInfo(id) {
             $("#bmsi-header").html(content.bmsiHeader);
             $("#bmsi-body").html(content.bmsiBody);
             $("#bmsi-footer").html(content.bmsiFooter);
-            $("#rfq-header").html(content.rfqHeader);
-            $("#rfq-body").html(content.rfqBody);
-            $("#rfq-footer").html(content.rfqFooter);
+            if (content.rfqHeader) {
+                $("#frm-rfq").show();
+                $("#rfq-header").html(content.rfqHeader);
+                $("#rfq-body").html(content.rfqBody);
+                $("#rfq-footer").html(content.qFooter);
+            }
+            if (content.qHeader) {
+                $("#frm-q").show();
+                $("#q-header").html(content.qHeader);
+                $("#q-body").html(content.qBody);
+                $("#q-footer").html(content.qFooter);
+            }
         },
         error: function (xhr, status, error) {
             console.log(error);
@@ -591,7 +608,7 @@ function dlgViewProject(pdid) {
     $("#dlg-view-project").dialog({
         autoOpen: true,
         modal: true,
-        width: 500,
+        width: 760,
         position: {
             my: "top - 25"
         },
@@ -637,13 +654,70 @@ function getRFQInfo(id) {
     });
 }
 
+function getQInfo(id) {
+    var data = "qId=" + id;
+
+    $.ajax({
+        type: "POST",
+        data: data,
+        url: "history-new-project/q-info",
+        success: function (response) {
+            var content = JSON.parse(response);
+
+            $("#q-name").val(content.qName);
+            $("#q-complete").val(content.qComplete);
+            $("#q-discard").val(content.qDiscard);
+            $("#q-customer").val(content.qCustomer);
+            $("#q-customer-ref").val(content.qCustomerRef);
+            $("#q-location").val(content.qLocation);
+            $("#q-currency").val(content.qCurrency);
+            $("#q-availability").val(content.qAvailability);
+            $("#q-delivery").val(content.qDelivery);
+            $("#q-packing").val(content.qPacking);
+            $("#q-payment").val(content.qPayment);
+            $("#q-validity").val(content.qValidity);
+            $("#q-grand-total").val(content.qGrandTotal);
+            $("#q-welcome").val(content.qWelcome);
+            $("#q-remarks").val(content.qRemarks);
+            $("#q-notes").val(content.qNote);
+            $("#qi-header").html(content.qiHeader);
+            $("#qi-body").html(content.qiBody);
+            $("#qi-footer").html(content.qiFooter);
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
 function dlgViewRFQ(id) {
     getRFQInfo(id);
 
     $("#dlg-view-rfq").dialog({
         autoOpen: true,
         modal: true,
-        width: 500,
+        width: 760,
+        position: {
+            my: "top - 25"
+        },
+        show: {
+            effect: "blind",
+            duration: 1000
+        },
+        hide: {
+            effect: "explode",
+            duration: 1000
+        }
+    });
+}
+
+function dlgViewQ(id) {
+    getQInfo(id);
+
+    $("#dlg-view-q").dialog({
+        autoOpen: true,
+        modal: true,
+        width: 760,
         position: {
             my: "top - 25"
         },
@@ -675,7 +749,7 @@ function getSubProject() {
         url: "/ProjectManager/project/lst-sub-project",
         success: function (response) {
             var content = JSON.parse(response);
-            
+
             if (content.count > 1) {
                 $("#lst-sub-project").html(content.value);
                 dlgEditSubProject(null);
@@ -699,7 +773,7 @@ function editSubProject(id) {
     var contact = $("#contact option:selected").attr("value");
     var data = "";
 
-    if (pdId == -1 ) {
+    if (pdId == -1) {
         alert("No edit the project detail with id:" + pdId);
         return;
     } else {

@@ -7,6 +7,9 @@
 <script>
     $(function () {
         dashboardView();
+        setTimeout(function () {
+            location.reload(1);
+        }, 60000);
     });
 </script>
 <style>

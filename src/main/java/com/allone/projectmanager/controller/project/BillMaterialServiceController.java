@@ -23,20 +23,33 @@ import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
+import com.allone.projectmanager.reports.BillMaterialReport;
+import com.allone.projectmanager.reports.QuotationReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -162,6 +175,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         content.put("subprojects", subprojectValues.html);
         content.put("billMaterialService", (bmsInfo != null) ? bmsInfo[0] : "");
         content.put("note", (bmsInfo != null) ? bmsInfo[1] : "");
+        content.put("flagRFQ", (bmsInfo != null) ? bmsInfo[2] : "0");
         content.put("noItems", (haveBMSI.equals(Boolean.FALSE)) ? "true" : "false");
         content.put("billMaterialServiceItems", (haveBMSI.equals(Boolean.TRUE)) ? createBillMaterialServiceItems(pd.getId()) : "");
         content.put("type", (pd != null) ? pd.getType() : "");
@@ -177,8 +191,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     private void pushBillMaterialService(Long pdId) {
-        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService()
-                .getByProject(pdId);
+        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
         if (bms != null) {
             clearVirtualBillMaterialService(pdId);
@@ -201,7 +214,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     private String[] createBillMaterialService(Long pdId) {
-        String response[] = new String[]{"", ""};
+        String response[] = new String[]{"", "", ""};
 
         if (pdId != null) {
             ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
@@ -210,11 +223,13 @@ public class BillMaterialServiceController extends ProjectCommon {
                 BillMaterialService bms = getBillMaterialService(pd.getId());
 
                 String notes = (bms != null && !Strings.isNullOrEmpty(bms.getNote())) ? bms.getNote() : "";
+                Boolean flagRFQ = (bms != null && bms.getFlagRFQ() != null) ? bms.getFlagRFQ() : Boolean.FALSE;
 
                 response[0] = "<tr>\n"
                         + "<td>" + pd.getReference() + "-" + pd.getCustomer() + "</td>\n"
                         + "</tr>\n";
                 response[1] = notes;
+                response[2] = flagRFQ.toString();
             }
         }
 
@@ -272,14 +287,27 @@ public class BillMaterialServiceController extends ProjectCommon {
                 p = srvProjectManager.getDaoProject().getById(p.getId());
 
                 if (p != null) {
-                    if (p.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
-                        p.setStatus(ProjectStatusEnum.CREATE.toString());
-                        srvProjectManager.getDaoProject().edit(p);
+                    if (!Strings.isNullOrEmpty(mode) && mode.equals("BMS-EDIT")) {
+                        if (p.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
+                            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+
+                            p.setStatus(ProjectStatusEnum.CREATE.toString());
+                            srvProjectManager.getDaoProject().edit(p);
+                            if (pds != null && !pds.isEmpty()) {
+                                for (ProjectDetail pd : pds) {
+                                    if (pd.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
+                                        pd.setStatus(ProjectStatusEnum.CREATE.toString());
+                                        srvProjectManager.getDaoProjectDetail().edit(pd);
+                                    }
+                                }
+                            }
+                            model.addAttribute("button_remove",
+                                    "<input type='button' value='Remove' class='button alarm' onclick='removeBillMaterialService()'>\n");
+                        }
                     }
                     setUserProjectId(session.getId(), p.getId());
                     model.addAttribute("p_id", p.getId());
                     model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='getBillMaterialServiceItems()'>\n");
-                    model.addAttribute("button_remove", "<input type='button' value='Remove' class='button alarm' onclick='removeBillMaterialService()'>\n");
                 }
 
                 return "index";
@@ -351,7 +379,6 @@ public class BillMaterialServiceController extends ProjectCommon {
     public @ResponseBody
     String remove(Long pdId) {
         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
-        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
 
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
@@ -359,27 +386,18 @@ public class BillMaterialServiceController extends ProjectCommon {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
 
             if (bms != null) {
-                srvProjectManager.getDaoBillMaterialService().delete(bms);
-                srvProjectManager.getDaoBillMaterialServiceItem().delete(bms.getId());
-                srvProjectManager.getDaoProjectDetail().delete(pd);
-
-                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
-
-                if (pds == null || pds.isEmpty()) {
-                    srvProjectManager.getDaoProject().delete(p);
-                }
+                bms.setComplete(Boolean.FALSE);
+                srvProjectManager.getDaoBillMaterialService().edit(bms);
                 clearVirtualBillMaterialService(pdId);
-
-                String[] bmsInfo = createBillMaterialService(pdId);
-
-                content.put("billMaterialService", bmsInfo[0]);
-                content.put("note", bmsInfo[1]);
-                if (pd.getType().equals(ProjectTypeEnum.SERVICE.name())) {
-                    content.put("noItems", "true");
-                } else {
-                    content.put("noItems", "false");
-                    content.put("billMaterialServiceItems", createBillMaterialServiceItems(pdId));
-                }
+                List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getCreatedByProjectExceptId(pd.getProject(), pd.getId());
+                String response = "<h1>Bill of "
+                        + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "Materials" : "Services")
+                        + " - REF:" + pd.getReference() + " - Removed " + ((pds != null && !pds.isEmpty()) ? "back to bill of "
+                                + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "materials" : "services")
+                                + ", you have incomplete sub-project(s) pending" : "") + "</h1>\n";
+                content.put("header", response);
+                content.put("moreBillMaterialService", (pds != null && !pds.isEmpty()) ? "true" : "false");
+                content.put("location", (pds != null && !pds.isEmpty()) ? "" : "http://localhost:8081/ProjectManager/project/history-new-project");
 
                 return new Gson().toJson(content);
             }
@@ -410,11 +428,12 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/bill-material-service/save")
-    public @ResponseBody
-    String saveBillMaterialService(BillMaterialService bms, String quantities) {
-        Map<String, String> content = new HashMap<>();
-        String response = "";
-
+    public void save(
+            BillMaterialService bms,
+            String quantities,
+            Boolean flagRFQ,
+            final HttpServletRequest request,
+            final HttpServletResponse response) {
         if (bms != null) {
             ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
             Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
@@ -427,10 +446,13 @@ public class BillMaterialServiceController extends ProjectCommon {
                 BillMaterialService _bms = getBillMaterialService(pd.getId());
 
                 if (_bms != null) {
+                    Set<Map<String, String>> requestBMS = new LinkedHashSet<>();
+
                     _bms.setProject(pd.getId());
                     _bms.setName(pd.getReference() + "-" + pd.getCustomer());
                     _bms.setNote(bms.getNote());
                     _bms.setComplete(Boolean.TRUE);
+                    _bms.setFlagRFQ(flagRFQ);
                     if (_bms.getId() == null) {
                         bms = srvProjectManager.getDaoBillMaterialService().add(_bms);
                         if (!Strings.isNullOrEmpty(quantities)) {
@@ -445,30 +467,70 @@ public class BillMaterialServiceController extends ProjectCommon {
 
                             if (bmsis != null && !bmsis.isEmpty()) {
                                 for (BillMaterialServiceItem bmsi : bmsis) {
+                                    Map<String, String> item = new LinkedHashMap<>();
+                                    Item i = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+
+                                    if (i != null) {
+                                        item.put("item", i.getImno());
+                                        item.put("price", bmsi.getPrice().toString());
+                                        item.put("available", i.getQuantity().toString());
+                                        item.put("quantity", bmsi.getQuantity().toString());
+                                        requestBMS.add(item);
+                                    }
                                     if (bmsi.getId() == null) {
                                         srvProjectManager.getDaoBillMaterialServiceItem().add(bmsi);
                                     } else {
                                         srvProjectManager.getDaoBillMaterialServiceItem().edit(bmsi);
                                     }
+
                                 }
                             }
                         }
                     }
                     clearVirtualBillMaterialService(pd.getId());
-                    List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getCreatedByProjectExceptId(pd.getProject(), pd.getId());
-                    response = "<h1>Bill of "
-                            + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "Materials" : "Services")
-                            + " - REF:" + pd.getReference() + " - Complete " + ((pds != null && !pds.isEmpty()) ? "back to bill of "
-                                    + ((pd.getType().equals(ProjectTypeEnum.SALE.toString())) ? "materials" : "services")
-                                    + ", you have incomplete sub-project(s) pending" : "") + "</h1>\n";
-                    content.put("header", response);
-                    content.put("moreBillMaterialService", (pds != null && !pds.isEmpty()) ? "true" : "false");
-                    content.put("location", (pds != null && !pds.isEmpty()) ? "" : "http://localhost:8081/ProjectManager/project/history-new-project");
+
+                    Map<String, Map<String, String>> info = new LinkedHashMap<>();
+                    Map<String, String> titleLeft = new LinkedHashMap<>();
+                    Map<String, String> titleRigth = new LinkedHashMap<>();
+                    Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
+                    SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy");
+
+                    titleLeft.put("To", pd.getCustomer());
+                    titleLeft.put("Tel", cont.getPhone());
+                    titleLeft.put("Attn", cont.getSurname() + " " + cont.getName());
+                    titleLeft.put("Re", pd.getVesselName());
+                    titleRigth.put("Our Ref", pd.getReference());
+                    titleRigth.put("Date", ds.format(new Date()));
+                    info.put("titleLeft", titleLeft);
+                    info.put("titleRight", titleRigth);
+                    BillMaterialReport bm = new BillMaterialReport(info, requestBMS, bms.getNote());
+                    File file = new File("c:\\ProjectManager\\" + bm.getPdfFile());
+
+                    try {
+                        if (request != null) {
+                            HttpSession session = request.getSession();
+
+                            if (session != null) {
+                                InputStream in = new FileInputStream(file);
+                                OutputStream output = response.getOutputStream();
+
+                                response.reset();
+                                response.setContentType("application/octet-stream");
+                                response.setContentLength((int) (file.length()));
+                                response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                IOUtils.copyLarge(in, output);
+                                output.flush();
+                                output.close();
+                            }
+                        }
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
-
-        return new Gson().toJson(content);
     }
 
     @RequestMapping(value = "/bill-material-service/search")
@@ -598,6 +660,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                         pd.setReference(reference + "/" + nextsubid.toString());
                         pd.setCustomer(dbpd.getCustomer());
                         pd.setVessel(dbpd.getVessel());
+                        pd.setVesselName(dbpd.getVesselName());
                         pd.setContact(dbpd.getContact());
 
                         pd = srvProjectManager.getDaoProjectDetail().add(pd);
@@ -634,6 +697,7 @@ public class BillMaterialServiceController extends ProjectCommon {
             content.put("contact", (contact != null) ? contact.getSurname() + " " + contact.getName() : "");
             content.put("billMaterialService", bmsInfo[0]);
             content.put("note", bmsInfo[1]);
+            content.put("flagRFQ", (bmsInfo != null) ? bmsInfo[2] : "0");
             content.put("BillMaterialTitle", getBillMaterialTitle(pd.getType(), pd.getReference(), getSubprojects(pd.getProject()).intValue()));
             content.put("BillMaterialSummary", getBillMaterialSummary(pd.getType()));
             content.put("BillMaterialDetail", getBillMaterialDetail(pd.getType()));

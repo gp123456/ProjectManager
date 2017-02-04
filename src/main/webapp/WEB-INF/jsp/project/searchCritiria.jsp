@@ -18,7 +18,7 @@
     });
 </script>
 
-<form class="go-bottom">
+<form>
     <label class="custom-select">Type
         <select id="search-type" ></select>
     </label>
@@ -29,25 +29,19 @@
         <select id="search-company"></select>
     </label>
     <div>
-        <input type="text" id="search-reference" value="">
-        <label class="go-bottom-label" for="search-reference">Reference</label>
+        <input type="text" id="search-reference" placeholder="Reference" value="">
     </div>
     <div>
-        <input type="text" id="search-vessel" value="">
-        <label class="go-bottom-label" for="search-vessel">Vessel</label>
+        <input type="text" id="search-vessel" value="" placeholder="Vessel">
     </div>
     <div>
-        <input type="text" id="search-customer" value="">
-        <label class="go-bottom-label" for="search-customer">Customer</label>
+        <input type="text" id="search-customer" value="" placeholder="Customer">
     </div>
     <div>
-        <input name="sdate" type="text" id="date-start">
-        <label class="go-bottom-label" for="date-start">Start Date</label>
+        <input name="sdate" type="text" id="date-start" placeholder="Start Date">
     </div>
     <div>
-        <input name="edate" type="text" id="date-end">
-        <label class="go-bottom-label" for="date-end">End Date</label>
+        <input name="edate" type="text" id="date-end" placeholder="End Date">
     </div>
-    <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/></h3>
-<input type="button" class="button" value="Clear" id="search-clear" onclick="searchClear()"/>
+    <input type="button" class="button" value="Search" id="search" onclick="searchContent(0, 10)"/>
 </form>

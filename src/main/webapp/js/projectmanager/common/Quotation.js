@@ -42,7 +42,7 @@ function changeQuotaSubproject(mode) {
 }
 
 function addItem() {
-    var data = "rqId=" + $('#request-quotation-id').val()
+    var data = "bmsId=" + $('#bill-material-service-id').val()
             + "&location=" + $("#locations option:selected").val()
             + "&currency=" + $("#currency option:selected").val();
 
@@ -85,9 +85,9 @@ function addItem() {
 function qSubmit() {
     if (!requestQuotationIds.isArray) {
         var pdId = $("#subproject option:selected").val();
-        var rqId = $("#request-quotations option:selected").val();
+        var bmsId = $("#bill-material-service option:selected").val();
 
-        setRequestQuotation(pdId, rqId)
+        setRequestQuotation(pdId, bmsId)
     }
 
     var data = "infoRQ=" + JSON.stringify(requestQuotationIds);
@@ -105,7 +105,7 @@ function qSubmit() {
 }
 
 function getQuotation(mode) {
-    var data = "rqId=" + $('#request-quotation-id').val() + "&location=" + $("#locations option:selected").val();
+    var data = "bmsId=" + $('#bill-material-service-id').val() + "&location=" + $("#locations option:selected").val();
 
     $.ajax({
         type: "POST",
@@ -123,18 +123,18 @@ function getQuotation(mode) {
     });
 }
 
-function getValues(response) {
+function getQValues(response) {
     var data = "";
 
     if (response !== null) {
         var content = JSON.parse(response);
 
         if (content !== null) {
-            if (content.requestQuotation !== null) {
-                data = "id=" + content.requestQuotation + "&location=" + content.location;
+            if (content.billMaterialService !== null) {
+                data = "id=" + content.billMaterialService + "&location=" + content.location;
 
-                if (content.requestQuotationItem !== null) {
-                    var items = JSON.parse(content.requestQuotationItem);
+                if (content.billMaterialServiceItem !== null) {
+                    var items = JSON.parse(content.billMaterialServiceItem);
 
                     data += "&itemInfo=";
                     if (items !== null) {
@@ -171,8 +171,8 @@ function qClear(response) {
     if (response !== null) {
         var content = JSON.parse(response);
 
-        if (content !== null && content.requestQuotation !== null && content.location !== null && content.requestQuotationItem !== null) {
-            var data = "rqId=" + content.requestQuotation + "&location=" + content.location;
+        if (content !== null && content.billMaterialService !== null && content.location !== null && content.billMaterialServiceItem !== null) {
+            var data = "bmsId=" + content.billMaterialService + "&location=" + content.location;
 
             $.ajax({
                 type: "POST",
@@ -180,7 +180,7 @@ function qClear(response) {
                 data: data,
                 success: function () {
                     $("#grand" + content.location).html("0.00");
-                    JSON.parse(content.requestQuotationItem).forEach(function (item) {
+                    JSON.parse(content.billMaterialServiceItem).forEach(function (item) {
                         $("#price" + item.id + content.location).html("<div contenteditable></div>");
                         $("#price" + item.id + content.location).css('backgroundColor', 'rgb(247, 128, 128)');
                         $("#price" + item.id + content.location).css('color', 'rgba(29, 25, 10, 0.84)');
@@ -205,7 +205,7 @@ function qClear(response) {
 }
 
 function qCalculate(response) {
-    var data = getValues(response);
+    var data = getQValues(response);
 
     if (data === '') {
         return;
@@ -234,7 +234,7 @@ function qCalculate(response) {
 }
 
 function qSave() {
-    var data = "customerReference=" + $("#customer-reference").val()
+    var data = "?customerReference=" + $("#customer-reference").val()
             + "&availability=" + $("#availability").val()
             + "&delivery=" + $("#delivery").val()
             + "&packing=" + $("#packing").val()
@@ -242,23 +242,14 @@ function qSave() {
             + "&validity=" + $("#validity").val()
             + "&welcome=" + $("#welcome-note").val()
             + "&remark=" + $("#remarks-note").val()
-            + "&note=" + $("#note").val();
+            + "&note=" + $("#note").val()
+            + "&dateExpired=" + $("#expired").datepicker({dateFormat: 'yyyy-mm-dd'}).val();
 
-    console.log(data);
+    location.href = "/ProjectManager/project/quotation/save" + data;
 
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/quotation/save",
-        data: data,
-        success: function (response) {
-            $("#header").html(response);
-            setTimeout(function () {
-                location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
-            }, 5000);
-        },
-        error: function (e) {
-        }
-    });
+    setTimeout(function () {
+        location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
+    }, 5000);
 }
 
 function qRemove() {
@@ -271,7 +262,7 @@ function qEmail() {
 
 function changeQCurrency() {
     var location = $("#locations option:selected").val();
-    var data = "rqId=" + $('#request-quotation-id').val()
+    var data = "bmsId=" + $('#bill-material-service-id').val()
             + "&location=" + location
             + "&currency=" + $("#currency option:selected").val();
 
@@ -289,7 +280,7 @@ function changeQCurrency() {
 
 function completeQuotation() {
     var location = $("#locations option:selected").val();
-    var data = "rqId=" + $('#request-quotation-id').val()
+    var data = "bmsId=" + $('#bill-material-service-id').val()
             + "&location=" + location;
 
     $.ajax({

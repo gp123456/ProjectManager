@@ -17,7 +17,13 @@
                 
                 $("#subproject").val(content.subproject);
                 $("#supplier").val(content.supplier);
-                $("#currency").val(content.currency);
+                if (content.modeCurrency === "lst") {
+                    $("#txt-currency").hide();
+                    $("#lst-currency").val(content.currency);
+                } else if (content.modeCurrency === "txt") {
+                    $("#lst-currency").hide();
+                    $("#txt-currency").val(content.currency);
+                }
                 $("#request-quotation").html(content.requestQuotation);
                 $("#request-quotation-items").html(content.itemRequestQuotation);
             },
@@ -46,14 +52,15 @@
                 <tr>
                     <td><label>Subproject</label></td>
                     <td><input type="text" id="subproject" readonly></td>
-                </tr>
+                    </tr>
                 <tr>
                     <td><label>Supplier</label></td>
                     <td><input type="text" id="supplier" readonly></td>
                 </tr>
                 <tr>
                     <td><label>Currency</label></td>
-                    <td><input type="text" id="currency" readonly></td>
+                    <select id="lsl-currency"></select>
+                    <td><input type="text" id="txt-currency" readonly></td>
                 </tr>
             </tbody>
         </table>

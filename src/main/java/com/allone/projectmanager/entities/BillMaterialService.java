@@ -53,12 +53,16 @@ public class BillMaterialService implements Serializable {
     @NotNull
     private Long project;
 
-    @Column(name = "note")
-    private String note;
+    @Basic(optional = false)
+    @Column(name = "complete", columnDefinition = "Bit(1) default b'0'")
+    private Boolean complete;
 
     @Basic(optional = false)
-    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
-    private Boolean complete;
+    @Column(name = "rfq_flag", columnDefinition = "Bit(1) default b'0'")
+    private Boolean flagRFQ;
+
+    @Column(name = "note")
+    private String note;
 
     @Transient
     private String classSave;
@@ -66,8 +70,9 @@ public class BillMaterialService implements Serializable {
     private BillMaterialService(Builder builder) {
         name = builder.name;
         project = builder.project;
-        note = builder.note;
         complete = builder.complete;
+        flagRFQ = builder.flagRFQ;
+        note = builder.note;
         classSave = builder.classSave;
     }
 
@@ -75,8 +80,9 @@ public class BillMaterialService implements Serializable {
         id = builder.id;
         name = builder.name;
         project = builder.project;
-        note = builder.note;
         complete = builder.complete;
+        flagRFQ = builder.flagRFQ;
+        note = builder.note;
         classSave = builder.classSave;
     }
 
@@ -103,6 +109,22 @@ public class BillMaterialService implements Serializable {
         this.project = project;
     }
 
+    public Boolean getComplete() {
+        return complete;
+    }
+
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
+
+    public Boolean getFlagRFQ() {
+        return flagRFQ;
+    }
+
+    public void setFlagRFQ(Boolean flagRFQ) {
+        this.flagRFQ = flagRFQ;
+    }
+
     public String getNote() {
         return note;
     }
@@ -117,14 +139,6 @@ public class BillMaterialService implements Serializable {
 
     public void setClassSave(String classSave) {
         this.classSave = classSave;
-    }
-
-    public Boolean getComplete() {
-        return complete;
-    }
-
-    public void setComplete(Boolean complete) {
-        this.complete = complete;
     }
 
     @Override
@@ -157,9 +171,11 @@ public class BillMaterialService implements Serializable {
 
         private Long project;
 
-        private String note;
-
         private Boolean complete;
+
+        private Boolean flagRFQ;
+
+        private String note;
 
         private String classSave;
 
@@ -175,14 +191,20 @@ public class BillMaterialService implements Serializable {
             return this;
         }
 
-        public Builder setNote(String note) {
-            this.note = note;
+        public Builder setComplete(Boolean complete) {
+            this.complete = complete;
 
             return this;
         }
 
-        public Builder setComplete(Boolean complete) {
-            this.complete = complete;
+        public Builder setFlagRFQ(Boolean flagRFQ) {
+            this.flagRFQ = flagRFQ;
+
+            return this;
+        }
+
+        public Builder setNote(String note) {
+            this.note = note;
 
             return this;
         }

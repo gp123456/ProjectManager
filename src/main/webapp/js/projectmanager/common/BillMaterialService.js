@@ -73,10 +73,10 @@ function getBillMaterialServiceItems() {
             var type = content.type;
             var items = content.items;
 
-            if (type === "SERVICE") {
+            if (type === "Service") {
                 saveBillMaterialService(null);
             } else {
-                if (type === "SALE" && items !== null) {
+                if (type === "Sale" && items !== null) {
                     saveBillMaterialService(items);
                 } else {
                     alert("You must submit one item at least");
@@ -89,9 +89,10 @@ function getBillMaterialServiceItems() {
 }
 
 function saveBillMaterialService(response) {
+    var flagRFQ = $("#flag-rfq:checked").val();
     var items = (response) ? JSON.parse(response) : null;
-    var data = "project=" + $("#subproject option:selected").val() +
-            "&note=" + $("#note").val();
+    var data = "?project=" + $("#subproject option:selected").val() + "&note=" + encodeURIComponent($("#note").val());
+    
 
     if (items !== null) {
         data += "&quantities=";
@@ -108,31 +109,19 @@ function saveBillMaterialService(response) {
     } else {
         data += "&quantities=";
     }
+    data += "&flagRFQ=";
+    data += (typeof flagRFQ === "undefined") ? "off" : flagRFQ;
+    
+    console.log(data);
+    
+    location.href = "/ProjectManager/project/bill-material-service/save" + data;
 
-    $.ajax({
-        type: "POST",
-        url: "/ProjectManager/project/bill-material-service/save",
-        data: data,
-        success: function (response) {
-            var content = JSON.parse(response);
-
-            $("#header").html(content.header);
-
-            setTimeout(function () {
-                if (content.moreBillMaterialService === "true") {
-                    location.reload();
-                } else {
-                    window.location = content.location;
-                }
-            }, 5000);
-        },
-        error: function (e) {
-            alert(e);
-        }
-    });
+    setTimeout(function () {
+        location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
+    }, 5000);
 }
 
-function addItem() {
+function addBMSItem() {
     $.ajax({
         type: "POST",
         url: "/ProjectManager/project/bill-material-service/add-item",
@@ -140,6 +129,7 @@ function addItem() {
             var content = JSON.parse(response);
 
             $("#item-currency").html(content.currency);
+            $("#item-location").html(content.location);
             $("#item-supplier").html(content.supplier);
             dlgNewItem();
         },
@@ -190,7 +180,7 @@ function dlgNewItem() {
     $("#add-item").dialog({
         autoOpen: true,
         modal: true,
-        width: 365,
+        width: 400,
         buttons: {
             "stock": function () {
                 stockNewItem();
@@ -304,6 +294,14 @@ function viewSubproject() {
             }
 
             $("#note").val(content.note);
+            if (content.type === "Service") {
+                $("#flag-rfq-view").hide();
+            } else {
+                $("#flag-rfq-view").show();
+                if (content.flagRFQ === "true") {
+                    $("#flag-rfq").attr('checked', content.flagRFQ);
+                }
+            }
         },
         error: function (e) {
         }
@@ -320,15 +318,15 @@ function removeBillMaterialService() {
         success: function (response) {
             var content = JSON.parse(response);
 
-            $("#bill-material-service").html(content.billMaterialService);
-            if (content.noItems === "false") {
-                $('#select-item').show();
-                $('#select-bill-material-service-item').show();
-                $("#bill-material-service-item").html(content.billMaterialServiceItems);
-            } else {
-                $('#select-item').hide();
-                $('#select-bill-material-service-item').hide();
-            }
+            $("#header").html(content.header);
+
+            setTimeout(function () {
+                if (content.moreBillMaterialService === "true") {
+                    location.reload();
+                } else {
+                    window.location = content.location;
+                }
+            }, 5000);
         },
         error: function (e) {
         }

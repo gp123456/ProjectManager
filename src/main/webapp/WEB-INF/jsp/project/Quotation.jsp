@@ -4,6 +4,12 @@
     Author     : antonia
 --%>
 
+<script>
+    $(function () {
+        $("#expired").datepicker({dateFormat: 'dd/mm/yy'});
+    });
+</script>
+
 <div id="header" class="formLayout">
     <div id="containerIntro">
         <table>
@@ -15,7 +21,7 @@
             </tbody>
         </table>
     </div>
-    <input type="hidden" id="request-quotation-id" value=${requestQuotationId} />
+    <input type="hidden" id="bill-material-service-id" value=${billMaterialServiceId} />
     <h2>Project Info</h2>
     <table>
         <tbody>
@@ -38,6 +44,10 @@
             <tr>
                 <td><label>Contact</label></td>
                 <td><input type="text" id="contact" value="${contact}" style="width: 500px" readonly></td>
+            </tr>
+            <tr>
+                <td><label>Expired date</label></td>
+                <td><input type="text" id="expired" value="${expired}" style="width: 500px"></td>
             </tr>
         </tbody>
     </table>
@@ -134,6 +144,7 @@
     <h3>Notes</h3>
     <textarea id="note" rows="10" style="width: 100%">${note}</textarea>
     <div>
+        <iframe id="download" style="display:none;"></iframe>
         <input type="button" id="clear" value="Clear" class="button" onclick="getQuotation('clear')">
         <input type="button" id="calculate" value="Calculate" class="button" onclick="getQuotation('calculate')">
         <input type="button" id="save" value="Save" class="button alarm" onclick="qSave()" disabled>
