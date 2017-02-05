@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -37,7 +38,7 @@ public class ContactDAO {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Contact.findAll");
 
             values = query.getResultList();
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -56,7 +57,7 @@ public class ContactDAO {
 
                 value = (query != null) ? (Contact) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -75,7 +76,7 @@ public class ContactDAO {
 
                 value = (query != null) ? query.getResultList() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
         em.close();
@@ -93,7 +94,7 @@ public class ContactDAO {
 
                 value = (query != null) ? query.getResultList() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 

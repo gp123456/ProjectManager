@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -37,7 +38,7 @@ public class ItemDAO extends Item {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findAll");
 
             values = query.getResultList();
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -56,7 +57,7 @@ public class ItemDAO extends Item {
 
                 values = (query != null) ? (Item) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -75,7 +76,7 @@ public class ItemDAO extends Item {
 
                 values = (query != null) ? (Item) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -92,7 +93,7 @@ public class ItemDAO extends Item {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Item.findLastId");
 
             values = (query != null) ? (Long) query.getSingleResult() : null;
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 

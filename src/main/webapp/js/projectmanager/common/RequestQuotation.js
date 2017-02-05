@@ -111,7 +111,7 @@ function saveRFQ(url, pdId, rqId, supplier, currency) {
     }
 
     if (currency === 'none') {
-        currency = -1
+        currency = 0
     }
 
     var data = "pdId=" + pdId +
@@ -142,7 +142,7 @@ function sendEmail() {
             null,
             $("#supplier option:selected").val(),
             $("#currency option:selected").val());
-            
+
     $('#dlg-email').dialog({
         autoOpen: true,
         modal: true,
@@ -150,16 +150,16 @@ function sendEmail() {
         buttons: {
             "submit": function () {
                 var data = "email=" + $('#email-address').val() + "&id=" + $('#email-rq-id').val();
-                
+
                 $.ajax({
                     type: "POST",
                     url: "/ProjectManager/project/request-quotation/send-email-submit",
                     data: data,
                     success: function (response) {
                         location.href = response;
-                        
+
                         $("#dlg-email").dialog("close");
-                        
+
 //                        setTimeout(function () {
 //                            var l = $('#location').val();
 //
@@ -245,10 +245,14 @@ function getValues(response) {
         if (content !== null) {
             if (content.requestQuotation !== null) {
                 var id = content.requestQuotation;
+                var currency = ( $("#lst-currency").css('display') !== 'none' ) ? $("#lst-currency option:selected").attr("value") : -1;
 
                 data = "id=" + id +
                         "&delivery=" + $("#delivery").text() +
-                        "&expenses=" + $("#expenses").text();
+                        "&expenses=" + $("#expenses").text() +
+                        "&currency=" + currency;
+                
+                alert(data);
 
                 if (content.requestQuotationItem !== null) {
                     var items = JSON.parse(content.requestQuotationItem);

@@ -19,7 +19,7 @@
                 $("#supplier").val(content.supplier);
                 if (content.modeCurrency === "lst") {
                     $("#txt-currency").hide();
-                    $("#lst-currency").val(content.currency);
+                    $("#lst-currency").html(content.currency);
                 } else if (content.modeCurrency === "txt") {
                     $("#lst-currency").hide();
                     $("#txt-currency").val(content.currency);
@@ -59,8 +59,9 @@
                 </tr>
                 <tr>
                     <td><label>Currency</label></td>
-                    <select id="lsl-currency"></select>
-                    <td><input type="text" id="txt-currency" readonly></td>
+                    <td><label class="custom-select"><select id="lst-currency"></select></label>
+                        <input type="text" id="txt-currency" readonly>
+                    </td>
                 </tr>
             </tbody>
         </table>

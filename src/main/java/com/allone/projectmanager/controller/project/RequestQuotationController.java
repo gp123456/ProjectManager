@@ -368,8 +368,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                         result[0] = pd.getReference();
                         result[1] = rq.getSupplier();
-                        result[2] = (rq.getCurrency() != -1) ? "txt" : "lst";
-                        result[3] = (rq.getCurrency() != -1) ? getCurrencyName(rq.getCurrency()) : getListCurrency();
+                        result[2] = (rq.getCurrency() != 0) ? "txt" : "lst";
+                        result[3] = (rq.getCurrency() != 0) ? getCurrencyName(rq.getCurrency()) : getListCurrency();
                         result[4] = info[0];
                         result[5] = info[1];
                         result[6] = rq.getNote();
@@ -449,13 +449,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
         return result;
     }
 
-    private String[] getBillMaterialServiceByProjectDetailInfo(Long pdId) {
+    private String[] getBillMaterialServiceByProjectDetailInfo(Long pId) {
         String[] result = {"", "", ""};
-        ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+        List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectIdType(pId, ProjectTypeEnum.SALE.toString());
         Integer index = 1;
 
-        if (pd != null) {
-            if (pd.getType().equals(ProjectTypeEnum.SALE.name())) {
+        if (pds != null && !pds.isEmpty()) {
+            for (ProjectDetail pd : pds) {
                 result[0] += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>\n";
 
                 if (index.equals(1)) {
@@ -632,7 +632,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setContent("../project/RequestQuotationSelectItem.jsp");
                         this.setClassContent("content");
                         setHeaderInfo(session, model);
-                        String[] pbInfo = getBillMaterialServiceByProjectDetailInfo(p.getProjectDetail());
+                        String[] pbInfo = getBillMaterialServiceByProjectDetailInfo(p.getId());
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         model.addAttribute("projectId", p.getId());
                         model.addAttribute("projectReference", p.getReference());
@@ -878,7 +878,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/refresh")
     public @ResponseBody
-    String refresh(Long id, BigDecimal delivery, BigDecimal expenses, String itemInfo) {
+    String refresh(Long id, BigDecimal delivery, BigDecimal expenses, Integer currency, String itemInfo) {
         if (id != null) {
             RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(id);
             BigDecimal sumPriceItems = BigDecimal.ZERO;
@@ -886,6 +886,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
             if (rq != null) {
                 rq.setDeliveryCost((delivery != null) ? delivery.setScale(2, RoundingMode.CEILING) : BigDecimal.ZERO);
                 rq.setOtherExpenses((expenses != null) ? expenses.setScale(2, RoundingMode.CEILING) : BigDecimal.ZERO);
+                if (!currency.equals(-1)) {
+                    rq.setCurrency(currency);
+                }
                 if (!Strings.isNullOrEmpty(itemInfo)) {
                     RequestQuotationItemModel[] items = new Gson().fromJson(itemInfo, RequestQuotationItemModel[].class);
 
@@ -977,7 +980,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                if (pdId != null && rq.getCurrency() != null) {
+                if (pdId != null) {
                     BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
                     ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
@@ -1055,7 +1058,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                if (pdId != null && currency != null) {
+                if (pdId != null) {
                     BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pdId);
                     ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
 
@@ -1064,6 +1067,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                         rq.setCurrency(currency);
                         rq.setComplete(Boolean.FALSE);
+                        rq.setDiscard(Boolean.FALSE);
                         rq.setNote(note);
                         rq.setSupplier(supplier);
                         rq.setName(pd.getReference() + "-" + supplier);

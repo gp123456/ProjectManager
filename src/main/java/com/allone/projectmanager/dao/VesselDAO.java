@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -38,7 +39,7 @@ public class VesselDAO {
             Query query = em.createNamedQuery("com.allone.projectmanager.entities.Vessel.findAll");
 
             values = (query != null) ? query.getResultList() : null;
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -57,7 +58,7 @@ public class VesselDAO {
 
                 value = (query != null) ? (Vessel) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -76,7 +77,7 @@ public class VesselDAO {
 
                 value = (query != null) ? query.getResultList() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             System.out.printf("%s", e.getMessage());
         }
 

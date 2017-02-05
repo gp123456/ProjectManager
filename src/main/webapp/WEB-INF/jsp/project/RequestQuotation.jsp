@@ -119,7 +119,7 @@
     </table>
     <div><p><h2>Marpo Group Notes</h2><textarea id="note" rows="10" style="width: 100%">${noteRequestQuotation}</textarea></div>
     <div><p><h2>Vendor Notes</h2><textarea id="supplier-note" rows="10" style="width: 100%" readonly="readonly">${noteSupplierRequestQuotation}</textarea></div>
-    <div>${buttonSave}${buttonSendEmail}</div>
+    <div>${buttonSendEmail}</div>
     <div id="dlg-email" hidden="true" title="Setup Email of Sender">
         <div>
             <input type="text" id="email-sender" required>

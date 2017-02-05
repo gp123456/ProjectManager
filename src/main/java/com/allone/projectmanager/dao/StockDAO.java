@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 
@@ -48,7 +49,7 @@ public class StockDAO extends Stock {
                     .setMaxResults(limits[1]);
 
             values = (query != null) ? query.getResultList() : null;
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -67,7 +68,7 @@ public class StockDAO extends Stock {
 
                 values = (Stock) query.getSingleResult();
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 

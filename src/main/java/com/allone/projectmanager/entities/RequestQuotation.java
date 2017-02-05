@@ -46,10 +46,10 @@ public class RequestQuotation implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "complete", columnDefinition = "Bit(1) default 'b0'")
+    @Column(name = "complete", columnDefinition = "Bit(1) default b'0'")
     private Boolean complete;
 
-    @Column(name = "discard", columnDefinition = "Bit(1) default 'b0'")
+    @Column(name = "discard", columnDefinition = "Bit(1) default b'0'")
     private Boolean discard;
 
     @Column(name = "supplier")

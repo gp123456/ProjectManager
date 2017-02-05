@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.TransactionRequiredException;
 
 /**
@@ -41,7 +42,7 @@ public class CollabsDAO {
 
                 value = (query != null) ? (Collabs) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -60,7 +61,7 @@ public class CollabsDAO {
 
                 value = (query != null) ? (Collabs) query.getSingleResult() : null;
             }
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 
@@ -80,7 +81,7 @@ public class CollabsDAO {
                 values = (query != null) ? query.getResultList() : null;
             }
 
-        } catch (HibernateException e) {
+        } catch (HibernateException | NoResultException e) {
             logger.log(Level.SEVERE, "{0}", e.getMessage());
         }
 

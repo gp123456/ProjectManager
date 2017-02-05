@@ -249,7 +249,7 @@ function saveSubProject() {
         return;
     }
 
-    var data = "project=" + project + "&type=" + type + "&expired=" + expired + "&company=" + company;
+    var data = "project=" + project + "&type=" + type + "&expiredCreate=" + expired + "&expired=" + expired + "&company=" + company;
 
     $.ajax({
         type: "POST",

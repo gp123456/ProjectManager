@@ -216,6 +216,7 @@ public class ProjectController extends ProjectCommon {
                 User user = getUser(session.getId());
                 Collabs collab = srvProjectManager.getDaoCollabs().getById(user.getId());
                 Vessel v = srvProjectManager.getDaoVessel().getById(pd.getVessel());
+                Contact c = srvProjectManager.getDaoContact().getById(pd.getContact());
 
                 if (collab != null) {
                     Project p = srvProjectManager.getDaoProject().add(new Project.Builder().setReference(user.
@@ -226,6 +227,8 @@ public class ProjectController extends ProjectCommon {
                     pd.setCreator(collab.getId());
                     pd.setCreated(new Date());
                     pd.setReference(p.getReference() + "/1");
+                    pd.setContact((c != null) ? c.getId() : 0);
+                    pd.setVessel((v != null) ? v.getId() : 0);
                     pd.setVesselName((v != null) ? v.getName() : "");
                     if (!Strings.isNullOrEmpty(dateExpired)) {
                         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -237,6 +240,7 @@ public class ProjectController extends ProjectCommon {
                             logger.log(Level.SEVERE, null, ex);
                         }
                     }
+
                     pd = srvProjectManager.getDaoProjectDetail().add(pd);
 
                     if (pd != null) {
@@ -593,7 +597,7 @@ public class ProjectController extends ProjectCommon {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                     try {
                         Date parsedDate = formatter.parse(dateExpired);
-                        dbpd.setExpired(parsedDate);
+                        dbpd.setExpiredCreate(parsedDate);
                     } catch (ParseException ex) {
                         logger.log(Level.SEVERE, null, ex);
                     }
