@@ -496,8 +496,8 @@ public class BillMaterialServiceController extends ProjectCommon {
                     SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy");
 
                     titleLeft.put("To", pd.getCustomer());
-                    titleLeft.put("Tel", cont.getPhone());
-                    titleLeft.put("Attn", cont.getSurname() + " " + cont.getName());
+                    titleLeft.put("Tel", (cont != null) ? cont.getPhone() : "");
+                    titleLeft.put("Attn", (cont != null) ? cont.getSurname() + " " + cont.getName() : "");
                     titleLeft.put("Re", pd.getVesselName());
                     titleRigth.put("Our Ref", pd.getReference());
                     titleRigth.put("Date", ds.format(new Date()));

@@ -326,7 +326,7 @@ public class QuotationController extends QuotationCommon {
             model.addAttribute("company", pds.get(0).getCompany());
             model.addAttribute("customer", pds.get(0).getCustomer());
             model.addAttribute("vessel", pds.get(0).getVesselName());
-            model.addAttribute("contact", contact.getName() + " " + contact.getSurname());
+            model.addAttribute("contact", (contact != null) ? contact.getName() + " " + contact.getSurname() : "");
             model.addAttribute("subprojects", info);
 
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pds.get(0).getId());
@@ -391,7 +391,7 @@ public class QuotationController extends QuotationCommon {
         model.addAttribute("company", pd.getCompany());
         model.addAttribute("customer", pd.getCustomer());
         model.addAttribute("vessel", pd.getVesselName());
-        model.addAttribute("contact", contact.getName() + " " + contact.getSurname());
+        model.addAttribute("contact", (contact != null) ? contact.getName() + " " + contact.getSurname() : "");
 
         for (LocationEnum location : LocationEnum.values()) {
             info += "<option value='" + location.getId() + "'>" + location.getName() + "</option>";
@@ -453,7 +453,7 @@ public class QuotationController extends QuotationCommon {
                 content.put("company", pd.getCompany());
                 content.put("customer", pd.getCustomer());
                 content.put("vessel", pd.getVesselName());
-                content.put("contact", contact.getName() + " " + contact.getSurname());
+                content.put("contact", (contact != null) ? contact.getName() + " " + contact.getSurname() : "");
                 info = "";
                 for (LocationEnum location : LocationEnum.values()) {
                     info += "<option value='" + location.getId() + "'>" + location.getName() + "</option>";
@@ -809,7 +809,7 @@ public class QuotationController extends QuotationCommon {
                         }
                         srvProjectManager.getDaoProjectDetail().edit(pd);
 
-                        if (p != null && cont != null) {
+                        if (p != null) {
                             Map<String, String> titleLeft = new LinkedHashMap<>();
                             Map<String, String> titleRigth = new LinkedHashMap<>();
                             Map<String, String> additional = new LinkedHashMap<>();
@@ -819,8 +819,8 @@ public class QuotationController extends QuotationCommon {
                             SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy");
 
                             titleLeft.put("To", pd.getCustomer());
-                            titleLeft.put("Tel", cont.getPhone());
-                            titleLeft.put("Attn", cont.getSurname() + " " + cont.getName());
+                            titleLeft.put("Tel", (cont != null) ? cont.getPhone() : "");
+                            titleLeft.put("Attn", (cont != null) ? cont.getSurname() + " " + cont.getName() : "");
                             titleLeft.put("Re", pd.getVesselName());
                             titleRigth.put("Our Ref", pd.getReference());
                             titleRigth.put("Date", ds.format(new Date()));
