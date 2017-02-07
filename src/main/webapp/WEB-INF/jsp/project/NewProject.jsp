@@ -75,7 +75,7 @@
                 <td width="300px">
                     <p>
                         <label class="custom-select-large">
-                            <select id="customer"></select>
+                            <select id="customer" onchange="projectFilterCustomer()"></select>
                         </label>    
                     </p>
                 </td>

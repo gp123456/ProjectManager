@@ -346,7 +346,7 @@ public class ProjectController extends ProjectCommon {
         Map<String, String> content = new HashMap<>();
 
         if (!Strings.isNullOrEmpty(customer)) {
-            String response = "";
+            String response = "<option value='0'>Select Vessel</option>";
             List<Vessel> vessels = (!Strings.isNullOrEmpty(customer))
                     ? ((!customer.equals("none"))
                     ? srvProjectManager.getDaoVessel().getByCompany(customer)
@@ -365,16 +365,16 @@ public class ProjectController extends ProjectCommon {
                     content.put("vessel", response);
                 }
             } else {
-                content.put("vessel", "<option value='-1'>Select Vessel</option>");
+                content.put("vessel", "<option value='0'>Select Vessel</option>");
             }
-            response = "";
+            response = "<option value='0'>Select Contact</option>";
             if (contacts != null && contacts.isEmpty() == false) {
                 for (Contact contact : contacts) {
                     response += "<option value='" + contact.getId() + "'>" + contact.getSurname() + " " + contact.getName() + "</option>";
                     content.put("contact", response);
                 }
             } else {
-                content.put("contact", "<option value='-1'>Select Contact</option>");
+                content.put("contact", "<option value='0'>Select Contact</option>");
             }
         }
 
