@@ -126,18 +126,13 @@ function createAllExcel() {
 }
 
 function createExcel(pdId) {
-    var data = "pdId=" + pdId;
+    var data = "?pdId=" + pdId;
+    
+    location.href = "/ProjectManager/project/create-excel" + data;
 
-    $.ajax({
-        type: "POST",
-        url: "create-excel",
-        data: data,
-        success: function (response) {
-            alert(response);
-        },
-        error: function (e) {
-        }
-    });
+    setTimeout(function () {
+        location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
+    }, 5000);
 }
 
 function saveProject(searchOpenExist) {

@@ -20,6 +20,12 @@ import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +35,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -106,6 +114,33 @@ public class ProjectController extends ProjectCommon {
                 + srvProjectManager.getDaoProject().countByStatus(ProjectStatusEnum.FINAL.toString()) + "]");
 
         return content;
+    }
+
+    private void downloadExcel(final HttpServletRequest request, final HttpServletResponse response, String xlsFile) {
+        File file = new File("c:\\ProjectManager\\" + xlsFile);
+
+        try {
+            if (request != null) {
+                HttpSession session = request.getSession();
+
+                if (session != null) {
+                    InputStream in = new FileInputStream(file);
+                    OutputStream output = response.getOutputStream();
+
+                    response.reset();
+                    response.setContentType("application/vnd.ms-excel");
+                    response.setContentLength((int) (file.length()));
+                    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                    IOUtils.copyLarge(in, output);
+                    output.flush();
+                    output.close();
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @RequestMapping(value = "/snapshot")
@@ -303,16 +338,13 @@ public class ProjectController extends ProjectCommon {
     }
 
     @RequestMapping(value = {"/create-excel"})
-    public @ResponseBody
-    String createProjectXLS(Long pdId) {
-        return ExportExcel(srvProjectManager, pdId);
+    public void createProjectXLS(Long pdId, final HttpServletRequest request, final HttpServletResponse response) {
+        downloadExcel(request, response, ExportExcel(srvProjectManager, pdId));
     }
 
     @RequestMapping(value = {"/create-all-excel"})
     public @ResponseBody
     String createProjectsXLS(ProjectDetail p, String date_start, String date_end) {
-        String response = "no found project details";
-
         try {
             Date start = !Strings.isNullOrEmpty(date_start) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_start) : null;
             Date end = !Strings.isNullOrEmpty(date_end) ? new SimpleDateFormat("dd/MM/yyyy").parse(date_end) : null;
@@ -324,14 +356,16 @@ public class ProjectController extends ProjectCommon {
 
             if (pds != null && !pds.isEmpty()) {
                 for (ProjectDetail pd : pds) {
-                    response = ExportExcel(srvProjectManager, pd.getId());
+                    ExportExcel(srvProjectManager, pd.getId());
                 }
+
+                return "created all projects[" + pds.size() + "] in root directory ProjectManager of server";
             }
         } catch (ParseException ex) {
             Logger.getLogger(ProjectController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return response;
+        return "error to create xls files";
     }
 
     @RequestMapping(value = {"/content"})

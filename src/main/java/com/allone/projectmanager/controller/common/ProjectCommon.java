@@ -712,7 +712,7 @@ public class ProjectCommon extends Common {
                 return "error create xls file: " + strPath + strStoreFile;
             }
 
-            return "create xls file: " + strPath + strStoreFile;
+            return strStoreFile;
         }
 
         return "no found project with id:" + pdId;
