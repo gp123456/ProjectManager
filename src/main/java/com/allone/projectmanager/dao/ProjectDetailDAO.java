@@ -389,6 +389,27 @@ public class ProjectDetailDAO {
         return values;
     }
 
+    public Long getByProjectIdNotLost(Long pId) {
+        Long values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (pId != null) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findNotLost")
+                        .setParameter("status", ProjectStatusEnum.LOST.toString())
+                        .setParameter("project", pId);
+
+                values = (query != null) ? (Long) query.getSingleResult() : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return values;
+    }
+
     public Long countByStatus(String status) {
         Long values = null;
         EntityManager em = emf.createEntityManager();

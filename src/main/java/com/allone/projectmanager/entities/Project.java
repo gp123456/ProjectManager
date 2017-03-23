@@ -59,12 +59,16 @@ public class Project implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "tmp_status")
+    private String tmpStatus;
+
     @Transient
     private Long projectDetail;
 
     private Project(Builder builder) {
         reference = builder.getReference();
         status = builder.getStatus();
+        tmpStatus = builder.getTmpStatus();
         projectDetail = builder.getProjectDetail();
     }
 
@@ -93,6 +97,14 @@ public class Project implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getTmpStatus() {
+        return tmpStatus;
+    }
+
+    public void setTmpStatus(String tmpStatus) {
+        this.tmpStatus = tmpStatus;
     }
 
     public Long getProjectDetail() {
@@ -135,6 +147,8 @@ public class Project implements Serializable {
 
         private String status;
 
+        private String tmpStatus;
+
         private Long projectDetail;
 
         public String getReference() {
@@ -153,6 +167,16 @@ public class Project implements Serializable {
 
         public Builder setStatus(String status) {
             this.status = status;
+
+            return this;
+        }
+
+        public String getTmpStatus() {
+            return tmpStatus;
+        }
+
+        public Builder setTmpStatus(String tmpStatus) {
+            this.tmpStatus = tmpStatus;
 
             return this;
         }

@@ -119,6 +119,7 @@ public class HistoryNewProjectController extends Common {
     private String getRQSHeader() {
         return "<tr>"
                 + "<th>Supplier</th>\n"
+                + "<th>C/D</th>\n"
                 + "<th>Currency</th>\n"
                 + "<th>Delivery Cost</th>\n"
                 + "<th>Other Expenses</th>\n"
@@ -133,6 +134,7 @@ public class HistoryNewProjectController extends Common {
         for (RequestQuotation rq : rqs) {
             response += "<tr>\n"
                     + "<td><a href='#' onclick='dlgViewRFQ(" + rq.getId() + ")'>" + rq.getSupplier() + "</a></td>\n"
+                    + "<td>" + ((rq.getComplete().equals(Boolean.TRUE)) ? "T" : "F") + "/" + ((rq.getDiscard().equals(Boolean.TRUE)) ? "T" : "F") + "</td>\n"
                     + "<td>" + getCurrencyName(rq.getCurrency()) + "</td>\n"
                     + "<td>" + rq.getDeliveryCost() + "</td>\n"
                     + "<td>" + rq.getOtherExpenses() + "</td>\n"
@@ -191,6 +193,7 @@ public class HistoryNewProjectController extends Common {
     private String getQSHeader() {
         return "<tr>"
                 + "<th>Customer</th>\n"
+                + "<th>C/D</th>\n"
                 + "<th>Location</th>\n"
                 + "<th>Currency</th>\n"
                 + "<th>Grand Total</th>\n"
@@ -203,6 +206,7 @@ public class HistoryNewProjectController extends Common {
         for (Quotation q : qs) {
             response += "<tr>\n"
                     + "<td><a href='#' onclick='dlgViewQ(" + q.getId() + ")'>" + q.getCustomer() + "</a></td>\n"
+                    + "<td>" + ((q.getComplete().equals(Boolean.TRUE)) ? "T" : "F") + "/" + ((q.getDiscard().equals(Boolean.TRUE)) ? "T" : "F") + "</td>\n"
                     + "<td>" + getLocationNameById(q.getLocation()) + "</td>\n"
                     + "<td>" + getCurrencyName(q.getCurrency()) + "</td>\n"
                     + "<td>" + q.getGrandTotal() + "</td>\n"

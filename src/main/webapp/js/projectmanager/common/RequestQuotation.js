@@ -110,10 +110,6 @@ function saveRFQ(url, pdId, rqId, supplier, currency) {
         return;
     }
 
-    if (currency === 'none') {
-        currency = 0
-    }
-
     var data = "pdId=" + pdId +
             "&supplier=" + supplier +
             "&currency=" + currency +
@@ -403,31 +399,21 @@ function discard() {
     });
 }
 
-function complete() {
-    var data = "pdId=" + $("#subproject option:selected").val();
+function completeRFQ() {
+    var data = "?rqId=" + $("#request-quotations option:selected").val();
 
+    location.href = "/ProjectManager/project/request-quotation/complete" + data;
+}
+
+function exitRFQ() {
+    var data = "rqId=" + $("#request-quotations option:selected").val();
+    
     $.ajax({
         type: "POST",
-        url: "/ProjectManager/project/request-quotation/complete",
+        url: "/ProjectManager/project/request-quotation/exit",
         data: data,
-        success: function (response) {
-            if (response) {
-                var content = JSON.parse(response);
-
-                if (content.header) {
-                    $("#header").html(content.header);
-                } else {
-                    $("#header").html(response);
-                }
-
-                setTimeout(function () {
-                    if (content.location) {
-                        location.href = content.location;
-                    } else {
-                        location.reload();
-                    }
-                }, 5000);
-            }
+        success: function () {
+            location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
         },
         error: function (e) {
         }
@@ -435,18 +421,22 @@ function complete() {
 }
 
 function save() {
-    saveRFQ("/ProjectManager/project/request-quotation/save",
-            $("#subproject option:selected").val(),
-            null,
-            $("#supplier option:selected").val(),
-            $("#currency option:selected").val());
+    var supplier = $("#supplier option:selected").val();
+    
+    if (supplier === 'none') {
+        alert("You must select supplier first")
+        return;
+    }
+
+    var data = "?pdId=" + $("#subproject option:selected").val() +
+            "&supplier=" + supplier +
+            "&currency=" + $("#currency option:selected").val() +
+            "&note=" + $("#note").val();
+            
+    location.href = "/ProjectManager/project/request-quotation/save" + data;
 
     setTimeout(function () {
-        var l = $('#location').val();
-
-        if (l) {
-            location.href = l;
-        }
+        location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
     }, 5000);
 }
 

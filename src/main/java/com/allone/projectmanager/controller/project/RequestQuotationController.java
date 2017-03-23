@@ -11,6 +11,7 @@ import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Company;
+import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.RequestQuotation;
@@ -21,13 +22,25 @@ import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.RequestQuotationItemModel;
 import com.allone.projectmanager.model.User;
+import com.allone.projectmanager.reports.BillMaterialReport;
+import com.allone.projectmanager.reports.RequestQuotationReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +48,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -313,7 +328,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                 result[2] = info[0];
                 result[3] = info[1];
-                result[4] = "<option value='none'>Select Currency</option>\n";
+                result[4] = "<option value='0'>Select Currency</option>\n";
                 for (CurrencyEnum currency : CurrencyEnum.values()) {
                     result[4] += "<option value='" + currency.getId() + "' "
                             + (rq != null && rq.getCurrency() != null && currency.getId().equals(rq.getCurrency())
@@ -1049,11 +1064,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @RequestMapping(value = "/request-quotation/save")
-    public @ResponseBody
-    @SuppressWarnings("null")
-    String saveRFQ(HttpServletRequest request, Long pdId, String supplier, Integer currency, String note, String name) throws MessagingException {
-        String response = "";
-
+    public @SuppressWarnings("null")
+    void saveRFQ(
+            Long pdId,
+            String supplier,
+            Integer currency,
+            String note,
+            final HttpServletRequest request,
+            final HttpServletResponse response) throws MessagingException {
         if (request != null) {
             HttpSession session = request.getSession();
 
@@ -1064,6 +1082,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     if (bms != null && pd != null) {
                         RequestQuotation rq = getRequestQuotation(bms.getId());
+                        Set<Map<String, String>> requestRFQS = new LinkedHashSet<>();
+                        Set<Map<String, String>> requestRFQD = new LinkedHashSet<>();
+                        Map<String, String> item = new LinkedHashMap<>();
 
                         rq.setCurrency(currency);
                         rq.setComplete(Boolean.FALSE);
@@ -1071,39 +1092,103 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         rq.setNote(note);
                         rq.setSupplier(supplier);
                         rq.setName(pd.getReference() + "-" + supplier);
+                        item.put("delivery_cost", "0.00");
+                        item.put("other_expenses", "0.00");
+                        item.put("material_cost", "0.00");
+                        item.put("grand_total", "0.00");
+                        requestRFQS.add(item);
                         if (rq.getId() == null) {
                             rq = srvProjectManager.getDaoRequestQuotation().add(rq);
-
-                            Collection<RequestQuotationItem> rqis = getRequestQoutationItems(bms.getId());
-                            if (rq != null && rqis != null && !rqis.isEmpty()) {
-                                for (RequestQuotationItem rqi : rqis) {
-                                    if (rqi.getRequestQuotation() == null) {
-                                        rqi.setRequestQuotation(rq.getId());
-                                    }
-                                }
-
-                                srvProjectManager.getDaoRequestQuotationItem().add(rqis);
-                            }
                         } else {
                             rq = srvProjectManager.getDaoRequestQuotation().edit(rq);
                         }
+                        Collection<RequestQuotationItem> rqis = getRequestQoutationItems(rq.getBillMaterialService());
+                        if (rq != null && rqis != null && !rqis.isEmpty()) {
+                            for (RequestQuotationItem rqi : rqis) {
+                                if (rqi.getRequestQuotation() == null) {
+                                    rqi.setRequestQuotation(rq.getId());
+                                    BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(rqi.
+                                            getBillMaterialServiceItem());
+
+                                    if (bmsi != null) {
+                                        Item i = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+                                        item = new LinkedHashMap<>();
+
+                                        if (i != null) {
+                                            item.put("code", i.getImno());
+                                            item.put("description", i.getDescription());
+                                            item.put("quantity", bmsi.getQuantity().toString());
+                                            item.put("price_unit", "0.00");
+                                            item.put("discount", "0.00");
+                                            item.put("availability", "0.00");
+                                            item.put("net_total", "0.00");
+                                            requestRFQD.add(item);
+                                        }
+                                    }
+                                }
+                            }
+
+                            Collection<RequestQuotationItem> dbrqis = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
+
+                            if (dbrqis != null && !dbrqis.isEmpty()) {
+                                for (RequestQuotationItem dbrqi : dbrqis) {
+                                    RequestQuotationItem rqi = getRequestQoutationItem(rq.getBillMaterialService(), dbrqi.getId());
+
+                                    if (rqi != null) {
+                                        dbrqi.setAvailability(rqi.getAvailability());
+                                        dbrqi.setDiscount(rqi.getDiscount());
+                                        dbrqi.setTotal(rqi.getTotal());
+                                        dbrqi.setUnitPrice(rqi.getUnitPrice());
+                                        srvProjectManager.getDaoRequestQuotationItem().edit(dbrqi);
+                                    }
+                                }
+                            } else {
+                                srvProjectManager.getDaoRequestQuotationItem().add(rqis);
+                            }
+                        }
                         removeRequestQuotation(bms.getId());
                         removeRequestQuotationItems(bms.getId());
+                        Map<String, Map<String, String>> info = new LinkedHashMap<>();
+                        Map<String, String> titleLeft = new LinkedHashMap<>();
+                        Map<String, String> titleRigth = new LinkedHashMap<>();
+
+                        titleLeft.put("Our Ref", pd.getReference());
+                        titleLeft.put("Supplier", supplier);
+                        titleLeft.put("Currency", (currency.equals(0)) ? "Your choise" : getCurrencyName(currency));
+                        info.put("titleLeft", titleLeft);
+                        info.put("titleRight", titleRigth);
+                        RequestQuotationReport rfqr = new RequestQuotationReport(info, requestRFQS, requestRFQD, note, null);
+                        File file = new File("c:\\ProjectManager\\" + rfqr.getPdfFile());
+
+                        try {
+                            InputStream in = new FileInputStream(file);
+                            OutputStream output = response.getOutputStream();
+
+                            response.reset();
+                            response.setContentType("application/octet-stream");
+                            response.setContentLength((int) (file.length()));
+                            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                            IOUtils.copyLarge(in, output);
+                            output.flush();
+                            output.close();
+                        } catch (FileNotFoundException ex) {
+                            Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else if (bms == null) {
-                        response = "no found bill of material or services";
+                        logger.log(Level.SEVERE, "no found bill of material or services");
                     }
                 } else {
                     if (pdId == null) {
-                        response = "you must to give a project detail id";
+                        logger.log(Level.SEVERE, "you must to give a project detail id");
                     }
                     if (currency == null) {
-                        response = "you must to give a currency";
+                        logger.log(Level.SEVERE, "you must to give a currency");
                     }
                 }
             }
         }
-
-        return response;
     }
 
     @RequestMapping(value = "/request-quotation/get-items")
@@ -1221,55 +1306,145 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @RequestMapping(value = "/request-quotation/complete")
-    public @ResponseBody
-    String complete(Long pdId) {
-        String response = "";
+    public void complete(Long rqId, HttpServletRequest request, HttpServletResponse response) {
+        if (request != null) {
+            HttpSession session = request.getSession();
 
-        if (pdId != null) {
-            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
-            Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+            if (session != null) {
+                if (rqId != null) {
+                    RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(rqId);
 
-            if (p != null && pd != null) {
-                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
+                    if (rq != null) {
+                        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(rq.getBillMaterialService());
+                        Set<Map<String, String>> requestRFQS = new LinkedHashSet<>();
+                        Set<Map<String, String>> requestRFQD = new LinkedHashSet<>();
+                        Map<String, String> item = new LinkedHashMap<>();
 
-                if (bms != null) {
-                    bms.setFlagRFQ(Boolean.FALSE);
-                    srvProjectManager.getDaoBillMaterialService().edit(bms);
-                    List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(bms.getId());
-                    Map<String, String> content = new HashMap<>();
+                        item.put("delivery_cost", (rq.getDeliveryCost() instanceof BigDecimal) ? rq.getDeliveryCost().toString() : "0.00");
+                        item.put("other_expenses", (rq.getOtherExpenses() != null) ? rq.getOtherExpenses().toString() : "0.00");
+                        item.put("material_cost", (rq.getMaterialCost() != null) ? rq.getMaterialCost().toString() : "0.00");
+                        item.put("grand_total", (rq.getGrandTotal() != null) ? rq.getGrandTotal().toString() : "0.00");
+                        requestRFQS.add(item);
+                        if (bms != null) {
+                            bms.setFlagRFQ(Boolean.FALSE);
+                            srvProjectManager.getDaoBillMaterialService().edit(bms);
+                            rq.setComplete(Boolean.TRUE);
+                            rq.setDiscard(Boolean.FALSE);
+                            srvProjectManager.getDaoRequestQuotation().edit(rq);
 
-                    if (rqs != null && !rqs.isEmpty()) {
-                        Boolean complete = Boolean.TRUE;
-                        Long rqId = 0l;
+                            Collection<RequestQuotationItem> rqis = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
 
-                        for (RequestQuotation rq : rqs) {
-                            if (rq.getComplete().equals(Boolean.FALSE)) {
-                                complete = Boolean.FALSE;
-                                rqId = rq.getId();
-                                break;
+                            if (rq != null && rqis != null && !rqis.isEmpty()) {
+                                for (RequestQuotationItem rqi : rqis) {
+                                    BillMaterialServiceItem bmsi = srvProjectManager.getDaoBillMaterialServiceItem().getById(rqi.
+                                            getBillMaterialServiceItem());
+
+                                    if (bmsi != null) {
+                                        Item i = srvProjectManager.getDaoItem().getById(bmsi.getItem());
+                                        item = new LinkedHashMap<>();
+
+                                        if (i != null) {
+                                            item.put("code", (!Strings.isNullOrEmpty(i.getImno())) ? i.getImno() : "");
+                                            item.put("description", (!Strings.isNullOrEmpty(i.getDescription())) ? i.getDescription() : "");
+                                            item.put("quantity", (i.getQuantity() != null) ? bmsi.getQuantity().toString() : "0");
+                                            item.put("price_unit", (rqi.getUnitPrice() != null) ? rqi.getUnitPrice().toString() : "0.00");
+                                            item.put("discount", (rqi.getDiscount() != null) ? rqi.getDiscount().toString() : "0.00");
+                                            item.put("availability", (rqi.getAvailability() != null) ? rqi.getAvailability().toString() : "0");
+                                            item.put("net_total", (rqi.getTotal() != null) ? rqi.getTotal().toString() : "0.00");
+                                            requestRFQD.add(item);
+                                        }
+                                    }
+                                }
+
+                                Map<String, Map<String, String>> info = new LinkedHashMap<>();
+                                Map<String, String> titleLeft = new LinkedHashMap<>();
+                                Map<String, String> titleRigth = new LinkedHashMap<>();
+                                ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
+
+                                titleLeft.put("Our Ref", (pd != null) ? pd.getReference() : "");
+                                titleLeft.put("Supplier", (!Strings.isNullOrEmpty(rq.getSupplier())) ? rq.getSupplier() : "");
+                                titleLeft.put("Currency", (rq.getCurrency() != null) ? getCurrencyName(rq.getCurrency()) : "");
+                                info.put("titleLeft", titleLeft);
+                                info.put("titleRight", titleRigth);
+                                RequestQuotationReport rfqr = new RequestQuotationReport(
+                                        info,
+                                        requestRFQS,
+                                        requestRFQD,
+                                        rq.getNote(),
+                                        rq.getSupplierNote());
+                                File file = new File("c:\\ProjectManager\\" + rfqr.getPdfFile());
+
+                                try {
+                                    InputStream in = new FileInputStream(file);
+                                    OutputStream output = response.getOutputStream();
+
+                                    response.reset();
+                                    response.setContentType("application/octet-stream");
+                                    response.setContentLength((int) (file.length()));
+                                    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                    IOUtils.copyLarge(in, output);
+                                    output.flush();
+                                    output.close();
+                                } catch (FileNotFoundException ex) {
+                                    Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
                             }
-                        }
-                        if (complete.equals(Boolean.TRUE)) {
-                            content.put("header", "REQUEST FOR QUOTATION, SUB-PROJECT REF:" + p.getReference() + " COMPLETE");
-                            content.put("location", "http://localhost:8081/ProjectManager/project/history-new-project");
                         } else {
-                            content.put("header", "REQUEST FOR QUOTATION, SUB-PROJECT REF:" + p.getReference() + " NO COMPLETE");
-                            content.put("location", "http://localhost:8081/ProjectManager/project/request-quotation?id=" + rqId + "&mode=NCRQ");
+                            logger.log(Level.SEVERE, "no found bill of material");
                         }
-
-                        return new Gson().toJson(content);
+                    } else if (rq == null) {
+                        logger.log(Level.SEVERE, "no found request quotation with id:{0}", rqId);
                     }
                 } else {
-                    response = "no found bill of material";
+                    logger.log(Level.SEVERE, "the request quotation id is invalid", rqId);
                 }
-            } else if (p == null) {
-                response = "no found project";
-            } else if (pd == null) {
-                response = "no found project detail";
             }
         }
+    }
 
-        return response;
+    @RequestMapping(value = "/request-quotation/exit")
+    public @ResponseBody
+    void exit(Long rqId, HttpServletRequest request) {
+        if (request != null) {
+            HttpSession session = request.getSession();
+
+            if (session != null) {
+                if (rqId != null) {
+                    RequestQuotation dbrq = srvProjectManager.getDaoRequestQuotation().getById(rqId);
+
+                    if (dbrq != null) {
+                        BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(dbrq.getBillMaterialService());
+
+                        if (bms != null) {
+                            bms.setFlagRFQ(Boolean.FALSE);
+                            srvProjectManager.getDaoBillMaterialService().edit(bms);
+
+                            List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(dbrq.getBillMaterialService());
+
+                            if (rqs != null && !rqs.isEmpty()) {
+                                for (RequestQuotation rq : rqs) {
+                                    if (rq.getComplete().equals(Boolean.FALSE)) {
+                                        rq.setDiscard(Boolean.TRUE);
+                                        srvProjectManager.getDaoRequestQuotation().edit(rq);
+                                    }
+                                }
+                            } else {
+                                logger.log(Level.INFO, "no found rfqs with bmsId={0}", dbrq.getBillMaterialService());
+                            }
+                        } else {
+                            logger.log(Level.INFO, "no found bms with bmsId={0}", dbrq.getBillMaterialService());
+                        }
+                    } else {
+                        logger.log(Level.INFO, "no found rfq with id={0}", rqId);
+                    }
+                } else {
+                    logger.log(Level.INFO, "invalid rfq id={0}", rqId);
+                }
+            }
+        }
     }
 
     @RequestMapping(value = "/request-quotation/change-rfq")
@@ -1289,14 +1464,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     response = "<option value='none'>Select Supplier</option>\n";
                     if (suppliers != null && !suppliers.isEmpty()) {
                         for (Company supplier : suppliers) {
-                            response += "<option value='" + supplier.getName() + "' "
+                            response += "<`='" + supplier.getName() + "' "
                                     + (rq != null && !Strings.isNullOrEmpty(rq.getSupplier()) && supplier.getName().equals(rq.getSupplier())
                                     ? "selected='selected'>" : ">") + supplier.getName() + "</option>\n";
                         }
                     }
                     content.put("suppliers", response);
 
-                    response = "<option value='none'>Select Currency</option>\n";
+                    response = "<option value='0'>Select Currency</option>\n";
                     for (CurrencyEnum currency : CurrencyEnum.values()) {
                         response += "<option value='" + currency.getId() + "' "
                                 + (rq != null && rq.getCurrency() != null && currency.getId().equals(rq.getCurrency())

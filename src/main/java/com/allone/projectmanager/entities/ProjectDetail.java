@@ -78,7 +78,9 @@ import javax.xml.bind.annotation.XmlRootElement;
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
                     query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company"),
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findOpenExist",
-                    query = "SELECT p.reference FROM ProjectDetail p WHERE p.type = :type AND p.vessel = :vessel AND p.company = :company AND p.status <> :status")
+                    query = "SELECT p.reference FROM ProjectDetail p WHERE p.type = :type AND p.vessel = :vessel AND p.company = :company AND p.status <> :status"),
+            @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findNotLost",
+                    query = "SELECT count(p) FROM ProjectDetail p WHERE p.project = :project AND p.status <> :status")
         })
 public class ProjectDetail implements Serializable {
 
@@ -97,6 +99,9 @@ public class ProjectDetail implements Serializable {
     @NotNull
     @Column(name = "status")
     private String status;
+
+    @Column(name = "tmp_status")
+    private String tmpStatus;
 
     @Basic(optional = false)
     @NotNull
@@ -146,6 +151,7 @@ public class ProjectDetail implements Serializable {
     private ProjectDetail(Builder builder) {
         project = builder.project;
         status = builder.status;
+        tmpStatus = builder.tmpStatus;
         type = builder.type;
         creator = builder.creator;
         created = builder.created;
@@ -188,6 +194,14 @@ public class ProjectDetail implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getTmpStatus() {
+        return tmpStatus;
+    }
+
+    public void setTmpStatus(String tmpStatus) {
+        this.tmpStatus = tmpStatus;
     }
 
     public String getType() {
@@ -309,6 +323,8 @@ public class ProjectDetail implements Serializable {
 
         private String status;
 
+        private String tmpStatus;
+
         private String type;
 
         private Long creator;
@@ -339,6 +355,12 @@ public class ProjectDetail implements Serializable {
 
         public Builder setStatus(String status) {
             this.status = status;
+
+            return this;
+        }
+
+        public Builder setTmpStatus(String tmpStatus) {
+            this.tmpStatus = tmpStatus;
 
             return this;
         }

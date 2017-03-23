@@ -19,7 +19,8 @@ public enum ProjectStatusEnum {
     FORWARDING_DOCUMENTS("Forwarding Documents"),
     INVOICE("Invoice"),
     CREDIT_NOTE("Credit Note"),
-    FINAL("Final");
+    FINAL("Final"),
+    LOST("Lost");
 
     private final String value;
 

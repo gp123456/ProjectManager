@@ -127,7 +127,7 @@ function createAllExcel() {
 
 function createExcel(pdId) {
     var data = "?pdId=" + pdId;
-    
+
     location.href = "/ProjectManager/project/create-excel" + data;
 
     setTimeout(function () {
@@ -756,6 +756,24 @@ function getSubProject() {
             console.log(error);
         }
     });
+}
+
+function lostProject(pdId, pdReference) {
+    if (confirm("Do you want lost the project with reference:" + pdReference)) {
+        var data = "pdId=" + pdId;
+
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "lost-project",
+            success: function (response) {
+                window.location.href = "/ProjectManager/project/history-new-project";
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
 }
 
 function editSubProject(id) {

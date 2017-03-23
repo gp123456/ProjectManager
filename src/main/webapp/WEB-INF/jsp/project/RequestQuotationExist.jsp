@@ -70,4 +70,8 @@
     </div>
     <div><p><h2>Marpo Group Notes</h2><textarea id="note" rows="10" style="width: 100%" readonly>${noteRequestQuotation}</textarea></div>
     <div><p><h2>Vendor Notes</h2><textarea id="supplier-note" rows="10" style="width: 100%" readonly>${noteSupplierRequestQuotation}</textarea></div>
+    <div>
+        <input type="button" class="button" value="Complete" onclick="completeRFQ()"/>
+        <input type="button" class="button" value="Exit" onclick="exitRFQ()"/>
+    </div>
 </div>

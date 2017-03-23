@@ -152,6 +152,8 @@ public class ProjectCommon extends Common {
                 + "<td>" + pd.getCustomer() + "</td>"
                 + "<td>" + ((cont != null) ? cont.getName() + " " + cont.getSurname() : "") + "</td>\n"
                 + "<td  align='center'><img src=" + alarm + " /></td>\n"
+                + "<td  align='center'><input type='button' class='button' value='Yes/No' onclick=\"lostProject(" + pd.getId() + ",'" + pd.getReference()
+                + "')\"/></td>\n"
                 + "</tr>\n";
 
         return response;
@@ -179,6 +181,7 @@ public class ProjectCommon extends Common {
                 + "<th>Customer</th>\n"
                 + "<th>Contact</th>\n"
                 + "<th>Alarm</th>\n"
+                + "<th>Lost</th>\n"
                 + "</tr>\n";
     }
 
@@ -262,6 +265,7 @@ public class ProjectCommon extends Common {
         Long allInvoice = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.INVOICE.toString());
         Long allCreditNote = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.CREDIT_NOTE.toString());
         Long allFinal = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.FINAL.toString());
+        Long allLost = srvProjectManager.getDaoProjectDetail().getCountByTypeStatus(type, ProjectStatusEnum.LOST.toString());
         List<PlotInfoModel> result = new ArrayList<>();
 
         if (allOpen != null && allOpen.compareTo(0l) > 0) {
@@ -276,6 +280,7 @@ public class ProjectCommon extends Common {
             result.add(new PlotInfoModel("Invoice", allInvoice.toString()));
             result.add(new PlotInfoModel("Credit Note", allCreditNote.toString()));
             result.add(new PlotInfoModel("Final", allFinal.toString()));
+            result.add(new PlotInfoModel("Lost", allLost.toString()));
         }
 
         return result;

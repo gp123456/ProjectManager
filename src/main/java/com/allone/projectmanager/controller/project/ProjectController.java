@@ -680,4 +680,47 @@ public class ProjectController extends ProjectCommon {
 
         return response;
     }
+
+    @RequestMapping(value = {"/lost-project"})
+    public @ResponseBody
+    String lostProject(Long pdId) {
+        logger.log(Level.INFO, "Set lost project detail with id={0}", pdId);
+        String response = "";
+
+        if (pdId != null) {
+            ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(pdId);
+
+            if (pd != null) {
+                if (!pd.getStatus().equals(ProjectStatusEnum.LOST.toString())) {
+                    pd.setTmpStatus(pd.getStatus());
+                    pd.setStatus(ProjectStatusEnum.LOST.toString());
+                    srvProjectManager.getDaoProjectDetail().edit(pd);
+
+                    Long count = srvProjectManager.getDaoProjectDetail().getByProjectIdNotLost(pdId);
+
+                    if (count == null) {
+                        Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+
+                        if (p != null) {
+                            p.setTmpStatus(p.getStatus());
+                            p.setStatus(ProjectStatusEnum.LOST.toString());
+                            srvProjectManager.getDaoProject().edit(p);
+                        }
+                    }
+                } else {
+                    pd.setStatus(pd.getTmpStatus());
+                    pd.setTmpStatus(null);
+                    srvProjectManager.getDaoProjectDetail().edit(pd);
+
+                    Project p = srvProjectManager.getDaoProject().getById(pd.getProject());
+
+                    p.setStatus(p.getTmpStatus());
+                    p.setTmpStatus(null);
+                    srvProjectManager.getDaoProject().edit(p);
+                }
+            }
+        }
+
+        return response;
+    }
 }
