@@ -34,10 +34,11 @@ public class ContactStatisticController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Contacts-Statistic");
                 this.setSide_bar("../contact/sidebar.jsp");
                 this.setContent("../contact/Statistic.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

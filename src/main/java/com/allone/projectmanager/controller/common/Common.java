@@ -20,9 +20,7 @@ import com.allone.projectmanager.model.User;
 import com.google.common.base.Strings;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,13 +48,13 @@ import org.springframework.ui.Model;
 public class Common {
 
     private static final Logger logger = Logger.getLogger(Common.class.getName());
+    
+    private User user;
 
     private ProjectTypeEnum projectType;
 
-    private static final Map<String, User> user = new HashMap<>();
-
     private String side_bar;
-
+    
     private String content;
 
     private String classContent;
@@ -172,9 +170,7 @@ public class Common {
         return response;
     }
 
-    public void setHeaderInfo(HttpSession session, Model model) {
-        User user = getUser(session.getId());
-
+    public void setHeaderInfo(Model model) {
         if (user != null) {
             model.addAttribute("screen_name", user.getScreen_name());
             model.addAttribute("full_name", user.getFull_name());
@@ -234,42 +230,6 @@ public class Common {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public void setUser(String session, User user) {
-        this.user.put(session, user);
-    }
-
-    public User getUser(String session) {
-        User u = user.get(session);
-
-        return u;
-    }
-
-    public User setUserProjectId(String session, Long projectId) {
-        User u = user.get(session);
-
-        if (u != null) {
-            u.setProjectId(projectId);
-        }
-
-        return u;
-    }
-
-    public Boolean isLockProject(Long userId, Long projectId) {
-        for (User u : user.values()) {
-            Long pId = u.getProjectId();
-
-            if (!u.getId().equals(userId) && pId != null && pId.equals(projectId)) {
-                return Boolean.TRUE;
-            }
-        }
-
-        return Boolean.FALSE;
-    }
-
-    public User removeUser(String session) {
-        return user.remove(session);
     }
 
     public SearchCriteria getSearchCriteria() {
@@ -349,8 +309,7 @@ public class Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                Collabs collab = srvProjectManager.getDaoCollabs().getById(getUser(session.getId()).getId());
-                String prj_reference = collab.getProjectId() + "/" + collab.getProjectPrefix();
+                String prj_reference = user.getProjectId() + "/" + user.getProject_reference();
 
                 model.addAttribute("prj_reference", prj_reference);
 
@@ -510,5 +469,9 @@ public class Common {
         }
 
         return name;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

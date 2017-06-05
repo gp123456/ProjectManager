@@ -73,6 +73,7 @@ public class ProjectCommon extends Common {
         }
 
         String ref = pd.getReference();
+        @SuppressWarnings("UnusedAssignment")
         Long prjCount = 0l;
         List<ProjectDetail> lstPrj = (!Strings.isNullOrEmpty(ref)) ? Arrays.asList(srvProjectManager.getDaoProjectDetail().getByReference(ref)) : null;
 
@@ -120,7 +121,7 @@ public class ProjectCommon extends Common {
 
     public String createProjectRow(ProjectManagerService srvProjectManager, ProjectDetail pd) {
         String response = "";
-        Collabs user = srvProjectManager.getDaoCollabs().getById(pd.getCreator());
+        String user = srvProjectManager.isProjectLock(srvProjectManager.getDaoCollabs().getAll(), pd.getId());
         Vessel vess = srvProjectManager.getDaoVessel().getById(pd.getVessel());
         Contact cont = srvProjectManager.getDaoContact().getById(pd.getContact());
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
@@ -143,7 +144,7 @@ public class ProjectCommon extends Common {
                 : "<td>" + pd.getReference() + "</td>\n")
                 + "<td>" + pd.getType() + "</td>\n"
                 + "<td>" + pd.getStatus() + "</td>\n"
-                + "<td>" + ((user != null) ? user.getName() + " " + user.getSurname() : "") + "</td>\n"
+                + "<td>" + ((!Strings.isNullOrEmpty(user)) ? user : "") + "</td>\n"
                 + "<td>" + format.format(pd.getCreated()) + "</td>\n"
                 + "<td>" + format.format(pd.getExpiredCreate()) + "</td>\n"
                 + "<td>" + format.format(pd.getExpired()) + "</td>\n"
@@ -159,10 +160,12 @@ public class ProjectCommon extends Common {
         return response;
     }
 
+    @SuppressWarnings("static-access")
     public String getModeEdit() {
         return mode.EDIT.name();
     }
 
+    @SuppressWarnings("static-access")
     public String getModeView() {
         return mode.VIEW.name();
     }
@@ -172,7 +175,7 @@ public class ProjectCommon extends Common {
                 + "<th>Reference</th>\n"
                 + "<th>Type</th>\n"
                 + "<th>Status</th>\n"
-                + "<th>User</th>\n"
+                + "<th>Lock User</th>\n"
                 + "<th>Created</th>\n"
                 + "<th>Quotation Expired</th>\n"
                 + "<th>Final Expired</th>\n"
@@ -203,9 +206,7 @@ public class ProjectCommon extends Common {
         List<ProjectDetail> lstPrj = (List<ProjectDetail>) obj[1];
 
         if (lstPrj != null && !lstPrj.isEmpty()) {
-            for (ProjectDetail prj : lstPrj) {
-                response += createProjectRow(srvProjectManager, prj);
-            }
+            response = lstPrj.stream().map((prj) -> createProjectRow(srvProjectManager, prj)).reduce(response, String::concat);
         }
 
         return new Object[]{prjCount, response};
@@ -224,7 +225,9 @@ public class ProjectCommon extends Common {
             Integer size) {
         if (pd != null) {
             Map<String, String> content = new HashMap<>();
+            @SuppressWarnings("UnusedAssignment")
             String header = null;
+            @SuppressWarnings("UnusedAssignment")
             Object[] body = null;
             String footer = null;
             Long count = null;

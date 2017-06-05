@@ -34,10 +34,11 @@ public class ContactEditController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Contacts-Edit");
                 this.setSide_bar("../contact/sidebar.jsp");
                 this.setContent("../contact/Edit.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

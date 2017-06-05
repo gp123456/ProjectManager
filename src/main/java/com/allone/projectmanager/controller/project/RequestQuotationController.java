@@ -11,7 +11,6 @@ import com.allone.projectmanager.entities.Project;
 import com.allone.projectmanager.entities.BillMaterialService;
 import com.allone.projectmanager.entities.BillMaterialServiceItem;
 import com.allone.projectmanager.entities.Company;
-import com.allone.projectmanager.entities.Contact;
 import com.allone.projectmanager.entities.Item;
 import com.allone.projectmanager.entities.ProjectDetail;
 import com.allone.projectmanager.entities.RequestQuotation;
@@ -22,7 +21,6 @@ import com.allone.projectmanager.enums.CurrencyEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.RequestQuotationItemModel;
 import com.allone.projectmanager.model.User;
-import com.allone.projectmanager.reports.BillMaterialReport;
 import com.allone.projectmanager.reports.RequestQuotationReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -34,9 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -235,6 +231,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     + "</tr>\n";
         }
 
+        @SuppressWarnings("null")
         Collection<RequestQuotationItem> rqis = srvProjectManager.getDaoRequestQuotationItem().getByRequestQuotation(rq.getId());
         Integer index = 1;
 
@@ -414,9 +411,8 @@ public class RequestQuotationController extends RequestQuotationCommon {
             List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
 
             if (bmsis != null && !bmsis.isEmpty()) {
-                for (BillMaterialServiceItem bmsi : bmsis) {
+                bmsis.stream().forEach((bmsi) -> {
                     Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-
                     if (item != null) {
                         Stock stock = srvProjectManager.getDaoStock().getById(item.getLocation());
                         String imno = item.getImno();
@@ -432,7 +428,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                 + bmsi.getBillMaterialService() + "," + bmsi.getId() + ");'></td>\n"
                                 + "</tr>\n";
                     }
-                }
+                });
             }
         }
 
@@ -492,9 +488,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
         String[] response = {"", "", "", "", "", "", ""};
 
         if (rqs != null && !rqs.isEmpty()) {
-            for (RequestQuotation rq : rqs) {
+            rqs.stream().forEach((rq) -> {
                 response[0] += "<option value='" + rq.getId() + "'>" + rq.getName() + "</option>\n";
-            }
+            });
             response[1] = rqs.get(0).getSupplier();
             response[2] = getCurrencyName(rqs.get(0).getCurrency());
 
@@ -528,11 +524,13 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @RequestMapping(value = "/request-quotation")
+    @SuppressWarnings("null")
     public String RequestQuotation(HttpServletRequest request, Project p, String emailSender, String mode, Model model) {
         if (request != null) {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 String[] modeInfo = mode.split("-");
                 String _mode = (modeInfo != null) ? modeInfo[0] : mode;
 
@@ -545,7 +543,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setClassContent("content");
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         if (p != null) {
-                            setHeaderInfo(session, model);
+                            setHeaderInfo(model);
                             model.addAttribute("projectId", p.getId());
                             model.addAttribute("mode", modeInfo[1]);
                             model.addAttribute("projectReference", p.getReference());
@@ -561,7 +559,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setSide_bar("../project/sidebar.jsp");
                         this.setContent("../project/RequestQuotationNoComplete.jsp");
                         this.setClassContent("content");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         model.addAttribute("requestQuotationId", p.getId());
                         model.addAttribute("buttonSendEmail", "<input type='button' value='Send eMail' class='button' onclick='sendEmailNCRFQ()'>");
                         model.addAttribute("buttonDiscard", "<input type='button' value='Discard' class='button' onclick='discard()'>");
@@ -573,7 +571,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setSide_bar(null);
                         this.setContent("../project/RequestQuotationSupplier.jsp");
                         this.setClassContent("contentNoSideBar");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         model.addAttribute("requestQuotationId", p.getId());
                         model.addAttribute("emailSender", emailSender);
                         model.addAttribute("buttonClearAll", "<input type='button' value='Clear All' class='button' onclick='getRequestQuotation("
@@ -603,9 +601,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                                     if (rqis != null && !rqis.isEmpty()) {
                                         String ids = "";
 
-                                        for (RequestQuotationItem rqi : rqis) {
-                                            ids += rqi.getId() + ",";
-                                        }
+                                        ids = rqis.stream().map((rqi) -> rqi.getId() + ",").reduce(ids, String::concat);
 
                                         if (!Strings.isNullOrEmpty(ids)) {
                                             ids = ids.substring(0, ids.lastIndexOf(","));
@@ -623,7 +619,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setSide_bar(null);
                         this.setContent("../project/RequestQuotationExist.jsp");
                         this.setClassContent("contentNoSideBar");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(p.getId());
                         BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
                         String[] info = getExistRequestQuotation(bms.getId());
@@ -641,12 +637,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     }
                     case "NEW":
                     case "BMSI": {
-                        this.setTitle("Preparation Request for Quotation");
+                        this.setTitle("Preparation for Quotation");
                         this.setHeader("header.jsp");
                         this.setSide_bar("../project/sidebar.jsp");
                         this.setContent("../project/RequestQuotationSelectItem.jsp");
                         this.setClassContent("content");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         String[] pbInfo = getBillMaterialServiceByProjectDetailInfo(p.getId());
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         model.addAttribute("projectId", p.getId());
@@ -662,7 +658,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setSide_bar("../project/sidebar.jsp");
                         this.setContent("../project/RequestQuotationExist.jsp");
                         this.setClassContent("content");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
                         model.addAttribute("projectId", p.getId());
@@ -678,7 +674,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         this.setSide_bar("../project/sidebar.jsp");
                         this.setContent("../project/RequestQuotationSelectItem.jsp");
                         this.setClassContent("content");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                         p = srvProjectManager.getDaoProject().getById(p.getId());
                         String[] pbInfo = getBillMaterialServiceByProjectInfo(p.getId());
                         model.addAttribute("projectId", p.getId());
@@ -744,14 +740,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
             if (checked.equals(Boolean.TRUE)) {
                 setRequestQuotation(bms.getId(), new RequestQuotation.Builder().setBillMaterialService(bms.getId()).build());
-                for (BillMaterialServiceItem item : items) {
+                items.stream().forEach((item) -> {
                     setRequestQuotationItem(bms.getId(), new RequestQuotationItem.Builder().setBillMaterialServiceItem(item.getId()).build());
-                }
+                });
             } else {
                 removeRequestQuotation(bms.getId());
-                for (BillMaterialServiceItem item : items) {
+                items.stream().forEach((item) -> {
                     removeRequestQuotationItem(bms.getId(), new RequestQuotationItem.Builder().setBillMaterialServiceItem(item.getId()).build());
-                }
+                });
             }
 
             String[] pbInfo = getBillMaterialServiceInfo(pdId);
@@ -927,6 +923,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                     }
                 }
 
+                @SuppressWarnings("null")
                 BigDecimal grandTotal = delivery.add(expenses).add(sumPriceItems);
 
                 rq.setMaterialCost(sumPriceItems.setScale(2, RoundingMode.CEILING));
@@ -956,7 +953,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                User user = getUser(session.getId());
+                User user = srvProjectManager.getUser();
 
                 if (user != null) {
                     rq = srvProjectManager.getDaoRequestQuotation().getById(rq.getId());
@@ -1027,7 +1024,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
                         removeRequestQuotation(bms.getId());
                         removeRequestQuotationItems(bms.getId());
                         Company company = srvProjectManager.getDaoCompany().getByTypeName(CompanyTypeEnum.SUPPLIER, _rq.getSupplier());
-                        User user = getUser(session.getId());
+                        User user = srvProjectManager.getUser();
 
                         if (company != null && !Strings.isNullOrEmpty(company.getEmail1()) && user != null
                                 && !Strings.isNullOrEmpty(user.getEmail()) && pd != null) {
@@ -1162,15 +1159,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                         try {
                             InputStream in = new FileInputStream(file);
-                            OutputStream output = response.getOutputStream();
-
-                            response.reset();
-                            response.setContentType("application/octet-stream");
-                            response.setContentLength((int) (file.length()));
-                            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-                            IOUtils.copyLarge(in, output);
-                            output.flush();
-                            output.close();
+                            try (OutputStream output = response.getOutputStream()) {
+                                response.reset();
+                                response.setContentType("application/octet-stream");
+                                response.setContentLength((int) (file.length()));
+                                response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                IOUtils.copyLarge(in, output);
+                                output.flush();
+                            }
                         } catch (FileNotFoundException ex) {
                             Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
                         } catch (IOException ex) {
@@ -1254,12 +1250,15 @@ public class RequestQuotationController extends RequestQuotationCommon {
             RequestQuotationItem rqi = getRequestQoutationItem(bms, bmsi);
 
             if (rqi != null) {
-                if (name.equals("price")) {
-                    return (rqi.getUnitPrice().equals(0)) ? null : rqi.getUnitPrice().toString();
-                } else if (name.equals("discount")) {
-                    return (rqi.getDiscount().equals(0)) ? null : rqi.getDiscount().toString();
-                } else if (name.equals("availability")) {
-                    return (rqi.getAvailability().equals(0)) ? null : rqi.getAvailability().toString();
+                switch (name) {
+                    case "price":
+                        return (rqi.getUnitPrice().equals(0)) ? null : rqi.getUnitPrice().toString();
+                    case "discount":
+                        return (rqi.getDiscount().equals(0)) ? null : rqi.getDiscount().toString();
+                    case "availability":
+                        return (rqi.getAvailability().equals(0)) ? null : rqi.getAvailability().toString();
+                    default:
+                        break;
                 }
             }
         }
@@ -1271,6 +1270,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     public @ResponseBody
     String discard(Long rqId) {
         Map<String, String> content = new HashMap<>();
+        @SuppressWarnings("UnusedAssignment")
         String response = "";
 
         if (rqId != null) {
@@ -1306,6 +1306,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
     }
 
     @RequestMapping(value = "/request-quotation/complete")
+    @SuppressWarnings("null")
     public void complete(Long rqId, HttpServletRequest request, HttpServletResponse response) {
         if (request != null) {
             HttpSession session = request.getSession();
@@ -1376,15 +1377,14 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                                 try {
                                     InputStream in = new FileInputStream(file);
-                                    OutputStream output = response.getOutputStream();
-
-                                    response.reset();
-                                    response.setContentType("application/octet-stream");
-                                    response.setContentLength((int) (file.length()));
-                                    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-                                    IOUtils.copyLarge(in, output);
-                                    output.flush();
-                                    output.close();
+                                    try (OutputStream output = response.getOutputStream()) {
+                                        response.reset();
+                                        response.setContentType("application/octet-stream");
+                                        response.setContentLength((int) (file.length()));
+                                        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                        IOUtils.copyLarge(in, output);
+                                        output.flush();
+                                    }
                                 } catch (FileNotFoundException ex) {
                                     Logger.getLogger(QuotationController.class.getName()).log(Level.SEVERE, null, ex);
                                 } catch (IOException ex) {
@@ -1425,12 +1425,12 @@ public class RequestQuotationController extends RequestQuotationCommon {
                             List<RequestQuotation> rqs = srvProjectManager.getDaoRequestQuotation().getByBillMaterialService(dbrq.getBillMaterialService());
 
                             if (rqs != null && !rqs.isEmpty()) {
-                                for (RequestQuotation rq : rqs) {
-                                    if (rq.getComplete().equals(Boolean.FALSE)) {
-                                        rq.setDiscard(Boolean.TRUE);
-                                        srvProjectManager.getDaoRequestQuotation().edit(rq);
-                                    }
-                                }
+                                rqs.stream().filter((rq) -> (rq.getComplete().equals(Boolean.FALSE))).map((rq) -> {
+                                    rq.setDiscard(Boolean.TRUE);
+                                    return rq;
+                                }).forEach((rq) -> {
+                                    srvProjectManager.getDaoRequestQuotation().edit(rq);
+                                });
                             } else {
                                 logger.log(Level.INFO, "no found rfqs with bmsId={0}", dbrq.getBillMaterialService());
                             }
@@ -1449,6 +1449,7 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
     @RequestMapping(value = "/request-quotation/change-rfq")
     public @ResponseBody
+    @SuppressWarnings("null")
     String changeRFQ(Long rqId, Boolean hasList, Boolean isEdit) {
         if (rqId != null) {
             RequestQuotation rq = srvProjectManager.getDaoRequestQuotation().getById(rqId);
@@ -1463,11 +1464,9 @@ public class RequestQuotationController extends RequestQuotationCommon {
 
                     response = "<option value='none'>Select Supplier</option>\n";
                     if (suppliers != null && !suppliers.isEmpty()) {
-                        for (Company supplier : suppliers) {
-                            response += "<`='" + supplier.getName() + "' "
-                                    + (rq != null && !Strings.isNullOrEmpty(rq.getSupplier()) && supplier.getName().equals(rq.getSupplier())
-                                    ? "selected='selected'>" : ">") + supplier.getName() + "</option>\n";
-                        }
+                        response = suppliers.stream().map((supplier) -> "<`='" + supplier.getName() + "' "
+                                + (rq != null && !Strings.isNullOrEmpty(rq.getSupplier()) && supplier.getName().equals(rq.getSupplier())
+                                        ? "selected='selected'>" : ">") + supplier.getName() + "</option>\n").reduce(response, String::concat);
                     }
                     content.put("suppliers", response);
 

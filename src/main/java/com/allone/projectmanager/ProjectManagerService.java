@@ -26,9 +26,12 @@ import com.allone.projectmanager.dao.QuotationItemDAO;
 import com.allone.projectmanager.dao.RequestQuotationDAO;
 import com.allone.projectmanager.dao.RequestQuotationItemDAO;
 import com.allone.projectmanager.dao.ServiceCollabDAO;
+import com.allone.projectmanager.entities.Collabs;
+import com.allone.projectmanager.model.User;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +49,8 @@ public class ProjectManagerService {
     private static final Logger logger = Logger.getLogger(ProjectManagerService.class.getName());
 
     private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ProjectManagerPU");
+
+    private User user;
 
     public ProjectManagerService() {
     }
@@ -191,5 +196,44 @@ public class ProjectManagerService {
 
     public ServiceCollabDAO getDaoServiceCollab() {
         return daoServiceCollab;
+    }
+
+    public void setProjectLock(Long project) {
+        if (user != null) {
+            getDaoCollabs().updateProjectLock(user.getId(), project);
+        }
+    }
+
+    public String isProjectLock(List<Collabs> users, Long projectId) {
+        for (Collabs u : users) {
+            Long pId = u.getProjectLock();
+
+            if (pId != null && pId.equals(projectId)) {
+                logger.log(Level.INFO, "lockUser={0}", u.getUsername());
+
+                return u.getUsername();
+            }
+        }
+
+        return null;
+    }
+
+    public void removeProjectLock() {
+        if (user != null) {
+            Collabs c = getDaoCollabs().getById(user.getId());
+
+            if (c != null) {
+                c.setProjectLock(null);
+                getDaoCollabs().edit(c);
+            }
+        }
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

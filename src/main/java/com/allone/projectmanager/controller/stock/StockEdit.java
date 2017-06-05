@@ -34,10 +34,11 @@ public class StockEdit extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Stock-Edit");
                 this.setSide_bar("../stock/sidebar.jsp");
                 this.setContent("../stock/Edit.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

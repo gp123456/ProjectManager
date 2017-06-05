@@ -123,17 +123,17 @@
                 </fieldset>
             </form>
         </div>
-<!--        <ul id="statistics">
-            <li onclick="window.location.href = '/project/statistics?year=2007';">2007</li>
-            <li onclick="window.location.href = '/project/statistics?year=2008';">2008</li>
-            <li onclick="window.location.href = '/project/statistics?year=2009';">2009</li>
-            <li onclick="window.location.href = '/project/statistics?year=2010';">2010</li>
-            <li onclick="window.location.href = '/project/statistics?year=2011';">2011</li>
-            <li onclick="window.location.href = '/project/statistics?year=2012';">2012</li>
-            <li onclick="window.location.href = '/project/statistics?year=2013';">2013</li>
-            <li onclick="window.location.href = '/project/statistics?year=2014';">2014</li>
-            <li onclick="window.location.href = '/project/statistics?year=2015';">2015</li>
-        </ul>-->
+        <!--        <ul id="statistics">
+                    <li onclick="window.location.href = '/project/statistics?year=2007';">2007</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2008';">2008</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2009';">2009</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2010';">2010</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2011';">2011</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2012';">2012</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2013';">2013</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2014';">2014</li>
+                    <li onclick="window.location.href = '/project/statistics?year=2015';">2015</li>
+                </ul>-->
     </div>
     <div class="menu-item">
         <h3 onclick="window.location.href = '<%=path%>/project/history-new-project';">History</h3>

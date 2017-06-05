@@ -120,4 +120,22 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "user:"
+                + "id=" + id
+                + "username=" + username
+                + "password=" + password
+                + "screen_name=" + screen_name
+                + "full_name=" + full_name
+                + "last_login=" + last_login
+                + "avatar=" + avatar
+                + "project_reference=" + project_reference
+                + "project_expired_created=" + project_expired_created
+                + "project_expired=" + project_expired
+                + "email=" + email
+                + "projectId=" + projectId
+                + "role=" + role;
+    }
 }

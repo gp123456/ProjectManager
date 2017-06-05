@@ -388,6 +388,25 @@ public class ProjectDetailDAO {
 
         return values;
     }
+    
+    public List getByStatus(String status) {
+        List values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (!Strings.isNullOrEmpty(status)) {
+                Query query = em.createNamedQuery("com.allone.projectmanager.entities.ProjectDetail.findByStatus").setParameter("status", status);
+
+                values = (query != null) ? query.getResultList() : null;
+            }
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return values;
+    }
 
     public Long getByProjectIdNotLost(Long pId) {
         Long values = null;
@@ -500,7 +519,6 @@ public class ProjectDetailDAO {
                         .setParameter("type", type)
                         .setParameter("vessel", vessel)
                         .setParameter("company", company)
-                        .setParameter("status", ProjectStatusEnum.INVOICE.toString())
                         .setMaxResults(1);
 
                 value = (query != null) ? (String) query.getSingleResult() : null;

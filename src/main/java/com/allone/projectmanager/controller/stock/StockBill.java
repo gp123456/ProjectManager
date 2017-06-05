@@ -34,10 +34,11 @@ public class StockBill extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Stock-Bill");
                 this.setSide_bar("../stock/sidebar.jsp");
                 this.setContent("../stock/Bill.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

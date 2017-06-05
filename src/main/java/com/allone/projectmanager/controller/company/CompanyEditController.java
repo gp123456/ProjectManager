@@ -34,10 +34,11 @@ public class CompanyEditController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Companies-Edit");
                 this.setSide_bar("../company/sidebar.jsp");
                 this.setContent("../company/Edit.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

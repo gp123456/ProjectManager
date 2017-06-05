@@ -34,11 +34,12 @@ public class VesselHistoryController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Vessel");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../vessel/sidebar.jsp");
                 this.setContent("../vessel/History.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

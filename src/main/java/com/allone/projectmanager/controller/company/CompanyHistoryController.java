@@ -34,11 +34,12 @@ public class CompanyHistoryController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Company");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../company/sidebar.jsp");
                 this.setContent("../company/History.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

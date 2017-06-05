@@ -34,11 +34,12 @@ public class ContactHistoryController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Contact");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../contact/sidebar.jsp");
                 this.setContent("../contact/History.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

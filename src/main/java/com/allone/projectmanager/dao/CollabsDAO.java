@@ -31,6 +31,23 @@ public class CollabsDAO {
         this.emf = emf;
     }
 
+    public List getAll() {
+        List values = null;
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Query query = em.createNamedQuery("com.allone.projectmanager.entities.Collabs.findAll");
+
+            values = (query != null) ? query.getResultList() : null;
+        } catch (HibernateException | NoResultException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return values;
+    }
+
     public Collabs login(String username, String password) {
         Collabs value = null;
         EntityManager em = emf.createEntityManager();
@@ -112,5 +129,45 @@ public class CollabsDAO {
         em.close();
 
         return user;
+    }
+    
+    public Collabs updateProjectLock(Long id, Long pdId) {
+        EntityManager em = emf.createEntityManager();
+        Collabs user = null;
+
+        try {
+            if (id != null && id.compareTo(0l) >= 0) {
+                em.getTransaction().begin();
+                int countUpdate = em.createNamedQuery("com.allone.projectmanager.entities.Collabs.updateProjectLock").
+                        setParameter("id", id).setParameter("pdId", pdId).executeUpdate();
+                em.getTransaction().commit();
+
+                if (countUpdate > 0) {
+                    user = getById(id);
+                }
+            }
+        } catch (TransactionRequiredException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
+
+        return user;
+    }
+
+    public void edit(Collabs item) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            if (item != null) {
+                em.getTransaction().begin();
+                em.merge(item);
+                em.getTransaction().commit();
+            }
+        } catch (HibernateException e) {
+            logger.log(Level.SEVERE, "{0}", e.getMessage());
+        }
+
+        em.close();
     }
 }

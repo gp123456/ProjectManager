@@ -228,11 +228,12 @@ public class HistoryNewProjectController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("History-Projects");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../project/sidebar.jsp");
                 this.setContent("../project/HistoryNewProject.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

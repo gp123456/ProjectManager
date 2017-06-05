@@ -5,9 +5,11 @@
  */
 package com.allone.projectmanager.controller.project;
 
+import com.allone.projectmanager.ProjectManagerService;
 import com.allone.projectmanager.controller.common.Common;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,16 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/project-cretid")
 public class CreditNoteController extends Common {
 
+    @Autowired
+    ProjectManagerService srvProjectManager;
+    
     @RequestMapping(value = "/credit-note")
     public String CreditNote(HttpServletRequest request, Model model) {
         if (request != null) {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Projects-Credit Note");
                 this.setSide_bar("../project/sidebar.jsp");
                 this.setContent("../project/CreditNote.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

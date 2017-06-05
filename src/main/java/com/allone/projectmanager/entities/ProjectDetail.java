@@ -78,7 +78,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.countByTypeCompany",
                     query = "SELECT count(p) FROM ProjectDetail p WHERE p.type = :type AND p.status <> :status AND p.company = :company"),
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findOpenExist",
-                    query = "SELECT p.reference FROM ProjectDetail p WHERE p.type = :type AND p.vessel = :vessel AND p.company = :company AND p.status <> :status"),
+                    query = "SELECT p.reference FROM ProjectDetail p WHERE p.type = :type AND p.vessel = :vessel AND p.company = :company AND " +
+                    "p.status != 'Invoice' AND p.status != 'Lost'"),
             @NamedQuery(name = "com.allone.projectmanager.entities.ProjectDetail.findNotLost",
                     query = "SELECT count(p) FROM ProjectDetail p WHERE p.project = :project AND p.status <> :status")
         })

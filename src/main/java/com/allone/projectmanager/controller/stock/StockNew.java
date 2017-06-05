@@ -34,10 +34,11 @@ public class StockNew extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Stock-New");
                 this.setSide_bar("../stock/sidebar.jsp");
                 this.setContent("../stock/New.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

@@ -40,11 +40,12 @@ public class ContactNewController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 setTitle("Contacts-New");
                 setHeader("header.jsp");
                 setSide_bar("../contact/sidebar.jsp");
                 setContent("../contact/New.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

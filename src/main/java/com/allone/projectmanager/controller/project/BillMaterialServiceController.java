@@ -24,7 +24,6 @@ import com.allone.projectmanager.enums.OwnCompanyEnum;
 import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.reports.BillMaterialReport;
-import com.allone.projectmanager.reports.QuotationReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.File;
@@ -150,10 +149,12 @@ public class BillMaterialServiceController extends ProjectCommon {
         SubProjectInfo info = new SubProjectInfo();
 
         if (pds != null && !pds.isEmpty()) {
-            for (ProjectDetail pd : pds) {
+            pds.stream().map((pd) -> {
                 info.html += "<option value='" + pd.getId() + "'>" + pd.getReference() + "</option>";
+                return pd;
+            }).forEach((pd) -> {
                 pushBillMaterialService(pd.getId());
-            }
+            });
             info.pd = pds.get(0);
             info.size = pds.size();
         }
@@ -161,6 +162,7 @@ public class BillMaterialServiceController extends ProjectCommon {
         return info;
     }
 
+    @SuppressWarnings("null")
     private String createContent(Project p) {
         Map<String, String> content = new HashMap<>();
         SubProjectInfo subprojectValues = selectSubprojects(p.getId());
@@ -246,6 +248,7 @@ public class BillMaterialServiceController extends ProjectCommon {
                 for (BillMaterialServiceItem bmsi : bmsis) {
                     Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
                     Stock stock = (item != null) ? srvProjectManager.getDaoStock().getById(item.getLocation()) : null;
+                    @SuppressWarnings("null")
                     String imno = item.getImno();
                     String stockName = (stock != null) ? stock.getLocation() : "";
                     Long itemId = bmsi.getItem();
@@ -279,33 +282,34 @@ public class BillMaterialServiceController extends ProjectCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Projects - Bill of materials or services");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../project/sidebar.jsp");
                 this.setContent("../project/BillMaterialService.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
                 p = srvProjectManager.getDaoProject().getById(p.getId());
 
                 if (p != null) {
-                    if (!Strings.isNullOrEmpty(mode) && mode.equals("BMS-EDIT")) {
-                        if (p.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
-                            List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
+                    List<ProjectDetail> pds = srvProjectManager.getDaoProjectDetail().getByProjectId(p.getId());
 
-                            p.setStatus(ProjectStatusEnum.CREATE.toString());
-                            srvProjectManager.getDaoProject().edit(p);
-                            if (pds != null && !pds.isEmpty()) {
-                                for (ProjectDetail pd : pds) {
-                                    if (pd.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
-                                        pd.setStatus(ProjectStatusEnum.CREATE.toString());
-                                        srvProjectManager.getDaoProjectDetail().edit(pd);
-                                    }
-                                }
+                    if (pds != null && !pds.isEmpty()) {
+                        srvProjectManager.setProjectLock(pds.get(0).getId());
+                        if (!Strings.isNullOrEmpty(mode) && mode.equals("BMS-EDIT")) {
+                            if (p.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString())) {
+                                p.setStatus(ProjectStatusEnum.CREATE.toString());
+                                srvProjectManager.getDaoProject().edit(p);
+                                pds.stream().filter((pd) -> (pd.getStatus().equals(ProjectStatusEnum.BILL_MATERIAL_SERVICE.toString()))).map((pd) -> {
+                                    pd.setStatus(ProjectStatusEnum.CREATE.toString());
+                                    return pd;
+                                }).forEach((pd) -> {
+                                    srvProjectManager.getDaoProjectDetail().edit(pd);
+                                });
                             }
                             model.addAttribute("button_remove",
                                     "<input type='button' value='Remove' class='button alarm' onclick='removeBillMaterialService()'>\n");
                         }
                     }
-                    setUserProjectId(session.getId(), p.getId());
                     model.addAttribute("p_id", p.getId());
                     model.addAttribute("button_save", "<input type='button' value='Save' class='button alarm' onclick='getBillMaterialServiceItems()'>\n");
                 }
@@ -428,6 +432,7 @@ public class BillMaterialServiceController extends ProjectCommon {
     }
 
     @RequestMapping(value = "/bill-material-service/save")
+    @SuppressWarnings("null")
     public void save(
             BillMaterialService bms,
             String quantities,
@@ -466,10 +471,9 @@ public class BillMaterialServiceController extends ProjectCommon {
                             Collection<BillMaterialServiceItem> bmsis = getBillMaterialServiceItems(pd.getId());
 
                             if (bmsis != null && !bmsis.isEmpty()) {
-                                for (BillMaterialServiceItem bmsi : bmsis) {
+                                bmsis.stream().map((bmsi) -> {
                                     Map<String, String> item = new LinkedHashMap<>();
                                     Item i = srvProjectManager.getDaoItem().getById(bmsi.getItem());
-
                                     if (i != null) {
                                         item.put("item", i.getImno());
                                         item.put("price", bmsi.getPrice().toString());
@@ -477,13 +481,14 @@ public class BillMaterialServiceController extends ProjectCommon {
                                         item.put("quantity", bmsi.getQuantity().toString());
                                         requestBMS.add(item);
                                     }
+                                    return bmsi;
+                                }).forEach((bmsi) -> {
                                     if (bmsi.getId() == null) {
                                         srvProjectManager.getDaoBillMaterialServiceItem().add(bmsi);
                                     } else {
                                         srvProjectManager.getDaoBillMaterialServiceItem().edit(bmsi);
                                     }
-
-                                }
+                                });
                             }
                         }
                     }
@@ -512,15 +517,14 @@ public class BillMaterialServiceController extends ProjectCommon {
 
                             if (session != null) {
                                 InputStream in = new FileInputStream(file);
-                                OutputStream output = response.getOutputStream();
-
-                                response.reset();
-                                response.setContentType("application/octet-stream");
-                                response.setContentLength((int) (file.length()));
-                                response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-                                IOUtils.copyLarge(in, output);
-                                output.flush();
-                                output.close();
+                                try (OutputStream output = response.getOutputStream()) {
+                                    response.reset();
+                                    response.setContentType("application/octet-stream");
+                                    response.setContentLength((int) (file.length()));
+                                    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                    IOUtils.copyLarge(in, output);
+                                    output.flush();
+                                }
                             }
                         }
                     } catch (FileNotFoundException ex) {
@@ -576,7 +580,7 @@ public class BillMaterialServiceController extends ProjectCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                Date expired = new Date(new Date().getTime() + getUser(session.getId()).getProject_expired() * 86400000l);
+                Date expired = new Date(new Date().getTime() + srvProjectManager.getUser().getProject_expired() * 86400000l);
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
                 String htmlCompany = "<select id='subproject-company'>\n" + "<option value='none' selected='selected'>Select</option>\n";
                 String htmlType = "<select id='type'>\n" + "<option value='none' selected='selected'>Select</option>\n";
@@ -646,7 +650,7 @@ public class BillMaterialServiceController extends ProjectCommon {
             if (session != null) {
                 if (pd != null) {
                     pd.setStatus(ProjectStatusEnum.CREATE.toString());
-                    pd.setCreator(getUser(session.getId()).getId());
+                    pd.setCreator(srvProjectManager.getUser().getId());
                     pd.setCreated(new Date());
 
                     ProjectDetail dbpd = srvProjectManager.getDaoProjectDetail().getLastByProject(pd.getProject());

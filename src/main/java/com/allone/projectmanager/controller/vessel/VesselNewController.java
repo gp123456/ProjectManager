@@ -36,10 +36,11 @@ public class VesselNewController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Vessel-New");
                 this.setSide_bar("../vessel/sidebar.jsp");
                 this.setContent("../vessel/New.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

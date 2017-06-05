@@ -93,7 +93,11 @@ function saveBillMaterialService(response) {
     var items = (response) ? JSON.parse(response) : null;
     var data = "?project=" + $("#subproject option:selected").val() + "&note=" + encodeURIComponent($("#note").val());
     
-
+    if (typeof flagRFQ === "undefined") {
+        if (!confirm("Are you sure don't need request for quotation?")) {
+            return;
+        }
+    }
     if (items !== null) {
         data += "&quantities=";
 
@@ -102,6 +106,8 @@ function saveBillMaterialService(response) {
 
             if (value == '' || isNaN(value)) {
                 alert("you must insert values in all quantities");
+                
+                return;
             } else {
                 data += item + "-" + value + ",";
             }
@@ -111,8 +117,6 @@ function saveBillMaterialService(response) {
     }
     data += "&flagRFQ=";
     data += (typeof flagRFQ === "undefined") ? "off" : flagRFQ;
-    
-    console.log(data);
     
     location.href = "/ProjectManager/project/bill-material-service/save" + data;
 

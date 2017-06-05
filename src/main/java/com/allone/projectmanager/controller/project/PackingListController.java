@@ -46,10 +46,11 @@ public class PackingListController extends ProjectCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Projects-Packing List");
                 this.setSide_bar("../project/sidebar.jsp");
                 this.setContent("../project/PackingList.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

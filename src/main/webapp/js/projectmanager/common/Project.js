@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -38,7 +38,8 @@ function searchContent(offset, size) {
             $("#footer").html(content.footer);
             $("#count").html("Results[" + content.count + "]<input type='button' class='button' value='Create Excel' onclick='createAllExcel()'/>");
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -58,7 +59,8 @@ function getProjectById(id) {
             $("#project-header").html(content.project_header);
             $("#project-body").html(content.project_body);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -71,7 +73,8 @@ function getProjectStatistics(year) {
         success: function () {
             location.reload();
         },
-        error: function () {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -88,7 +91,8 @@ function removeRow(id) {
             $("#header").html(content.project_header);
             $("#body").html(content.project_body);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -118,9 +122,9 @@ function createAllExcel() {
         url: "create-all-excel",
         data: data,
         success: function (response) {
-            alert(response);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -136,8 +140,6 @@ function createExcel(pdId) {
 }
 
 function saveProject(searchOpenExist) {
-    console.log(searchOpenExist);
-
     var type = $("#type option:selected").attr("value");
     var expired = $("#expired").datepicker({dateFormat: 'yyyy-mm-dd'}).val();
     var customer = $("#customer option:selected").attr("value");
@@ -190,7 +192,8 @@ function saveProject(searchOpenExist) {
                 location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
             }, 5000);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -223,7 +226,8 @@ function projectPackingList(id) {
             $("#body").html(content.project_body);
             $("#footer").html(content.project_footer);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -240,7 +244,8 @@ function projectFilterCustomer() {
             $("#contact").html(content.contact);
             $("#edit").attr('class', 'button alarm');
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -358,7 +363,7 @@ function dashboardView() {
             }
         },
         error: function (xhr, status, error) {
-            alert(error);
+            console.log(error);
         }
     });
 }
@@ -371,7 +376,8 @@ function getProjectByStatus(status, div_id) {
         success: function (response) {
             $(div_id).html(response);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -383,7 +389,8 @@ function getStatuses() {
         success: function (response) {
             $("#lst-edit-project").html(response);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -400,7 +407,8 @@ function setProjectByStatus(dlg_id, dest_path, mode) {
                 success: function (response) {
                     location.href = response + "?id=" + id + "&mode=" + mode;
                 },
-                error: function (e) {
+                error: function (xhr, status, error) {
+                    alert(error);
                 }
             });
         } else {
@@ -441,10 +449,7 @@ function dlgProject(mode, version, status, dlg_id, div_id, dest_path) {
 
 function editProject() {
     var reference = $("#prj-reference").val();
-
     var data = "reference=" + reference;
-
-    console.log(data);
 
     $.ajax({
         type: "GET",
@@ -465,7 +470,8 @@ function editProject() {
                 }
             }
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 
@@ -550,7 +556,8 @@ function fillSearchCriteriaProject(version) {
 
             searchContent(0, 10);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -759,7 +766,7 @@ function getSubProject() {
 }
 
 function lostProject(pdId, pdReference) {
-    if (confirm("Do you want lost the project with reference:" + pdReference)) {
+    if (confirm("Do you want lost the subproject with reference:" + pdReference)) {
         var data = "pdId=" + pdId;
 
         $.ajax({
@@ -825,7 +832,8 @@ function editSubProject(id) {
                 window.location = content.location;
             }, 5000);
         },
-        error: function () {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }

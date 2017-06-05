@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,7 +55,7 @@ public class Root extends ProjectCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                removeUser(session.getId());
+                srvProjectManager.removeProjectLock();
             }
         }
 
@@ -69,43 +68,38 @@ public class Root extends ProjectCommon {
             HttpSession session = request.getSession();
 
             if (session != null) {
-                User user = getUser(session.getId());
+                Collabs collab = srvProjectManager.getDaoCollabs().login(_user.getUsername(), _user.getPassword());
+                User user = new User();
 
-                if (user == null) {
-                    Collabs collab = srvProjectManager.getDaoCollabs().login(_user.getUsername(), _user.getPassword());
-
-                    if (collab != null) {
-                        SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-                        String current = ds.format(new Date());
-
-                        user = new User();
-                        user.setId(collab.getId());
-                        user.setScreen_name(user.getUsername());
-                        user.setLast_login(new String(current.getBytes("ISO-8859-1")));
-                        user.setFull_name(collab.getSurname() + " " + collab.getName());
-                        user.setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
-                        user.setProject_expired(collab.getProjectExpired());
-                        user.setEmail(collab.getEmail());
-                        user.setRole(collab.getRole());
-                        setUser(session.getId(), user);
-                        setTitle("Project Manager");
-                        setHeader("main_header.jsp");
-                        setContent("../project/ViewProject.jsp");
-                        setHeaderInfo(session, model);
-                        model.addAttribute("login", "true");
-                        model.addAttribute("role", user.getRole());
-
-                        return "index";
-                    } else {
-                        return "login";
-                    }
-                } else {
+                if (collab != null) {
+                    SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                    String current = ds.format(new Date());
+                    
+                    user.setId(collab.getId());
+                    user.setScreen_name(user.getUsername());
+                    user.setLast_login(new String(current.getBytes("ISO-8859-1")));
+                    user.setFull_name(collab.getSurname() + " " + collab.getName());
+                    user.setProject_reference((collab.getProjectId() + 1l) + "/" + collab.getProjectPrefix());
+                    user.setProject_expired(collab.getProjectExpired());
+                    user.setEmail(collab.getEmail());
+                    user.setRole(collab.getRole());
+                    srvProjectManager.setUser(user);
+                    setUser(user);
                     setTitle("Project Manager");
                     setHeader("main_header.jsp");
                     setContent("../project/ViewProject.jsp");
-                    setHeaderInfo(session, model);
+                    setHeaderInfo(model);
                     model.addAttribute("login", "true");
                     model.addAttribute("role", user.getRole());
+
+                    return "index";
+                } else {
+                    setUser(user);
+                    setTitle("Project Manager");
+                    setHeader("main_header.jsp");
+                    setContent("../project/ViewProject.jsp");
+                    setHeaderInfo(model);
+                    model.addAttribute("login", "true");
 
                     return "index";
                 }

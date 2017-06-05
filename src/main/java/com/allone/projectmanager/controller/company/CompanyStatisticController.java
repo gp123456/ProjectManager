@@ -34,10 +34,11 @@ public class CompanyStatisticController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Companies-Statistic");
                 this.setSide_bar("../company/sidebar.jsp");
                 this.setContent("../company/Statistic.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

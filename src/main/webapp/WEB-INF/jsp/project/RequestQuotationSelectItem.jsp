@@ -40,5 +40,6 @@
     <br>
     <div>
         <input type="button" value="Submit" class="button" onclick="submitRequestQuotation()">
+        <input type="button" value="Submit Quotation" class="button" onclick="submitQuotation()">
     </div>
 </div>

@@ -34,10 +34,11 @@ public class VesselEditController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Vessel-Edit");
                 this.setSide_bar("../vessel/sidebar.jsp");
                 this.setContent("../vessel/Edit.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

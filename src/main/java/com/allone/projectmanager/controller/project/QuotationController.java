@@ -23,7 +23,6 @@ import com.allone.projectmanager.enums.ProjectStatusEnum;
 import com.allone.projectmanager.enums.ProjectTypeEnum;
 import com.allone.projectmanager.model.QuotationItemModel;
 import com.allone.projectmanager.model.User;
-import com.allone.projectmanager.tools.DownloadFile;
 import com.allone.projectmanager.reports.QuotationReport;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -48,12 +47,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.print.PrintService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -285,6 +281,7 @@ public class QuotationController extends QuotationCommon {
 //
 //        return html;
 //    }
+    @SuppressWarnings("null")
     private String editInfo(Long pId, Model model, String mode) {
         String content = "../root/message.jsp";
         Project p = srvProjectManager.getDaoProject().getById(pId);
@@ -332,6 +329,7 @@ public class QuotationController extends QuotationCommon {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pds.get(0).getId());
 
             if (bms != null) {
+                @SuppressWarnings("UnusedAssignment")
                 Quotation firstQ = null;
                 List<Quotation> qs = srvProjectManager.getDaoQuotation().getByBillMaterialService(bms.getId());
 
@@ -446,6 +444,7 @@ public class QuotationController extends QuotationCommon {
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(pd.getId());
 
             if (bms != null) {
+                @SuppressWarnings("UnusedAssignment")
                 String info = "";
                 Contact contact = srvProjectManager.getDaoContact().getById(pd.getContact());
 
@@ -477,9 +476,8 @@ public class QuotationController extends QuotationCommon {
         List<ProjectDetail> items = srvProjectManager.getDaoProjectDetail().getByProjectIdType(pId, ProjectTypeEnum.SALE.name());
 
         if (items != null && !items.isEmpty()) {
-            for (ProjectDetail item : items) {
+            items.stream().forEach((item) -> {
                 BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getByProject(item.getId());
-
                 if (bms != null) {
                     setMapQuotation(new Quotation.Builder()
                             .setCurrency(CurrencyEnum.EUR.getId())
@@ -488,9 +486,7 @@ public class QuotationController extends QuotationCommon {
                             .setName(item.getReference() + "-" + item.getCustomer())
                             .setBillMaterialService(bms.getId())
                             .build());
-
                     List<BillMaterialServiceItem> bmsis = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bms.getId());
-
                     if (bmsis != null && !bmsis.isEmpty()) {
                         bmsis.stream().forEach((bmsi) -> {
                             setMapQuotationItem(bms.getId(), LocationEnum.GREECE.getId(), new QuotationItem.Builder()
@@ -500,7 +496,7 @@ public class QuotationController extends QuotationCommon {
                         });
                     }
                 }
-            }
+            });
         }
     }
 
@@ -508,37 +504,36 @@ public class QuotationController extends QuotationCommon {
     public String Quotation(HttpServletRequest request, Project p, String mode, Model model) {
         if (request != null) {
             HttpSession session = request.getSession();
-            User user = getUser(session.getId());
-            Date expired = new Date(new Date().getTime() + user.getProject_expired() * 86400000l);
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
 
-            this.setTitle("Quotation");
-            this.setHeader("header.jsp");
-            this.setSide_bar("../project/sidebar.jsp");
-            if (!Strings.isNullOrEmpty(mode)) {
-                if (mode.equals("NEW")) {
-                    resetCommonValues();
-                    p = srvProjectManager.getDaoProject().getById(p.getId());
-                    if (p != null) {
-                        model.addAttribute("projectReference", p.getReference());
-                        model.addAttribute("is_quotation", 1);
-                        model.addAttribute("display", "display: none;");
-                        model.addAttribute("expired", format.format(expired));
-                        this.setContent(selectInfo(p.getId(), model));
+            if (session != null) {
+                User user = srvProjectManager.getUser();
+                Date expired = new Date(new Date().getTime() + user.getProject_expired() * 86400000l);
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+
+                setUser(user);
+                this.setTitle("Quotation");
+                this.setHeader("header.jsp");
+                this.setSide_bar("../project/sidebar.jsp");
+                if (!Strings.isNullOrEmpty(mode)) {
+                    if (mode.equals("NEW")) {
+                        resetCommonValues();
+                        p = srvProjectManager.getDaoProject().getById(p.getId());
+                        if (p != null) {
+                            model.addAttribute("projectReference", p.getReference());
+                            model.addAttribute("is_quotation", 1);
+                            model.addAttribute("display", "display: none;");
+                            model.addAttribute("expired", format.format(expired));
+                            this.setContent(selectInfo(p.getId(), model));
+                            this.setClassContent("content");
+                            setHeaderInfo(model);
+                        }
+                    } else if (mode.equals("Q-EDIT") || mode.equals("EDIT-PROJECT")) {
+                        resetCommonValues();
+                        model.addAttribute("display", "display: inline;");
+                        this.setContent(editInfo(p.getId(), model, mode));
                         this.setClassContent("content");
-                        setHeaderInfo(session, model);
+                        setHeaderInfo(model);
                     }
-//                } else if (mode.equals("NEW_RQ")) {
-//                    this.setContent(selectInfo(model));
-//                    this.setClassContent("content");
-//                    setHeaderInfo(session, model);
-//                    setVirualQuotation();
-                } else if (mode.equals("Q-EDIT") || mode.equals("EDIT-PROJECT")) {
-                    resetCommonValues();
-                    model.addAttribute("display", "display: inline;");
-                    this.setContent(editInfo(p.getId(), model, mode));
-                    this.setClassContent("content");
-                    setHeaderInfo(session, model);
                 }
             }
 
@@ -652,22 +647,16 @@ public class QuotationController extends QuotationCommon {
 
     @RequestMapping(value = "/quotation/add-item")
     public @ResponseBody
-    String addItem(Long bmsId, Integer location, Integer currency) {
+    @SuppressWarnings({"null", "empty-statement"})
+    String addItem(Long bmsId, Integer location, Integer currency, Long[] items) {
         if (bmsId != null && location != null && currency != null) {
             Map<String, String> content = new HashMap<>();
             BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
 
-            if (getMapQuotation(bmsId, location) != null) {
-                content.put("status", "exist");
-                content.put("message", "Exist Quotation for BMS=" + bms.getName() + " and Location=" + getLocationNameById(location));
-
-                return new Gson().toJson(content);
-            } else if (bms != null) {
+            if (bms != null && location != null && currency != null) {
                 ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
 
                 if (pd != null) {
-                    List<BillMaterialServiceItem> items = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bmsId);
-
                     setMapQuotation(new Quotation.Builder()
                             .setCurrency(currency)
                             .setCustomer(pd.getCustomer())
@@ -675,17 +664,16 @@ public class QuotationController extends QuotationCommon {
                             .setBillMaterialService(bmsId)
                             .setLocation(location)
                             .build());
-                    if (items != null && !items.isEmpty()) {
-                        items.stream().forEach((item) -> {
+                    if (items != null && items.length > 0) {
+                        for (Long item : items) {
                             setMapQuotationItem(bms.getId(), location, new QuotationItem.Builder()
-                                    .setBillMaterialServiceItem(item.getId())
+                                    .setBillMaterialServiceItem(item)
                                     .setEdit(Boolean.TRUE)
                                     .build());
-                        });
+                        };
                     }
-                    content.put("status", "created");
                     content.put("quotation", getHtmlQuotation());
-                    content.put("quotationItem", getHtmlQuotationItems());
+                    content.put("quotationItem", getHtmlQuotationItems(bms.getId(), location));
 
                     return new Gson().toJson(content);
                 }
@@ -712,83 +700,41 @@ public class QuotationController extends QuotationCommon {
     @RequestMapping(value = "/quotation/save")
     public void save(Quotation _q, String dateExpired, final HttpServletRequest request, final HttpServletResponse response) {
         if (_q != null) {
-            Collection<Quotation> qs = getMapQuotation();
+            Quotation qs = getMapQuotation(_q.getBillMaterialService(), _q.getLocation());
 
-            if (qs != null && !qs.isEmpty()) {
-                qs.stream()
-                        .map((q) -> {
-                            q.setCreated(new Date());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setComplete(Boolean.TRUE);
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setDiscard(Boolean.FALSE);
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setCustomerReference(_q.getCustomerReference());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setAvailability(_q.getAvailability());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setDelivery(_q.getDelivery());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setPacking(_q.getPacking());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setPayment(_q.getPayment());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setValidity(_q.getValidity());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setWelcome(_q.getWelcome());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setRemark(_q.getRemark());
-                            return q;
-                        })
-                        .map((q) -> {
-                            q.setNote(_q.getNote());
-                            return q;
-                        })
-                        .map((q) -> {
-                            if (q.getId() == null) {
-                                srvProjectManager.getDaoQuotation().add(q);
-                            } else {
-                                srvProjectManager.getDaoQuotation().edit(q);
-                            }
+            if (qs != null) {
+                qs.setCreated(new Date());
+                qs.setComplete(Boolean.FALSE);
+                qs.setDiscard(Boolean.FALSE);
+                qs.setCustomerReference(_q.getCustomerReference());
+                qs.setAvailability(_q.getAvailability());
+                qs.setDelivery(_q.getDelivery());
+                qs.setPacking(_q.getPacking());
+                qs.setPayment(_q.getPayment());
+                qs.setValidity(_q.getValidity());
+                qs.setWelcome(_q.getWelcome());
+                qs.setRemark(_q.getRemark());
+                qs.setNote(_q.getNote());
+                if (qs.getId() == null) {
+                    srvProjectManager.getDaoQuotation().add(qs);
+                } else {
+                    srvProjectManager.getDaoQuotation().edit(qs);
+                }
 
-                            return q;
-                        })
-                        .filter((q) -> (q != null)).forEach((q) -> {
-                    List<QuotationItem> qis = getMapQuotationItem(q.getBillMaterialService(), q.getLocation());
+                List<QuotationItem> qis = getMapQuotationItem(qs.getBillMaterialService(), qs.getLocation());
 
-                    if (qis != null && !qis.isEmpty()) {
-                        qis.stream().forEach((qi) -> {
-                            if (qi.getId() == null) {
-                                qi.setQuotation(q.getId());
-                                srvProjectManager.getDaoQuotationItem().add(qi);
-                            } else {
-                                srvProjectManager.getDaoQuotationItem().edit(qi);
-                            }
-                        });
-                    }
-                });
+                if (qis != null && !qis.isEmpty()) {
+                    qis.stream().forEach((qi) -> {
+                        if (qi.getId() == null) {
+                            qi.setQuotation(qs.getId());
+                            srvProjectManager.getDaoQuotationItem().add(qi);
+                        } else {
+                            srvProjectManager.getDaoQuotationItem().edit(qi);
+                        }
+                    });
+                }
 
-                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(qs.iterator().next().getBillMaterialService());
+                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(qs.getBillMaterialService());
 
                 if (bms != null) {
                     ProjectDetail pd = srvProjectManager.getDaoProjectDetail().getById(bms.getProject());
@@ -817,6 +763,7 @@ public class QuotationController extends QuotationCommon {
                             Set<Map<String, Set<Map<String, String>>>> offers = new LinkedHashSet<>();
                             Map<String, Map<String, String>> info = new LinkedHashMap<>();
                             SimpleDateFormat ds = new SimpleDateFormat("dd-MM-yyyy");
+                            Collection<Quotation> _qs = getMapQuotation();
 
                             titleLeft.put("To", pd.getCustomer());
                             titleLeft.put("Tel", (cont != null) ? cont.getPhone() : "");
@@ -833,23 +780,22 @@ public class QuotationController extends QuotationCommon {
                             comments.put("welcome", _q.getWelcome());
                             comments.put("remarks", _q.getRemark());
                             comments.put("notes", _q.getNote());
-                            for (Quotation q : qs) {
-                                List<QuotationItem> qis = getMapQuotationItem(q.getBillMaterialService(), q.getLocation());
+                            
+                            _qs.stream().forEach((q) -> {
+                                List<QuotationItem> _qis = getMapQuotationItem(q.getBillMaterialService(), q.getLocation());
                                 String location = "EX WORKS "
                                         + getLocationNameById(q.getLocation())
                                         + "("
                                         + getCurrencyById(q.getCurrency())
                                         + ")"
                                         + " - Total: " + q.getGrandTotal();
-
-                                if (qis != null && !qis.isEmpty()) {
+                                if (_qis != null && !_qis.isEmpty()) {
                                     Set<Map<String, String>> values = new LinkedHashSet<>();
 
-                                    for (QuotationItem qi : qis) {
+                                    _qis.stream().map((qi) -> {
                                         Map<String, String> value = new LinkedHashMap<>();
                                         BillMaterialServiceItem bmsi
                                                 = srvProjectManager.getDaoBillMaterialServiceItem().getById(qi.getBillMaterialServiceItem());
-
                                         if (bmsi != null) {
                                             Item item = srvProjectManager.getDaoItem().getById(bmsi.getItem());
 
@@ -862,8 +808,10 @@ public class QuotationController extends QuotationCommon {
                                         value.put("price", qi.getUnitPrice().toString());
                                         value.put("discount", qi.getDiscount().toString());
                                         value.put("total", qi.getTotal().toString());
+                                        return value;
+                                    }).forEach((value) -> {
                                         values.add(value);
-                                    }
+                                    });
                                     offers.add(
                                             new LinkedHashMap<String, Set<Map<String, String>>>() {
                                         {
@@ -871,7 +819,7 @@ public class QuotationController extends QuotationCommon {
                                         }
                                     });
                                 }
-                            }
+                            });
                             info.put("titleLeft", titleLeft);
                             info.put("titleRight", titleRigth);
                             info.put("additional", additional);
@@ -888,15 +836,14 @@ public class QuotationController extends QuotationCommon {
 
                                     if (session != null) {
                                         InputStream in = new FileInputStream(file);
-                                        OutputStream output = response.getOutputStream();
-
-                                        response.reset();
-                                        response.setContentType("application/octet-stream");
-                                        response.setContentLength((int) (file.length()));
-                                        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-                                        IOUtils.copyLarge(in, output);
-                                        output.flush();
-                                        output.close();
+                                        try (OutputStream output = response.getOutputStream()) {
+                                            response.reset();
+                                            response.setContentType("application/octet-stream");
+                                            response.setContentLength((int) (file.length()));
+                                            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+                                            IOUtils.copyLarge(in, output);
+                                            output.flush();
+                                        }
                                     }
                                 }
                             } catch (FileNotFoundException ex) {
@@ -913,8 +860,7 @@ public class QuotationController extends QuotationCommon {
 
     @RequestMapping(value = "/quotation/complete")
     public @ResponseBody
-    String complete(Long bmsId, Integer location
-    ) {
+    String complete(Long bmsId, Integer location) {
         if (bmsId != null && location != null) {
             Quotation q = getMapQuotation(bmsId, location);
 
@@ -926,6 +872,84 @@ public class QuotationController extends QuotationCommon {
 
                 return "<h1>Quotation:" + q.getName() + " - Complete</h1>\n";
             }
+        }
+
+        return null;
+    }
+
+    @RequestMapping(value = "/quotation/select-item")
+    public @ResponseBody
+    String selectItem(Long bmsId, Integer location) {
+        Map<String, String> content = new HashMap<>();
+        String response = "";
+
+        if (bmsId != null && location != null) {
+            if (getMapQuotation(bmsId, location) != null) {
+                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
+
+                if (bms != null) {
+                    content.put("status", "exist");
+                    content.put("message", "Exist Quotation for BMS=" + bms.getName() + " and Location=" + getLocationNameById(location));
+
+                    return new Gson().toJson(content);
+                }
+            }
+
+            List<BillMaterialServiceItem> items = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bmsId);
+
+            if (items != null && !items.isEmpty()) {
+                for (BillMaterialServiceItem item : items) {
+                    Item i = srvProjectManager.getDaoItem().getById(item.getId());
+
+                    if (i != null) {
+                        response += "<option value='" + item.getId() + "'>" + i.getDescription() + "</option>";
+                    }
+                }
+
+                content.put("status", "selected");
+                content.put("data", response);
+            }
+
+            return new Gson().toJson(content);
+        }
+
+        return null;
+    }
+    
+    @RequestMapping(value = "/quotation/change-location")
+    public @ResponseBody
+    String changeLocation(Long bmsId, Integer location) {
+        Map<String, String> content = new HashMap<>();
+        String response = "";
+
+        if (bmsId != null && location != null) {
+            if (getMapQuotation(bmsId, location) != null) {
+                BillMaterialService bms = srvProjectManager.getDaoBillMaterialService().getById(bmsId);
+
+                if (bms != null) {
+                    content.put("status", "exist");
+                    content.put("message", "Exist Quotation for BMS=" + bms.getName() + " and Location=" + getLocationNameById(location));
+
+                    return new Gson().toJson(content);
+                }
+            }
+
+            List<BillMaterialServiceItem> items = srvProjectManager.getDaoBillMaterialServiceItem().getByBillMaterialService(bmsId);
+
+            if (items != null && !items.isEmpty()) {
+                for (BillMaterialServiceItem item : items) {
+                    Item i = srvProjectManager.getDaoItem().getById(item.getId());
+
+                    if (i != null) {
+                        response += "<option value='" + item.getId() + "'>" + i.getDescription() + "</option>";
+                    }
+                }
+
+                content.put("status", "selected");
+                content.put("data", response);
+            }
+
+            return new Gson().toJson(content);
         }
 
         return null;

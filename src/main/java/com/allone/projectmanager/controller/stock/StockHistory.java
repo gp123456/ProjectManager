@@ -34,11 +34,12 @@ public class StockHistory extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Stock");
                 this.setHeader("header.jsp");
                 this.setSide_bar("../stock/sidebar.jsp");
                 this.setContent("../stock/History.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

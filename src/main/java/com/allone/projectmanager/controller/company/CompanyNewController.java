@@ -40,10 +40,11 @@ public class CompanyNewController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Companies-New");
                 this.setSide_bar("../company/sidebar.jsp");
                 this.setContent("../company/New.jsp");
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }

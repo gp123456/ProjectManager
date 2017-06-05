@@ -247,8 +247,6 @@ function getValues(response) {
                         "&delivery=" + $("#delivery").text() +
                         "&expenses=" + $("#expenses").text() +
                         "&currency=" + currency;
-                
-                alert(data);
 
                 if (content.requestQuotationItem !== null) {
                     var items = JSON.parse(content.requestQuotationItem);
@@ -509,4 +507,10 @@ function dlgSetupEmailSender() {
             duration: 1000
         }
     });
+}
+
+function submitQuotation() {
+    var id = $("#subproject option:selected").val();
+    
+    window.location.href = "/ProjectManager/project/quotation" + "?id=" + id + "&mode=NEW";
 }

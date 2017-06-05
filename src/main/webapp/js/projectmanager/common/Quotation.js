@@ -36,15 +36,22 @@ function changeQuotaSubproject(mode) {
                 $("#quotation-item").html(content.quotationItem);
             }
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
 
 function addItem() {
+    var items = [];
+    $('#lst-select-qitem :selected').each(function (i, selected) {
+        items[i] = $(selected).val();
+    });
+
     var data = "bmsId=" + $('#bill-material-service-id').val()
             + "&location=" + $("#locations option:selected").val()
-            + "&currency=" + $("#currency option:selected").val();
+            + "&currency=" + $("#currency option:selected").val()
+            + "&items=" + items;
 
     $.ajax({
         type: "POST",
@@ -55,29 +62,74 @@ function addItem() {
                 var content = JSON.parse(response);
 
                 if (content) {
-                    if (content.status) {
-                        if (content.status === "exist") {
-                            alert(content.message);
-                        } else if (content.status === "created") {
-                            if (content.quotation) {
-                                $("#quotation").html(content.quotation);
+                    if (content.quotation) {
+                        $("#quotation").html(content.quotation);
+                    }
+                    if (content.quotationItem) {
+                        $("#quotation-item").html(content.quotationItem);
+                    }
+                    $("#availability").val("");
+                    $("#delivery").val("");
+                    $("#packing").val("");
+                    $("#payment").val("");
+                    $("#validity").val("");
+                    $("#calculate").removeAttr('disabled');
+                    $("#calculate").removeClass('button alarm');
+                    $("#calculate").addClass('button');
+                    $("#email").attr('disabled', 'disabled');
+                    $("#email").removeClass('button');
+                    $("#email").addClass('button alarm');
+                    $("#save").attr('disabled', 'disabled');
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
+function dlgSelectItem() {
+    var data = "bmsId=" + $('#bill-material-service-id').val() + "&location=" + $("#locations option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/quotation/select-item",
+        data: data,
+        success: function (response) {
+            if (response) {
+                var content = JSON.parse(response);
+
+                if (content) {
+                    if (content.status === "exist") {
+                        alert(content.message);
+                    } else if (content.status === "selected") {
+                        $("#lst-select-qitem").html(content.data);
+                        $("#dlg-select-qitem").dialog({
+                            autoOpen: true,
+                            modal: true,
+                            width: 500,
+                            buttons: {
+                                "submit": function () {
+                                    addItem();
+                                    $("#dlg-select-qitem").dialog("close");
+                                }
+                            },
+                            show: {
+                                effect: "blind",
+                                duration: 1000
+                            },
+                            hide: {
+                                effect: "explode",
+                                duration: 1000
                             }
-                            if (content.quotationItem) {
-                                $("#quotation-item").html(content.quotationItem);
-                            }
-                            $("#calculate").removeAttr('disabled');
-                            $("#calculate").removeClass('button alarm');
-                            $("#calculate").addClass('button');
-                            $("#email").attr('disabled', 'disabled');
-                            $("#email").removeClass('button');
-                            $("#email").addClass('button alarm');
-                            $("#save").attr('disabled', 'disabled');
-                        }
+                        });
                     }
                 }
             }
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -99,7 +151,8 @@ function qSubmit() {
         success: function () {
             window.location.href = "/ProjectManager/project/quotation?mode=NEW_RQ";
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -118,7 +171,8 @@ function getQuotation(mode) {
                 qClear(response);
             }
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -197,7 +251,8 @@ function qClear(response) {
                     $("#email").addClass('button alarm');
                     $("#save").attr('disabled', 'disabled');
                 },
-                error: function (e) {
+                error: function (xhr, status, error) {
+                    console.log(error);
                 }
             });
         }
@@ -228,13 +283,16 @@ function qCalculate(response) {
             $("#email").addClass('button');
             $("#save").removeAttr('disabled');
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
 
 function qSave() {
     var data = "?customerReference=" + $("#customer-reference").val()
+            + "&billMaterialService=" + $('#bill-material-service-id').val()
+            + "&location=" + $("#locations option:selected").val()
             + "&availability=" + $("#availability").val()
             + "&delivery=" + $("#delivery").val()
             + "&packing=" + $("#packing").val()
@@ -248,7 +306,9 @@ function qSave() {
     location.href = "/ProjectManager/project/quotation/save" + data;
 
     setTimeout(function () {
-        location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
+        if (!confirm("Do you want create another location?")) {
+            location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
+        }
     }, 5000);
 }
 
@@ -273,7 +333,8 @@ function changeQCurrency() {
         success: function (response) {
             $("#rq-currency" + location).html(response);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }
@@ -293,7 +354,45 @@ function completeQuotation() {
                 location.href = "http://localhost:8081/ProjectManager/project/history-new-project";
             }, 5000);
         },
-        error: function (e) {
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
+function changeLocation() {
+    var data = "bmsId=" + $('#bill-material-service-id').val()
+            + "&location=" + $("#locations option:selected").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/ProjectManager/project/quotation/change-location",
+        data: data,
+        success: function (response) {
+            if (response) {
+                var content = JSON.parse(response);
+                
+                if (content) {
+                    if (content.quotationItem) {
+                        $("#quotation-item").html(content.quotationItem);
+                    }
+                    $("#availability").val(content.availability);
+                    $("#delivery").val(content.delivery);
+                    $("#packing").val(content.packing);
+                    $("#payment").val(content.payment);
+                    $("#validity").val(content.validity);
+                    $("#calculate").removeAttr('disabled');
+                    $("#calculate").removeClass('button alarm');
+                    $("#calculate").addClass('button');
+                    $("#email").attr('disabled', 'disabled');
+                    $("#email").removeClass('button');
+                    $("#email").addClass('button alarm');
+                    $("#save").attr('disabled', 'disabled');
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
         }
     });
 }

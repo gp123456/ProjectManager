@@ -27,10 +27,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "collabs")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword", query = "SELECT c FROM Collabs c WHERE c.username = :username AND c.password = :password"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByColusernameColpassword",
+            query = "SELECT c FROM Collabs c WHERE c.username = :username AND c.password = :password"),
     @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findById", query = "SELECT c FROM Collabs c WHERE c.id = :id"),
     @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findByRole", query = "SELECT c FROM Collabs c WHERE c.role = :role"),
-    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectId", query = "UPDATE Collabs c SET c.projectId = c.projectId + 1 WHERE c.id = :id")
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectId",
+            query = "UPDATE Collabs c SET c.projectId = c.projectId + 1 WHERE c.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.updateProjectLock",
+            query = "UPDATE Collabs c SET c.projectLock = :pdId WHERE c.id = :id"),
+    @NamedQuery(name = "com.allone.projectmanager.entities.Collabs.findAll", query = "SELECT c FROM Collabs c")
 })
 public class Collabs implements Serializable {
 
@@ -72,7 +77,7 @@ public class Collabs implements Serializable {
     @Column(name = "project_id")
     @NotNull
     private Long projectId;
-    
+
     @Column(name = "project_expired")
     @NotNull
     private Integer projectExpired;
@@ -80,7 +85,10 @@ public class Collabs implements Serializable {
     @Column(name = "role")
     @NotNull
     private String role;
-    
+
+    @Column(name = "project_lock")
+    private Long projectLock;
+
     @Transient
     private Builder builder;
 
@@ -96,6 +104,7 @@ public class Collabs implements Serializable {
         projectId = builder.projectId;
         projectExpired = builder.projectExpired;
         role = builder.role;
+        projectLock = builder.projectLock;
     }
 
     public Collabs() {
@@ -185,7 +194,7 @@ public class Collabs implements Serializable {
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
-    
+
     public Integer getProjectExpired() {
         return projectExpired;
     }
@@ -193,13 +202,21 @@ public class Collabs implements Serializable {
     public void setProjectExpired(Integer projectExpired) {
         this.projectExpired = projectExpired;
     }
-    
+
     public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Long getProjectLock() {
+        return projectLock;
+    }
+
+    public void setProjectLock(Long projectLock) {
+        this.projectLock = projectLock;
     }
 
     @Override
@@ -226,8 +243,9 @@ public class Collabs implements Serializable {
     public String toString() {
         return "com.allone.projectmanager.entities.Collabs[ id=" + id + " ]";
     }
-    
+
     public class Builder {
+
         private String name;
 
         private String surname;
@@ -245,77 +263,85 @@ public class Collabs implements Serializable {
         private String projectPrefix;
 
         private Long projectId;
-        
+
         private Integer projectExpired;
-        
+
         private String role;
+
+        private Long projectLock;
 
         public Builder setName(String name) {
             this.name = name;
-            
+
             return this;
         }
 
         public Builder setSurname(String surname) {
             this.surname = surname;
-            
+
             return this;
         }
 
         public Builder setPhone(String phone) {
             this.phone = phone;
-            
+
             return this;
         }
 
         public Builder setEmail(String email) {
             this.email = email;
-            
+
             return this;
         }
 
         public Builder setNotes(String notes) {
             this.notes = notes;
-            
+
             return this;
         }
 
         public Builder setUsername(String username) {
             this.username = username;
-            
+
             return this;
         }
 
         public Builder setPassword(String password) {
             this.password = password;
-            
+
             return this;
         }
 
         public Builder setProjectPrefix(String projectPrefix) {
             this.projectPrefix = projectPrefix;
-            
+
             return this;
         }
 
         public Builder setProjectId(Long projectId) {
             this.projectId = projectId;
-            
+
             return this;
         }
-        
+
         public Builder setProjectExpired(Integer projectExpired) {
             this.projectExpired = projectExpired;
-            
+
             return this;
         }
 
         public Builder setRole(String role) {
             this.role = role;
-            
+
             return this;
         }
-        
+
+        public Builder setProjectLock(Long projectLock) {
+            this.projectLock = projectLock;
+
+            return this;
+        }
+
         public Collabs build() {
             return new Collabs(this);
         }

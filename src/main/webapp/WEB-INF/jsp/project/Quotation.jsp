@@ -72,11 +72,11 @@
             <tr>
                 <td>
                     <label class="custom-select">
-                        <select id="locations">${location}</select>
+                        <select id="locations" onclick="changeLocation()">${location}</select>
                     </label>
                 </td>
                 <td>
-                    <input type="button" class="button" value="Add Item(s)" onclick="addItem()"/>
+                    <input type="button" class="button" value="Add Item(s)" onclick="dlgSelectItem()"/>
                 </td>
                 <td>
                     <input type="button" class="button alarm" value="Complete" onclick="completeQuotation()" style="${display}"/>
@@ -84,6 +84,11 @@
             </tr>
         </tbody>
     </table>
+    <div id="dlg-select-qitem" hidden="true" title="Select Item">
+        <form>
+            <select id="lst-select-qitem" style="width: 460px" multiple></select>
+        </form>
+    </div>
     <h3>Select Currency</h3>
     <table>
         <tbody>

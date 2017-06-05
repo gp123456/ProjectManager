@@ -55,11 +55,12 @@ public class DebugController extends Common {
             HttpSession session = request.getSession();
 
             if (session != null) {
+                setUser(srvProjectManager.getUser());
                 this.setTitle("Debug");
                 this.setHeader(null);
                 this.setSide_bar("../debug/sidebar.jsp");
                 this.setContent(null);
-                setHeaderInfo(session, model);
+                setHeaderInfo(model);
 
                 return "index";
             }
